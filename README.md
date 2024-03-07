@@ -1,7 +1,7 @@
-# CSSE376 Project: [GAME CHOICE]
+# CSSE376 Project: Risk
 
 ## Contributors
-Team [X]: [TEAM MEMBER NAME], [TEAM MEMBER NAME], [TEAM MEMBER NAME]
+Team 5: Canon Maranda, Grant Wyness, Harvey Yang, Frank Zhang
 
 ## Dependencies
 - Java: JDK 11
