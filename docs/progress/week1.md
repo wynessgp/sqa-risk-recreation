@@ -21,7 +21,7 @@
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
-- abc, could be links to PR
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### PR done and approved
 - abc
