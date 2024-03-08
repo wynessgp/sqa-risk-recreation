@@ -24,20 +24,18 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### PR done and approved
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### Other people's PR reviewed by you
 - abc
 
 ### Team member: Grant Wyness
 #### PR created:
-- abc, could be links to PR
 
 ### PR done and approved
-- abc
 
 ### Other people's PR reviewed by you
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### Team member: Harvey Yang
 #### PR created:
