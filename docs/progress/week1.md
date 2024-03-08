@@ -27,33 +27,33 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### Other people's PR reviewed by you
-- abc
+- N/A
 
 ### Team member: Grant Wyness
 #### PR created:
 
 ### PR done and approved
+- N/A
 
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/7
 
 ### Team member: Harvey Yang
 #### PR created:
-- abc, could be links to PR
+- N/A
 
 ### PR done and approved
-- abc
+- N/A
 
 ### Other people's PR reviewed by you
-- abc
-
+- N/A
 
 ### Team member: Frank Zhang
 #### PR created:
-- abc, could be links to PR
+- N/A
 
 ### PR done and approved
-- abc
+- N/A
 
 ### Other people's PR reviewed by you
-- abc
+- N/A
