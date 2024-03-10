@@ -1,4 +1,4 @@
-# UC2. Single Turn of Game
+# UC3. Single Turn Attack Phase during Game
 
 ### Actor: Player
 
