@@ -83,13 +83,17 @@ Player does the placement phase of their turn in an ongoing game
     4. Resume basic flow at Step 2
 
 ### Exceptions
+Standard exceptions across all use cases here (TBD)
 
 ### Preconditions
-System is displaying the game board
+1. System is displaying the game board
+2. It is the user's turn
+3. The game is not over
 
 ### Postconditions
-The user has their new armies placed in order to begin the attack or fortify phase of 
-their ongoing turn.
+1. System is displaying the game board
+2. It is the attack phase of the user's turn
+3. The game board is appropriately updated with the newly placed troops
 
 ### System or subsystem
 none
@@ -120,23 +124,73 @@ Attacking Player is in the attacking phase of their single turn
     1. Prompts the AP for how many armies they wish to attack with
     2. Displays an option to confirm the attack
     3. Displays an option to cancel the attack
-3. AP selects to confirm the attack
+3. AP does the following:
+    1. Enters how many armies they wish to use for the attack
+    2. Selects to confirm the attack
 4. System does the following:
     1. Prompts the DP for how many armies they wish to defend with
     2. Displays an option to confirm the defense
-5. DP selects to confirm the defense
+5. DP does the following:
+    1. Enters how many armies they wish to use for the defense
+    2. Selects to confirm the defense
 6. System does the following:
-    1. 
+    1. Rolls the corresponding attack, defense dice
+    2. Orders the results from highest to lowest on both sides
+    3. Compares the results to calculate casualites
+    4. Displays the casualty results with die rolls
+7. AP confirms the results of the battle
+8. System displays the following:
+    1. The remaining number of armies in each territory involved
+    2. An option to continue the attack
+    3. An option to cancel the attack
+9. AP selects to cancel the attack
+10. System does the following:
+    1. Updates the board to reflect army count changes
+    2. Enables the AP to continue attacking
+    3. Displays an option to end the attack phase
+11. AP selects to end the attack phase
+12. System notifies the AP that the fortify phase is beginning
 
 ### Alternate Flow 
+1. Basic Flow Step 1: AP selects a territory to attack that is their own
+    1. System informs the AP that the territory they've selected to attack is their own
+    2. AP confirms the message
+    3. Resume basic flow at Step 1
+2. Basic Flow Step 1: AP selects a territory to attack *from* that is not their own
+    1. System informs the AP that the territory they've selected to attack from is not their own
+    2. AP confirms the message
+    3. Resume basic flow at Step 1.1
+3. Basic Flow Step 3: AP provides an invalid number of armies to use for the attack
+    1. System informs the AP they've selected an invalid number of armies to use in the attack
+    2. AP confirms the message
+    3. Resume basic flow at Step 3
+4. Basic Flow Step 5: DP provides an invalid number of armies to use for the defense
+    1. System informs the DP they've selected an invalid number of armies to use in the defense
+    2. DP confirms the message
+    3. Resume basic flow at Step 5 
+5. Basic Flow Step 8 (9?): There are no remaining defending armies
+    1. System does the following:
+        1. Updates who the territory belongs to
+        2. Displays the remaining number of armies in each territory involved
+        3. Displays an option to continue
+    2. AP selects the option to continue
+    3. Resume basic flow at Step 11 (9?)
+6. Basic Flow Step 9: AP chooses to continue the attack
+    1. Resume basic flow at Step 3
+7. Basic Flow Step 11: AP chooses to attack again
+    1. Resume basic flow at Step 3
 
 ### Exceptions
+Standard exceptions across all use cases here (TBD)
 
 ### Preconditions
-System is displaying the game board
+1. System is displaying the game board
+2. It is the attack phase of the AP's turn
+3. The game is not over
 
 ### Postconditions
-ABC
+1. System is displaying the game board
+2. It is the fortify phase of the AP's turn, or the game has ended.
 
 ### System or subsystem
 none
@@ -160,28 +214,18 @@ none
 A player is in the fortify phase of their single turn
 
 ### Basic Flow
-1. AP does the following:
-    1. Selects a territory to attack
-    2. Selects a territory to attack from
-2. System does the following:
-    1. Prompts the AP for how many armies they wish to attack with
-    2. Displays an option to confirm the attack
-    3. Displays an option to cancel the attack
-3. AP selects to confirm the attack
-4. System does the following:
-    1. Prompts the DP for how many armies they wish to defend with
-    2. Displays an option to confirm that defense
-5. 
 
 ### Alternate Flow 
 
 ### Exceptions
 
 ### Preconditions
-System is displaying the game board
+1. System is displaying the game board
+2. It is the fortify phase of the user's turn
 
 ### Postconditions
-ABC
+1. System is displaying the game board
+2. It is the next player's turn, or the game has ended.
 
 ### System or subsystem
 none
