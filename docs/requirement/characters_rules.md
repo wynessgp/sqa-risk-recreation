@@ -10,12 +10,11 @@ The game begins with placing infantry pieces on claimed territories, representin
 Depending on how many players are in the game, each player starts with a predtermined number of infantry pieces:
 |Number of players|Number of infantry per player|
 |-----------------|-----------------------------|
+|2                |40                           |
 |3                |35                           |
 |4                |30                           |
 |5                |25                           |
 |6                |20                           |
-
-Note: A game with two players is not displayed in the table above since the setup rules are slightly different.
 
 Infantry pieces are then placed on the game board according to the setup rules.
 
@@ -35,13 +34,13 @@ If a player occupies all the territories in a continent, they will receive addit
 # Game Cards
 Risk cards allow a player to increase the size of their armies. Each card consists of a territory and an image of one of the three game pieces. The exception to this is the wild card, which shows all three game pieces and no territories. Players do not start out with Risk cards in their posession.
 
-## Collecting Cards
+## Collecting Risk Cards
 A Risk card is obtained when a player captures a new territory during a turn. They can only claim one card per turn, even if they capture more than one territory. Players cannot hold more than four cards at the start of a turn. When they have five or six cards in their hand, they must trade in a valid combination of cards.
 
 ### Eliminating a Player
 If a player happens to eliminate another player from the game by capturing their last territory, all Risk cards are given to the player still in the game. If the player's card count exceeds four, they must continue to trade in cards immediately until this number is at most four.
 
-## Trading In
+## Trading In Risk Cards
 A player can trade in three of their Risk cards in any of the following ways:
 1. All three cards have the same game piece image (infantry, cavelry, artillery)
 2. Each card has a different game piece image
@@ -64,3 +63,11 @@ If a player trades in more than six card sets during the game, their army reward
 
 ### Territory Matching
 If a player trades in a card that contains a picture of a territory they currently claim, they receive two additional armies. These extra armies must be placed on the corresponing territory from the card. This transaction only applies once per turn, so two matching territory pictures would result in only two additional piecies placed on a single territory.
+
+## Secret Mission Cards
+The secret mission cards are only utilized in the *Secret Mission* version of the game. During the setup phase, players will remove any colored cards where corresponding armies are not in use. One secret mission card is dealt to each player and the remaining cards are unused. This adaptation of the game is won when a player successfully completes the mission on their card.
+
+## Alternate Game Card Uses
+Different variations of the Risk game require the deck of Risk cards to be utilized in different ways. Some of the use cases are as follows:
+- Capital Risk: each player holds a single territory card representing their headquarters. The remainder of the deck is used as normal.
+- Secret Mission Risk: cards are dealt to the players to determine occupied territories. Gameplay with the deck resumes as normal following the setup phase. Secret mission cards are also utilized during gameplay.
