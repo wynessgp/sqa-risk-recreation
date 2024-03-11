@@ -41,7 +41,7 @@ Player does the placement phase of their turn in an ongoing game
     3. An option to confirm the current placement
     4. An option to cancel the current placement
 5. User does the following:
-    1. Selects how many armies to place
+    1. Enters how many armies to place
         1. Bounded by [1, num new armies)
     2. Selects to confirm the current placement
 6. System does the following:
@@ -54,42 +54,46 @@ Player does the placement phase of their turn in an ongoing game
     3. Displays an option to skip into the fortify phase
 
 ### Alternate Flow
-1. Basic Flow Step 1: User does not select to trade in RISK cards
+1. Basic Flow Step 1: User has no RISK cards to trade in
+    1. System informs the user they have no RISK cards to trade in
+    2. User confirms the message
+    3. Resume basic flow at Step 3
+2. Basic Flow Step 1: User does not select to trade in RISK cards
     1. Resume basic flow at Step 3
-2. Basic Flow Step 1: User has 5 or 6 RISK cards in hand
+3. Basic Flow Step 1: User has 5 or 6 RISK cards in hand (forced trade-in)
     1. System informs the user they have too many RISK cards and must turn them in
     2. User does the following:
         1. Confirms the message
         2. Turns in RISK cards until they have less than 5 in hand
     3. Resume basic flow at Step 2
-3. Basic Flow Step 3: User selects to turn in more RISK cards
+4. Basic Flow Step 3: User selects to turn in more RISK cards
     1. Resume basic flow at Step 2
-4. Basic Flow Step 3: User selects a territory that isn't theirs
+5. Basic Flow Step 3: User selects a territory that isn't theirs
     1. System informs the user that the territory they selected is not theirs
     2. User confirms the message
-    3. Resume basic flow at Step 2
-5. Basic Flow Step 5: User selects to cancel current placement
-    1. Resume basic flow at Step 2
-6. Basic Flow Step 5: User selects an invalid amount of armies to place
+    3. Resume basic flow at Step 1
+6. Basic Flow Step 5: User selects to cancel current placement
+    1. Resume basic flow at Step 1
+7. Basic Flow Step 5: User selects an invalid amount of armies to place
     1. System does the following:
         1. Informs the user they've selected an invalid number of troops
         2. Notifies them that the valid range is bounded by [1, num new armies)
     2. User confirms the message
-    3. Resume basic flow at Step 2
-7. Basic Flow Step 7: User hasn't placed all of their armies
+    3. Resume basic flow at Step 1
+8. Basic Flow Step 7: User hasn't placed all of their armies
     1. System informs the user they must place all of their armies
     2. User confirms the message
-    3. Resume basic flow at Step 2
+    3. Resume basic flow at Step 1
 
 ### Exceptions
-Standard exceptions across all use cases here (TBD)
+1. User selects the exit application option
+    1. System closes the application
 
 ### Preconditions
 1. System is displaying the game board
 2. It is the user's turn
 3. The game is not over
-4. System has calculated the amount of armies the 
-current player (user) needs to place
+4. System has calculated the amount of armies the current player (user) needs to place
 
 ### Postconditions
 1. System is displaying the game board
@@ -160,10 +164,14 @@ Attacking Player is in the attacking phase of their single turn
     3. Resume basic flow at Step 1.1
 3. Basic Flow Step 3: AP provides an invalid number of armies to use for the attack
     1. System informs the AP they've selected an invalid number of armies to use in the attack
+        1. System notes that it must be from [1, 3]
+        2. Must leave an army behind in the territory they are attacking from
     2. AP confirms the message
     3. Resume basic flow at Step 3
 4. Basic Flow Step 5: DP provides an invalid number of armies to use for the defense
     1. System informs the DP they've selected an invalid number of armies to use in the defense
+        1. System notes that it must be from [1, 2]
+        2. System notes that it cannot exceed the number of armies in the territory
     2. DP confirms the message
     3. Resume basic flow at Step 5 
 5. Basic Flow Step 8 (9?): There are no remaining defending armies
@@ -179,11 +187,12 @@ Attacking Player is in the attacking phase of their single turn
     1. Resume basic flow at Step 3
 
 ### Exceptions
-Standard exceptions across all use cases here (TBD)
+1. User selects the exit application option
+    1. System closes the application
 
 ### Preconditions
 1. System is displaying the game board
-2. It is the attack phase of the AP's turn
+2. It is the attack phase of the AP's turn (AP selected to enter the attack phase from UC2)
 3. The game is not over
 
 ### Postconditions
@@ -240,8 +249,15 @@ A player is in the fortify phase of their single turn
     1. System informs the User that the territory they've selected to transfer to is not their own
     2. User confirms the message
     3. Resume basic flow at Step 1.1
+3. Basic Flow Step 3: User provides an invalid amount of armies to transfer
+    1. System informs the user that they've selected an invalid amount of troops to transfer
+        1. Notes that it must be bounded by [1, armies in territory)
+    2. User confirms the message
+    3. Return to basic flow step 1
 
 ### Exceptions
+1. User selects the exit application option
+    1. System closes the application
 
 ### Preconditions
 1. System is displaying the game board
