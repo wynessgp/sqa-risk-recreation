@@ -1,35 +1,135 @@
 @startuml
-note "Some example plantUML code for a class diagram." as N1
 
-+class Game{
--players: List<Player>
-+doTurn(): void
--checkWinCondition(): Player
+package presentation {
+    +class Main {
+        +{static} main(args: String[]): void
+        +start(): void
+    }
+
+    +interface GenericUI {
+        +draw(): void
+    }
+
+    +class ConcreteUI {
+        
+    }
+
+    ConcreteUI .u.|> GenericUI
+
+    +interface GenericController {
+        +receiveInput(): void
+    }
+
+    +class ConcreteController {
+
+    }
+
+    ConcreteController .u.|> GenericController
+
+
 }
 
-+abstract Player{
-# wealth: int
-+{abstract} someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
-+someMethodWhoseImplementationSameForAllPlayerType(): some_return_type
--maybeSomePrivateMethod(): some_return_type
+package domain {
+    +abstract class GameRules {
+        #gamePhase: GamePhase
+    }
+
+    +class WorldDomination {
+
+    }
+
+    +class SecretMission {
+
+    }
+
+    +class CapitalRisk {
+
+    }
+
+    +enum GamePhase {
+        GAME_START,
+        SETUP,
+        PLACEMENT,
+        ATTACK,
+        FORTIFY,
+        GAME_OVER
+    }
+
+    GameRules --> GamePhase
+    CapitalRisk --|> GameRules
+    SecretMission --|> GameRules
+    WorldDomination --|> GameRules
+
+    +class Piece {
+        -pieceType: PieceType
+
+    }
+
+    +enum PieceType {
+        ARTILLERY,
+        CAVALRY,
+        INFANTRY
+    }
+
+    Piece --> PieceType
+
+    +interface Card {
+        +{static}{final} isWild(): boolean
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+    }
+
+    +class WildCard {
+        {method} // add methods above
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+        +{static}{final} isWild(): boolean
+    }
+
+    note "matchesPieceType and isWild returns true, matchesTerritory returns false" as N1
+    N1 .u. WildCard
+
+    +class TerritoryCard {
+        -territoryType: TerritoryType
+        -pieceType: PieceType
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+        +{static}{final} isWild(): boolean
+    }
+
+    TerritoryCard ..|> Card
+    WildCard ..|> Card
+    TerritoryCard --> PieceType
+    TerritoryCard --> TerritoryType
+
+    +enum TerritoryType {
+        ...
+    }
+
+
 }
 
-+class PlayerTypeA{
-+ someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
+package datasource {
+    +interface StandardOutput {
+
+    }
+
+    +class FileOutput {
+
+    }
+
+    FileOutput .u.|> StandardOutput
+
+    +interface StandardInput {
+
+    }
+
+    +class FileInput {
+
+    }
+
+    FileInput .u.|> StandardInput
 }
-
-note left of PlayerTypeA::someMethodWhoseImplementationDiffersByPlayerType
-override this method here
-end note
-
-+class PlayerTypeB{
-+ someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
-}
-
-Game -r->"*" Player
-PlayerTypeA -u-|> Player
-PlayerTypeB -u-|> Player
-
-note "See documentation at https://plantuml.com/class-diagram" as N2
 
 @enduml
+
