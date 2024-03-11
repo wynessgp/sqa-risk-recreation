@@ -214,8 +214,32 @@ none
 A player is in the fortify phase of their single turn
 
 ### Basic Flow
+1. User does the following:
+    1. Selects a territory to move armies from
+    2. Selects a territory to move armies to
+2. System does the following:
+    1. Prompts the user for how many armies they wish to move from the selected territory
+    2. Displays an option to confirm the movement
+    3. Displays an option to cancel the movement
+3. User does the following:
+    1. Provides the relevant information to the prompt
+    2. Selects to confirm the movement
+4. System does the following:
+    1. Updates the board to reflect the movement
+    2. Displays the results of the action
+    3. Informs the user that their only fortification movement has been used
+5. User confirms the message
+6. System proceeds with the next player's move from the placement phase.
 
 ### Alternate Flow 
+1. Basic Flow Step 1: User selects a territory to transfer from that is *not* their own
+    1. System informs the User that the territory they've selected to transfer from is not their own
+    2. User confirms the message
+    3. Resume basic flow at Step 1
+2. Basic Flow Step 1: User selects a territory to transfer to that is *not* their own
+    1. System informs the User that the territory they've selected to transfer to is not their own
+    2. User confirms the message
+    3. Resume basic flow at Step 1.1
 
 ### Exceptions
 
