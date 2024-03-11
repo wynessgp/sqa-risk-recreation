@@ -1,5 +1,8 @@
 # CSSE376 Project: Risk
 
+## Build statuses:
+![Gradle Build Status](https://github.com/rhit-csse376/project-202430-s1-team05-202430/actions/workflows/gradle-build.yml/badge.svg)(https://github.com/rhit-csse376/project-202430-s1-team05-202430/actions/workflows/gradle.yml)
+
 ## Contributors
 Team 5: Canon Maranda, Grant Wyness, Harvey Yang, Frank Zhang
 
