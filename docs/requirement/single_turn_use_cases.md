@@ -27,60 +27,59 @@ to verify if each individual phase is correct. Links have been added for your co
 Player does the placement phase of their turn in an ongoing game
 
 ### Basic Flow
-1. User receives appropriate amount of new armies
-2. User selects a territory to place their armies
-3. System displays the following information:
+1. User selects to trade in RISK cards
+2. System does the following:
+    1. Updates the amount of armies the user must place
+    2. Notifies the user they have received new armies
+        1. Includes ones placed in territories, if necessary
+        2. Includes ones gained from trading in the set
+    3. Displays an option to turn in more RISK cards
+3. User selects a territory to place their armies
+4. System displays the following information:
     1. How many armies the player currently has there
     2. A prompt asking how many new armies to place there
     3. An option to confirm the current placement
     4. An option to cancel the current placement
-4. User does the following:
-    1. Selects how many troops to place
+5. User does the following:
+    1. Selects how many armies to place
+        1. Bounded by [1, num new armies)
     2. Selects to confirm the current placement
-5. System does the following:
+6. System does the following:
     1. Updates the board to reflect new placements
-    2. Notifies the user on how many armies they must still place (if any)
-6. User selects to end placement phase
-7. System does the following:
+    2. Notifies the user on how many armies they must still place
+7. User selects to end placement phase
+8. System does the following:
     1. Notifies the user the placement phase is ending
     2. Displays an option to start the attack phase
     3. Displays an option to skip into the fortify phase
 
 ### Alternate Flow
-1. Basic Flow Step 2: User selects a territory that isn't theirs
-    1. System informs the user that the territory they selected is not theirs
-    2. User confirms the message
-    3. Resume basic flow at Step 2
-2. Basic Flow Step 2: User selects to trade in RISK cards
-    1. System does the following:
-        1. Verifies the RISK cards are a valid trade-in
-        2. Places up to 2 armies in territories matching relevant RISK cards
-        3. Updates the amount of new armies the user has to place
-        4. Notifies the user of their new armies
-    2. Resume basic flow at Step 2
-3. Basic Flow Step 4: User selects to cancel current placement
-    1. Resume basic flow at Step 2
-4. Basic Flow Step 4: User selects an invalid amount of armies to place
-    1. System does the following:
-        1. Informs the user they've selected an invalid number of troops
-        2. Refunds their troops
-    2. User confirms the message
-    3. Resume basic flow at Step 2
-5. Basic Flow Step 6: User hasn't placed all of their armies
-    1. System informs the user they must place all of their armies
-    2. User confirms the message
-    3. Resume basic flow at Step 2
-6. Basic Flow Step 6: User has 5 or 6 RISK cards in hand
+1. Basic Flow Step 1: User does not select to trade in RISK cards
+    1. Resume basic flow at Step 3
+2. Basic Flow Step 1: User has 5 or 6 RISK cards in hand
     1. System informs the user they have too many RISK cards and must turn them in
     2. User does the following:
         1. Confirms the message
         2. Turns in RISK cards until they have less than 5 in hand
-    3. System does the following:
-        1. Verifies the RISK cards are a valid trade-in
-        2. Places 2 armies in territories matching relevant RISK cards
-        3. Updates the amount of armies the user must place
-        4. Notifies the user of their new armies
-    4. Resume basic flow at Step 2
+    3. Resume basic flow at Step 2
+3. Basic Flow Step 3: User selects to turn in more RISK cards
+    1. Resume basic flow at Step 2
+4. Basic Flow Step 3: User selects a territory that isn't theirs
+    1. System informs the user that the territory they selected is not theirs
+    2. User confirms the message
+    3. Resume basic flow at Step 2
+5. Basic Flow Step 5: User selects to cancel current placement
+    1. Resume basic flow at Step 2
+6. Basic Flow Step 5: User selects an invalid amount of armies to place
+    1. System does the following:
+        1. Informs the user they've selected an invalid number of troops
+        2. Notifies them that the valid range is bounded by [1, num new armies)
+    2. User confirms the message
+    3. Resume basic flow at Step 2
+7. Basic Flow Step 7: User hasn't placed all of their armies
+    1. System informs the user they must place all of their armies
+    2. User confirms the message
+    3. Resume basic flow at Step 2
 
 ### Exceptions
 Standard exceptions across all use cases here (TBD)
@@ -89,6 +88,8 @@ Standard exceptions across all use cases here (TBD)
 1. System is displaying the game board
 2. It is the user's turn
 3. The game is not over
+4. System has calculated the amount of armies the 
+current player (user) needs to place
 
 ### Postconditions
 1. System is displaying the game board
@@ -134,10 +135,7 @@ Attacking Player is in the attacking phase of their single turn
     1. Enters how many armies they wish to use for the defense
     2. Selects to confirm the defense
 6. System does the following:
-    1. Rolls the corresponding attack, defense dice
-    2. Orders the results from highest to lowest on both sides
-    3. Compares the results to calculate casualites
-    4. Displays the casualty results with die rolls
+    1. Displays the casualty results with die rolls
 7. AP confirms the results of the battle
 8. System displays the following:
     1. The remaining number of armies in each territory involved
@@ -156,7 +154,7 @@ Attacking Player is in the attacking phase of their single turn
     1. System informs the AP that the territory they've selected to attack is their own
     2. AP confirms the message
     3. Resume basic flow at Step 1
-2. Basic Flow Step 1: AP selects a territory to attack *from* that is not their own
+2. Basic Flow Step 1: AP selects a territory to attack from that is not their own
     1. System informs the AP that the territory they've selected to attack from is not their own
     2. AP confirms the message
     3. Resume basic flow at Step 1.1
@@ -232,11 +230,13 @@ A player is in the fortify phase of their single turn
 6. System proceeds with the next player's move from the placement phase.
 
 ### Alternate Flow 
-1. Basic Flow Step 1: User selects a territory to transfer from that is *not* their own
+
+-- 
+1. Basic Flow Step 1: User selects a territory to transfer from that is not their own
     1. System informs the User that the territory they've selected to transfer from is not their own
     2. User confirms the message
     3. Resume basic flow at Step 1
-2. Basic Flow Step 1: User selects a territory to transfer to that is *not* their own
+2. Basic Flow Step 1: User selects a territory to transfer to that is not their own
     1. System informs the User that the territory they've selected to transfer to is not their own
     2. User confirms the message
     3. Resume basic flow at Step 1.1
@@ -249,7 +249,7 @@ A player is in the fortify phase of their single turn
 
 ### Postconditions
 1. System is displaying the game board
-2. It is the next player's turn, or the game has ended.
+2. It is the next player's turn
 
 ### System or subsystem
 none
