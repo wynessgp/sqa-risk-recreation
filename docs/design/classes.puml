@@ -1,4 +1,4 @@
-@startuml
+@startuml RiskDesign
 
 package presentation {
     +class Main {
@@ -11,7 +11,7 @@ package presentation {
     }
 
     +class ConcreteUI {
-        
+
     }
 
     ConcreteUI .u.|> GenericUI
