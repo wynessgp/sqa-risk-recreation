@@ -1,5 +1,3 @@
-# Instruction: please feel free to use this as a template for your weekly progress report. You may change the formatting or the content for it to be more helpful. But please make sure to include all the bare minimum content.
-
 # Part 1. Team Planning of the Week
 **Planning Date**: 3/7/2024
 
@@ -58,3 +56,19 @@
 
 ### Other people's PR reviewed by you
 - N/A
+
+
+# Intructor feedback
+## Progress evaluation :scroll:
+Good progress for Week 1!
+
+## Suggested next action items :fist:
+1)  Don't forget to add the GitHub Action (the gradle.yml) and the badge to README
+2)  thoroughly understanding the game rules, and
+3)  starting to work on the requirement docs (which I can tell from your Project board that you are already planning on it!)
+
+## Highlight of your team's work :partying_face:
+The setup is done very fast! Good job!
+
+## Improvements to consider :star:
+None :).
