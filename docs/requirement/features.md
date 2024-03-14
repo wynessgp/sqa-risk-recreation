@@ -1,28 +1,28 @@
 # Features
-- Ability to hold 2-6 players’ game. 
-- Ability to make player choose a color as their beginning. 
+- Ability to hold 2-6 Users’ game(flexibility for change group size). 
+- Ability User chooses a color at the beginning for their territories and armies. 
 - Using world territory as the actual game map 
-- Ability for players to put down game pieces (Infantry, Calvary, Artillery) on territories 
-- Ability to roll the dice 
-- Ability for players to take turn occupying all the territories at the start of the game 
-- Ability to attacking each opponent and the territory they are in 
-- Ability to track turn 
-- Ability to shuffle the deck of cards 
-- Ability to track deck  
-- Ability to track current player-holding cards 
-- Ability for players to receive armies: 
+- Ability for Users to put down game pieces (Infantry, Calvary, Artillery) on territories 
+- Ability to roll dice for 
+- Ability for Users to take turn occupying all the territories at the start of the game 
+- Ability to attacking each opponent for control of territories.
+- Ability to track turn helps User know whose turn it is.
+- Ability to shuffle the deck of cards ensures randomness in the game-enhancing cards that Users can draw
+- Ability to track deck monitors the cards held by each User
+- Ability to track current User-holding cards 
+- Ability for Users to receive armies: 
 - At the start of every turn, based on the number of territories occupied (number of occupied territories divided by 3, minimum 3 armies) 
-- At the start of every turn, based on the continent the player controlled (different value for each continent) 
+- At the start of every turn, based on the continent the User controlled (different value for each continent) 
 - Trade in cards for armies 
-- Ability for players to receive cards: 
-- Receive one card at the end of any turn in which the player has captured at least one territory 
-- Detect when a player has too many cards 
-    - beginning of the turn, the player has 5 or 6 cards 
-    - eliminate an opponent and collect cards caused the player to hold 6 or more cards. 
-- Detect when a player has won the game when: 
-    - The player defeated all other remaining players 
-    - The player captured all 42 territories in the world. 
+- Ability for Users to receive cards: 
+- Receive one card at the end of any turn in which the User has captured at least one territory 
+- Detect when a User has too many cards 
+    - beginning of the turn, the User has 5 or 6 cards 
+    - eliminate an opponent and collect cards caused the User to hold 6 or more cards. 
+- Detect when a User has won the game when: 
+    - The User defeated all other remaining Users 
+    - The User captured all 42 territories in the world. 
 - Ability to move armies around the territories. 
 - Ability to setup the game for each new round. 
-- Ability to detect when a player lost. 
-- Detects when a player performed a successful attack 
+- Ability to detect when a User lost. 
+- Detects when a user performed a successful attack,Provides immediate feedback on the outcome for user
