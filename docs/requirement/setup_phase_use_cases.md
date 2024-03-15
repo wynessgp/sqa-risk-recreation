@@ -35,16 +35,11 @@ From basic steps 4 or 7:
 
 ### Alternate Flow - Still Have Unclaimed Territories During Set Up
 From basic step 6: 
-1. Each user takes turns placing an Infantry piece onto any unoccupied territory on the board 
-2. The system displays the updated board
-3. Repeat steps 1 and 2 until all territories are claimed
-4. Return to Basic Flow at step 7
+1. Return to Basic Flow at step 5
 
 ### Alternate Flow - Still Have Unplaced Armies During Set Up
 From basic step 8:
-1. Users take turns placing one additional army in the territories they already occupied 
-2. The system displays the updated board
-3. Repeat steps 1 and 2 until all users run out of armies 
+1. Return to Basic Flow at step 7
 
 ### Exceptions
 None
