@@ -8,20 +8,17 @@
 - Ability to track turns
 - Ability to shuffle the deck of cards
 - Ability to track the deck of cards held by each User
-- Ability to track current User-holding cards 
 - Ability for Users to receive armies at the start of every turn
     - based on the number of territories occupied 
     - based on the continent the User controlled
 - Ability to trade in cards for armies 
 - Ability for Users to receive cards at the end of any turn in which the User has captured at least one territory
 - Ability to detect when a User has too many cards 
-    - beginning of the turn, the User has 5 or 6 cards 
-    - eliminate an opponent and collect cards causing the User to hold 6 or more cards. 
 - Ability to detect when a User has won the game when: 
     - The User defeated all other remaining Users 
-    - The User captured all 42 territories in the world. 
-- Ability to move armies around the territories. 
-- Ability to set up the game for each new round. 
-- Ability to detect when a User is lost. 
+    - The User captured all 42 territories in the world 
+- Ability to move armies around the territories 
+- Ability to set up the game for each new round 
+- Ability to detect when a User loses the game 
 - Ability to detect when a user performed a successful attack
 - Ability to provide immediate feedback on attacks
