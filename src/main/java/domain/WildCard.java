@@ -7,4 +7,9 @@ public class WildCard implements Card {
         return true; // that's it.
     }
 
+    @Override
+    public boolean matchesPieceType(PieceType pieceType) {
+        return true; // easiest class I've ever written
+    }
+
 }
