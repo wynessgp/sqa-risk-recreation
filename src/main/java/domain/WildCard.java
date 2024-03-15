@@ -17,4 +17,9 @@ public class WildCard implements Card {
         return true; // ...
     }
 
+    @Override
+    public boolean isWild() {
+        return true;
+    }
+
 }

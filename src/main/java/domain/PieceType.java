@@ -4,5 +4,4 @@ public enum PieceType {
     INFANTRY, 
     CAVALRY, 
     ARTILLERY
-
 }

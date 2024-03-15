@@ -72,4 +72,16 @@ public class WildCardTest {
         assertTrue(unitUnderTest.matchesContinent(oceania));
         assertTrue(unitUnderTest.matchesContinent(asia));
     }
+
+    @Test
+    public void Test03_isWild_singleWildCard() {
+        // make the unit under test
+        Card unitUnderTest = new WildCard();
+
+        // no enum variable setup, just into the operation
+        // operation being tested: isWild
+        // should always return true for wild cards
+
+        assertTrue(unitUnderTest.isWild());
+    }
 }

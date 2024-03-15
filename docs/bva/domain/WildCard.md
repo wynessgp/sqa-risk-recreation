@@ -129,7 +129,7 @@ Output: Boolean
 # Method: `public boolean isWild()`
 
 ## BVA Step 1
-Input: Card (object)
+Input: Card (object); one of the subclasses of the Card interface (wild card in this case)
 
 Output: True/false as to whether the card is a wild card (will always be true for wild cards)
 
