@@ -1,4 +1,4 @@
-# Method: `static final boolean matchesTerritory(TerritoryType territory)`
+# Method: `public boolean matchesTerritory(TerritoryType territory)`
 
 ## BVA Step 1
 Input: Passes in a selected territory from the Risk board
@@ -45,7 +45,7 @@ be doing each choice for a territory on each continent; since the result should 
 - Input: Territory = Egypt
 - Output: Boolean = 1
 
-# Method: `static final boolean matchesPieceType(PieceType pieceType)`
+# Method: `public boolean matchesPieceType(PieceType pieceType)`
 
 ## BVA Step 1
 Input: Passes in an army type (Infantry, Cavalry, Artillery) from the game 
@@ -79,7 +79,7 @@ Output: Boolean
     - Input: Army = Artillery
     - Output: Boolean = 1
 
-# Method: `static final boolean isWild()`
+# Method: `public boolean isWild()`
 
 ## BVA Step 1
 Input: Card (object)
