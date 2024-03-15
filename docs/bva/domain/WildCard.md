@@ -3,7 +3,7 @@
 ## BVA Step 1
 Input: Passes in a selected territory from the Risk board
 
-Output: True/false as to whether it matches the territory of the wild card (will always be true)
+Output: True/false as to whether it matches the territory of the wild card (will always be false)
 
 ## BVA Step 2
 Input: Cases (TerritoryType is an enum)
@@ -19,31 +19,31 @@ Input: Cases (Enum)
 - The 0th, 43rd possibility (not possible to set)
 
 Output: Boolean
-- 0 (will not be possible to achieve)
-- 1
+- 0 
+- 1 (will not be possible to achieve)
 
 ## BVA Step 4
 ### Note:
 I am not explicitly enumerating all 42 territories. I will
-be doing each choice for a territory on each continent; since the result should always be true.
+be doing each choice for a territory on each continent; since the result should always be false.
 ### Test 1:
 - Input: Territory = Afghanistan
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 2:
 - Input: Territory = Alaska
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 3: 
 - Input: Territory = Western Europe
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 4:
 - Input: Territory = Western Australia
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 5:
 - Input: Territory = Argentina
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 6:
 - Input: Territory = Egypt
-- Output: Boolean = 1
+- Output: Boolean = 0
 
 # Method: `public boolean matchesPieceType(PieceType pieceType)`
 

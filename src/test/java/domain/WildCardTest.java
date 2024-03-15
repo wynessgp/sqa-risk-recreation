@@ -1,5 +1,6 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -20,15 +21,16 @@ public class WildCardTest {
         TerritoryType egypt = TerritoryType.EGYPT;
 
         // operation being tested: matchesTerritory on WildCard
-        // Note that this should always return True
-        // Since wildcards aren't assigned a territory.
+        // Note that this should always return False
+        // Since wildcards aren't assigned a territory, and
+        // we want to prevent users from getting more units from these.
         
-        assertTrue(unitUnderTest.matchesTerritory(afghan));
-        assertTrue(unitUnderTest.matchesTerritory(alaska));
-        assertTrue(unitUnderTest.matchesTerritory(westernEurope));
-        assertTrue(unitUnderTest.matchesTerritory(westernAustralia));
-        assertTrue(unitUnderTest.matchesTerritory(argentina));
-        assertTrue(unitUnderTest.matchesTerritory(egypt));
+        assertFalse(unitUnderTest.matchesTerritory(afghan));
+        assertFalse(unitUnderTest.matchesTerritory(alaska));
+        assertFalse(unitUnderTest.matchesTerritory(westernEurope));
+        assertFalse(unitUnderTest.matchesTerritory(westernAustralia));
+        assertFalse(unitUnderTest.matchesTerritory(argentina));
+        assertFalse(unitUnderTest.matchesTerritory(egypt));
     }
 
     @Test
@@ -63,7 +65,7 @@ public class WildCardTest {
         Continent asia = Continent.ASIA;
 
         // operation being tested: matchesContinent on WildCard
-        // should always return True
+        // should always return False, same reason as matchesTerritory
 
         assertTrue(unitUnderTest.matchesContinent(africa));
         assertTrue(unitUnderTest.matchesContinent(northAmerica));
