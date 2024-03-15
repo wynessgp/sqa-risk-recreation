@@ -48,4 +48,28 @@ public class WildCardTest {
         assertTrue(unitUnderTest.matchesPieceType(cavalry));
         assertTrue(unitUnderTest.matchesPieceType(artillery));
     }
+
+    @Test
+    public void Test02_matchesContinent_allUniqueContinents() {
+        // make the unit under test
+        Card unitUnderTest = new WildCard();
+
+        // handle enum variable setup
+        Continent africa = Continent.AFRICA;
+        Continent northAmerica = Continent.NORTH_AMERICA;
+        Continent southAmerica = Continent.SOUTH_AMERICA;
+        Continent europe = Continent.EUROPE;
+        Continent oceania = Continent.OCEANIA;
+        Continent asia = Continent.ASIA;
+
+        // operation being tested: matchesContinent on WildCard
+        // should always return True
+
+        assertTrue(unitUnderTest.matchesContinent(africa));
+        assertTrue(unitUnderTest.matchesContinent(northAmerica));
+        assertTrue(unitUnderTest.matchesContinent(southAmerica));
+        assertTrue(unitUnderTest.matchesContinent(europe));
+        assertTrue(unitUnderTest.matchesContinent(oceania));
+        assertTrue(unitUnderTest.matchesContinent(asia));
+    }
 }
