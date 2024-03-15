@@ -14,7 +14,7 @@ public class WildCard implements Card {
 
     @Override
     public boolean matchesContinent(Continent continent) {
-        return true; // ...
+        return false; // ...
     }
 
     @Override

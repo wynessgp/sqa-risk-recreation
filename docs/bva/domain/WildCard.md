@@ -84,7 +84,7 @@ Output: Boolean
 ## BVA Step 1
 Input: A passed in Continent enum from the Risk board
 
-Output: True/false as to whether the card has a territory of the same continent on it (always true for wild cards)
+Output: True/false as to whether the card has a territory of the same continent on it (always false for wild cards)
 
 ## BVA Step 2
 Input: Cases (Continent is an enum)
@@ -102,28 +102,28 @@ Input:
 - The 0th, 7th possibility (not possible to set)
 
 Output: Boolean
-- 0 (will not be possible to achieve)
-- 1
+- 0 
+- 1 (will not be possible to achieve)
 
 ## BVA Step 4
 ### Test 1:
 - Input: Continent = Africa
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 2:
 - Input: Continent = North America
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 3:
 - Input: Continent = South America
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 4:
 - Input: Continent = Europe
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 5:
 - Input: Continent = Oceania
-- Output: Boolean = 1
+- Output: Boolean = 0
 ### Test 6:
 - Input: Continent = Asia
-- Output: Boolean = 1
+- Output: Boolean = 0
 
 
 # Method: `public boolean isWild()`

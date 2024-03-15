@@ -67,12 +67,12 @@ public class WildCardTest {
         // operation being tested: matchesContinent on WildCard
         // should always return False, same reason as matchesTerritory
 
-        assertTrue(unitUnderTest.matchesContinent(africa));
-        assertTrue(unitUnderTest.matchesContinent(northAmerica));
-        assertTrue(unitUnderTest.matchesContinent(southAmerica));
-        assertTrue(unitUnderTest.matchesContinent(europe));
-        assertTrue(unitUnderTest.matchesContinent(oceania));
-        assertTrue(unitUnderTest.matchesContinent(asia));
+        assertFalse(unitUnderTest.matchesContinent(africa));
+        assertFalse(unitUnderTest.matchesContinent(northAmerica));
+        assertFalse(unitUnderTest.matchesContinent(southAmerica));
+        assertFalse(unitUnderTest.matchesContinent(europe));
+        assertFalse(unitUnderTest.matchesContinent(oceania));
+        assertFalse(unitUnderTest.matchesContinent(asia));
     }
 
     @Test
