@@ -7,15 +7,21 @@ Users select their colors and place their armies on the game board to claim thei
 
 ### Basic Flow
 1. Each user selects a color 
-2. The system gives each user 40 Infantry pieces, decreased by 5 for each additional user above 2 (up to 6 users) 
-3. Each user rolls a die, the user who rolls the highest number places an Infantry piece onto any territory on the board to claim that territory 
-4. Each user takes turns placing an Infantry piece onto any unoccupied territory on the board 
-5. The system displays the updated board with the user’s army shown on their selected territory 
-6. Repeat steps 4 and 5 until all 42 territories have been claimed 
-7. Users take turns placing one additional army in the territories they already occupied 
-8. The system displays the updated board 
-9. Repeat steps 7 and 8 until everyone runs out of armies 
-10. The system shuffles and displays the pack of cards 
+2. The system gives each user 
+    - 40 Infantry pieces if there are 2 users
+    - 35 Infantry piece if there are 3 users
+    - 30 Infantry pieces if there are 4 users
+    - 25 Infantry pieces if there are 5 users
+    - 20 Infantry pieces if there are 6 users
+3. Each user rolls a die, the user who rolls the highest number places an Infantry piece onto any territory on the board to claim that territory
+4. The system displays the updated board with the user’s army shown on their selected territory  
+5. Each user takes turns placing an Infantry piece onto any unoccupied territory on the board 
+6. The system displays the updated board
+7. Repeat steps 5 and 6 until all 42 territories have been claimed 
+8. Users take turns placing one additional army in the territories they already occupied 
+9. The system displays the updated board 
+10. Repeat steps 8 and 9 until everyone runs out of armies 
+11. The system shuffles and displays the pack of cards 
 
 ### Alternate Flow - Tie For Highest Die Number
 From basic step 3: 
@@ -33,7 +39,7 @@ From basic steps 4 or 7:
 None
 
 ### Preconditions
-There are at least two players and no more than 6 players participating in the game
+There are at least two users and no more than 6 users playing in the game
 
 ### Postconditions
 The game board is fully set and ready to play 
