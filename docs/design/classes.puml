@@ -187,25 +187,16 @@ package domain {
 }
 
 package datasource {
-    +interface StandardOutput {
-
-    }
-
-    +class FileOutput {
-
-    }
-
-    FileOutput .u.|> StandardOutput
-
     +interface StandardInput {
-
+        +read(): Object
     }
 
-    +class FileInput {
-
+    +class PictureLoader {
+        +PictureLoader(filePath: String)
+        +read(): Object
     }
 
-    FileInput .u.|> StandardInput
+    PictureLoader .u.|> StandardInput
 }
 
 @enduml
