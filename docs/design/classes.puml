@@ -78,6 +78,8 @@ package domain {
         -shuffle(): boolean
     }
 
+    DeckManager -> "*" Card
+
     +class TradeInManager {
         -attemptedCards: Set<Card>
         -setsTradedInSoFar: int
@@ -88,12 +90,20 @@ package domain {
         -clearSavedSet(): boolean
     }
 
-    +class Player {
+    TradeInManager -d-> "*" Card
+    TradeInManager .d.> Card
 
+    +class Player {
+        -cards: Set<Card>
+        -pieces: Set<Piece>
     }
+
+    Player -> "*" Piece
+    Player -> "*" Card
 
     +class Piece {
         -pieceType: PieceType
+        -location: Territory
     }
 
     +enum PieceType {
