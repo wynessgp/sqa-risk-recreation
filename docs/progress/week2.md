@@ -29,13 +29,16 @@
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/17
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/12
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/22
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/17
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/22
 
 ### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/17
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/22
 
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/18
