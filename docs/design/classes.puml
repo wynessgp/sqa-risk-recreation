@@ -154,7 +154,7 @@ package domain {
         +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
         ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
         +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
-        +findAdjacenctTerritories(givenTerritory: TerritoryType): Set<Territory>
+        +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
     }
 
     TerritoryGraph --> "*" Territory
