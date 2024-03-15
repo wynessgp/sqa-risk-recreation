@@ -34,7 +34,7 @@ package presentation {
 }
 
 package domain {
-    +abstract class GameRules {
+    +abstract class GameEngine {
         ~gamePhase: GamePhase
         ~gameGraph: TerritoryGraph
         ~tradeInChecker: TradeInManager
@@ -62,13 +62,13 @@ package domain {
         GAME_OVER
     }
 
-    GameRules --> GamePhase
-    GameRules --> TerritoryGraph
-    GameRules --> DeckManager
-    GameRules --> TradeInManager
-    CapitalRisk --|> GameRules
-    SecretMission --|> GameRules
-    WorldDomination --|> GameRules
+    GameEngine --> GamePhase
+    GameEngine --> TerritoryGraph
+    GameEngine --> DeckManager
+    GameEngine --> TradeInManager
+    CapitalRisk --|> GameEngine
+    SecretMission --|> GameEngine
+    WorldDomination --|> GameEngine
 
     +class DeckManager {
         -deckOfCards: List<Card>
@@ -120,11 +120,13 @@ package domain {
         +isWild(): boolean
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
+        +matchesContinent(continent: Continent): boolean
     }
 
     +class WildCard {
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
+        +matchesContinent(continent: Continent): boolean
         +isWild(): boolean
     }
 
@@ -134,22 +136,36 @@ package domain {
     +class TerritoryCard {
         -territoryType: TerritoryType
         -pieceType: PieceType
+        -continent: Continent
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
+        +matchesContinent(continent: Continent): boolean
         +isWild(): boolean
+    }
+
+    +class SecretMissionCard {
+        // behaves a little differently        
     }
 
     TerritoryCard ..|> Card
     WildCard ..|> Card
     TerritoryCard --> PieceType
     TerritoryCard --> TerritoryType
+    TerritoryCard --> Continent
 
     +enum TerritoryType {
         ...
     }
 
+    +enum Continent {
+        NORTH_AMERICA,
+        SOUTH_AMERICA,
+        ...
+    }
+
     +class TerritoryGraph {
         -territoryKeys: List<TerritoryType>
+        -territories: List<Territory>
         -territoryTypeToAdjacencies: Map<TerritoryType, Set<Territory>>
         +TerritoryGraph()
         +addNewKey(newKey: TerritoryType): boolean
@@ -157,6 +173,7 @@ package domain {
         ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
         +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
         +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
+        +findTerritoryByType(givenTerritory: TerritoryType): Territory
     }
 
     TerritoryGraph --> "*" Territory
@@ -169,6 +186,7 @@ package domain {
         // initialized to NEUTRAL
         -playerInControl: PlayerColor
         -numArmiesPresent: int
+        -continent: Continent
         +Territory(territoryType: TerritoryType)
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
@@ -176,6 +194,7 @@ package domain {
 
     Territory --> PlayerColor
     Territory --> TerritoryType
+    Territory -> Continent
 
     +enum PlayerColor {
         NEUTRAL,
