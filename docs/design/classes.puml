@@ -26,12 +26,19 @@ package presentation {
 
     ConcreteController .u.|> GenericController
 
+    +class PlayerDisplay {
+
+    }
+
 
 }
 
 package domain {
     +abstract class GameRules {
-        #gamePhase: GamePhase
+        ~gamePhase: GamePhase
+        ~gameGraph: TerritoryGraph
+        ~tradeInChecker: TradeInManager
+        ~deckManager: DeckManager
     }
 
     +class WorldDomination {
@@ -56,13 +63,37 @@ package domain {
     }
 
     GameRules --> GamePhase
+    GameRules --> TerritoryGraph
+    GameRules --> DeckManager
+    GameRules --> TradeInManager
     CapitalRisk --|> GameRules
     SecretMission --|> GameRules
     WorldDomination --|> GameRules
 
+    +class DeckManager {
+        -deckOfCards: List<Card>
+        +DeckManager()
+        +drawCard(): Card
+        +initDeck(): boolean
+        -shuffle(): boolean
+    }
+
+    +class TradeInManager {
+        -attemptedCards: Set<Card>
+        -setsTradedInSoFar: int
+        +startTrade(attemptedCards: Set<Card>): boolean
+        -verifyValidCombo(): boolean
+        -calculateNumNewPieces(): boolean
+        -updateSetsTradedIn(): boolean
+        -clearSavedSet(): boolean
+    }
+
+    +class Player {
+
+    }
+
     +class Piece {
         -pieceType: PieceType
-
     }
 
     +enum PieceType {
@@ -80,7 +111,6 @@ package domain {
     }
 
     +class WildCard {
-        {method} // add methods above
         +{static}{final} matchesTerritory(territory: TerritoryType): boolean
         +{static}{final} matchesPieceType(pieceType: PieceType): boolean
         +{static}{final} isWild(): boolean
@@ -104,6 +134,43 @@ package domain {
 
     +enum TerritoryType {
         ...
+    }
+
+    +class TerritoryGraph {
+        -territoryKeys: List<TerritoryType>
+        -territoryTypeToAdjacencies: Map<TerritoryType, Set<Territory>>
+        +TerritoryGraph()
+        +addNewKey(newKey: TerritoryType): boolean
+        +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
+        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
+        +findAdjacenctTerritories(givenTerritory: TerritoryType): Set<Territory>
+    }
+
+    TerritoryGraph --> "*" Territory
+    TerritoryGraph --> "*" TerritoryType
+
+    +class Territory {
+        -territoryType: TerritoryType
+        // initialized to NEUTRAL
+        -playerInControl: Player
+        -numArmiesPresent: int
+        +Territory(territoryType: TerritoryType)
+        +setPlayerInControl(newPlayer: Player): boolean 
+        +setNumArmiesPresent(newAmount: int): boolean
+    }
+
+    Territory --> Player
+    Territory --> TerritoryType
+
+    +enum Player {
+        NEUTRAL,
+        BLACK,
+        RED,
+        YELLOW,
+        BLUE,
+        GREEN,
+        PURPLE
     }
 
 
