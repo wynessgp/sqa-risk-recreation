@@ -15,7 +15,7 @@
 **Item Progress**:
 1. [done] reviewed instructor feedback
 2. [75% done] linking to presentation package as project progresses
-3. [not started] began BVA, continuing over weekend
+3. [started] began BVA, continuing over weekend
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -24,7 +24,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/19
 
 ### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/18
 
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/17
@@ -37,7 +37,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/17
 
 ### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/18
 
 ### Team member: Harvey Yang
 #### PR created:
