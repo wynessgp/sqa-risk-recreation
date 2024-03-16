@@ -2,9 +2,11 @@ package domain;
 
 public class TerritoryCard {
     private final TerritoryType territory;
+    private final ArmyType piece;
 
-    public TerritoryCard(TerritoryType territory, ArmyType army) {
+    public TerritoryCard(TerritoryType territory, ArmyType piece) {
         this.territory = territory;
+        this.piece = piece;
     }
 
     public boolean matchesTerritory(TerritoryType territory) {
@@ -12,6 +14,6 @@ public class TerritoryCard {
     }
 
     public boolean matchesPieceType(ArmyType piece) {
-        return true;
+        return this.piece == piece;
     }
 }

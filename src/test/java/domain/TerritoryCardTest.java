@@ -47,4 +47,16 @@ public class TerritoryCardTest {
         TerritoryCard card = new TerritoryCard(TerritoryType.Alaska, piece);
         assertTrue(card.matchesPieceType(piece));
     }
+
+    @ParameterizedTest
+    @MethodSource("pieceGenerator")
+    public void test04_matchesPieceType_checkAllFalseInputs(ArmyType pieceOnCard) {
+        TerritoryCard card = new TerritoryCard(TerritoryType.Alaska, pieceOnCard);
+        Set<ArmyType> pieces = Set.of(ArmyType.values());
+        for (ArmyType pieceToCheck : pieces) {
+            if (pieceToCheck != pieceOnCard) {
+                assertFalse(card.matchesPieceType(pieceToCheck));
+            }
+        }
+    }
 }
