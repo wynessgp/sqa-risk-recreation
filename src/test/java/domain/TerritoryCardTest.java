@@ -35,4 +35,16 @@ public class TerritoryCardTest {
             }
         }
     }
+
+    private static Stream<Arguments> pieceGenerator() {
+        Set<ArmyType> armies = Set.of(ArmyType.values());
+        return armies.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("pieceGenerator")
+    public void test03_matchesPieceType_checkAllTrueInputs(ArmyType piece) {
+        TerritoryCard card = new TerritoryCard(TerritoryType.Alaska, piece);
+        assertTrue(card.matchesPieceType(piece));
+    }
 }

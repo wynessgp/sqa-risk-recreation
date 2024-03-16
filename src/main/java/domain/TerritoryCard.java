@@ -10,4 +10,8 @@ public class TerritoryCard {
     public boolean matchesTerritory(TerritoryType territory) {
         return this.territory == territory;
     }
+
+    public boolean matchesPieceType(ArmyType piece) {
+        return true;
+    }
 }
