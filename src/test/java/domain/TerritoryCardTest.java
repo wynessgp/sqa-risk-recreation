@@ -59,4 +59,10 @@ public class TerritoryCardTest {
             }
         }
     }
+
+    @Test
+    public void test05_isWild_returnsFalse() {
+        TerritoryCard card = new TerritoryCard(TerritoryType.Alaska, ArmyType.INFANTRY);
+        assertFalse(card.isWild());
+    }
 }

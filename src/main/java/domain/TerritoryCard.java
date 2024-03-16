@@ -16,4 +16,8 @@ public class TerritoryCard {
     public boolean matchesPieceType(ArmyType piece) {
         return this.piece == piece;
     }
+
+    public boolean isWild() {
+        return false;
+    }
 }
