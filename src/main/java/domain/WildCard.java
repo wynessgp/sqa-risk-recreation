@@ -12,10 +12,6 @@ public class WildCard implements Card {
         return true; // easiest class I've ever written
     }
 
-//    public boolean matchesContinent(Continent continent) {
-//        return false; // ...
-//    }
-
     @Override
     public boolean isWild() {
         return true;

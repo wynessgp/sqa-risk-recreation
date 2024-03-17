@@ -24,8 +24,8 @@ Output: Boolean
 
 ## BVA Step 4
 ### Note:
-I am not explicitly enumerating all 42 territories. I will
-be doing each choice for a territory on each continent; since the result should always be false.
+I will not be explicitly enumerating all of the territories in this markdown file, but each one
+is considered in the test.
 ### Test 1:
 - Input: Territory = Afghanistan
 - Output: Boolean = 0
@@ -43,6 +43,11 @@ be doing each choice for a territory on each continent; since the result should 
 - Output: Boolean = 0
 ### Test 6:
 - Input: Territory = Egypt
+- Output: Boolean = 0
+
+...
+### Test 42:
+- Input: Territory = Yakutsk
 - Output: Boolean = 0
 
 # Method: `public boolean matchesPieceType(PieceType pieceType)`
@@ -78,53 +83,6 @@ Output: Boolean
 ### Test 3:
 - Input: Army = Artillery
 - Output: Boolean = 1
-
-# Method: `public boolean matchesContinent(Continent cont)`
-
-## BVA Step 1
-Input: A passed in Continent enum from the Risk board
-
-Output: True/false as to whether the card has a territory of the same continent on it (always false for wild cards)
-
-## BVA Step 2
-Input: Cases (Continent is an enum)
-
-Output: Boolean (0, 1)
-
-## BVA Step 3
-Input: 
-- The first possibility: Africa
-- The second possibility: North America
-- The third possibility: South America
-- The fourth possibility: Europe
-- The fifth possibility: Oceania
-- The sixth possibility: Asia
-- The 0th, 7th possibility (not possible to set)
-
-Output: Boolean
-- 0 
-- 1 (will not be possible to achieve)
-
-## BVA Step 4
-### Test 1:
-- Input: Continent = Africa
-- Output: Boolean = 0
-### Test 2:
-- Input: Continent = North America
-- Output: Boolean = 0
-### Test 3:
-- Input: Continent = South America
-- Output: Boolean = 0
-### Test 4:
-- Input: Continent = Europe
-- Output: Boolean = 0
-### Test 5:
-- Input: Continent = Oceania
-- Output: Boolean = 0
-### Test 6:
-- Input: Continent = Asia
-- Output: Boolean = 0
-
 
 # Method: `public boolean isWild()`
 
