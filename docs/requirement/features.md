@@ -1,13 +1,20 @@
-### F1: ABC
-
-### F2: ABC
-
-### F3: ABC
-
-### F4: ABC
-
-### F5: ABC
-
-### F6: ABC
-
-### F7: ABC
+# Features
+- Ability to hold 2-6 Users’ game
+- Ability for Users to choose a color at the beginning of the game
+- Ability for Users to put down game pieces (Infantry, Calvary, Artillery) on territories 
+- Ability to roll dice
+- Ability for Users to take turns occupying all the territories at the start of the game 
+- Ability to attack each opponent for control of territories
+- Ability to track turns
+- Ability to shuffle the deck of cards
+- Ability to track the deck of cards held by each User
+- Ability for Users to receive armies at the start of every turn
+- Ability to trade in cards for armies 
+- Ability for users to receive cards at the end of their turn
+- Ability to detect when a User has too many cards 
+- Ability to detect when a User has won the game.
+- Ability to move armies around the territories 
+- Ability to set up the game for each new round 
+- Ability to detect when a User loses the game 
+- Ability to detect when a user performed a successful attack
+- Ability to provide immediate feedback on attacks
