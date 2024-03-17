@@ -3,34 +3,33 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class WildCardTest {
+
+    private static Stream<Arguments> territoryGenerator() {
+        Set<TerritoryType> territories = Set.of(TerritoryType.values());
+        return territories.stream().map(Arguments::of);
+    }
     
-    @Test
-    public void Test00_matchesTerritory_territoryFromAllContinents() {
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void Test00_matchesTerritory_allDistinctTerritories(TerritoryType territory) {
         // make the unit under test
         Card unitUnderTest = new WildCard();
-
-        // handle enum variable setup
-        TerritoryType afghan = TerritoryType.AFGHANISTAN;
-        TerritoryType alaska = TerritoryType.ALASKA;
-        TerritoryType westernEurope = TerritoryType.WESTERN_EUROPE;
-        TerritoryType westernAustralia = TerritoryType.WESTERN_AUSTRALIA;
-        TerritoryType argentina = TerritoryType.ARGENTINA;
-        TerritoryType egypt = TerritoryType.EGYPT;
-
+        
         // operation being tested: matchesTerritory on WildCard
         // Note that this should always return False
         // Since wildcards aren't assigned a territory, and
         // we want to prevent users from getting more units from these.
         
-        assertFalse(unitUnderTest.matchesTerritory(afghan));
-        assertFalse(unitUnderTest.matchesTerritory(alaska));
-        assertFalse(unitUnderTest.matchesTerritory(westernEurope));
-        assertFalse(unitUnderTest.matchesTerritory(westernAustralia));
-        assertFalse(unitUnderTest.matchesTerritory(argentina));
-        assertFalse(unitUnderTest.matchesTerritory(egypt));
+        assertFalse(unitUnderTest.matchesTerritory(territory));
     }
 
     @Test

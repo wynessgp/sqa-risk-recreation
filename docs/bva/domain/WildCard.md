@@ -24,8 +24,8 @@ Output: Boolean
 
 ## BVA Step 4
 ### Note:
-I am not explicitly enumerating all 42 territories. I will
-be doing each choice for a territory on each continent; since the result should always be false.
+I will not be explicitly enumerating all of the territories in this markdown file, but each one
+is considered in the test.
 ### Test 1:
 - Input: Territory = Afghanistan
 - Output: Boolean = 0
@@ -43,6 +43,11 @@ be doing each choice for a territory on each continent; since the result should 
 - Output: Boolean = 0
 ### Test 6:
 - Input: Territory = Egypt
+- Output: Boolean = 0
+
+...
+### Test 42:
+- Input: Territory = Yakutsk
 - Output: Boolean = 0
 
 # Method: `public boolean matchesPieceType(PieceType pieceType)`
