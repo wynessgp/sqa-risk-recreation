@@ -10,3 +10,4 @@ Team 5: Canon Maranda, Grant Wyness, Harvey Yang, Frank Zhang
 - Java: JDK 11
 - JUnit: 5.8.1
 - Gradle: 7.4
+- EasyMock: 4.2
