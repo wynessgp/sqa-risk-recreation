@@ -13,11 +13,6 @@ public class WildCard implements Card {
     }
 
     @Override
-    public boolean matchesContinent(Continent continent) {
-        return false; // ...
-    }
-
-    @Override
     public boolean isWild() {
         return true;
     }
