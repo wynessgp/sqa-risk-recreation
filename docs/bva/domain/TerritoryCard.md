@@ -107,32 +107,3 @@ Output: 0 (false) or 1 (true, unobtainable)
 Input: None
 
 Output: 0
-
-# method: matchesContinent(Continent continent): boolean
-
-## BVA Step 1
-Input: A continent from the Risk board and the territory on the card
-
-Output: Yes or no answer
-
-## BVA Step 2
-Input: Cases (Continent enum) for both inputs
-
-Output: Boolean
-
-## BVA Step 3
-Input: Each possibility for Continent (NorthAmerica, SouthAmerica, Europe, Africa, Asia, Australia). Note that anything outside of these choices is not considered a valid input.
-
-Output: 0 (false) or 1 (true)
-
-## BVA Step 4
-The tests will follow the following table. The card's continent is in the first row, and the territory is in the first column. There will be 6*42 tests in total.
-
-| Continent \ Territory | Alaska | WesternCanada | ... | WesternAustralia |
-|:---------------------:|:------:|:-------------:|:---:|:----------------:|
-|     NorthAmerica      |   1    |       1       | ... |        0         |
-|     SouthAmerica      |   0    |       0       | ... |        0         |
-|        Europe         |   0    |       0       | ... |        0         |
-|        Africa         |   0    |       0       | ... |        0         |
-|         Asia          |   0    |       0       | ... |        0         |
-|       Australia       |   0    |       0       | ... |        1         |
