@@ -51,29 +51,30 @@ public class WildCardTest {
         assertTrue(unitUnderTest.matchesPieceType(artillery));
     }
 
-    @Test
-    public void Test02_matchesContinent_allUniqueContinents() {
-        // make the unit under test
-        Card unitUnderTest = new WildCard();
-
-        // handle enum variable setup
-        Continent africa = Continent.AFRICA;
-        Continent northAmerica = Continent.NORTH_AMERICA;
-        Continent southAmerica = Continent.SOUTH_AMERICA;
-        Continent europe = Continent.EUROPE;
-        Continent oceania = Continent.OCEANIA;
-        Continent asia = Continent.ASIA;
-
-        // operation being tested: matchesContinent on WildCard
-        // should always return False, same reason as matchesTerritory
-
-        assertFalse(unitUnderTest.matchesContinent(africa));
-        assertFalse(unitUnderTest.matchesContinent(northAmerica));
-        assertFalse(unitUnderTest.matchesContinent(southAmerica));
-        assertFalse(unitUnderTest.matchesContinent(europe));
-        assertFalse(unitUnderTest.matchesContinent(oceania));
-        assertFalse(unitUnderTest.matchesContinent(asia));
-    }
+//    matchesContinent is not needed for cards
+//    @Test
+//    public void Test02_matchesContinent_allUniqueContinents() {
+//        // make the unit under test
+//        Card unitUnderTest = new WildCard();
+//
+//        // handle enum variable setup
+//        Continent africa = Continent.AFRICA;
+//        Continent northAmerica = Continent.NORTH_AMERICA;
+//        Continent southAmerica = Continent.SOUTH_AMERICA;
+//        Continent europe = Continent.EUROPE;
+//        Continent oceania = Continent.OCEANIA;
+//        Continent asia = Continent.ASIA;
+//
+//        // operation being tested: matchesContinent on WildCard
+//        // should always return False, same reason as matchesTerritory
+//
+//        assertFalse(unitUnderTest.matchesContinent(africa));
+//        assertFalse(unitUnderTest.matchesContinent(northAmerica));
+//        assertFalse(unitUnderTest.matchesContinent(southAmerica));
+//        assertFalse(unitUnderTest.matchesContinent(europe));
+//        assertFalse(unitUnderTest.matchesContinent(oceania));
+//        assertFalse(unitUnderTest.matchesContinent(asia));
+//    }
 
     @Test
     public void Test03_isWild_singleWildCard() {

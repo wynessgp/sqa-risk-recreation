@@ -1,6 +1,6 @@
 package domain;
 
-public class TerritoryCard {
+public class TerritoryCard implements Card {
     private final TerritoryType territory;
     private final PieceType piece;
 
