@@ -27,4 +27,5 @@ class TerritoryTest {
         assertTrue(territory.setNumArmiesPresent(1));
         assertFalse(territory.setNumArmiesPresent(-1));
     }
+    //split the tests
 }
