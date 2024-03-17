@@ -3,8 +3,10 @@
 
 **Items Planned**:
 1. Continue work on BVA and testing for setup classes
-2. abc
-3. abc
+  - Update design document accordingly
+  - Most work done in domain package
+2. Select general purpose linter
+3. Select style linter
 
 # Part 2. Team Progress of the Week
 **Evaluation Date**: x/x/2024
@@ -18,22 +20,25 @@
 ### Team member: Canon Maranda
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
 ### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
 ### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
 ### Team member: Grant Wyness
 #### PR created:
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
 ### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
 ### Team member: Harvey Yang
 #### PR created:
