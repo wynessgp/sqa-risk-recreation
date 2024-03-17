@@ -17,6 +17,11 @@ public class WildCardTest {
         Set<TerritoryType> territories = Set.of(TerritoryType.values());
         return territories.stream().map(Arguments::of);
     }
+
+    private static Stream<Arguments> pieceGenerator() {
+        Set<PieceType> pieces = Set.of(PieceType.values());
+        return pieces.stream().map(Arguments::of);
+    }
     
     @ParameterizedTest
     @MethodSource("territoryGenerator")
@@ -32,22 +37,16 @@ public class WildCardTest {
         assertFalse(unitUnderTest.matchesTerritory(territory));
     }
 
-    @Test
-    public void Test01_matchesPieceType_allDifferentPieceTypes() {
+    @ParameterizedTest
+    @MethodSource("pieceGenerator")
+    public void Test01_matchesPieceType_allDifferentPieceTypes(PieceType piece) {
         // make the unit under test
         Card unitUnderTest = new WildCard();
-
-        // handle enum variable setup
-        PieceType infantry = PieceType.INFANTRY;
-        PieceType cavalry = PieceType.CAVALRY;
-        PieceType artillery = PieceType.ARTILLERY;
 
         // operation being tested: matchesPieceType on WildCard
         // should always return True
 
-        assertTrue(unitUnderTest.matchesPieceType(infantry));
-        assertTrue(unitUnderTest.matchesPieceType(cavalry));
-        assertTrue(unitUnderTest.matchesPieceType(artillery));
+        assertTrue(unitUnderTest.matchesPieceType(piece));
     }
 
     @Test
