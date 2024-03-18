@@ -120,13 +120,11 @@ package domain {
         +isWild(): boolean
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
-        +matchesContinent(continent: Continent): boolean
     }
 
     +class WildCard {
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
-        +matchesContinent(continent: Continent): boolean
         +isWild(): boolean
     }
 
@@ -136,10 +134,8 @@ package domain {
     +class TerritoryCard {
         -territoryType: TerritoryType
         -pieceType: PieceType
-        -continent: Continent
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
-        +matchesContinent(continent: Continent): boolean
         +isWild(): boolean
     }
 
@@ -151,7 +147,6 @@ package domain {
     WildCard ..|> Card
     TerritoryCard --> PieceType
     TerritoryCard --> TerritoryType
-    TerritoryCard --> Continent
 
     +enum TerritoryType {
         ...
