@@ -56,46 +56,5 @@
 
 
 
-## Method: `public Player getPlayerInControl()`
 
-### BVA Step 1
-- **Input**: The state of after setting a valid player in control.
-- **Output**: The `Player` object that was set as in control.
-
-### BVA Step 2
-- **Input**: collection of player object.
-- **Output**: Null or a player.
-
-### BVA Step 3
-- **Input**: No input.
-- **Output**: The new `Player` object that has been set as in control.
-
-### BVA Step 4
-
-### Test 1
-- **Input**: After `setPlayerInControl(playerA)`
-- **Output**: `playerA`
-
-### Test 2
-- **Input**: no player was set
-- **Output**: Null.
-
-
-## Method: `public int getNumArmiesPresent()`
-
-### BVA Step 1
-- **Input**: the state of after setting numbers of armies on the territory.
-- **Output**: The number of armies set.
-
-### BVA Step 2
-- **Input**: no input.
-- **Output**: int.
-
-### BVA Step 3
-- **Input**: valid and invalid state.
-- **Output**: number of armies.
-
-  
-### BVA Step 4
-no test yet.
 
