@@ -1,12 +1,17 @@
 package domain;
 
 public class Territory {
+    private TerritoryType type;
     private Player playerInControl;
     private int numArmiesPresent;
 
-    public Territory() {
+    public Territory(TerritoryType type) {
+        this.type = type;
         this.playerInControl = null;
         this.numArmiesPresent = 0;
+    }
+    public TerritoryType getType() {
+        return type;
     }
 
     public boolean setPlayerInControl(Player player) {
