@@ -22,21 +22,21 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
-### PR done and approved
+#### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
-### Other people's PR reviewed by you
+#### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
-### PR done and approved
+#### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
 
-### Other people's PR reviewed by you
+#### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 
@@ -44,10 +44,10 @@
 #### PR created:
 - N/A
 
-### PR done and approved
+#### PR done and approved
 - N/A
 
-### Other people's PR reviewed by you
+#### Other people's PR reviewed by you
 - N/A
 
 
@@ -55,8 +55,8 @@
 #### PR created:
 - N/A
 
-### PR done and approved
+#### PR done and approved
 - N/A
 
-### Other people's PR reviewed by you
+#### Other people's PR reviewed by you
 - N/A
