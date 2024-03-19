@@ -28,24 +28,29 @@
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/28
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/36
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/36 (revert #28)
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/36
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/23
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/28
 
 ### Team member: Harvey Yang
 #### PR created:
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/28
 
 #### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/28
 
 #### Other people's PR reviewed by you
 - N/A
