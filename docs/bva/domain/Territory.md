@@ -5,7 +5,7 @@
 - **Output**: True if the player was successfully set as the controller of the territory; otherwise, false.
 
 ### BVA Step 2
-- **Input**: collection of player objects
+- **Input**: a pointer to a player object
 - **Output**: Boolean
 
 ### BVA Step 3
@@ -18,9 +18,21 @@
 - **Output**: True
 
 ### Test 2
-- **Input**: First, `setPlayerInControl(playerA)`, then `setPlayerInControl(playerB)`
+- **Input**: First, `setPlayerInControl(playerA)`, then `getPlayerInControl()  == playerA`
 - **Output**: True
 
+
+### Test 3
+- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(playerB)`
+- - **Output**: true
+
+### Test 4
+- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(playerB)`, then `getPlayerInControl()  == playerB`
+- - **Output**: true
+
+- ### Test 5
+- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(null)`
+- - **Output**: False
 
 ## Method: `public boolean setNumArmiesPresent(int newAmount)`
 
@@ -51,8 +63,23 @@
 - **Output**: True
 
 ### Test 4
-- **Input**: `setNumArmiesPresent(-1)`
-- **Output**: flase
+- **Input**: `SetNumArmiesPresent(-1)` 
+- **Output**: false
+
+### Test 5
+- **Input**: `SetNumArmiesPresent(5)` then `territory.getNumArmiesPresent()` == 5
+- **Output**: true
+
+### Test 6
+- **Input**: `SetNumArmiesPresent(0)` then `territory.getNumArmiesPresent()` == 0
+- **Output**: true
+
+### Test 7
+- **Input**: `SetNumArmiesPresent(1)` then `territory.getNumArmiesPresent()` == 1
+- **Output**: true
+
+
+
 
 
 

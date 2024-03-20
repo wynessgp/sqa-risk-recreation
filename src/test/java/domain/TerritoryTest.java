@@ -32,6 +32,25 @@ class TerritoryTest {
     }
 
     @Test
+    void test11_ChangePlayerInControlSuccessfully() {
+        Territory territory = new Territory(TerritoryType.ALASKA);
+        Player playerA = new Player();
+        Player playerB = new Player();
+        territory.setPlayerInControl(playerA);
+        territory.setPlayerInControl(playerB);
+        assertSame(playerB, territory.getPlayerInControl());
+    }
+
+    @Test
+    void test00_SetPlayerInControl_ReturnsFalse() {
+        Territory territory = new Territory(TerritoryType.ALASKA);
+        Player playerA = new Player();
+        Player playerB = null;
+        territory.setPlayerInControl(playerA);
+        assertFalse(territory.setPlayerInControl(playerB));
+    }
+
+    @Test
     void test03_SetNumArmiesPresent_ReturnsTrueForValidNumber() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         assertTrue(territory.setNumArmiesPresent(5));
