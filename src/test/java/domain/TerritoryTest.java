@@ -42,7 +42,7 @@ class TerritoryTest {
     }
 
     @Test
-    void test00_SetPlayerInControl_ReturnsFalse() {
+    void test12_SetPlayerInControl_ReturnsFalse() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         Player playerA = new Player();
         Player playerB = null;
