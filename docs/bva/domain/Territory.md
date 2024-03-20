@@ -9,7 +9,11 @@
 - **Output**: Boolean
 
 ### BVA Step 3
-- **Input**: Switching control from one player to another valid player.
+- **Input**: Switching control from one player to another valid player contain the following situations:
+  - The first possibility: Assigning control of a territory to a player when it previously had no player assigned
+  - The second possibility: Transitioning control from one player (PlayerA) to a different player (PlayerB)
+  - The third possibility: Attempting to change control from a player to the same player.
+  - The fourth possibility: Assign the territory's control to null after it has been controlled by a valid player
 - **Output**: True,or false.
   
 ### BVA Step 4
@@ -77,6 +81,75 @@
 ### Test 7
 - **Input**: `SetNumArmiesPresent(1)` then `territory.getNumArmiesPresent()` == 1
 - **Output**: true
+
+
+## Method: `getPlayerInControl()`
+
+### BVA Step 1
+
+- **Input**: the player in control has been set.
+- **Output**: The current Player in control or null if no player is in control
+
+### BVA Step 2
+
+- **Input**: None
+- **Output**: Player object or null
+
+### BVA Step 3
+//To do this, you can show what the object looks like before calling the method, then give the expected output.
+- **Input**: Cases
+  - The first possibility: The territory has no player in control, call getter
+  - The second possibility: The territory has a player in control,call getter
+  
+- **Output**: Player object or null
+
+### BVA Step 4
+
+### Test 1
+- **Input**: `getPlayerInControl()`
+- **Output**: null
+
+### Test 2
+- **Input**: `setPlayerInControl(playerA)`, then `getPlayerInControl() == playerA`
+- **Output**: PlayerA
+
+
+## Method: `getNumArmiesPresent()`
+
+### BVA Step 1
+
+- **Input**: The number of armies present on the territory has been set.
+- **Output**: The number of armies present on the territory
+
+### BVA Step 2
+
+- **Input**: None
+- **Output**: Integer
+
+### BVA Step 3
+
+- **Input**: Cases
+  - The first possibility: The territory has no armies present, call getter
+  - The second possibility: The territory has armies present, call getter
+
+- **Output**: Integer
+- - The first possibility: 0
+- - The second possibility: >0 (the number of armies present)
+
+### BVA Step 4
+
+### Test 1
+- **Input**: `getNumArmiesPresent()`
+- **Output**: 0
+
+### Test 2
+- **Input**: `setNumArmiesPresent(5)`, then `getNumArmiesPresent() == 5`
+- **Output**: 5
+
+
+
+
+
 
 
 

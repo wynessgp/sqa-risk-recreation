@@ -5,14 +5,12 @@ public class Territory {
     private Player playerInControl;
     private int numArmiesPresent;
 
-    public Territory(TerritoryType type) {
-        this.type = type;
+    public Territory() {
+
         this.playerInControl = null;
         this.numArmiesPresent = 0;
     }
-    public TerritoryType getType() {
-        return type;
-    }
+
 
     public boolean setPlayerInControl(Player player) {
         if (player == null) return false;
