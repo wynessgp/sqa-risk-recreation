@@ -11,20 +11,20 @@ Output: The result of the current Die getting rolled
 Input: Pointer (to a Random object)
 
 Output: Counts 
-    - Ranges from [1, maxNumberPossible]
+- Ranges from [1, maxNumberPossible]
 
 ## BVA Step 3
 Input: Pointer
-    - The null pointer
-    - A pointer to the true object
+- The null pointer
+- A pointer to the true object
 
 Output: Counts
-    - -1 (can't set)
-    - 0 (can't set, there is no "0" on a 6-sided die) <!-- If we want to include 0s, do a minimumNumberPossible field. -->
-    - 1
-    - > 1
-    - Max possible value: maxNumberPossible
-    - One larger than maxNumberPossible (can't set)
+- -1 (can't set)
+- 0 (can't set, there is no "0" on a 6-sided die) <!-- Consider a minimum possible roll field -->
+- 1
+- \> 1
+- Max possible value: maxNumberPossible
+- One larger than maxNumberPossible (can't set)
 
 ## BVA Step 4
 ### Test 1:
