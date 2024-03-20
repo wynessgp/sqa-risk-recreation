@@ -38,7 +38,9 @@ package domain {
         ~gamePhase: GamePhase
         ~gameGraph: TerritoryGraph
         ~tradeInChecker: TradeInManager
-        ~deckManager: DeckManager
+        ~riskCardDeck: RiskCardDeck
+        ~dieRollParser: DieRollParser
+
     }
 
     +class WorldDomination {
@@ -64,34 +66,63 @@ package domain {
 
     GameEngine --> GamePhase
     GameEngine --> TerritoryGraph
-    GameEngine --> DeckManager
-    GameEngine --> TradeInManager
+    GameEngine --> RiskCardDeck
+    GameEngine --> TradeInParser
+    GameEngine --> DieRollParser
+
     CapitalRisk --|> GameEngine
     SecretMission --|> GameEngine
     WorldDomination --|> GameEngine
 
-    +class DeckManager {
+    +class RiskCardDeck {
         -deckOfCards: List<Card>
-        +DeckManager()
-        +drawCard(): Card
-        +initDeck(): boolean
-        -shuffle(): boolean
+        +RiskCardDeck()
+        +drawCardFromDeck(): Card
+        +initializeDeck(): boolean
+        -shuffleDeck(): boolean
     }
 
-    DeckManager -> "*" Card
+    +class Die {
+        -maxNumberPossible: int
+        +Die(maxNumPossible: int)
+        +rollSingleDie(randomizer: Random): Integer
+    }
 
-    +class TradeInManager {
-        -attemptedCards: Set<Card>
+    +class DieRollParser {
+        -attackerDice: List<Die>
+        -defenderDice: List<Die>
+        -randomizer: Random
+        +DieRollParser()
+        -buildDiceLists(): boolean
+        +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
+        +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
+        +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
+    }
+
+    DieRollParser --> "*" Die
+    DieRollParser ..> BattleResult 
+
+    note top of DieRollParser
+        rollAttackerDice() and rollDefenderDice() will order the lists in non-increasing order
+    end note
+
+    +enum BattleResult {
+        ATTACKER_VICTORY,
+        DEFENDER_VICTORY
+    }
+
+    RiskCardDeck --> "*" Card
+
+    +class TradeInParser {
         -setsTradedInSoFar: int
+        +TradeInParser()
         +startTrade(attemptedCards: Set<Card>): boolean
-        -verifyValidCombo(): boolean
-        -calculateNumNewPieces(): boolean
-        -updateSetsTradedIn(): boolean
-        -clearSavedSet(): boolean
+        -verifyValidCombo(attemptedCards: Set<Card>): boolean
+        -calculateNumNewPieces(attemptedCards: Set<Card>): boolean
+        -updateSetsTradedIn(attemptedCards: Set<Card>): boolean
     }
 
-    TradeInManager -d-> "*" Card
-    TradeInManager .d.> Card
+    TradeInParser .d.> Card
 
     +class Player {
         -cards: Set<Card>
@@ -99,13 +130,12 @@ package domain {
         -color: PlayerColor
     }
 
-    Player -> "*" Piece
-    Player -> "*" Card
-    Player -> PlayerColor
+    Player -u-> "*" Piece
+    Player -u-> "*" Card
+    Player -u-> PlayerColor
 
     +class Piece {
         -pieceType: PieceType
-        -location: Territory
     }
 
     +enum PieceType {
