@@ -20,6 +20,9 @@ public class TerritoryGraph {
         if (territories.get(startingTerritory).contains(endingTerritory) && territories.get(endingTerritory).contains(startingTerritory)) {
             return false;
         }
+        if (startingTerritory == endingTerritory) {
+            return false;
+        }
         territories.get(startingTerritory).add(endingTerritory);
         territories.get(endingTerritory).add(startingTerritory);
         return true;

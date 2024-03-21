@@ -167,4 +167,12 @@ public class TerritoryGraphTest {
             }
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test10_addNewAdjacency_withOneVertex_duplicateValue(TerritoryType startingTerritory) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        territoryGraph.addNewKey(startingTerritory);
+        assertFalse(territoryGraph.addNewAdjacency(startingTerritory, startingTerritory));
+    }
 }
