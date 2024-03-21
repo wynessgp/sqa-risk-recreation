@@ -96,4 +96,17 @@ public class TerritoryGraphTest {
         territoryGraph.addNewKey(endingTerritory);
         assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test07_addNewAdjacency_withTwoVertices_notInGraph(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        territoryGraph.addNewKey(startingTerritory);
+        territoryGraph.addNewKey(endingTerritory);
+        for (TerritoryType territory : Set.of(TerritoryType.values())) {
+            if (territory != startingTerritory && territory != endingTerritory) {
+                assertFalse(territoryGraph.addNewAdjacency(startingTerritory, territory));
+            }
+        }
+    }
 }
