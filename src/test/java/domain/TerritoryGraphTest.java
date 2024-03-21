@@ -1,5 +1,6 @@
 package domain;
 
+import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,39 +22,75 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test00_addNewKey_fromEmptySet_addTerritory(TerritoryType territory) {
+    public void test00_addNewTerritory_fromEmptySet_addTerritory(TerritoryType territoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        assertTrue(territoryGraph.addNewKey(territory));
+        Territory territory = EasyMock.createMock(Territory.class);
+
+        EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+        EasyMock.replay(territory);
+
+        assertTrue(territoryGraph.addNewTerritory(territory));
+        EasyMock.verify(territory);
     }
 
     @Test
-    public void test01_addNewKey_withOneExisting_noDuplicate() {
+    public void test01_addNewTerritory_withOneExisting_noDuplicate() {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        TerritoryType territory = TerritoryType.ARGENTINA;
-        territoryGraph.addNewKey(territory);
-        territory = TerritoryType.ALASKA;
-        assertTrue(territoryGraph.addNewKey(territory));
+        Territory firstTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(firstTerritory.getTerritoryType()).andReturn(TerritoryType.ARGENTINA);
+        EasyMock.replay(firstTerritory);
+        territoryGraph.addNewTerritory(firstTerritory);
+
+        Territory secondTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(secondTerritory.getTerritoryType()).andReturn(TerritoryType.ALASKA);
+        EasyMock.replay(secondTerritory);
+
+        assertTrue(territoryGraph.addNewTerritory(secondTerritory));
+        EasyMock.verify(firstTerritory);
+        EasyMock.verify(secondTerritory);
     }
 
     @Test
-    public void test02_addNewKey_withTwoExisting_noDuplicate() {
+    public void test02_addNewTerritory_withTwoExisting_noDuplicate() {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        TerritoryType territory = TerritoryType.BRAZIL;
-        territoryGraph.addNewKey(territory);
-        territory = TerritoryType.CONGO;
-        territoryGraph.addNewKey(territory);
-        territory = TerritoryType.ALASKA;
-        assertTrue(territoryGraph.addNewKey(territory));
+        Territory firstTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(firstTerritory.getTerritoryType()).andReturn(TerritoryType.BRAZIL);
+        EasyMock.replay(firstTerritory);
+        territoryGraph.addNewTerritory(firstTerritory);
+
+        Territory secondTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(secondTerritory.getTerritoryType()).andReturn(TerritoryType.CONGO);
+        EasyMock.replay(secondTerritory);
+        territoryGraph.addNewTerritory(secondTerritory);
+
+        Territory thirdTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(thirdTerritory.getTerritoryType()).andReturn(TerritoryType.ALASKA);
+        EasyMock.replay(thirdTerritory);
+
+        assertTrue(territoryGraph.addNewTerritory(thirdTerritory));
+        EasyMock.verify(firstTerritory);
+        EasyMock.verify(secondTerritory);
+        EasyMock.verify(thirdTerritory);
     }
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test03_addNewKey_withAllExisting_addDuplicate_returnsFalse(TerritoryType territory) {
+    public void test03_addNewTerritory_withAllExisting_addDuplicate_returnsFalse(TerritoryType territoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        for (TerritoryType territoryToAdd : Set.of(TerritoryType.values())) {
-            territoryGraph.addNewKey(territoryToAdd);
+        for (TerritoryType territoryTypeToAdd : Set.of(TerritoryType.values())) {
+            Territory territory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(territory.getTerritoryType()).andReturn(territoryTypeToAdd);
+            EasyMock.replay(territory);
+            territoryGraph.addNewTerritory(territory);
+            EasyMock.verify(territory);
         }
-        assertFalse(territoryGraph.addNewKey(territory));
+
+        Territory territory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+        EasyMock.replay(territory);
+
+        assertFalse(territoryGraph.addNewTerritory(territory));
+        EasyMock.verify(territory);
     }
 
     @ParameterizedTest
@@ -69,12 +106,18 @@ public class TerritoryGraphTest {
     @MethodSource("territoryGenerator")
     public void test05_addNewAdjacency_withOneVertex_returnsFalse(TerritoryType startingTerritory) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        territoryGraph.addNewKey(startingTerritory);
+        Territory territory = EasyMock.createMock(Territory.class);
+
+        EasyMock.expect(territory.getTerritoryType()).andReturn(startingTerritory);
+        EasyMock.replay(territory);
+        territoryGraph.addNewTerritory(territory);
+
         for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
             if (endingTerritory != startingTerritory) {
                 assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
             }
         }
+        EasyMock.verify(territory);
     }
 
     private static Stream<Arguments> territoryCombinationGenerator() {
@@ -91,34 +134,67 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test06_addNewAdjacency_withTwoVertices_noEdges(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    public void test06_addNewAdjacency_withTwoVertices_noEdges(TerritoryType startingTerritoryType, TerritoryType endingTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        territoryGraph.addNewKey(startingTerritory);
-        territoryGraph.addNewKey(endingTerritory);
-        assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+
+        Territory startingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+        EasyMock.replay(startingTerritory);
+        territoryGraph.addNewTerritory(startingTerritory);
+
+        Territory endingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(endingTerritory.getTerritoryType()).andReturn(endingTerritoryType);
+        EasyMock.replay(endingTerritory);
+        territoryGraph.addNewTerritory(endingTerritory);
+
+        assertTrue(territoryGraph.addNewAdjacency(startingTerritoryType, endingTerritoryType));
+        EasyMock.verify(startingTerritory);
+        EasyMock.verify(endingTerritory);
     }
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test07_addNewAdjacency_withTwoVertices_notInGraph(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    public void test07_addNewAdjacency_withTwoVertices_notInGraph(TerritoryType startingTerritoryType, TerritoryType endingTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        territoryGraph.addNewKey(startingTerritory);
-        territoryGraph.addNewKey(endingTerritory);
-        for (TerritoryType territory : Set.of(TerritoryType.values())) {
-            if (territory != startingTerritory && territory != endingTerritory) {
-                assertFalse(territoryGraph.addNewAdjacency(startingTerritory, territory));
+
+        Territory startingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+        EasyMock.replay(startingTerritory);
+        territoryGraph.addNewTerritory(startingTerritory);
+
+        Territory endingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(endingTerritory.getTerritoryType()).andReturn(endingTerritoryType);
+        EasyMock.replay(endingTerritory);
+        territoryGraph.addNewTerritory(endingTerritory);
+
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            if (territoryType != startingTerritoryType && territoryType != endingTerritoryType) {
+                assertFalse(territoryGraph.addNewAdjacency(startingTerritoryType, territoryType));
             }
         }
+        EasyMock.verify(startingTerritory);
+        EasyMock.verify(endingTerritory);
     }
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test07_addNewAdjacency_withTwoVertices_withEdge(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    public void test07_addNewAdjacency_withTwoVertices_withEdge(TerritoryType startingTerritoryType, TerritoryType endingTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        territoryGraph.addNewKey(startingTerritory);
-        territoryGraph.addNewKey(endingTerritory);
-        territoryGraph.addNewAdjacency(startingTerritory, endingTerritory);
-        assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+
+        Territory startingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+        EasyMock.replay(startingTerritory);
+        territoryGraph.addNewTerritory(startingTerritory);
+
+        Territory endingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(endingTerritory.getTerritoryType()).andReturn(endingTerritoryType);
+        EasyMock.replay(endingTerritory);
+        territoryGraph.addNewTerritory(endingTerritory);
+
+        territoryGraph.addNewAdjacency(startingTerritoryType, endingTerritoryType);
+        assertFalse(territoryGraph.addNewAdjacency(startingTerritoryType, endingTerritoryType));
+        EasyMock.verify(startingTerritory);
+        EasyMock.verify(endingTerritory);
     }
 
     @Test
@@ -138,23 +214,44 @@ public class TerritoryGraphTest {
 
         for (Set<TerritoryType> territoryPair : territoriesNoDuplicates) {
             Iterator<TerritoryType> iterator = territoryPair.iterator();
-            TerritoryType startingTerritory = iterator.next();
-            TerritoryType endingTerritory = iterator.next();
-            territoryGraph.addNewKey(startingTerritory);
-            territoryGraph.addNewKey(endingTerritory);
-            assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+            TerritoryType startingTerritoryType = iterator.next();
+            TerritoryType endingTerritoryType = iterator.next();
+
+            Territory startingTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+            EasyMock.replay(startingTerritory);
+            territoryGraph.addNewTerritory(startingTerritory);
+
+            Territory endingTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(endingTerritory.getTerritoryType()).andReturn(endingTerritoryType);
+            EasyMock.replay(endingTerritory);
+            territoryGraph.addNewTerritory(endingTerritory);
+
+            assertTrue(territoryGraph.addNewAdjacency(startingTerritoryType, endingTerritoryType));
+            EasyMock.verify(startingTerritory);
+            EasyMock.verify(endingTerritory);
         }
     }
 
     @Test
     public void test09_addNewAdjacency_withCompleteGraph() {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
-            territoryGraph.addNewKey(startingTerritory);
-            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
-                if (endingTerritory != startingTerritory) {
-                    territoryGraph.addNewKey(endingTerritory);
-                    territoryGraph.addNewAdjacency(startingTerritory, endingTerritory);
+        for (TerritoryType startingTerritoryType : Set.of(TerritoryType.values())) {
+            Territory startingTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+            EasyMock.replay(startingTerritory);
+            territoryGraph.addNewTerritory(startingTerritory);
+            EasyMock.verify(startingTerritory);
+
+            for (TerritoryType endingTerritoryType : Set.of(TerritoryType.values())) {
+                if (endingTerritoryType != startingTerritoryType) {
+                    Territory endingTerritory = EasyMock.createMock(Territory.class);
+                    EasyMock.expect(endingTerritory.getTerritoryType()).andReturn(endingTerritoryType);
+                    EasyMock.replay(endingTerritory);
+                    territoryGraph.addNewTerritory(endingTerritory);
+
+                    territoryGraph.addNewAdjacency(startingTerritoryType, endingTerritoryType);
+                    EasyMock.verify(endingTerritory);
                 }
             }
         }
@@ -170,9 +267,13 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test10_addNewAdjacency_withOneVertex_duplicateValue(TerritoryType startingTerritory) {
+    public void test10_addNewAdjacency_withOneVertex_duplicateValue(TerritoryType startingTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        territoryGraph.addNewKey(startingTerritory);
-        assertFalse(territoryGraph.addNewAdjacency(startingTerritory, startingTerritory));
+        Territory startingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(startingTerritory.getTerritoryType()).andReturn(startingTerritoryType);
+        EasyMock.replay(startingTerritory);
+        territoryGraph.addNewTerritory(startingTerritory);
+        EasyMock.verify(startingTerritory);
+        assertFalse(territoryGraph.addNewAdjacency(startingTerritoryType, startingTerritoryType));
     }
 }

@@ -7,12 +7,15 @@ import java.util.Set;
 
 public class TerritoryGraph {
     private final Map<TerritoryType, Set<TerritoryType>> territories = new HashMap<>();
+    private final Map<TerritoryType, Territory> territoryTypeToObject = new HashMap<>();
 
-    public boolean addNewKey(TerritoryType territory) {
-        if (territories.containsKey(territory)) {
+    public boolean addNewTerritory(Territory territory) {
+        TerritoryType territoryType = territory.getTerritoryType();
+        if (territoryTypeToObject.containsKey(territoryType)) {
             return false;
         }
-        territories.put(territory, new HashSet<>());
+        territoryTypeToObject.put(territoryType, territory);
+        territories.put(territoryType, new HashSet<>());
         return true;
     }
 
