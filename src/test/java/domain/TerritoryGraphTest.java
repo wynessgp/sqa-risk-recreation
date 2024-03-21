@@ -94,8 +94,6 @@ public class TerritoryGraphTest {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         territoryGraph.addNewKey(startingTerritory);
         territoryGraph.addNewKey(endingTerritory);
-        if (endingTerritory != startingTerritory) {
-            assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
-        }
+        assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
     }
 }
