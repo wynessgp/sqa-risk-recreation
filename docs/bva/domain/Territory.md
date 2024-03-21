@@ -20,28 +20,19 @@
 ### BVA Step 4
 
 ### Test 1
-- **Input**: Assigning control of a territory to a player when it previously had no player assigned (PlayerA)
+- **Input**: a valid Player object, The territory has no player in control
 - **Output**: True
 
 ### Test 2
-- **Input**: assign and check the player in control is setted up correctly (PlayerA)
-- **Output**: True
-
-
-### Test 3
-- **Input**: Transitioning control from one player (PlayerA) to a different player (PlayerB)
+- **Input**: A vaild player objects.the territory has been controlled by another player
 - - **Output**: true
 
-### Test 4
-- **Input**: check the player in control is setted up correctly after the transition from one player to another (PlayerA) to (PlayerB)
-- - **Output**: true
-
-- ### Test 5
-- **Input**: Assign the territory's control to null after it has been controlled by a valid player (PlayerA)
+- ### Test 3
+- **Input**: null, The territory has been controlled by a valid player
 - - **Output**: False
 
-- ### Test 6
-- **Input**: Assign the territory's control to the same player(PlayerA) after it has been controlled by a valid player (PlayerA)
+- ### Test 4
+- **Input**: a valid Player object, The territory has been controlled by the same player
 - - **Output**: False
 
 ## Method: `public boolean setNumArmiesPresent(int newAmount)`
@@ -60,39 +51,27 @@
 
 ### BVA Step 4
 ### Test 1
-- **Input**: set 5 armies present
+- **Input**: 5
 - **Output**: True
 
 ### Test 2
-- **Input**: set 0 armies present
+- **Input**: 0
 - **Output**: True
   
 ### Test 3
-- **Input**: set 1 army present
+- **Input**: 1
 - **Output**: True
 
 ### Test 4
-- **Input**: invalid input  (negative number -1)
+- **Input**: invalid input (negative number -1)
 - **Output**: false
 
-
-### Test 5
-- **Input**: check the number of armies present after setting(to 5) is 5
-- **Output**: true
-
-### Test 6
-- **Input**: check the number of armies present after setting(to 0) is 0
-- **Output**: true
-
-### Test 7
-- **Input**: check the number of armies present after setting(to 1) is 1
-- **Output**: true
 
 
 ## Method: `getPlayerInControl()`
 
 ### BVA Step 1
-- **Input**: the player in control has been set.
+- **Input**: the underlying Player object associated with the Territory.
 - **Output**: The current Player in control or null if no player is in control
 
 ### BVA Step 2
@@ -102,7 +81,7 @@
 ### BVA Step 3
 - **Input**: Cases
   - The first possibility: The territory has no player in control, call getter
-  - The second possibility: The territory has a player in control,call getter
+  - The second possibility: The territory has a player in control, call getter
   
 - **Output**: Player object or null
 
@@ -112,7 +91,7 @@
 - **Output**: null
 
 ### Test 2
-- **Input**: set playerA in control. Then, retrieve the current player in control
+- **Input**: get the current player in control when PlayerA was in control and PlayerB is set to control the territory
 - **Output**: PlayerA
 
 
@@ -141,5 +120,39 @@
 - **Output**: 0
 
 ### Test 2
-- **Input**: set 5 armies present. Then, retrieve the number of armies present
+- **Input**: retrieve the number of armies present when 5 armies were set to be present
 - **Output**: 5
+
+
+## Method: `public TerritoryType getTerritoryType()`
+
+### BVA Step 1
+- **Input**: The territory type has been set.
+- **Output**: The type of territory
+
+### BVA Step 2
+- **Input**: None
+- **Output**: TerritoryType
+
+### BVA Step 3
+- **Input**: Each possibility for TerritoryType (42 possibilities). Note that anything outside of these choices is not considered a valid input.
+  - Alaska
+  - WesternCanada
+  - ...
+  - WesternAustralia
+
+- **Output**: TerritoryType
+
+### BVA Step 4
+
+### Test 1
+- **Input**: get territory type without any territory type being set
+- **Output**: null
+
+### Test 2
+- **Input**:retrieve the territory type when it is set to Alaska
+- **Output**: ALASKA
+
+### Test 3
+- **Input**: retrieve the territory type when it is set to Western Australia
+- **Output**: WESTERN_AUSTRALIA

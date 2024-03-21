@@ -1,12 +1,13 @@
 package domain;
 
 public class Territory {
-    private TerritoryType type;
+    private TerritoryType territoryType;;
     private Player playerInControl;
     private int numArmiesPresent;
+    private Continent continent;
 
-    public Territory() {
-
+    public Territory(TerritoryType territoryType) {
+        this.territoryType = territoryType;
         this.playerInControl = null;
         this.numArmiesPresent = 0;
     }
@@ -30,5 +31,9 @@ public class Territory {
 
     public int getNumArmiesPresent() {
         return numArmiesPresent;
+    }
+
+    public TerritoryType getTerritoryType() {
+        return territoryType;
     }
 }
