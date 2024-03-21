@@ -109,4 +109,14 @@ public class TerritoryGraphTest {
             }
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test07_addNewAdjacency_withTwoVertices_withEdge(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        territoryGraph.addNewKey(startingTerritory);
+        territoryGraph.addNewKey(endingTerritory);
+        territoryGraph.addNewAdjacency(startingTerritory, endingTerritory);
+        assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+    }
 }
