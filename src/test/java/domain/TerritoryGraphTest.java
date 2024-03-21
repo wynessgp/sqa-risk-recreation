@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -123,12 +124,45 @@ public class TerritoryGraphTest {
     @Test
     public void test08_addNewAdjacency_withAllVertices_noEdges() {
         TerritoryGraph territoryGraph = new TerritoryGraph();
+        Set<Set<TerritoryType>> territoriesNoDuplicates = new HashSet<>();
+        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
+            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+                if (endingTerritory != startingTerritory) {
+                    Set<TerritoryType> territoryPair = new HashSet<>();
+                    territoryPair.add(startingTerritory);
+                    territoryPair.add(endingTerritory);
+                    territoriesNoDuplicates.add(territoryPair);
+                }
+            }
+        }
+
+        for (Set<TerritoryType> territoryPair : territoriesNoDuplicates) {
+            Iterator<TerritoryType> iterator = territoryPair.iterator();
+            TerritoryType startingTerritory = iterator.next();
+            TerritoryType endingTerritory = iterator.next();
+            territoryGraph.addNewKey(startingTerritory);
+            territoryGraph.addNewKey(endingTerritory);
+            assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+        }
+    }
+
+    @Test
+    public void test09_addNewAdjacency_withCompleteGraph() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
         for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
             territoryGraph.addNewKey(startingTerritory);
             for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
                 if (endingTerritory != startingTerritory) {
                     territoryGraph.addNewKey(endingTerritory);
-                    assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+                    territoryGraph.addNewAdjacency(startingTerritory, endingTerritory);
+                }
+            }
+        }
+
+        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
+            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+                if (endingTerritory != startingTerritory) {
+                    assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
                 }
             }
         }

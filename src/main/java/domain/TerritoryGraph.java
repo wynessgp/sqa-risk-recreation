@@ -1,31 +1,27 @@
 package domain;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TerritoryGraph {
-    private final Set<TerritoryType> territories = new HashSet<>();
-    private final Map<TerritoryType, TerritoryType> adjacencies = new HashMap<>();
+    private final Map<TerritoryType, Set<TerritoryType>> territories = new HashMap<>();
 
     public boolean addNewKey(TerritoryType territory) {
-        if (territories.contains(territory)) {
+        if (territories.containsKey(territory)) {
             return false;
         }
-        territories.add(territory);
+        territories.put(territory, new HashSet<>());
         return true;
     }
 
     public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
-        if (!territories.contains(startingTerritory) || !territories.contains(endingTerritory)) {
+        if (!(territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory))) {
             return false;
         }
-        if (adjacencies.get(startingTerritory) == endingTerritory && adjacencies.get(endingTerritory) == startingTerritory) {
+        if (territories.get(startingTerritory).contains(endingTerritory) && territories.get(endingTerritory).contains(startingTerritory)) {
             return false;
         }
-        adjacencies.put(startingTerritory, endingTerritory);
-        adjacencies.put(endingTerritory, startingTerritory);
+        territories.get(startingTerritory).add(endingTerritory);
+        territories.get(endingTerritory).add(startingTerritory);
         return true;
     }
 }
