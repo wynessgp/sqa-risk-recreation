@@ -12,4 +12,8 @@ public class TerritoryGraph {
         territories.add(territory);
         return true;
     }
+
+    public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+        return false;
+    }
 }
