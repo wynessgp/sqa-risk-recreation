@@ -63,3 +63,21 @@
 
 ### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/12
+
+
+# Intructor feedback
+## Progress evaluation :scroll:
+Good evidence of making progress! But be sure every team member is contributing.
+
+## Suggested next action items :fist:
+1. Split the tasks for Game Setup Phase.
+2. Document the tasks in the GitHub Projects board.
+3. Start the development for the Game Setup Phase.(Make sure to ALWAYS do BVA first (document them in docs/bva). Then follow TDD.)
+
+## Highlight of your team's work :partying_face:
+It seems that everyone is actively participating in the project. Good job!
+
+## Improvements to consider :star:
+1. Please format the progress report markdown (md) file properly. For instance, "### PR done and approved" should have 4 "#". 
+2. Make sure to do enough project planning and document the task deligation in the GitHub Projects board.
+
