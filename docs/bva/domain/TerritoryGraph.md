@@ -1,18 +1,18 @@
 # method: `addNewTerritory(territory: Territory): boolean`
 
 ## BVA Step 1
-Input: A key to match a particular territory (Alaska, etc.), the underlying set of keys we already have
+Input: A Territory object (with TerritoryType field), the underlying set of keys we already have
 
 Output: A true/false whether the TerritoryType could be added as a valid key
 
 ## BVA Step 2
-Input: Pointer (with a TerritoryType field), Collection (underlying storage on keys)
+Input: Pointer, Collection (underlying storage on keys)
 
 Output: Boolean (0, 1)
 
 ## BVA Step 3
 Input: 
-- newKey: Pointer
+- territory: Pointer
     - Null object
     - Valid Territory object
 - Underlying list: Collection
