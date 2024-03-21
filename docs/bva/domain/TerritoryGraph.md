@@ -206,30 +206,40 @@ Output: associated Territory object
 # method: `findAdjacentTerritories(territory: TerritoryType): Set<Territory>`
 
 ## BVA Step 1
-Input: 
+Input: The exisitng undirected graph, a TerritoryType enum
 
-Output:
+Output: All the Territory objects that are adjacent to the input TerritoryType
 
 ## BVA Step 2
-Input: 
+Input: Collection, cases
 
-Output:
+Output: Collection
 
 ## BVA Step 3
-Input: 
+Input:
+- Collection: empty graph, graph with 1 vertex, graph with 2 vertices and 1 edge, graph with 42 vertices and 0 edges, complete graph with 42 vertices and 861 edges
+- Cases: each possibility from the TerritoryType enum (42 in total, all other options are impossible)
 
-Output:
+Output: Empty set, set with one Territory, set with all 42 territories
 
 ## BVA Step 4
 ### Test value 1
-...
+Input: empty graph, each possible TerritoryType
+
+Output: empty set
 ### Test value 2
-...
+Input: graph with one territory (no edges), the corresponding TerritoryType (for each possible TerritoryType)
+
+Output: empty set
 ### Test value 3
-...
-### Test value 1
-...
-### Test value 2
-...
-### Test value 3
-...
+Input: graph with two unique territories and an edge between them, one of the TerritoryTypes present in the graph (for each possible combination)
+
+Output: set containing the other Territory from the graph
+### Test value 4
+Input: graph with all 42 territories and no edges, each possible TerritoryType
+
+Output: empty set
+### Test value 5
+Input: complete graph with all 42 territories, each possible TerritoryType
+
+Output: set containing all Territory objects except the one that corresponds with the input TerritoryType
