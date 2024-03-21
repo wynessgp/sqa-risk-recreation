@@ -31,4 +31,15 @@ public class TerritoryGraphTest {
         territory = TerritoryType.ALASKA;
         assertTrue(territoryGraph.addNewKey(territory));
     }
+
+    @Test
+    public void test02_addNewKey_withTwoExisting_noDuplicate() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        TerritoryType territory = TerritoryType.BRAZIL;
+        territoryGraph.addNewKey(territory);
+        territory = TerritoryType.CONGO;
+        territoryGraph.addNewKey(territory);
+        territory = TerritoryType.ALASKA;
+        assertTrue(territoryGraph.addNewKey(territory));
+    }
 }
