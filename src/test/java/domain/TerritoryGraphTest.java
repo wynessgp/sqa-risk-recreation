@@ -119,4 +119,18 @@ public class TerritoryGraphTest {
         territoryGraph.addNewAdjacency(startingTerritory, endingTerritory);
         assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
     }
+
+    @Test
+    public void test08_addNewAdjacency_withAllVertices_noEdges() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
+            territoryGraph.addNewKey(startingTerritory);
+            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+                if (endingTerritory != startingTerritory) {
+                    territoryGraph.addNewKey(endingTerritory);
+                    assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+                }
+            }
+        }
+    }
 }
