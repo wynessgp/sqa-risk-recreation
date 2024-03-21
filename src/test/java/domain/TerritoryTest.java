@@ -61,6 +61,14 @@ class TerritoryTest {
     }
 
     @Test
+    void test14_SetPlayerInControl_ReturnsFalse() {
+        Territory territory = new Territory();
+        Player playerA = new Player();
+        territory.setPlayerInControl(playerA);
+        assertFalse(territory.setPlayerInControl(playerA));
+    }
+
+    @Test
     void test03_SetNumArmiesPresent_ReturnsTrueForValidNumber() {
         Territory territory = new Territory();
         assertTrue(territory.setNumArmiesPresent(5));
@@ -135,11 +143,5 @@ class TerritoryTest {
         territory.setNumArmiesPresent(validNumberOfArmies);
         assertEquals(validNumberOfArmies, territory.getNumArmiesPresent());
     }
-
-
-
-
-
-
 
 }

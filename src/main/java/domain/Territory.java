@@ -13,7 +13,7 @@ public class Territory {
 
 
     public boolean setPlayerInControl(Player player) {
-        if (player == null) return false;
+        if (player == null || player.equals(playerInControl)) return false;
         this.playerInControl = player;
         return true;
     }

@@ -2,7 +2,7 @@
 
 ### BVA Step 1
 - **Input**: A valid `Player` object.
-- **Output**: True if the player was successfully set as the controller of the territory; otherwise, false.
+- **Output**: Yes or no answer
 
 ### BVA Step 2
 - **Input**: a pointer to a player object
@@ -14,35 +14,41 @@
   - The second possibility: Transitioning control from one player (PlayerA) to a different player (PlayerB)
   - The third possibility: Attempting to change control from a player to the same player.
   - The fourth possibility: Assign the territory's control to null after it has been controlled by a valid player
+  - The fifth possibility: Assign the territory's control to the same player after it has been controlled by a valid player
 - **Output**: True,or false.
   
 ### BVA Step 4
+
 ### Test 1
-- **Input**: `setPlayerInControl(playerA)`
+- **Input**: Assigning control of a territory to a player when it previously had no player assigned (PlayerA)
 - **Output**: True
 
 ### Test 2
-- **Input**: First, `setPlayerInControl(playerA)`, then `getPlayerInControl()  == playerA`
+- **Input**: assign and check the player in control is setted up correctly (PlayerA)
 - **Output**: True
 
 
 ### Test 3
-- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(playerB)`
+- **Input**: Transitioning control from one player (PlayerA) to a different player (PlayerB)
 - - **Output**: true
 
 ### Test 4
-- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(playerB)`, then `getPlayerInControl()  == playerB`
+- **Input**: check the player in control is setted up correctly after the transition from one player to another (PlayerA) to (PlayerB)
 - - **Output**: true
 
 - ### Test 5
-- **Input**: `setPlayerInControl(playerA)`, then `setPlayerInControl(null)`
+- **Input**: Assign the territory's control to null after it has been controlled by a valid player (PlayerA)
+- - **Output**: False
+
+- ### Test 6
+- **Input**: Assign the territory's control to the same player(PlayerA) after it has been controlled by a valid player (PlayerA)
 - - **Output**: False
 
 ## Method: `public boolean setNumArmiesPresent(int newAmount)`
 
 ### BVA Step 1
 - **Input**: A positive number of armies to be placed on the territory.
-- **Output**: return True if the number of armies was successfully set; otherwise, false.
+- **Output**: Yes or no answer
 
 ### BVA Step 2
 - **Input**: count
@@ -53,50 +59,47 @@
 - **Output**: true and false.
 
 ### BVA Step 4
-
 ### Test 1
-- **Input**: `setNumArmiesPresent(5)`
+- **Input**: set 5 armies present
 - **Output**: True
 
 ### Test 2
-- **Input**: `setNumArmiesPresent(0)`
+- **Input**: set 0 armies present
 - **Output**: True
   
 ### Test 3
-- **Input**: `setNumArmiesPresent(1)`
+- **Input**: set 1 army present
 - **Output**: True
 
 ### Test 4
-- **Input**: `SetNumArmiesPresent(-1)` 
+- **Input**: invalid input  (negative number -1)
 - **Output**: false
 
+
 ### Test 5
-- **Input**: `SetNumArmiesPresent(5)` then `territory.getNumArmiesPresent()` == 5
+- **Input**: check the number of armies present after setting(to 5) is 5
 - **Output**: true
 
 ### Test 6
-- **Input**: `SetNumArmiesPresent(0)` then `territory.getNumArmiesPresent()` == 0
+- **Input**: check the number of armies present after setting(to 0) is 0
 - **Output**: true
 
 ### Test 7
-- **Input**: `SetNumArmiesPresent(1)` then `territory.getNumArmiesPresent()` == 1
+- **Input**: check the number of armies present after setting(to 1) is 1
 - **Output**: true
 
 
 ## Method: `getPlayerInControl()`
 
 ### BVA Step 1
-
 - **Input**: the player in control has been set.
 - **Output**: The current Player in control or null if no player is in control
 
 ### BVA Step 2
-
 - **Input**: None
 - **Output**: Player object or null
 
 ### BVA Step 3
-//To do this, you can show what the object looks like before calling the method, then give the expected output.
 - **Input**: Cases
   - The first possibility: The territory has no player in control, call getter
   - The second possibility: The territory has a player in control,call getter
@@ -104,30 +107,26 @@
 - **Output**: Player object or null
 
 ### BVA Step 4
-
 ### Test 1
-- **Input**: `getPlayerInControl()`
+- **Input**: get player in control without any player being set
 - **Output**: null
 
 ### Test 2
-- **Input**: `setPlayerInControl(playerA)`, then `getPlayerInControl() == playerA`
+- **Input**: set playerA in control. Then, retrieve the current player in control
 - **Output**: PlayerA
 
 
 ## Method: `getNumArmiesPresent()`
 
 ### BVA Step 1
-
 - **Input**: The number of armies present on the territory has been set.
 - **Output**: The number of armies present on the territory
 
 ### BVA Step 2
-
 - **Input**: None
 - **Output**: Integer
 
 ### BVA Step 3
-
 - **Input**: Cases
   - The first possibility: The territory has no armies present, call getter
   - The second possibility: The territory has armies present, call getter
@@ -137,24 +136,10 @@
 - - The second possibility: >0 (the number of armies present)
 
 ### BVA Step 4
-
 ### Test 1
-- **Input**: `getNumArmiesPresent()`
+- **Input**: get number of armies present without any armies being set
 - **Output**: 0
 
 ### Test 2
-- **Input**: `setNumArmiesPresent(5)`, then `getNumArmiesPresent() == 5`
+- **Input**: set 5 armies present. Then, retrieve the number of armies present
 - **Output**: 5
-
-
-
-
-
-
-
-
-
-
-
-
-
