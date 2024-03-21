@@ -1,5 +1,6 @@
 package domain;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,6 +20,15 @@ public class TerritoryGraphTest {
     @MethodSource("territoryGenerator")
     public void test00_addNewKey_fromEmptySet_addTerritory(TerritoryType territory) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
+        assertTrue(territoryGraph.addNewKey(territory));
+    }
+
+    @Test
+    public void test01_addNewKey_withOneExisting_noDuplicate() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        TerritoryType territory = TerritoryType.ARGENTINA;
+        territoryGraph.addNewKey(territory);
+        territory = TerritoryType.ALASKA;
         assertTrue(territoryGraph.addNewKey(territory));
     }
 }
