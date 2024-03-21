@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TerritoryGraphTest {
@@ -41,5 +42,15 @@ public class TerritoryGraphTest {
         territoryGraph.addNewKey(territory);
         territory = TerritoryType.ALASKA;
         assertTrue(territoryGraph.addNewKey(territory));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test03_addNewKey_withAllExisting_addDuplicate_returnsFalse(TerritoryType territory) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType territoryToAdd : Set.of(TerritoryType.values())) {
+            territoryGraph.addNewKey(territoryToAdd);
+        }
+        assertFalse(territoryGraph.addNewKey(territory));
     }
 }
