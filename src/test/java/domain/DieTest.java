@@ -21,7 +21,7 @@ public class DieTest {
         // perform the operation
         String expectedMessage = "Randomizer object is null, cannot roll Die!";
         Exception exception = assertThrows(NullPointerException.class,
-                                           () -> {unitUnderTest.rollSingleDie(null);} );
+                                           () -> unitUnderTest.rollSingleDie(null));
         
         // assert
         String actualMessage = exception.getMessage();
@@ -31,7 +31,7 @@ public class DieTest {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 6})
     public void test01_validRandomPointer_expectBVASuggestedValues(int forcedRollForMock) {
-        // variable setup: note that JDK11 doesn't have the lowerbounded nextInt,
+        // variable setup: note that JDK11 doesn't have the lower bounded nextInt,
         // so we have to offset the max and then re-add in the minimum later.
         int maximumPossibleRoll = 6;
         int minimumPossibleRoll = 1;
@@ -40,7 +40,9 @@ public class DieTest {
         Random random = EasyMock.mock(Random.class);
         // this line is a bit weird for the 6 case, as we'll be limited to 5 as the max in rand.nextInt, 
         // but we'll expect it to return 6 (since the die is technically capable of it)
-        EasyMock.expect(random.nextInt(maximumPossibleRoll - minimumPossibleRoll)).andReturn(forcedRollForMock);
+        // Note that we also need to return forcedRoll - 1, as we add the lower bound due to JDK11's restrictions.
+        EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1))
+                .andReturn(forcedRollForMock - 1);
 
         // Replay
         EasyMock.replay(random);
