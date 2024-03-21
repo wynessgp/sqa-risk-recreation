@@ -3,8 +3,8 @@
 
 **Items Planned**:
 1. Continue work on BVA and testing for setup classes
-  - Update design document accordingly
-  - Most work done in domain package
+    - Update design document accordingly
+    - Most work done in domain package
 2. Select general purpose linter
 3. Select style linter
 
