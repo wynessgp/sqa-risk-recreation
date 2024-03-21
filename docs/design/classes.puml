@@ -189,14 +189,11 @@ package domain {
     }
 
     +class TerritoryGraph {
-        -territoryKeys: List<TerritoryType>
-        -territories: List<Territory>
-        -territoryTypeToAdjacencies: Map<TerritoryType, Set<Territory>>
+        -territories: Map<TerritoryType, Set<Territory>>
         +TerritoryGraph()
-        +addNewKey(newKey: TerritoryType): boolean
+        +addNewTerritory(territory: Territory): boolean
         +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
         ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
-        +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
         +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
         +findTerritoryByType(givenTerritory: TerritoryType): Territory
     }
@@ -215,6 +212,9 @@ package domain {
         +Territory(territoryType: TerritoryType)
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
+        +getPlayerInControl(): Player
+        +getArmies(): int
+        +getTerritoryType(): TerritoryType
     }
 
     Territory --> PlayerColor
