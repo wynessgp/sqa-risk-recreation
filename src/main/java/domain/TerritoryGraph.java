@@ -14,6 +14,6 @@ public class TerritoryGraph {
     }
 
     public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
-        return false;
+        return territories.contains(startingTerritory) && territories.contains(endingTerritory);
     }
 }

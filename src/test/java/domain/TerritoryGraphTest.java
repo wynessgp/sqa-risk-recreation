@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -72,6 +73,29 @@ public class TerritoryGraphTest {
             if (endingTerritory != startingTerritory) {
                 assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
             }
+        }
+    }
+
+    private static Stream<Arguments> territoryCombinationGenerator() {
+        Set<Arguments> territories = new HashSet<>();
+        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
+            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+                if (endingTerritory != startingTerritory) {
+                    territories.add(Arguments.of(startingTerritory, endingTerritory));
+                }
+            }
+        }
+        return Stream.of(territories.toArray(Arguments[]::new));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test06_addNewAdjacency_withTwoVertices_noEdges(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        territoryGraph.addNewKey(startingTerritory);
+        territoryGraph.addNewKey(endingTerritory);
+        if (endingTerritory != startingTerritory) {
+            assertTrue(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
         }
     }
 }
