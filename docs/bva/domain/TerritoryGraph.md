@@ -75,7 +75,7 @@ Output: true when edge can be added, false otherwise (already exists or case not
 
 ## BVA Step 4
 ### Test values 1
-Input: empty graph, each possibile TerritoryType combination
+Input: empty graph, each possible TerritoryType combination
 
 Output: 0 (false)
 ### Test value 2
@@ -100,6 +100,10 @@ Input: graph with all 42 TerritoryType vertices (no edges), each possible Territ
 Output: 1
 ### Test value 7
 Input: complete graph with all 42 TerritoryType vertices, each possible TerritoryType combination
+
+Output: 0
+### Test value 8
+Input: graph with single vertex of TerritoryType, the same TerritoryType
 
 Output: 0
 
