@@ -1,12 +1,3 @@
-<!-- +class TerritoryGraph { // TODO: Fix Territory to be TerritoryType, use a map from TerritoryType to Territory
-  +TerritoryGraph()
-  +addNewKey(newKey: TerritoryType): boolean
-  +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: TerritoryType): boolean
-  ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<TerritoryType>): boolean
-  +findAdjacentTerritories(givenTerritory: TerritoryType): Set<TerritoryType>
-  +findTerritoryByType(givenTerritory: TerritoryType): Territory
-} -->
-
 # method: `addNewKey(newKey: TerritoryType): boolean`
 
 ## BVA Step 1
@@ -54,15 +45,12 @@ Output:
 - Input: newKey = ALASKA, Collection = [ALASKA, ..., YAKUTSK]
 - Output: 0 (no matter what you add, it'll be a duplicate)
 ### Test 5:
-- Input: newKey = ALASKA, Collection = [ALASKA, ALASKA]
-- Output: 0 (cannot add a duplicate)
-### Test 6:
 - Input: newKey = ARGENTINA, Collection = []
 - Output: 1 
-### Test 7: 
+### Test 6: 
 - Input: newKey = BRAZIL, Collection = []
 - Output: 1
-### Enumerate over the rest of the values for tests 8-47
+### Enumerate over the rest of the values for tests 7-46
 - Input: Collection = []
 - Output: 1
 
