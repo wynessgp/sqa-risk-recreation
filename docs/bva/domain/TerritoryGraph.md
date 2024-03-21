@@ -1,4 +1,4 @@
-# method: `addNewKey(newKey: TerritoryType): boolean`
+# method: `addNewTerritory(territory: Territory): boolean`
 
 ## BVA Step 1
 Input: A key to match a particular territory (Alaska, etc.), the underlying set of keys we already have
@@ -6,18 +6,15 @@ Input: A key to match a particular territory (Alaska, etc.), the underlying set 
 Output: A true/false whether the TerritoryType could be added as a valid key
 
 ## BVA Step 2
-Input: Cases (TerritoryType is an enum), Collection (underlying storage on keys)
+Input: Pointer (with a TerritoryType field), Collection (underlying storage on keys)
 
 Output: Boolean (0, 1)
 
 ## BVA Step 3
 Input: 
-- newKey: Cases
-    - The first possibility
-    - The second possibility
-    - ...
-    - The 42nd possibility
-    - The 0th or 43rd case (impossible to set)
+- newKey: Pointer
+    - Null object
+    - Valid Territory object
 - Underlying list: Collection
     - Empty collection
     - Collection with 1 element
@@ -33,24 +30,24 @@ Output:
 
 ## BVA Step 4
 ### Test 1:
-- Input: newKey = ALASKA, Collection = []
+- Input: Territory object initialized to ALASKA, Collection = []
 - Output: 1
 ### Test 2:
-- Input: newKey = ALASKA, Collection = [ARGENTINA]
+- Input: Territory object initialized to ALASKA, Collection = [ARGENTINA]
 - Output: 1
 ### Test 3:
-- Input: newKey = ALASKA, Collection = [BRAZIL, CONGO]
+- Input: Territory object initialized to ALASKA, Collection = [BRAZIL, CONGO]
 - Output: 1 
 ### Test 4:
-- Input: newKey = ALASKA, Collection = [ALASKA, ..., YAKUTSK]
+- Input: Territory object initialized to ALASKA, Collection = [ALASKA, ..., YAKUTSK]
 - Output: 0 (no matter what you add, it'll be a duplicate)
 ### Test 5:
-- Input: newKey = ARGENTINA, Collection = []
+- Input: Territory object initialized to ARGENTINA, Collection = []
 - Output: 1 
 ### Test 6: 
-- Input: newKey = BRAZIL, Collection = []
+- Input: Territory object initialized to BRAZIL, Collection = []
 - Output: 1
-### Enumerate over the rest of the values for tests 7-46
+### Enumerate over the rest of TerritoryType for tests 7-46
 - Input: Collection = []
 - Output: 1
 
