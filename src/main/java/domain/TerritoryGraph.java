@@ -1,6 +1,9 @@
 package domain;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TerritoryGraph {
     private final Map<TerritoryType, Set<TerritoryType>> territories = new HashMap<>();
@@ -14,10 +17,12 @@ public class TerritoryGraph {
     }
 
     public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
-        if (!(territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory))) {
+        if (!(territories.containsKey(startingTerritory)
+                && territories.containsKey(endingTerritory))) {
             return false;
         }
-        if (territories.get(startingTerritory).contains(endingTerritory) && territories.get(endingTerritory).contains(startingTerritory)) {
+        if (territories.get(startingTerritory).contains(endingTerritory)
+                && territories.get(endingTerritory).contains(startingTerritory)) {
             return false;
         }
         if (startingTerritory == endingTerritory) {
