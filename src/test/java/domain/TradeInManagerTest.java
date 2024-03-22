@@ -209,8 +209,38 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test19_calculateNumNewPieces_1TradedInSets_expected4(){
+    public void test19_calculateNumNewPieces_1TradedInSets_expected6(){
         int expected = 6;
+        tradeMgrUnderTest.updateSetsTradedIn();
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test20_calculateNumNewPieces_2TradedInSets_expected8(){
+        int expected = 8;
+        tradeMgrUnderTest.updateSetsTradedIn();
+        tradeMgrUnderTest.updateSetsTradedIn();
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test21_calculateNumNewPieces_3TradedInSets_expected10(){
+        int expected = 10;
+        tradeMgrUnderTest.updateSetsTradedIn();
+        tradeMgrUnderTest.updateSetsTradedIn();
+        tradeMgrUnderTest.updateSetsTradedIn();
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test22_calculateNumNewPieces_4TradedInSets_expected12(){
+        int expected = 12;
+        tradeMgrUnderTest.updateSetsTradedIn();
+        tradeMgrUnderTest.updateSetsTradedIn();
+        tradeMgrUnderTest.updateSetsTradedIn();
         tradeMgrUnderTest.updateSetsTradedIn();
         int actual = tradeMgrUnderTest.calculateNumNewPieces();
         assertEquals(expected, actual);
