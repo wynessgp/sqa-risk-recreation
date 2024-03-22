@@ -195,7 +195,7 @@ Output: associated Territory object
 # method: `findAdjacentTerritories(territory: TerritoryType): Set<Territory>`
 
 ## BVA Step 1
-Input: The exisitng undirected graph, a TerritoryType enum
+Input: The existing undirected graph, a TerritoryType enum
 
 Output: All the Territory objects that are adjacent to the input TerritoryType
 
