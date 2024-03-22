@@ -39,4 +39,8 @@ public class TerritoryGraph {
     public Territory getTerritory(TerritoryType territoryType) {
         return territoryTypeToObject.getOrDefault(territoryType, null);
     }
+
+    public Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
+        return new HashSet<>();
+    }
 }

@@ -353,4 +353,11 @@ public class TerritoryGraphTest {
             EasyMock.verify(territory);
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test15_findAdjacentTerritories_withEmptyGraph(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        assertTrue(territoryGraph.findAdjacentTerritories(territoryType).isEmpty());
+    }
 }
