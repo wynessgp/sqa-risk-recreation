@@ -330,4 +330,49 @@ Output:
 - Output:
   - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 
+# method: `validateSortIsInNonIncreasingOrder(List<Integer> listToCheck): boolean`
 
+## BVA Step 1
+Input: A list of integers which may not necessarily be in sorted order
+
+Output: A yes/no answer if the provided list is in fact, sorted in non-increasing order.
+
+## BVA Step 2
+Input: Collection
+
+Output: Boolean (0, 1)
+
+## BVA Step 3
+Input: Collection
+- An empty collection (can't set, will be checked in generateBattleResults)
+- Contains exactly one element 
+- Contains \> 1 element 
+- Maximum possible size (3 if attacker list, 2 if defender list) <!-- Consider expanding for flexiblity -->
+- Using the first element (index 0)
+- Using the last element (index 1 or 2)
+- Contains duplicates
+- No duplicates
+
+Output: Boolean
+- 0 
+- 1
+
+## BVA Step 4
+### Test 1:
+- Input: listToCheck = [5]
+- Output: 1
+### Test 2:
+- Input: listToCheck = [4, 2]
+- Output: 1
+### Test 3:
+- Input: listToCheck = [3, 3]
+- Output: 1
+### Test 4:
+- Input: listToCheck = [6, 5, 1]
+- Output: 1
+### Test 5:
+- Input: listToCheck = [2, 4]
+- Output: 0
+### Test 6:
+- Input: listToCheck = [1, 3, 5]
+- Output: 0
