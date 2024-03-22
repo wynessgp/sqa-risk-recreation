@@ -54,6 +54,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/28
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/45
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/46
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/39
 
 ### Team member: Harvey Yang
 #### PR created:
