@@ -256,60 +256,75 @@ Output:
   - message: "Both arguments must have at least 1 element"
 ### Test 4:
 - Input:
+  - defenderRolls = [1, 2], attackerRolls = [4]
+- Output: IllegalArgumentException
+  - message: "defenderRolls are not sorted in non-increasing order"
+### Test 5:
+- Input:
+  - defenderRolls = [5], attackerRolls = [1, 2]
+- Output: IllegalArgumentException
+  - message: "attackerRolls are not sorted in non-increasing order"
+### Test 6:
+- Input:
+  - defenderRolls = [4], attackerRolls = [3, 1, 2]
+- Output: IllegalArgumentException
+  - message: "attackerRolls are not sorted in non-increasing order"
+### Test 7:
+- Input:
   - defenderRolls = [5], attackerRolls = [5]
 - Output: 
   - Collection = [DEFENDER_VICTORY]
-### Test 5:
+### Test 8:
 - Input:
   - defenderRolls = [6, 6], attackerRolls = [1]
 - Output:
   - Collection = [DEFENDER_VICTORY]
-### Test 6:
+### Test 9:
 - Input:
   - defenderRolls = [6, 6], attackerRolls = [4, 3]
 - Output:
   - Collection = [DEFENDER_VICTORY, DEFENDER_VICTORY]
-### Test 7:
+### Test 10:
 - Input:
   - defenderRolls = [6, 6], attackerRolls = [5, 3, 2]
 - Output:
   - Collection = [DEFENDER_VICTORY, DEFENDER_VICTORY]
-### Test 8:
+### Test 11:
 - Input:
   - defenderRolls = [6, 2], attackerRolls = [4, 4, 3]
 - Output:
   - Collection = [DEFENDER_VICTORY, ATTACKER_VICTORY]
-### Test 9:
+### Test 12:
 - Input:
   - defenderRolls = [5, 4], attackerRolls = [6, 2, 1]
 - Output:
   - Collection = [ATTACKER_VICTORY, DEFENDER_VICTORY]
-### Test 10:
+### Test 13:
 - Input:
   - defenderRolls = [3], attackerRolls = [4]
 - Output: 
   - Collection = [ATTACKER_VICTORY]
-### Test 11:
+### Test 14:
 - Input:
   - defenderRolls = [5, 5], attackerRolls = [6]
 - Output: 
   - Collection = [ATTACKER_VICTORY]
-### Test 12:
+### Test 15:
 - Input:
   - defenderRolls = [2], attackerRolls = [4, 4]
 - Output:
   - Collection = [ATTACKER_VICTORY]
-### Test 13:
+### Test 16:
 - Input:
   - defenderRolls = [2], attackerRolls = [3, 4, 5]
 - Output:
   - Collection = [ATTACKER_VICTORY]
-### Test 14:
+### Test 17:
 - Input:
   - defenderRolls = [3, 4], attackerRolls = [4, 5]
 - Output:
   - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
-### Test 15:
+### Test 18:
 - Input:
   - defenderRolls = [2, 3], attackerRolls = [4, 4, 6]
 - Output:
