@@ -110,7 +110,7 @@ Output: 0
 Input: 
 - A TerritoryType enum (territories in Risk) 
 - A collection of TerritoryType objects to associate as adjacencies with a given TerritoryType 
-- The underlying collection storing current adjacencies of TerritoryTypes (so the map from TerritoryType to a set of TerritoryTypes; more precisely, to a collection of TerritoryTypes)
+- The underlying collection (graph) storing current adjacencies of TerritoryTypes (so the map from TerritoryType to a set of TerritoryTypes; more precisely, to a collection of TerritoryTypes)
 
 Output: A yes/no answer on whether we could add the adjacencies or not
 
@@ -135,25 +135,77 @@ Input:
     - Collection with 1 element
     - Collection with > 1 element
     - Maximum possible size of the collection (42)
-    - Collection with duplicates
-    - Collection with no duplicates
+    - Collection with duplicates (impossible because the underlying structures are sets)
 
 Output: Boolean
 - 0
 - 1
 
 ## BVA Step 4
-### Test 1:
-- Input: 
-    - newKey: ALASKA 
-    - adjTerritories = [YAKUTSK]
-    - underlying = []
-- Output: 1 (not overriding, territory is valid)
+### Test value 1:
+Input: empty graph, each possible TerritoryType, empty set
 
-### Test value 2
-...
-### Test value 3
-...
+Output: 0 (false)
+### Test value 2:
+Input: empty graph, each possible TerritoryType, set containing the same TerritoryType
+
+Output: 0
+### Test value 3:
+Input: empty graph, each possible TerritoryType, set containing all other TerritoryTypes
+
+Output: 0
+### Test value 4:
+Input: graph with one TerritoryType, the corresponding TerritoryType, empty set
+
+Output: 0
+### Test value 5:
+Input: graph with one TerritoryType, a different TerritoryType, empty set
+
+Output: 0
+### Test value 6:
+Input: graph with one TerritoryType, the corresponding TerritoryType, set containing all other TerritoryTypes
+
+Output: 0
+### Test value 7:
+Input: graph with one TerritoryType, a different TerritoryType, set containing the TerritoryType from the graph
+
+Output: 0
+### Test value 8
+Input: graph with two TerritoryTypes (no edges), the first TerritoryType vettex, set containing the second TerritoryType vertex
+
+Output: 1 (true)
+### Test value 9
+Input: graph with two TerritoryTypes and an edge between, the first TerritoryType vettex, set containing the second TerritoryType vertex
+
+Output: 0
+### Test value 10:
+Input: graph with all 42 TerritoryTypes (no edges), one of the vertices, set containing one different vertex
+
+Output: 1
+### Test value 11:
+Input: graph with all 42 TerritoryTypes (no edges), one of the vertices, set containing two different vertices
+
+Output: 1
+### Test value 12:
+Input: graph with all 42 TerritoryTypes (no edges), one of the vertices, set containing remaining vertices
+
+Output: 1
+### Test value 13:
+Input: graph with all 42 TerritoryTypes (no edges), one of the vertices, the same vertex
+
+Output: 0
+### Test value 14:
+Input: complete graph, each possible TerritoryType, a different TerritoryType
+
+Output: 0
+### Test value 15:
+Input: complete graph, each possible TerritoryType, the same TerritoryType
+
+Output: 0
+### Test value 16:
+Input: complete graph, each possible TerritoryType, the remaining TerritoryTypes
+
+Output: 0
 
 # method: `getTerritory(territory: TerritoryType): Territory`
 
