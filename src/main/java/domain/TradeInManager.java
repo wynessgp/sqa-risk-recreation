@@ -20,13 +20,16 @@ public class TradeInManager {
                 //check for wild card
                 if(card.isWild()) return true;
 
-                //check for "one of each" condition
+                //check which piece is in the list
                 if(card.matchesPieceType(PieceType.INFANTRY))  hasInfantry = true;
                 else if(card.matchesPieceType(PieceType.CAVALRY))  hasCavalry = true;
                 else if(card.matchesPieceType(PieceType.ARTILLERY))  hasArtillery = true;
             }
 
-            return hasInfantry && hasCavalry && hasArtillery;
+            return (hasInfantry && hasCavalry && hasArtillery)      //one of each
+                    || (hasInfantry && !hasCavalry && !hasArtillery)  //3 infantry
+                    || (!hasInfantry && hasCavalry && !hasArtillery)  //3 cavalry
+                    || (!hasInfantry && !hasCavalry && hasArtillery); //3 artillery
         }
         return false;
     }
