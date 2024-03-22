@@ -47,4 +47,23 @@ public class TradeInManagerTest {
     public void test00_verifyValidCombo_emptySet_expectedFalse(){
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
+
+    @Test
+    public void test01_verifyValidCombo_oneInfantry_expectedFalse(){
+        cards.add(infantryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test02_verifyValidCombo_oneCalvary_expectedFalse(){
+        cards.add(cavalryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test03_verifyValidCombo_oneArtillery_expectedFalse(){
+        cards.add(artilleryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
 }
