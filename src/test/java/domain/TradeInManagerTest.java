@@ -321,6 +321,9 @@ public class TradeInManagerTest {
 
     @Test
     public void test31_updateSetsTradeIn_MaxIntTradedInSets_expectedFalse(){
+        for(int i = 0; i < Integer.MAX_VALUE - 1; i++){
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
         assertFalse(tradeMgrUnderTest.updateSetsTradedIn());
     }
 
