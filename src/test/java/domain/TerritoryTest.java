@@ -1,13 +1,20 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+
 
 class TerritoryTest {
 
     @Test
-    void test00_SetPlayerInControl_ReturnsTrue() {
+    void test00_SetPlayerInControl_SetPlayer_ReturnsTrue() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         assertTrue(territory.setPlayerInControl(playerA));
@@ -15,7 +22,7 @@ class TerritoryTest {
 
 
     @Test
-    void test02_ChangePlayerInControl() {
+    void test02_ChangePlayerInControl_AnotherPlayer_ReturnTrue() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         Player playerB = new Player();
@@ -24,7 +31,7 @@ class TerritoryTest {
     }
 
     @Test
-    void test12_SetPlayerInControl_ReturnsFalse() {
+    void test03_SetNullPlayerInControl_SetNull_ReturnsFalse() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         Player playerB = null;
@@ -33,7 +40,7 @@ class TerritoryTest {
     }
 
     @Test
-    void test14_SetPlayerInControl_ReturnsFalse() {
+    void test04_SetPlayerInControl_SetSamePlayer_ReturnsFalse() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         territory.setPlayerInControl(playerA);
@@ -41,40 +48,40 @@ class TerritoryTest {
     }
 
     @Test
-    void test03_SetNumArmiesPresent_ReturnsTrueForValidNumber() {
+    void test05_SetNumArmiesPresent_SetValidNumberFive_ReturnsTrue() {
         Territory territory = new Territory(null);
         assertTrue(territory.setNumArmiesPresent(5));
     }
 
 
     @Test
-    void test05_SetNumArmiesPresent_ReturnsTrueForZero() {
+    void test06_SetNumArmiesPresent_SetValidNumberZero_ReturnsTrue() {
         Territory territory = new Territory(null);
         assertTrue(territory.setNumArmiesPresent(0));
     }
 
 
     @Test
-    void test07_SetNumArmiesPresent_ReturnsTrueForOne() {
+    void test07_SetNumArmiesPresent_SetValidNumberOne_ReturnsTrue() {
         Territory territory = new Territory(null);
         assertTrue(territory.setNumArmiesPresent(1));
     }
 
 
     @Test
-    void test09_SetNumArmiesPresent_ReturnsFalseForInvalidNumber() {
+    void test08_SetNumArmiesPresent_InvalidNegativeNumber_ReturnsFalse() {
         Territory territory = new Territory(null);
         assertFalse(territory.setNumArmiesPresent(-1));
     }
 
     @Test
-    void test10_GetPlayerInControl_ReturnsNull() {
+    void test09_GetPlayerInControl_DefaultPlayer_ReturnsNull() {
         Territory territory = new Territory(null);
         assertNull(territory.getPlayerInControl());
     }
 
     @Test
-    void test14_GetPlayerInControl_ReturnsPlayer() {
+    void test10_GetPlayerInControl_SetPlayer_ReturnsPlayer() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         territory.setPlayerInControl(playerA);
@@ -82,13 +89,23 @@ class TerritoryTest {
     }
 
     @Test
-    void test15_GetNumArmiesPresent_ReturnsZero() {
+    void test11_GetPlayerInControl_ChangePlayer_ReturnsChangedPlayer() {
+        Territory territory = new Territory(null);
+        Player playerA = new Player();
+        Player playerB = new Player();
+        territory.setPlayerInControl(playerA);
+        territory.setPlayerInControl(playerB);
+        assertSame(playerB, territory.getPlayerInControl());
+    }
+
+    @Test
+    void test12_GetNumArmiesPresent_ReturnsZero() {
         Territory territory = new Territory(null);
         assertEquals(0, territory.getNumArmiesPresent());
     }
 
     @Test
-    void test16_GetNumArmiesPresent_ReturnsNumber() {
+    void test13_GetNumArmiesPresent_SetValidNumberFive_ReturnsNumber() {
         Territory territory = new Territory(null);
         int validNumberOfArmies = 5;
         territory.setNumArmiesPresent(validNumberOfArmies);
@@ -96,20 +113,20 @@ class TerritoryTest {
     }
 
     @Test
-    void test17_GetTerritoryType_ReturnsTerritoryType() {
+    void test14_GetTerritoryType_DefaultType_ReturnsNull() {
         Territory territory = new Territory(null);
         assertNull(territory.getTerritoryType());
     }
 
     @Test
-    void test18_GetTerritoryType_ReturnsTerritoryType() {
+    void test15_GetTerritoryType_SetValidTypeAlaska_ReturnsTerritoryType() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         TerritoryType territoryType = TerritoryType.ALASKA;
         assertEquals(territoryType, territory.getTerritoryType());
     }
 
     @Test
-    void test19_GetTerritoryType_ReturnsTerritoryType() {
+    void test16_GetTerritoryType_SetValidTypeWesternAustralia_ReturnsTerritoryType() {
         Territory territory = new Territory(TerritoryType.WESTERN_AUSTRALIA);
         TerritoryType territoryType = TerritoryType.WESTERN_AUSTRALIA;
         assertSame(territoryType, territory.getTerritoryType());

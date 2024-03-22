@@ -1,4 +1,4 @@
-## Method: `public boolean setPlayerInControl(Player player)`
+## Method: `public boolean setPlayerInControl(Player player)`: boolean
 
 ### BVA Step 1
 - **Input**: A valid `Player` object.
@@ -35,7 +35,7 @@
 - **Input**: a valid Player object, The territory has been controlled by the same player
 - - **Output**: False
 
-## Method: `public boolean setNumArmiesPresent(int newAmount)`
+## Method: `public boolean setNumArmiesPresent(int newAmount)`: boolean
 
 ### BVA Step 1
 - **Input**: A positive number of armies to be placed on the territory.
@@ -68,7 +68,7 @@
 
 
 
-## Method: `getPlayerInControl()`
+## Method: `getPlayerInControl()`: Player
 
 ### BVA Step 1
 - **Input**: the underlying Player object associated with the Territory.
@@ -83,26 +83,30 @@
   - The first possibility: The territory has no player in control, call getter
   - The second possibility: The territory has a player in control, call getter
   
-- **Output**: Player object or null
+- **Output**: Pointers of Player object or null
 
 ### BVA Step 4
 ### Test 1
-- **Input**: get player in control without any player being set
+- **Input**: assigned player is null
 - **Output**: null
 
 ### Test 2
-- **Input**: get the current player in control when PlayerA was in control and PlayerB is set to control the territory
+- **Input**: a valid Player object (PlayerA)
 - **Output**: PlayerA
 
+### Test 3
+- **Input**: a valid Player object (PlayerB), when another valid Player object was previously in control (PlayerA)
+- **Output**: PlayerB
 
-## Method: `getNumArmiesPresent()`
+
+## Method: `getNumArmiesPresent()`: int
 
 ### BVA Step 1
-- **Input**: The number of armies present on the territory has been set.
+- **Input**: the underlying count of numArmiesPresent associated with the Territory.
 - **Output**: The number of armies present on the territory
 
 ### BVA Step 2
-- **Input**: None
+- **Input**: the count of armies present on the territory
 - **Output**: Integer
 
 ### BVA Step 3
@@ -116,22 +120,22 @@
 
 ### BVA Step 4
 ### Test 1
-- **Input**: get number of armies present without any armies being set
+- **Input**: number of armies set to 0
 - **Output**: 0
 
 ### Test 2
-- **Input**: retrieve the number of armies present when 5 armies were set to be present
+- **Input**: number of armies set to 5
 - **Output**: 5
 
 
-## Method: `public TerritoryType getTerritoryType()`
+## Method: `public TerritoryType getTerritoryType()`: TerritoryType
 
 ### BVA Step 1
 - **Input**: The territory type has been set.
 - **Output**: The type of territory
 
 ### BVA Step 2
-- **Input**: None
+- **Input**: the underlying TerritoryType associated with the Territory.
 - **Output**: TerritoryType
 
 ### BVA Step 3
@@ -141,18 +145,18 @@
   - ...
   - WesternAustralia
 
-- **Output**: TerritoryType
+- **Output**: Pointer of TerritoryType
 
 ### BVA Step 4
 
 ### Test 1
-- **Input**: get territory type without any territory type being set
+- **Input**: territory type set to null
 - **Output**: null
 
 ### Test 2
-- **Input**:retrieve the territory type when it is set to Alaska
+- **Input**:territory type set to Alaska
 - **Output**: ALASKA
 
 ### Test 3
-- **Input**: retrieve the territory type when it is set to Western Australia
+- **Input**: territory type set to Western Australia
 - **Output**: WESTERN_AUSTRALIA
