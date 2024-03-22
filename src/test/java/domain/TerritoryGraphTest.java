@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -322,5 +321,22 @@ public class TerritoryGraphTest {
         territoryGraph.addNewTerritory(territory);
         assertEquals(territory, territoryGraph.getTerritory(territoryType));
         EasyMock.verify(territory);
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test13_getTerritory_withExistingMapEntry_doesNotMatch(TerritoryType existingTerritoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Territory existingTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(existingTerritory.getTerritoryType()).andReturn(existingTerritoryType);
+        EasyMock.replay(existingTerritory);
+
+        territoryGraph.addNewTerritory(existingTerritory);
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            if (territoryType != existingTerritoryType) {
+                assertNull(territoryGraph.getTerritory(territoryType));
+            }
+        }
+        EasyMock.verify(existingTerritory);
     }
 }
