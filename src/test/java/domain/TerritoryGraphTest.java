@@ -363,7 +363,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test16_findAdjacentTerritories_withOneTerritoryNoEdges(TerritoryType territoryType) {
+    public void test16_findAdjacentTerritories_withOneTerritoryNoEdges(
+            TerritoryType territoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         Territory territory = EasyMock.createMock(Territory.class);
         EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
@@ -372,5 +373,32 @@ public class TerritoryGraphTest {
         territoryGraph.addNewTerritory(territory);
         assertTrue(territoryGraph.findAdjacentTerritories(territoryType).isEmpty());
         EasyMock.verify(territory);
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test17_findAdjacentTerritories_withTwoVerticesOneEdge(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Territory firstTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(firstTerritory.getTerritoryType()).andReturn(firstTerritoryType);
+        EasyMock.replay(firstTerritory);
+        territoryGraph.addNewTerritory(firstTerritory);
+
+        Territory secondTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(secondTerritory.getTerritoryType()).andReturn(secondTerritoryType);
+        EasyMock.replay(secondTerritory);
+        territoryGraph.addNewTerritory(secondTerritory);
+
+        territoryGraph.addNewAdjacency(firstTerritoryType, secondTerritoryType);
+        Set<Territory> adjacent = territoryGraph.findAdjacentTerritories(firstTerritoryType);
+        assertEquals(1, adjacent.size());
+        assertTrue(adjacent.contains(secondTerritory));
+
+        adjacent = territoryGraph.findAdjacentTerritories(secondTerritoryType);
+        assertEquals(1, adjacent.size());
+        assertTrue(adjacent.contains(firstTerritory));
+        EasyMock.verify(firstTerritory);
+        EasyMock.verify(secondTerritory);
     }
 }

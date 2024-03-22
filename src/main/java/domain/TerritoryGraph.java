@@ -41,6 +41,13 @@ public class TerritoryGraph {
     }
 
     public Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
-        return new HashSet<>();
+        Set<TerritoryType> adjacent = territories.get(territoryType);
+        Set<Territory> result = new HashSet<>();
+        if (adjacent != null) {
+            for (TerritoryType adjacentTerritoryType : adjacent) {
+                result.add(territoryTypeToObject.get(adjacentTerritoryType));
+            }
+        }
+        return result;
     }
 }
