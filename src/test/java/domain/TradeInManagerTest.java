@@ -66,4 +66,10 @@ public class TradeInManagerTest {
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
+    @Test
+    public void test04_verifyValidCombo_oneWild_expectedFalse(){
+        cards.add(wildCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
 }
