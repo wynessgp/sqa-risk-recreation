@@ -305,7 +305,7 @@ Output: 2147483645
 ### Test value 9
 Input: 429496732
 
-Output: MinInt + 2
+Output: exception
 
 
 # method: updateSetsTradedIn():boolean
