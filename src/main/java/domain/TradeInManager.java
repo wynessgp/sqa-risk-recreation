@@ -5,18 +5,20 @@ import java.util.List;
 
 public class TradeInManager {
 
-    public TradeInManager(){
+    private int setsTradedInSoFar;
 
+    public TradeInManager(){
+        setsTradedInSoFar = 0;
     }
 
-    public boolean verifyValidCombo(List<Card> cards) {
+    public boolean verifyValidCombo(List<Card> attemptedCards) {
         //check if size is 3
-        if(cards.size() == 3){
+        if(attemptedCards.size() == 3){
             boolean hasInfantry = false;
             boolean hasCavalry = false;
             boolean hasArtillery = false;
 
-            for(Card card : cards){
+            for(Card card : attemptedCards){
                 //check for wild card
                 if(card.isWild()) return true;
 
@@ -32,5 +34,9 @@ public class TradeInManager {
                     || (!hasInfantry && !hasCavalry && hasArtillery); //3 artillery
         }
         return false;
+    }
+
+    public int calculateNumNewPieces(List<Card> attemptedCards){
+        return 4;
     }
 }
