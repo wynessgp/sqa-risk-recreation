@@ -270,9 +270,9 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test25_calculateNumNewPieces_MaxValTradedInSets_expected2147483645(){
-        int expected = 2147483645;
-        for(int i = 0; i < 429496731; i++){
+    public void test25_calculateNumNewPieces_13TradedInSets_expected60(){
+        int expected = 55;
+        for(int i = 0; i < 13; i++){
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         int actual = tradeMgrUnderTest.calculateNumNewPieces();
@@ -280,13 +280,13 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test26_calculateNumNewPieces_MaxValPlusOneTradedInSets_expectedException(){
-        for(int i = 0; i < 429496731; i++){
+    public void test26_calculateNumNewPieces_allCardsTradedIn_expected0(){
+        int expected = 0;
+        for(int i = 0; i < 14; i++){
             tradeMgrUnderTest.updateSetsTradedIn();
         }
-        assertThrows(ArithmeticException.class, () -> {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        });
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
     }
 
 
