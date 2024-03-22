@@ -1,8 +1,5 @@
 package domain;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -12,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TerritoryGraphTest {
     private static Stream<Arguments> territoryGenerator() {
@@ -280,5 +279,12 @@ public class TerritoryGraphTest {
         territoryGraph.addNewTerritory(startingTerritory);
         EasyMock.verify(startingTerritory);
         assertFalse(territoryGraph.addNewAdjacency(startingTerritoryType, startingTerritoryType));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test11_getTerritory_withEmptyMap(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        assertNull(territoryGraph.getTerritory(territoryType));
     }
 }

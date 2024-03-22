@@ -35,4 +35,8 @@ public class TerritoryGraph {
         territories.get(endingTerritory).add(startingTerritory);
         return true;
     }
+
+    public Territory getTerritory(TerritoryType territoryType) {
+        return null;
+    }
 }
