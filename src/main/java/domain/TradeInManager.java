@@ -38,13 +38,12 @@ public class TradeInManager {
 
 
     public int calculateNumNewPieces(){
-//        if(this.setsTradedInSoFar == 0){
-//            return 4;
-//        }
-//        else{
-//            return 6;
-//        }
-        return 2*this.setsTradedInSoFar + 4;
+        if(this.setsTradedInSoFar < 5){
+            return 2*this.setsTradedInSoFar + 4;
+        }
+        else{
+            return 15;
+        }
     }
 
     public boolean updateSetsTradedIn(){

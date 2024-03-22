@@ -246,4 +246,14 @@ public class TradeInManagerTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void test23_calculateNumNewPieces_5TradedInSets_expected15(){
+        int expected = 15;
+        for(int i = 0; i < 5; i++){
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
 }
