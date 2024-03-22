@@ -293,8 +293,28 @@ public class TradeInManagerTest {
 
     //test for updateSetsTradedIn()
     @Test
-    public void test27_updateSetsTradeIn_0TradedInSets_expected1(){
+    public void test27_updateSetsTradeIn_0TradedInSets_expectedTrue(){
         assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
+    }
+
+    @Test
+    public void test28_updateSetsTradeIn_1TradedInSets_expectedTrue(){
+        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
+    }
+
+    @Test
+    public void test29_updateSetsTradeIn_10TradedInSets_expectedTrue(){
+        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
+    }
+
+    @Test
+    public void test30_updateSetsTradeIn_MaxIntMinusOneTradedInSets_expectedTrue(){
+        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
+    }
+
+    @Test
+    public void test31_updateSetsTradeIn_MaxIntTradedInSets_expectedFalse(){
+        assertFalse(tradeMgrUnderTest.updateSetsTradedIn());
     }
 
 }
