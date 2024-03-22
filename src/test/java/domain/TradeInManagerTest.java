@@ -141,4 +141,13 @@ public class TradeInManagerTest {
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
+
+    @Test
+    public void test011_verifyValidCombo_twoWildSetOf4_expectedFalse(){
+        cards.add(wildCard);
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
 }

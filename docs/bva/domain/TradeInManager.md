@@ -86,23 +86,39 @@ Input: collection with one infantry card, one calvary card, and one infantry car
 Output: true
 
 ### Test value 12
+Input: size 3 collection with only infantry
+
+Output: true
+
+### Test value 13
+Input: size 3 collection with only cavalry
+
+Output: true
+
+### Test value 14
+Input: size 3 collection with only artillery
+
+Output: true
+
+### Test value 15
 Input: collection with two wild cards and two infantry cards
 
 Output: false
 
-### Test value 13
+### Test value 16
 Input: collection with two infantry cards and two calvary cards
 
 Output: false
 
-### Test value 14
+### Test value 17
 Input: collection with one artillery card and three infantry cards
 
 Output: false
 
-### Test value 15
+### Test value 18
 Input: collection with one wild card, one infantry card, one calvary card, and one infantry card
 
+Output: false
 
 
 # method: verifyValidCombo():boolean
@@ -193,21 +209,36 @@ Input: collection with one infantry card, one calvary card, and one infantry car
 Output: true
 
 ### Test value 12
+Input: size 3 collection with only infantry
+
+Output: true
+
+### Test value 13
+Input: size 3 collection with only cavalry
+
+Output: true
+
+### Test value 14
+Input: size 3 collection with only artillery
+
+Output: true
+
+### Test value 15
 Input: collection with two wild cards and two infantry cards
 
 Output: false
 
-### Test value 13
+### Test value 16
 Input: collection with two infantry cards and two calvary cards
 
 Output: false
 
-### Test value 14
+### Test value 17
 Input: collection with one artillery card and three infantry cards
 
 Output: false
 
-### Test value 15
+### Test value 18
 Input: collection with one wild card, one infantry card, one calvary card, and one infantry card
 
 Output: false
