@@ -63,6 +63,8 @@ public class TradeInManagerTest {
         EasyMock.verify(artilleryCard);
     }
 
+
+    //test for verifyValidCombo()
     @Test
     public void test00_verifyValidCombo_emptySet_expectedFalse(){
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
@@ -200,6 +202,7 @@ public class TradeInManagerTest {
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
+
     //test for calculateNumNewPieces()
     @Test
     public void test18_calculateNumNewPieces_0TradedInSets_expected4(){
@@ -285,6 +288,13 @@ public class TradeInManagerTest {
 
         int actual = tradeMgrUnderTest.calculateNumNewPieces();
         assertEquals(expected, actual);
+    }
+
+
+    //test for updateSetsTradedIn()
+    @Test
+    public void test27_updateSetsTradeIn_0TradedInSets_expected1(){
+        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
     }
 
 }

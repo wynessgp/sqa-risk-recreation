@@ -323,30 +323,30 @@ Output: Boolean
 ## BVA Step 3
 Input: 0, 1, >1, MaxInt -1, MaxInt
 
-Output: integers >= 1, exception
+Output: true or false
 
 ## BVA Step 4
 ### Test value 1
 Input: 0
 
-Output: 1
+Output: true
 
 ### Test value 2
 Input: 1
 
-Output: 2
+Output: true
 
 ### Test value 3
 Input: 10
 
-Output: 11
+Output: true
 
 ### Test value 4
 Input: MaxInt - 1
 
-Output: MaxInt
+Output: true
 
 ### Test value 5
 Input: MaxInt
 
-Output: exception
+Output: false
