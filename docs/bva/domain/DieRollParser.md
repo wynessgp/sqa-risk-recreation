@@ -79,7 +79,7 @@ Output: Collection
   - amountOfDiceToRoll = 4
   - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 3]
+  - message: "Valid amount of dice is in the range [1, 3]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll = 1
