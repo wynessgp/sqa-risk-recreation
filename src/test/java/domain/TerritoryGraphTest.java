@@ -287,4 +287,17 @@ public class TerritoryGraphTest {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         assertNull(territoryGraph.getTerritory(territoryType));
     }
+
+    @ParameterizedTest()
+    @MethodSource("territoryGenerator")
+    public void test12_getTerritory_withExistingMapEntry(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Territory territory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+        EasyMock.replay(territory);
+
+        territoryGraph.addNewTerritory(territory);
+        assertEquals(territory, territoryGraph.getTerritory(territoryType));
+        EasyMock.verify(territory);
+    }
 }

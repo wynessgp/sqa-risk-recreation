@@ -37,6 +37,6 @@ public class TerritoryGraph {
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
-        return null;
+        return territoryTypeToObject.getOrDefault(territoryType, null);
     }
 }
