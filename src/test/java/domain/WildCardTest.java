@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,7 +24,7 @@ public class WildCardTest {
     
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void Test00_matchesTerritory_allDistinctTerritories(TerritoryType territory) {
+    public void test00_matchesTerritory_allDistinctTerritories(TerritoryType territory) {
         // make the unit under test
         Card unitUnderTest = new WildCard();
         
@@ -39,7 +38,7 @@ public class WildCardTest {
 
     @ParameterizedTest
     @MethodSource("pieceGenerator")
-    public void Test01_matchesPieceType_allDifferentPieceTypes(PieceType piece) {
+    public void test01_matchesPieceType_allDifferentPieceTypes(PieceType piece) {
         // make the unit under test
         Card unitUnderTest = new WildCard();
 
@@ -50,7 +49,7 @@ public class WildCardTest {
     }
 
     @Test
-    public void Test03_isWild_singleWildCard() {
+    public void test03_isWild_singleWildCard() {
         // make the unit under test
         Card unitUnderTest = new WildCard();
 
