@@ -118,10 +118,26 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test08_verifyValidCombo_oneWildSetOf3_expectedFalse(){
+    public void test08_verifyValidCombo_oneWildSetOf3_expectedTrue(){
         cards.add(wildCard);
         cards.add(infantryCard);
         cards.add(infantryCard);
+        assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test09_verifyValidCombo_twoWildSetOf3_expectedTrue(){
+        cards.add(wildCard);
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test010_verifyValidCombo_oneOfEachSetOf3_expectedTrue(){
+        cards.add(infantryCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
