@@ -259,6 +259,17 @@ public class TerritoryGraphTest {
 
     @Test
     public void test09_addNewAdjacency_withCompleteGraph() {
+        TerritoryGraph territoryGraph = generateCompleteGraph();
+        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
+            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+                if (endingTerritory != startingTerritory) {
+                    assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
+                }
+            }
+        }
+    }
+
+    public TerritoryGraph generateCompleteGraph() {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         for (TerritoryType startingTerritoryType : Set.of(TerritoryType.values())) {
             Territory startingTerritory = EasyMock.createMock(Territory.class);
@@ -280,14 +291,7 @@ public class TerritoryGraphTest {
                 }
             }
         }
-
-        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
-            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
-                if (endingTerritory != startingTerritory) {
-                    assertFalse(territoryGraph.addNewAdjacency(startingTerritory, endingTerritory));
-                }
-            }
-        }
+        return territoryGraph;
     }
 
     @ParameterizedTest
@@ -416,5 +420,19 @@ public class TerritoryGraphTest {
 
         Set<Territory> adjacent = territoryGraph.findAdjacentTerritories(territoryType);
         assertTrue(adjacent.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test19_findAdjacentTerritories_withCompleteGraph(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = generateCompleteGraph();
+        Set<Territory> adjacent = territoryGraph.findAdjacentTerritories(territoryType);
+        assertEquals(TerritoryType.values().length - 1, adjacent.size());
+        for (TerritoryType adjacentTerritoryType : TerritoryType.values()) {
+            if (adjacentTerritoryType != territoryType) {
+                Territory adjacentTerritory = territoryGraph.getTerritory(adjacentTerritoryType);
+                assertTrue(adjacent.contains(adjacentTerritory));
+            }
+        }
     }
 }
