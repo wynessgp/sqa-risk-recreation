@@ -281,13 +281,12 @@ public class TradeInManagerTest {
 
     @Test
     public void test26_calculateNumNewPieces_MaxValPlusOneTradedInSets_expectedException(){
-        int expected = Integer.MIN_VALUE+2;
-        for(int i = 0; i < 429496732; i++){
+        for(int i = 0; i < 429496731; i++){
             tradeMgrUnderTest.updateSetsTradedIn();
         }
-
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
+        assertThrows(ArithmeticException.class, () -> {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        });
     }
 
 
