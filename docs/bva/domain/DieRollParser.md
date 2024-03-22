@@ -1,0 +1,318 @@
+# method: `buildDiceLists(): boolean`
+
+## BVA Step 1
+Input: N/A
+
+Output: A yes/no answer whether the dice lists for attacker, defender were properly initialized.
+
+## BVA Step 2
+Input: N/A
+
+Output: Boolean (0, 1)
+
+## BVA Step 3
+Input: N/A
+
+Output: Boolean
+- 0 (should never happen)
+- 1
+
+## BVA Step 4
+### Test 1:
+- Output = 1 (true)
+
+# method: `rollAttackerDice(amountOfDiceToRoll: int): List<Integer>`
+
+## BVA Step 1
+Input: The amount of dice the attacker is rolling
+
+Output: The results of the dice rolls, sorted in non-increasing order.
+
+## BVA Step 2
+Input: 
+- amountOfDiceToRoll: Counts [1, 3] <!-- consider more -->
+- Underlying attacker dice storage: Collection (of pointers)
+
+Output:
+- A sorted collection (structured collection?)
+
+## BVA Step 3
+Input: 
+- amountOfDiceToRoll: Counts
+  - -1 (error case)
+  - 0 (error case)
+  - 1 
+  - \> 1
+  - Maximum possible value: 3
+  - One more than max possible value: 4 (error case)
+- Underlying dice storage: Collection
+  - An empty collection (error case)
+  - Contains exactly one element (error case if amountDice exceeds)
+  - Contains \> 1 element (error case if amountDice exceeds)
+  - Maximum possible size (Limited to 3 by RISK rules) <!-- Consider expanding for flex -->
+  - Using the first element (index 0)
+  - Using the last element (index 2)
+
+Output: Collection
+- An empty collection (shouldn't be possible; error case)
+- Contains exactly one element 
+- Contains \> 1 element
+- Maximum possible size (Limited to 3 by RISK rules)
+- Is sorted in non-increasing order 
+- Unsorted (can't set, error case)
+
+## BVA Step 4
+### Test 1:
+- Input:
+  - amountOfDiceToRoll = -1 
+  - Collection = []
+- Output: IllegalArgumentException 
+  - message: "Valid amount of dice is in the range [1, 3]"
+### Test 2:
+- Input:
+  - amountOfDiceToRoll = 0
+  - Collection = []
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]"
+### Test 3:
+- Input:
+  - amountOfDiceToRoll = 4
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]
+### Test 4:
+- Input:
+  - amountOfDiceToRoll = 1
+  - Collection = []
+- Output: IllegalArgumentException
+  - message: "Not enough dice to fulfill requested amount to roll"
+### Test 5:
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die]
+- Output: IllegalArgumentException 
+  - message: "Not enough dice to fulfill requested amount to roll"
+### Test 6:
+- Input:
+  - amountOfDiceToRoll = 3
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
+- Output: Collection = [3, 2, 1]
+### Test 7:
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die, valid 6-sided die]
+- Output: Collection = [4, 4]
+### Test 8:
+- Input:
+  - amountOfDiceToRoll = 1
+  - Collection = [valid 6-sided die]
+- Output: Collection = [3]
+
+# method: `rollDefenderDice(amountOfDiceToRoll: int): List<Integer>`
+
+## BVA Step 1
+Input: The amount of dice the defender is rolling
+
+Output: The results of the dice rolls, sorted in non-increasing order.
+
+## BVA Step 2
+Input: 
+- amountOfDiceToRoll: Counts [1, 2]
+- Underlying attacker dice storage: Collection
+
+Output:
+- A sorted collection (structured collection?)
+
+## BVA Step 3
+Input:
+- amountOfDiceToRoll: Counts
+  - -1 (error case)
+  - 0 (error case)
+  - 1
+  - Maximum possible value: 2
+  - One more than max possible value: 3 (error case)
+- Underlying dice storage: Collection
+  - An empty collection (error case)
+  - Contains exactly one element (error case if amountDice exceeds)
+  - Contains \> 1 element (error case if amountDice exceeds)
+  - Maximum possible size (Limited to 2 by RISK rules) <!-- Consider expanding for flexiblity -->
+  - Using the first element (index 0)
+  - Using the last element (index 1)
+
+Output: Collection
+- An empty collection (shouldn't be possible; error case)
+- Contains exactly one element
+- Contains \> 1 element
+- Maximum possible size (Limited to 2 by RISK rules)
+- Is sorted in non-increasing order
+- Unsorted (can't set, error case)
+
+## BVA Step 4
+### Test 1:
+- Input:
+  - amountOfDiceToRoll = -1
+  - Collection = []
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+### Test 2:
+- Input:
+  - amountOfDiceToRoll = 0
+  - Collection = []
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+### Test 3:
+- Input:
+  - amountOfDiceToRoll = 3
+  - Collection = [valid 6-sided die, valid 6-sided die]
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]
+### Test 4:
+- Input:
+  - amountOfDiceToRoll = 1
+  - Collection = []
+- Output: IllegalArgumentException
+  - message: "Not enough dice to fulfill requested amount to roll"
+### Test 5:
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die]
+- Output: IllegalArgumentException
+  - message: "Not enough dice to fulfill requested amount to roll"
+### Test 6:
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die, valid 6-sided die]
+- Output: Collection = [3, 2]
+### Test 7:
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die, valid 6-sided die]
+- Output: Collection = [4, 4]
+### Test 8:
+- Input:
+  - amountOfDiceToRoll = 1
+  - Collection = [valid die]
+- Output: Collection = [3]
+
+# method: `generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>`
+
+## BVA Step 1
+Input: The results of both the defender and attacker rolling their respective dice in the current battle
+
+Output: The RISK rules determined result for what happened in each individual dice battle
+- Namely, do a pairwise comparison of each side's dice when sorted in non-increasing order. 
+  - If the defender's roll \>= attacker's roll, the defender wins that battle.
+  - If the defender's roll \< attacker's roll, the attacker wins that battle.
+  - This should be done until the defender runs out of dice to pair with attacker dice.
+
+## BVA Step 2
+Input: 
+- defenderRolls: Collection
+- attackerRolls: Collection
+
+Output:
+- (overall) Collection
+- BattleResult: Cases
+
+## BVA Step 3
+Input: 
+- defenderRolls, attackerRolls (Collection):
+  - An empty collection (error case)
+  - Contains exactly one element
+  - Contains \> 1 element
+  - Maximum possible size (Limit of 2 for defenderRolls, 3 for attackerRolls by RISK rules)
+  - Is sorted in non-increasing order (error case)
+  - Unsorted (error case)
+  - Duplicate entries
+  - No duplicates
+
+Output:
+- Collection:
+  - An empty collection (shouldn't be possible; error case)
+  - Contains exactly one element
+  - Maximum possible size (Limited to 2 by RISK rules; or number of defenderDice)
+  - Has duplicates
+  - No duplicates
+- BattleResult (Cases):
+  - The 1st possibility: ATTACKER_VICTORY
+  - The 2nd possibility: DEFENDER_VICTORY
+  - The 0th, 3rd possibility: (can't set, won't be considered due to it being an Enum)
+
+## BVA Step 4
+### Test 1:
+- Input:
+  - defenderRolls = [], attackerRolls = []
+- Output: IllegalArgumentException
+  - message: "Both arguments must have at least 1 element"
+### Test 2:
+- Input:
+  - defenderRolls = [], attackerRolls = [5]
+- Output: IllegalArgumentException
+  - message: "Both arguments must have at least 1 element"
+### Test 3:
+- Input:
+  - defenderRolls = [5], attackerRolls = []
+- Output: IllegalArgumentException
+  - message: "Both arguments must have at least 1 element"
+### Test 4:
+- Input:
+  - defenderRolls = [5], attackerRolls = [5]
+- Output: 
+  - Collection = [DEFENDER_VICTORY]
+### Test 5:
+- Input:
+  - defenderRolls = [6, 6], attackerRolls = [1]
+- Output:
+  - Collection = [DEFENDER_VICTORY]
+### Test 6:
+- Input:
+  - defenderRolls = [6, 6], attackerRolls = [4, 3]
+- Output:
+  - Collection = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+### Test 7:
+- Input:
+  - defenderRolls = [6, 6], attackerRolls = [5, 3, 2]
+- Output:
+  - Collection = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+### Test 8:
+- Input:
+  - defenderRolls = [6, 2], attackerRolls = [4, 4, 3]
+- Output:
+  - Collection = [DEFENDER_VICTORY, ATTACKER_VICTORY]
+### Test 9:
+- Input:
+  - defenderRolls = [5, 4], attackerRolls = [6, 2, 1]
+- Output:
+  - Collection = [ATTACKER_VICTORY, DEFENDER_VICTORY]
+### Test 10:
+- Input:
+  - defenderRolls = [3], attackerRolls = [4]
+- Output: 
+  - Collection = [ATTACKER_VICTORY]
+### Test 11:
+- Input:
+  - defenderRolls = [5, 5], attackerRolls = [6]
+- Output: 
+  - Collection = [ATTACKER_VICTORY]
+### Test 12:
+- Input:
+  - defenderRolls = [2], attackerRolls = [4, 4]
+- Output:
+  - Collection = [ATTACKER_VICTORY]
+### Test 13:
+- Input:
+  - defenderRolls = [2], attackerRolls = [3, 4, 5]
+- Output:
+  - Collection = [ATTACKER_VICTORY]
+### Test 14:
+- Input:
+  - defenderRolls = [3, 4], attackerRolls = [4, 5]
+- Output:
+  - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+### Test 15:
+- Input:
+  - defenderRolls = [2, 3], attackerRolls = [4, 4, 6]
+- Output:
+  - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+
+
