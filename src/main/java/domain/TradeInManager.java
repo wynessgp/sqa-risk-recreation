@@ -48,7 +48,7 @@ public class TradeInManager {
     }
 
     public boolean updateSetsTradedIn(){
-        if(this.setsTradedInSoFar >= Integer.MAX_VALUE - 1) return false; //add 1 would overflow
+        if(this.setsTradedInSoFar >= 14) return false; //add 1 would overflow
         this.setsTradedInSoFar++;
         return true;
     }
