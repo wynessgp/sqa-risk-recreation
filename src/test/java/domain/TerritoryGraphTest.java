@@ -1,18 +1,24 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class TerritoryGraphTest {
+    private static Set<Arguments> territoryCombinations;
+
     private static Stream<Arguments> territoryGenerator() {
         Set<TerritoryType> territories = Set.of(TerritoryType.values());
         return territories.stream().map(Arguments::of);
@@ -121,15 +127,32 @@ public class TerritoryGraphTest {
     }
 
     private static Stream<Arguments> territoryCombinationGenerator() {
-        Set<Arguments> territories = new HashSet<>();
-        for (TerritoryType startingTerritory : Set.of(TerritoryType.values())) {
-            for (TerritoryType endingTerritory : Set.of(TerritoryType.values())) {
+        if (territoryCombinations == null) {
+            performTerritoryCombinationGeneration();
+        }
+        return territoryCombinations.stream();
+    }
+
+    private static void performTerritoryCombinationGeneration() {
+        Set<Set<TerritoryType>> territoriesNoDuplicates = new HashSet<>();
+        for (TerritoryType startingTerritory : TerritoryType.values()) {
+            for (TerritoryType endingTerritory : TerritoryType.values()) {
                 if (endingTerritory != startingTerritory) {
-                    territories.add(Arguments.of(startingTerritory, endingTerritory));
+                    Set<TerritoryType> territoryPair = new HashSet<>();
+                    territoryPair.add(startingTerritory);
+                    territoryPair.add(endingTerritory);
+                    territoriesNoDuplicates.add(territoryPair);
                 }
             }
         }
-        return Stream.of(territories.toArray(Arguments[]::new));
+        Set<Arguments> territoryArguments = new HashSet<>();
+        for (Set<TerritoryType> territoryPair : territoriesNoDuplicates) {
+            Iterator<TerritoryType> iterator = territoryPair.iterator();
+            TerritoryType startingTerritoryType = iterator.next();
+            TerritoryType endingTerritoryType = iterator.next();
+            territoryArguments.add(Arguments.of(startingTerritoryType, endingTerritoryType));
+        }
+        territoryCombinations = territoryArguments;
     }
 
     @ParameterizedTest
