@@ -259,7 +259,7 @@ Output: Count (cases)
 ## BVA Step 3
 Input: 0, 1, 2, 3, 4, 5, 6, maximum possible value 429496731 (theoretically: (Integer.MaxInt-15)/5 + 5), max value +1 = 429496732
 
-Output: 4, 6, 8, 10, 12, 15, 20, greatest multiple of 5 less than MaxInt = 2147483645, exception
+Output: 4, 6, 8, 10, 12, 15, 20, greatest multiple of 5 less than MaxInt = 2147483645, MinInt + 2 (wrap around)
 
 ## BVA Step 4
 ### Test value 1
@@ -305,7 +305,7 @@ Output: 2147483645
 ### Test value 9
 Input: 429496732
 
-Output: exception
+Output: MinInt + 2
 
 
 # method: updateSetsTradedIn():boolean

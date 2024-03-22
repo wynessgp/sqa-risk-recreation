@@ -276,4 +276,15 @@ public class TradeInManagerTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void test26_calculateNumNewPieces_MaxValPlusOneTradedInSets_expectedNegativeInt(){
+        int expected = Integer.MIN_VALUE+2;
+        for(int i = 0; i < 429496732; i++){
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
 }
