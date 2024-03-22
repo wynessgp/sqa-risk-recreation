@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.easymock.EasyMock;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -170,6 +169,33 @@ public class TradeInManagerTest {
         cards.add(wildCard);
         cards.add(wildCard);
         cards.add(infantryCard);
+        cards.add(infantryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test15_verifyValidCombo_twoAndTwoSetOf4_expectedFalse(){
+        cards.add(artilleryCard);
+        cards.add(artilleryCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test16_verifyValidCombo_oneAndThreeSetOf4_expectedFalse(){
+        cards.add(artilleryCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test17_verifyValidCombo_oneOfEachWithWildSetOf4_expectedFalse(){
+        cards.add(wildCard);
+        cards.add(artilleryCard);
+        cards.add(cavalryCard);
         cards.add(infantryCard);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
