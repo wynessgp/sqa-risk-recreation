@@ -360,4 +360,17 @@ public class TerritoryGraphTest {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         assertTrue(territoryGraph.findAdjacentTerritories(territoryType).isEmpty());
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test16_findAdjacentTerritories_withOneTerritoryNoEdges(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Territory territory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+        EasyMock.replay(territory);
+
+        territoryGraph.addNewTerritory(territory);
+        assertTrue(territoryGraph.findAdjacentTerritories(territoryType).isEmpty());
+        EasyMock.verify(territory);
+    }
 }
