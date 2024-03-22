@@ -266,4 +266,14 @@ public class TradeInManagerTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void test25_calculateNumNewPieces_MaxValTradedInSets_expected2147483645(){
+        int expected = 2147483645;
+        for(int i = 0; i < 429496731; i++){
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
+        assertEquals(expected, actual);
+    }
+
 }
