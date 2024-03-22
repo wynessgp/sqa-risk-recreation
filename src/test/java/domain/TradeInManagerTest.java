@@ -201,21 +201,18 @@ public class TradeInManagerTest {
     }
 
     //test for calculateNumNewPieces()
-    //note: this test ignores testing the cards parameter passed in entirly
-    //      because the return value should only be based on the number of
-    //      cards traded in so far. The validity of attempted cards should
-    //      be checked by verifyValidCombo()
     @Test
     public void test18_calculateNumNewPieces_0TradedInSets_expected4(){
         int expected = 4;
-        int actual = tradeMgrUnderTest.calculateNumNewPieces(cards);
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
         assertEquals(expected, actual);
     }
 
     @Test
     public void test19_calculateNumNewPieces_1TradedInSets_expected4(){
         int expected = 6;
-        int actual = tradeMgrUnderTest.calculateNumNewPieces(cards);
+        tradeMgrUnderTest.updateSetsTradedIn();
+        int actual = tradeMgrUnderTest.calculateNumNewPieces();
         assertEquals(expected, actual);
     }
 

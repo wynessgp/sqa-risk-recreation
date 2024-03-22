@@ -36,7 +36,18 @@ public class TradeInManager {
         return false;
     }
 
-    public int calculateNumNewPieces(List<Card> attemptedCards){
-        return 4;
+
+    public int calculateNumNewPieces(){
+        if(this.setsTradedInSoFar == 0){
+            return 4;
+        }
+        else{
+            return 6;
+        }
+    }
+
+    public boolean updateSetsTradedIn(){
+        this.setsTradedInSoFar++;
+        return true;
     }
 }
