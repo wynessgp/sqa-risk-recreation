@@ -4,15 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Random;
-
 import org.easymock.EasyMock;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class DieTest {
-    
+
     @Test
     public void test00_nullPointerRandomizer_expectNullPointerException() {
         // variable setup
@@ -21,8 +19,8 @@ public class DieTest {
         // perform the operation
         String expectedMessage = "Randomizer object is null, cannot roll Die!";
         Exception exception = assertThrows(NullPointerException.class,
-                                           () -> unitUnderTest.rollSingleDie(null));
-        
+                () -> unitUnderTest.rollSingleDie(null));
+
         // assert
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -30,7 +28,7 @@ public class DieTest {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 6})
-    public void test01_validRandomPointer_expectBVASuggestedValues(int forcedRollForMock) {
+    public void test01_validRandomPointer_expectBvaSuggestedValues(int forcedRollForMock) {
         // variable setup: note that JDK11 doesn't have the lower bounded nextInt,
         // so we have to offset the max and then re-add in the minimum later.
         int maximumPossibleRoll = 6;
@@ -38,9 +36,11 @@ public class DieTest {
 
         // Record
         Random random = EasyMock.mock(Random.class);
-        // this line is a bit weird for the 6 case, as we'll be limited to 5 as the max in rand.nextInt, 
-        // but we'll expect it to return 6 (since the die is technically capable of it)
-        // Note that we also need to return forcedRoll - 1, as we add the lower bound due to JDK11's restrictions.
+        // this line is a bit weird for the 6 case, as we'll be limited to 5 as the max
+        // in rand.nextInt, but we'll expect it to return 6 (since the die is technically
+        // capable of it)
+        // Note that we also need to return forcedRoll - 1, as we add the lower bound due
+        // to JDK11's restrictions.
         EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1))
                 .andReturn(forcedRollForMock - minimumPossibleRoll);
 
@@ -66,7 +66,8 @@ public class DieTest {
         // Record
         Random random = EasyMock.mock(Random.class);
 
-        // Note that we also need to return forcedRoll - 1, as we add the lower bound due to JDK11's restrictions.
+        // Note that we also need to return forcedRoll - 1, as we add the lower bound due to
+        // JDK11's restrictions.
         EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1))
                 .andReturn(expected - minimumPossibleRoll);
 
