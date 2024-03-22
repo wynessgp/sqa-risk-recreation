@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.Set;
+import java.util.List;
 
 public class TradeInManager {
 
@@ -8,7 +9,12 @@ public class TradeInManager {
 
     }
 
-    public boolean verifyValidCombo(Set<Card> cards) {
+    public boolean verifyValidCombo(List<Card> cards) {
+        if(cards.size() == 3){
+            for(Card card : cards){
+                if(card.isWild()) return true;
+            }
+        }
         return false;
     }
 }

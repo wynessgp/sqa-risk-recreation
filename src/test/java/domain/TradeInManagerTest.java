@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.easymock.EasyMock;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TradeInManagerTest {
 
     private TradeInManager tradeMgrUnderTest;
-    private Set<Card> cards;
+    private List<Card> cards;
     private Card wildCard, infantryCard, cavalryCard, artilleryCard;
 
     //mock setup
@@ -21,15 +23,34 @@ public class TradeInManagerTest {
     public void setUp() {
         tradeMgrUnderTest = new TradeInManager();
 
-        cards = new HashSet<>();
+        cards = new ArrayList<>();
         wildCard = EasyMock.createMock(Card.class);
         infantryCard = EasyMock.createMock(Card.class);
         cavalryCard = EasyMock.createMock(Card.class);
         artilleryCard = EasyMock.createMock(Card.class);
 
+        //wild card
         EasyMock.expect(wildCard.isWild()).andReturn(true).anyTimes();
+        EasyMock.expect(wildCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
+        EasyMock.expect(wildCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
+        EasyMock.expect(wildCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
+
+        //infantry card
+        EasyMock.expect(infantryCard.isWild()).andReturn(false).anyTimes();
         EasyMock.expect(infantryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(true).anyTimes();
+        EasyMock.expect(infantryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
+        EasyMock.expect(infantryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
+
+        //calvary card
+        EasyMock.expect(cavalryCard.isWild()).andReturn(false).anyTimes();
+        EasyMock.expect(cavalryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
         EasyMock.expect(cavalryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(true).anyTimes();
+        EasyMock.expect(cavalryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
+
+        //artillery card
+        EasyMock.expect(artilleryCard.isWild()).andReturn(false).anyTimes();
+        EasyMock.expect(artilleryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
+        EasyMock.expect(artilleryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
         EasyMock.expect(artilleryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(true).anyTimes();
 
         EasyMock.replay(wildCard, infantryCard, cavalryCard, artilleryCard);
@@ -94,6 +115,14 @@ public class TradeInManagerTest {
         cards.add(cavalryCard);
         cards.add(cavalryCard);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test08_verifyValidCombo_oneWildSetOf3_expectedFalse(){
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard);
+        assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
 }
