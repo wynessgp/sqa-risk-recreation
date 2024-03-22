@@ -321,7 +321,7 @@ Input: Count
 Output: Boolean
 
 ## BVA Step 3
-Input: 0, 1, >1, MaxInt -1, MaxInt
+Input: 0, 1, >1, 13 (max - 1), 14 (max)
 
 Output: true or false
 
@@ -342,11 +342,11 @@ Input: 10
 Output: true
 
 ### Test value 4
-Input: MaxInt - 1
+Input: 13
 
 Output: true
 
 ### Test value 5
-Input: MaxInt
+Input: 14
 
 Output: false

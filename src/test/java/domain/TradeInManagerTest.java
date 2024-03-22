@@ -312,7 +312,7 @@ public class TradeInManagerTest {
 
     @Test
     public void test30_updateSetsTradeIn_MaxIntMinusOneTradedInSets_expectedTrue(){
-        for(int i = 0; i < Integer.MAX_VALUE - 2; i++){
+        for(int i = 0; i < 13; i++){
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
@@ -320,7 +320,7 @@ public class TradeInManagerTest {
 
     @Test
     public void test31_updateSetsTradeIn_MaxIntTradedInSets_expectedFalse(){
-        for(int i = 0; i < Integer.MAX_VALUE - 1; i++){
+        for(int i = 0; i < 14; i++){
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         assertFalse(tradeMgrUnderTest.updateSetsTradedIn());
