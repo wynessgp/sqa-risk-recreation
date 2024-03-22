@@ -325,7 +325,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test13_getTerritory_withExistingMapEntry_doesNotMatch(TerritoryType existingTerritoryType) {
+    public void test13_getTerritory_withExistingMapEntry_doesNotMatch(
+            TerritoryType existingTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         Territory existingTerritory = EasyMock.createMock(Territory.class);
         EasyMock.expect(existingTerritory.getTerritoryType()).andReturn(existingTerritoryType);
@@ -338,5 +339,18 @@ public class TerritoryGraphTest {
             }
         }
         EasyMock.verify(existingTerritory);
+    }
+
+    @Test
+    public void test14_getTerritory_withAllEntries() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            Territory territory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+            EasyMock.replay(territory);
+            territoryGraph.addNewTerritory(territory);
+            assertEquals(territory, territoryGraph.getTerritory(territoryType));
+            EasyMock.verify(territory);
+        }
     }
 }
