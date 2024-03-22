@@ -41,9 +41,7 @@ public class TradeInManager {
         if(this.setsTradedInSoFar < 5){
             return 2*this.setsTradedInSoFar + 4;
         }
-        else{
-            return 15;
-        }
+        else return (this.setsTradedInSoFar - 5) * 5 + 15;
     }
 
     public boolean updateSetsTradedIn(){
