@@ -17,7 +17,7 @@ public class TradeInManagerTest {
     private List<Card> cards;
     private Card wildCard, infantryCard, cavalryCard, artilleryCard;
 
-    //mock setup
+    //mock setup for testing verifyValidCombo() and startTrade()
     @BeforeEach
     public void setUp() {
         tradeMgrUnderTest = new TradeInManager();
@@ -325,5 +325,9 @@ public class TradeInManagerTest {
         }
         assertFalse(tradeMgrUnderTest.updateSetsTradedIn());
     }
+
+
+    //test for startTrade()
+
 
 }
