@@ -31,6 +31,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/24
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/45
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/46
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/49
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/27
@@ -57,6 +58,8 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/45
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/46
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/39
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/49
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/50
 
 ### Team member: Harvey Yang
 #### PR created:
@@ -78,4 +81,4 @@
 - N/A
 
 #### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/47
