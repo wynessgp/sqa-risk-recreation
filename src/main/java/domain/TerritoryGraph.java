@@ -52,7 +52,7 @@ public class TerritoryGraph {
     }
 
     public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
-        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()) {
+        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty() || adjacencies.contains(territoryType)) {
             return false;
         }
         Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
