@@ -247,4 +247,35 @@ public class DieRollParserTest {
         assertEquals(List.of(3, 2), actual);
     }
 
+    @Test
+    public void test10_rollDefenderDice_rollTwoDiceIdenticalValues_expectSortedListOfSizeTwo() {
+        // variable setup
+        Random random = new Random();
+
+        Die firstDie = EasyMock.mock(Die.class);
+        Die secondDie = EasyMock.mock(Die.class);
+
+        // record - note these are not in sorted order!
+        EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(4);
+        EasyMock.expect(secondDie.rollSingleDie(random)).andReturn(4);
+
+        // provide the underlying dice collection to our class.
+        DieRollParser unitUnderTest = new DieRollParser(random,
+                null, List.of(firstDie, secondDie));
+
+        // replay
+        EasyMock.replay(firstDie, secondDie);
+
+        // do regular JUnit test calculations
+        List<Integer> actual = unitUnderTest.rollDefenderDice(2);
+
+        // verify
+        EasyMock.verify(firstDie, secondDie);
+
+        // do regular JUnit assertions
+        assertEquals(2, actual.size());
+        assertTrue(isSortedInNonIncreasingOrder(actual));
+        assertEquals(List.of(4, 4), actual);
+    }
+
 }
