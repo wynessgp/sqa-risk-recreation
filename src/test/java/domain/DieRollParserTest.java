@@ -87,7 +87,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                List.of(firstDie, secondDie, thirdDie));
+                List.of(firstDie, secondDie, thirdDie), null);
 
         // replay
         EasyMock.replay(firstDie, secondDie, thirdDie);
@@ -118,7 +118,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                List.of(firstDie, secondDie));
+                List.of(firstDie, secondDie), null);
 
         // replay
         EasyMock.replay(firstDie, secondDie);
@@ -146,7 +146,7 @@ public class DieRollParserTest {
         EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(3);
 
         // provide the underlying dice collection to our class.
-        DieRollParser unitUnderTest = new DieRollParser(random, List.of(firstDie));
+        DieRollParser unitUnderTest = new DieRollParser(random, List.of(firstDie), null);
 
         // replay
         EasyMock.replay(firstDie);
@@ -214,6 +214,37 @@ public class DieRollParserTest {
         // assert
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void test09_rollDefenderDice_rollTwoDice_expectSortedListOfSizeTwo() {
+        // variable setup
+        Random random = new Random();
+
+        Die firstDie = EasyMock.mock(Die.class);
+        Die secondDie = EasyMock.mock(Die.class);
+
+        // record - note these are not in sorted order!
+        EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(2);
+        EasyMock.expect(secondDie.rollSingleDie(random)).andReturn(3);
+
+        // provide the underlying dice collection to our class.
+        DieRollParser unitUnderTest = new DieRollParser(random,
+                null, List.of(firstDie, secondDie));
+
+        // replay
+        EasyMock.replay(firstDie, secondDie);
+
+        // do regular JUnit test calculations
+        List<Integer> actual = unitUnderTest.rollDefenderDice(2);
+
+        // verify
+        EasyMock.verify(firstDie, secondDie);
+
+        // do regular JUnit assertions
+        assertEquals(2, actual.size());
+        assertTrue(isSortedInNonIncreasingOrder(actual));
+        assertEquals(List.of(3, 2), actual);
     }
 
 }

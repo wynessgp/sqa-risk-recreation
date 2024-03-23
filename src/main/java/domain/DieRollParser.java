@@ -8,7 +8,7 @@ import java.util.Random;
 public class DieRollParser {
 
     private final List<Die> attackerDice;
-    private List<Die> defenderDice;
+    private final List<Die> defenderDice;
     private final Random randomizer;
 
     public DieRollParser() {
@@ -17,10 +17,11 @@ public class DieRollParser {
         this.randomizer = new Random();
     }
 
-    // this method is to only be utilized for unit testing!
-    DieRollParser(Random randomizer, List<Die> attackerDice) {
+    // this constructor is to only be utilized for unit testing!
+    DieRollParser(Random randomizer, List<Die> attackerDice, List<Die> defenderDice) {
         this.randomizer = randomizer;
         this.attackerDice = attackerDice;
+        this.defenderDice = defenderDice;
     }
 
     public boolean buildDiceLists() {
@@ -59,7 +60,7 @@ public class DieRollParser {
         return rollResults;
     }
 
-    public void rollDefenderDice(int amountOfDiceToRoll) {
+    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
         if (amountOfDiceToRoll < 1 || amountOfDiceToRoll > 2) {
             throw new IllegalArgumentException("Valid amount of dice is in the range [1, 2]");
         }
@@ -68,5 +69,13 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "Not enough dice to fulfill requested amount to roll");
         }
+
+        List<Integer> rollResults = new ArrayList<>();
+        if (amountOfDiceToRoll == 2) {
+            rollResults.add(defenderDice.get(0).rollSingleDie(randomizer));
+            rollResults.add(defenderDice.get(1).rollSingleDie(randomizer));
+        }
+        rollResults.sort(Comparator.reverseOrder());
+        return rollResults;
     }
 }
