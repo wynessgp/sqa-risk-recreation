@@ -342,4 +342,17 @@ public class DieRollParserTest {
         assertEquals(expectedResult, unitUnderTest.validateSortIsInNonIncreasingOrder(list));
     }
 
+    @ParameterizedTest
+    @CsvSource({"6, 5, 1, true", "1, 3, 5, false"})
+    public void test15_validateSortIsInNonIncreasingOrder_listOfSizeThree_resultVaries(
+            int listElementOne, int listElementTwo, // gross!
+            int listElementThree, boolean expectedResult) {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+        List<Integer> list = List.of(listElementOne, listElementTwo, listElementThree);
+
+        // assert statement
+        assertEquals(expectedResult, unitUnderTest.validateSortIsInNonIncreasingOrder(list));
+    }
+
 }
