@@ -8,10 +8,11 @@ import java.util.Random;
 public class DieRollParser {
 
     private final List<Die> attackerDice;
-    private Random randomizer;
+    private final Random randomizer;
 
     public DieRollParser() {
         this.attackerDice = new ArrayList<>();
+        this.randomizer = new Random();
     }
 
     // this method is to only be utilized for unit testing!
@@ -21,12 +22,16 @@ public class DieRollParser {
     }
 
     public boolean buildDiceLists() {
+        for (int i = 0; i < 3; i++) {
+            attackerDice.add(new Die(6, 1));
+        }
         return true;
     }
 
+    // this method is only to be used for unit testing!
     boolean buildDiceLists(int numDiceToInitialize) {
         for (int i = 0; i < numDiceToInitialize; i++) {
-            attackerDice.add(new Die(1, 6));
+            attackerDice.add(new Die());
         }
         return true;
     }

@@ -162,4 +162,19 @@ public class DieRollParserTest {
         assertEquals(List.of(3), actual);
     }
 
+    @Test
+    public void test06_rollAttackerDice_rollTwoUnsetValueDice_expectSortedListOfSizeTwo() {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+
+        // ok, create the dice lists.
+        assertTrue(unitUnderTest.buildDiceLists());
+
+        // now attempt to roll the dice to ensure the UUT did its job
+        List<Integer> actual = unitUnderTest.rollAttackerDice(2);
+        // we don't care what the actual numbers are in the output; just that it's sorted.
+        assertEquals(2, actual.size());
+        assertTrue(isSortedInNonIncreasingOrder(actual));
+    }
+
 }
