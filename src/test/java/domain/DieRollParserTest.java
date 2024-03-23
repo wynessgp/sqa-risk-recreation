@@ -196,4 +196,24 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @CsvSource({"1, 0", "2, 1"})
+    public void test08_rollDefenderDice_notEnoughDiceInCollection_expectException(
+            int illegalInput, int numDiceToInitialize) {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+
+        // preliminary op:
+        assertTrue(unitUnderTest.buildDiceLists(numDiceToInitialize));
+
+        // perform the operation
+        String expectedMessage = "Not enough dice to fulfill requested amount to roll";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.rollDefenderDice(illegalInput));
+
+        // assert
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

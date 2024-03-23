@@ -8,10 +8,12 @@ import java.util.Random;
 public class DieRollParser {
 
     private final List<Die> attackerDice;
+    private List<Die> defenderDice;
     private final Random randomizer;
 
     public DieRollParser() {
         this.attackerDice = new ArrayList<>();
+        this.defenderDice = new ArrayList<>();
         this.randomizer = new Random();
     }
 
@@ -32,6 +34,9 @@ public class DieRollParser {
     boolean buildDiceLists(int numDiceToInitialize) {
         for (int i = 0; i < numDiceToInitialize; i++) {
             attackerDice.add(new Die());
+        }
+        for (int i = 0; i < numDiceToInitialize; i++) {
+            defenderDice.add(new Die());
         }
         return true;
     }
@@ -57,6 +62,11 @@ public class DieRollParser {
     public void rollDefenderDice(int amountOfDiceToRoll) {
         if (amountOfDiceToRoll < 1 || amountOfDiceToRoll > 2) {
             throw new IllegalArgumentException("Valid amount of dice is in the range [1, 2]");
+        }
+
+        if (amountOfDiceToRoll > this.defenderDice.size()) {
+            throw new IllegalArgumentException(
+                    "Not enough dice to fulfill requested amount to roll");
         }
     }
 }
