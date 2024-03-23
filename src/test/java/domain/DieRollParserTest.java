@@ -177,4 +177,23 @@ public class DieRollParserTest {
         assertTrue(isSortedInNonIncreasingOrder(actual));
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 3})
+    public void test07_rollDefenderDice_tooFewOrTooManyDice_expectException(int illegalInput) {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+
+        // preliminary operation:
+        assertTrue(unitUnderTest.buildDiceLists());
+
+        // perform the operation
+        String expectedMessage = "Valid amount of dice is in the range [1, 2]";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.rollDefenderDice(illegalInput));
+
+        // assert
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

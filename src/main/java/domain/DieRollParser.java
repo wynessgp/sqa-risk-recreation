@@ -53,4 +53,10 @@ public class DieRollParser {
         rollResults.sort(Comparator.reverseOrder());
         return rollResults;
     }
+
+    public void rollDefenderDice(int amountOfDiceToRoll) {
+        if (amountOfDiceToRoll < 1 || amountOfDiceToRoll > 2) {
+            throw new IllegalArgumentException("Valid amount of dice is in the range [1, 2]");
+        }
+    }
 }
