@@ -28,6 +28,9 @@ public class DieRollParser {
         for (int i = 0; i < 3; i++) {
             attackerDice.add(new Die(6, 1));
         }
+        for (int i = 0; i < 2; i++) {
+            defenderDice.add(new Die(6, 1));
+        }
         return true;
     }
 
