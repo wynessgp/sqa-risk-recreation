@@ -644,4 +644,14 @@ public class TerritoryGraphTest {
         Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(TerritoryType.ALASKA);
         assertEquals(41, actualAdjacencies.size());
     }
+
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test33_addSetOfAdjacencies_withCompleteGraph_oneInSet(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
+        TerritoryGraph territoryGraph = generateCompleteGraph();
+        Set<TerritoryType> adjacencies = new HashSet<>();
+        adjacencies.add(secondTerritoryType);
+        assertFalse(territoryGraph.addSetOfAdjacencies(firstTerritoryType, adjacencies));
+    }
 }
