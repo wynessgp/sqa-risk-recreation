@@ -320,4 +320,14 @@ public class DieRollParserTest {
         assertTrue(isSortedInNonIncreasingOrder(actual));
     }
 
+    @Test
+    public void test13_validateSortIsInNonIncreasingOrder_listOfSizeOne_expectTrue() {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+        List<Integer> list = List.of(1);
+
+        // assert statement
+        assertTrue(unitUnderTest.validateSortIsInNonIncreasingOrder(list));
+    }
+
 }
