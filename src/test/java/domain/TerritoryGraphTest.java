@@ -455,7 +455,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test22_addSetOfAdjacencies_withEmptyGraph_addRemainingTypes(TerritoryType territoryType) {
+    public void test22_addSetOfAdjacencies_withEmptyGraph_addRemainingTypes(
+            TerritoryType territoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         Set<TerritoryType> adjacencies = new HashSet<>(Set.of(TerritoryType.values()));
         adjacencies.remove(territoryType);
@@ -464,7 +465,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test23_addSetOfAdjacencies_withOneTerritory_emptyAdjSet(TerritoryType territoryType) {
+    public void test23_addSetOfAdjacencies_withOneTerritory_emptyAdjSet(
+            TerritoryType territoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         Territory territory = EasyMock.createMock(Territory.class);
         EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
@@ -478,7 +480,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test24_addSetOfAdjacencies_withDifferentTerritories_emptyAdjSet(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
+    public void test24_addSetOfAdjacencies_withDifferentTerritories_emptyAdjSet(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
         Territory territory = EasyMock.createMock(Territory.class);
         EasyMock.expect(territory.getTerritoryType()).andReturn(firstTerritoryType);
@@ -492,12 +495,13 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test25_addSetOfAdjacencies_withOneTerritory_addRemainingTypes(TerritoryType territoryType) {
-        TerritoryGraph territoryGraph = new TerritoryGraph();
+    public void test25_addSetOfAdjacencies_withOneTerritory_addRemainingTypes(
+            TerritoryType territoryType) {
         Territory territory = EasyMock.createMock(Territory.class);
         EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
         EasyMock.replay(territory);
 
+        TerritoryGraph territoryGraph = new TerritoryGraph();
         Set<TerritoryType> adjacencies = new HashSet<>(Set.of(TerritoryType.values()));
         adjacencies.remove(territoryType);
         territoryGraph.addNewTerritory(territory);
@@ -507,12 +511,13 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test26_addSetOfAdjacencies_withDifferentTerritories_setWithTerritoryFromGraph(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
-        TerritoryGraph territoryGraph = new TerritoryGraph();
+    public void test26_addSetOfAdjacencies_withDifferentTerritories_setWithTerritoryFromGraph(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
         Territory territory = EasyMock.createMock(Territory.class);
         EasyMock.expect(territory.getTerritoryType()).andReturn(firstTerritoryType);
         EasyMock.replay(territory);
 
+        TerritoryGraph territoryGraph = new TerritoryGraph();
         Set<TerritoryType> adjacencies = new HashSet<>();
         adjacencies.add(firstTerritoryType);
         territoryGraph.addNewTerritory(territory);
@@ -522,8 +527,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test27_addSetOfAdjacencies_withTwoVerticesNoEdges(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
-        TerritoryGraph territoryGraph = new TerritoryGraph();
+    public void test27_addSetOfAdjacencies_withTwoVerticesNoEdges(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
         Territory firstTerritory = EasyMock.createMock(Territory.class);
         EasyMock.expect(firstTerritory.getTerritoryType()).andReturn(firstTerritoryType);
         EasyMock.replay(firstTerritory);
@@ -532,13 +537,15 @@ public class TerritoryGraphTest {
         EasyMock.expect(secondTerritory.getTerritoryType()).andReturn(secondTerritoryType);
         EasyMock.replay(secondTerritory);
 
+        TerritoryGraph territoryGraph = new TerritoryGraph();
         territoryGraph.addNewTerritory(firstTerritory);
         territoryGraph.addNewTerritory(secondTerritory);
         Set<TerritoryType> adjacencies = new HashSet<>();
         adjacencies.add(secondTerritoryType);
         assertTrue(territoryGraph.addSetOfAdjacencies(firstTerritoryType, adjacencies));
 
-        Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(firstTerritoryType);
+        Set<Territory> actualAdjacencies = territoryGraph
+                .findAdjacentTerritories(firstTerritoryType);
         assertEquals(1, actualAdjacencies.size());
         assertTrue(actualAdjacencies.contains(secondTerritory));
 
@@ -552,8 +559,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test28_addSetOfAdjacencies_withTwoVerticesAndEdge(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
-        TerritoryGraph territoryGraph = new TerritoryGraph();
+    public void test28_addSetOfAdjacencies_withTwoVerticesAndEdge(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
         Territory firstTerritory = EasyMock.createMock(Territory.class);
         EasyMock.expect(firstTerritory.getTerritoryType()).andReturn(firstTerritoryType);
         EasyMock.replay(firstTerritory);
@@ -562,6 +569,7 @@ public class TerritoryGraphTest {
         EasyMock.expect(secondTerritory.getTerritoryType()).andReturn(secondTerritoryType);
         EasyMock.replay(secondTerritory);
 
+        TerritoryGraph territoryGraph = new TerritoryGraph();
         territoryGraph.addNewTerritory(firstTerritory);
         territoryGraph.addNewTerritory(secondTerritory);
         territoryGraph.addNewAdjacency(firstTerritoryType, secondTerritoryType);
@@ -622,7 +630,8 @@ public class TerritoryGraphTest {
         adjacencies.add(TerritoryType.ARGENTINA);
         assertTrue(territoryGraph.addSetOfAdjacencies(TerritoryType.AFGHANISTAN, adjacencies));
 
-        Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(TerritoryType.AFGHANISTAN);
+        Set<Territory> actualAdjacencies = territoryGraph
+                .findAdjacentTerritories(TerritoryType.AFGHANISTAN);
         assertEquals(2, actualAdjacencies.size());
     }
 
@@ -641,14 +650,16 @@ public class TerritoryGraphTest {
         adjacencies.remove(TerritoryType.ALASKA);
         assertTrue(territoryGraph.addSetOfAdjacencies(TerritoryType.ALASKA, adjacencies));
 
-        Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(TerritoryType.ALASKA);
+        Set<Territory> actualAdjacencies = territoryGraph
+                .findAdjacentTerritories(TerritoryType.ALASKA);
         assertEquals(41, actualAdjacencies.size());
     }
 
 
     @ParameterizedTest
     @MethodSource("territoryCombinationGenerator")
-    public void test33_addSetOfAdjacencies_withCompleteGraph_oneInSet(TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
+    public void test33_addSetOfAdjacencies_withCompleteGraph_oneInSet(
+            TerritoryType firstTerritoryType, TerritoryType secondTerritoryType) {
         TerritoryGraph territoryGraph = generateCompleteGraph();
         Set<TerritoryType> adjacencies = new HashSet<>();
         adjacencies.add(secondTerritoryType);
@@ -666,7 +677,8 @@ public class TerritoryGraphTest {
 
     @ParameterizedTest
     @MethodSource("territoryGenerator")
-    public void test35_addSetOfAdjacencies_withCompleteGraph_remainingTypes(TerritoryType territoryType) {
+    public void test35_addSetOfAdjacencies_withCompleteGraph_remainingTypes(
+            TerritoryType territoryType) {
         TerritoryGraph territoryGraph = generateCompleteGraph();
         Set<TerritoryType> adjacencies = new HashSet<>(Set.of(TerritoryType.values()));
         adjacencies.remove(territoryType);

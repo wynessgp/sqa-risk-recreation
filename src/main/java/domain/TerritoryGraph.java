@@ -51,13 +51,16 @@ public class TerritoryGraph {
         return result;
     }
 
-    public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
-        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty() || adjacencies.contains(territoryType)) {
+    public boolean addSetOfAdjacencies(TerritoryType territoryType,
+                                       Set<TerritoryType> adjacencies) {
+        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()
+                || adjacencies.contains(territoryType)) {
             return false;
         }
         Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
         for (TerritoryType adjacentTerritoryType : adjacencies) {
-            if (!territoryTypeToObject.containsKey(adjacentTerritoryType) || currentAdjacencies.contains(adjacentTerritoryType)) {
+            if (!territoryTypeToObject.containsKey(adjacentTerritoryType)
+                    || currentAdjacencies.contains(adjacentTerritoryType)) {
                 return false;
             }
         }
