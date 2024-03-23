@@ -452,4 +452,13 @@ public class TerritoryGraphTest {
         adjacencies.add(territoryType);
         assertFalse(territoryGraph.addSetOfAdjacencies(territoryType, adjacencies));
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test22_addSetOfAdjacencies_withEmptyGraph_addRemainingTypes(TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Set<TerritoryType> adjacencies = new HashSet<>(Set.of(TerritoryType.values()));
+        adjacencies.remove(territoryType);
+        assertFalse(territoryGraph.addSetOfAdjacencies(territoryType, adjacencies));
+    }
 }
