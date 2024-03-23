@@ -52,6 +52,18 @@ public class TerritoryGraph {
     }
 
     public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
-        return false;
+        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()) {
+            return false;
+        }
+        for (TerritoryType adjacentTerritoryType : adjacencies) {
+            if (!territoryTypeToObject.containsKey(adjacentTerritoryType)) {
+                return false;
+            }
+        }
+        territories.get(territoryType).addAll(adjacencies);
+        for (TerritoryType adjacentTerritoryType : adjacencies) {
+            territories.get(adjacentTerritoryType).add(territoryType);
+        }
+        return true;
     }
 }
