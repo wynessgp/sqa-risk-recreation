@@ -198,6 +198,11 @@ Output: Collection
   - amountOfDiceToRoll = 1
   - Collection = [valid die]
 - Output: Collection = [3]
+### Test 9: (testing without pre-chosen values for dice)
+- Input:
+  - amountOfDiceToRoll = 2
+  - Collection = [valid 6-sided die, valid 6-sided die]
+- Output: Collection = [ [1-6], number less than 1st one]
 
 # method: `generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>`
 
