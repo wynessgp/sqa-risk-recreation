@@ -14,6 +14,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class DieRollParserTest {
 
+    private boolean isSortedInNonIncreasingOrder(List<Integer> listInQuestion) {
+        for (int i = 0; i < listInQuestion.size() - 1; i++) {
+            if (listInQuestion.get(i) < listInQuestion.get(i + 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Test
     public void test00_buildDiceLists_expectReturnsTrue() {
         // variable setup
@@ -95,12 +104,35 @@ public class DieRollParserTest {
         assertEquals(List.of(3, 2, 1), actual);
     }
 
-    private boolean isSortedInNonIncreasingOrder(List<Integer> listInQuestion) {
-        for (int i = 0; i < listInQuestion.size() - 1; i++) {
-            if (listInQuestion.get(i) < listInQuestion.get(i + 1)) {
-                return false;
-            }
-        }
-        return true;
+    @Test
+    public void test04_rollAttackerDice_rollTwoDice_expectSortedListOfSizeTwo() {
+        // variable setup
+        Random random = new Random();
+
+        Die firstDie = EasyMock.mock(Die.class);
+        Die secondDie = EasyMock.mock(Die.class);
+
+        // record
+        EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(4);
+        EasyMock.expect(secondDie.rollSingleDie(random)).andReturn(4);
+
+        // provide the underlying dice collection to our class.
+        DieRollParser unitUnderTest = new DieRollParser(random,
+                List.of(firstDie, secondDie));
+
+        // replay
+        EasyMock.replay(firstDie, secondDie);
+
+        // do regular JUnit test calculations
+        List<Integer> actual = unitUnderTest.rollAttackerDice(2);
+
+        // verify
+        EasyMock.verify(firstDie, secondDie);
+
+        // do regular JUnit assertions
+        assertEquals(2, actual.size());
+        assertTrue(isSortedInNonIncreasingOrder(actual));
+        assertEquals(List.of(4, 4), actual);
     }
+
 }

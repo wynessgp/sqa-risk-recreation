@@ -42,10 +42,8 @@ public class DieRollParser {
         }
 
         List<Integer> rollResults = new ArrayList<>();
-        if (amountOfDiceToRoll == 3) {
-            rollResults.add(attackerDice.get(0).rollSingleDie(randomizer));
-            rollResults.add(attackerDice.get(1).rollSingleDie(randomizer));
-            rollResults.add(attackerDice.get(2).rollSingleDie(randomizer));
+        for (int i = 0; i < amountOfDiceToRoll; i++) {
+            rollResults.add(attackerDice.get(i).rollSingleDie(randomizer));
         }
         rollResults.sort(Comparator.reverseOrder());
         return rollResults;
