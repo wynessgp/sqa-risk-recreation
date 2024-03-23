@@ -5,7 +5,7 @@
 - **Output**: Yes or no answer
 
 ### BVA Step 2
-- **Input**: a pointer to a player object
+- **Input**: Pointer, Territory object is initialized
 - **Output**: Boolean
 
 ### BVA Step 3
@@ -14,7 +14,6 @@
   - The second possibility: Transitioning control from one player (PlayerA) to a different player (PlayerB)
   - The third possibility: Attempting to change control from a player to the same player.
   - The fourth possibility: Assign the territory's control to null after it has been controlled by a valid player
-  - The fifth possibility: Assign the territory's control to the same player after it has been controlled by a valid player
 - **Output**: True,or false.
   
 ### BVA Step 4
@@ -75,8 +74,8 @@
 - **Output**: The current Player in control or null if no player is in control
 
 ### BVA Step 2
-- **Input**: None
-- **Output**: Player object or null
+- **Input**: the state of the relying object (Player object) is set
+- **Output**: pointer or null
 
 ### BVA Step 3
 - **Input**: Cases
@@ -135,7 +134,7 @@
 - **Output**: The type of territory
 
 ### BVA Step 2
-- **Input**: the underlying TerritoryType associated with the Territory.
+- **Input**: cases
 - **Output**: TerritoryType
 
 ### BVA Step 3
