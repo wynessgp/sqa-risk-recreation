@@ -55,12 +55,13 @@ public class TerritoryGraph {
         if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()) {
             return false;
         }
+        Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
         for (TerritoryType adjacentTerritoryType : adjacencies) {
-            if (!territoryTypeToObject.containsKey(adjacentTerritoryType)) {
+            if (!territoryTypeToObject.containsKey(adjacentTerritoryType) || currentAdjacencies.contains(adjacentTerritoryType)) {
                 return false;
             }
         }
-        territories.get(territoryType).addAll(adjacencies);
+        currentAdjacencies.addAll(adjacencies);
         for (TerritoryType adjacentTerritoryType : adjacencies) {
             territories.get(adjacentTerritoryType).add(territoryType);
         }
