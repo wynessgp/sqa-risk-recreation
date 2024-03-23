@@ -278,4 +278,31 @@ public class DieRollParserTest {
         assertEquals(List.of(4, 4), actual);
     }
 
+    @Test
+    public void test11_rollDefenderDice_rollOneDie_expectListOfSizeOne() {
+        // variable setup
+        Random random = new Random();
+        Die firstDie = EasyMock.mock(Die.class);
+
+        // record
+        EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(3);
+
+        // provide the underlying dice collection to our class.
+        DieRollParser unitUnderTest = new DieRollParser(random,
+                null, List.of(firstDie));
+
+        // replay
+        EasyMock.replay(firstDie);
+
+        // do regular JUnit test calculations
+        List<Integer> actual = unitUnderTest.rollDefenderDice(1);
+
+        // verify
+        EasyMock.verify(firstDie);
+
+        // do regular JUnit assertions
+        assertEquals(1, actual.size());
+        assertEquals(List.of(3), actual);
+    }
+
 }

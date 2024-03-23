@@ -71,9 +71,8 @@ public class DieRollParser {
         }
 
         List<Integer> rollResults = new ArrayList<>();
-        if (amountOfDiceToRoll == 2) {
-            rollResults.add(defenderDice.get(0).rollSingleDie(randomizer));
-            rollResults.add(defenderDice.get(1).rollSingleDie(randomizer));
+        for (int i = 0; i < amountOfDiceToRoll; i++) {
+            rollResults.add(defenderDice.get(i).rollSingleDie(randomizer));
         }
         rollResults.sort(Comparator.reverseOrder());
         return rollResults;
