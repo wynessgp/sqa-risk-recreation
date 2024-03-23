@@ -116,10 +116,10 @@ package domain {
     +class TradeInParser {
         -setsTradedInSoFar: int
         +TradeInParser()
-        +startTrade(attemptedCards: Set<Card>): boolean
-        -verifyValidCombo(attemptedCards: Set<Card>): boolean
-        -calculateNumNewPieces(attemptedCards: Set<Card>): boolean
-        -updateSetsTradedIn(attemptedCards: Set<Card>): boolean
+        +startTrade(attemptedCards: List<Card>): int
+        -verifyValidCombo(attemptedCards: List<Card>): boolean
+        -calculateNumNewPieces(attemptedCards: List<Card>): int
+        -updateSetsTradedIn(attemptedCards: List<Card>): boolean
     }
 
     TradeInParser .d.> Card
