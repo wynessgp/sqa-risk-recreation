@@ -171,7 +171,7 @@ Input: graph with one TerritoryType, a different TerritoryType, set containing t
 
 Output: 0
 ### Test value 8
-Input: graph with two TerritoryTypes (no edges), the first TerritoryType vettex, set containing the second TerritoryType vertex
+Input: graph with two TerritoryTypes (no edges), the first TerritoryType vertex, set containing the second TerritoryType vertex
 
 Output: 1 (true)
 ### Test value 9
