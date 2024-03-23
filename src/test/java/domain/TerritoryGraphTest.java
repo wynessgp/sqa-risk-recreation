@@ -589,4 +589,20 @@ public class TerritoryGraphTest {
         adjacencies.add(TerritoryType.ALASKA);
         assertFalse(territoryGraph.addSetOfAdjacencies(TerritoryType.ALASKA, adjacencies));
     }
+
+    @Test
+    public void test30_addSetOfAdjacencies_withAllVerticesNoEdges_oneInSet() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            Territory territory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+            EasyMock.replay(territory);
+            territoryGraph.addNewTerritory(territory);
+            EasyMock.verify(territory);
+        }
+
+        Set<TerritoryType> adjacencies = new HashSet<>();
+        adjacencies.add(TerritoryType.ALASKA);
+        assertTrue(territoryGraph.addSetOfAdjacencies(TerritoryType.ARGENTINA, adjacencies));
+    }
 }
