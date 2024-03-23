@@ -435,7 +435,7 @@ public class TerritoryGraphTest {
             }
         }
     }
-    
+
     @ParameterizedTest
     @MethodSource("territoryGenerator")
     public void test20_addSetOfAdjacencies_withEmptyGraph_emptyAdjSet(TerritoryType territoryType) {
@@ -624,5 +624,24 @@ public class TerritoryGraphTest {
 
         Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(TerritoryType.AFGHANISTAN);
         assertEquals(2, actualAdjacencies.size());
+    }
+
+    @Test
+    public void test32_addSetOfAdjacencies_withAllVerticesNoEdges_remainingInSet() {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            Territory territory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+            EasyMock.replay(territory);
+            territoryGraph.addNewTerritory(territory);
+            EasyMock.verify(territory);
+        }
+
+        Set<TerritoryType> adjacencies = new HashSet<>(Set.of(TerritoryType.values()));
+        adjacencies.remove(TerritoryType.ALASKA);
+        assertTrue(territoryGraph.addSetOfAdjacencies(TerritoryType.ALASKA, adjacencies));
+
+        Set<Territory> actualAdjacencies = territoryGraph.findAdjacentTerritories(TerritoryType.ALASKA);
+        assertEquals(41, actualAdjacencies.size());
     }
 }
