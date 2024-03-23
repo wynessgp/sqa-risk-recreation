@@ -54,13 +54,7 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "Not enough dice to fulfill requested amount to roll");
         }
-
-        List<Integer> rollResults = new ArrayList<>();
-        for (int i = 0; i < amountOfDiceToRoll; i++) {
-            rollResults.add(attackerDice.get(i).rollSingleDie(randomizer));
-        }
-        rollResults.sort(Comparator.reverseOrder());
-        return rollResults;
+        return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
     public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
@@ -72,10 +66,13 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "Not enough dice to fulfill requested amount to roll");
         }
+        return rollDiceFromList(amountOfDiceToRoll, defenderDice);
+    }
 
+    private List<Integer> rollDiceFromList(int amountOfDiceToRoll, List<Die> listToUse) {
         List<Integer> rollResults = new ArrayList<>();
         for (int i = 0; i < amountOfDiceToRoll; i++) {
-            rollResults.add(defenderDice.get(i).rollSingleDie(randomizer));
+            rollResults.add(listToUse.get(i).rollSingleDie(randomizer));
         }
         rollResults.sort(Comparator.reverseOrder());
         return rollResults;
