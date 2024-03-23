@@ -1,35 +1,203 @@
-@startuml
-note "Some example plantUML code for a class diagram." as N1
+@startuml RiskDesign
 
-+class Game{
--players: List<Player>
-+doTurn(): void
--checkWinCondition(): Player
+package presentation {
+    +class Main {
+        +{static} main(args: String[]): void
+        +start(): void
+    }
+
+    +interface GenericUI {
+        +draw(): void
+    }
+
+    +class ConcreteUI {
+
+    }
+
+    ConcreteUI .u.|> GenericUI
+
+    +interface GenericController {
+        +receiveInput(): void
+    }
+
+    +class ConcreteController {
+
+    }
+
+    ConcreteController .u.|> GenericController
+
+    +class PlayerDisplay {
+
+    }
+
+
 }
 
-+abstract Player{
-# wealth: int
-+{abstract} someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
-+someMethodWhoseImplementationSameForAllPlayerType(): some_return_type
--maybeSomePrivateMethod(): some_return_type
+package domain {
+    +abstract class GameRules {
+        ~gamePhase: GamePhase
+        ~gameGraph: TerritoryGraph
+        ~tradeInChecker: TradeInManager
+        ~deckManager: DeckManager
+    }
+
+    +class WorldDomination {
+
+    }
+
+    +class SecretMission {
+
+    }
+
+    +class CapitalRisk {
+
+    }
+
+    +enum GamePhase {
+        GAME_START,
+        SETUP,
+        PLACEMENT,
+        ATTACK,
+        FORTIFY,
+        GAME_OVER
+    }
+
+    GameRules --> GamePhase
+    GameRules --> TerritoryGraph
+    GameRules --> DeckManager
+    GameRules --> TradeInManager
+    CapitalRisk --|> GameRules
+    SecretMission --|> GameRules
+    WorldDomination --|> GameRules
+
+    +class DeckManager {
+        -deckOfCards: List<Card>
+        +DeckManager()
+        +drawCard(): Card
+        +initDeck(): boolean
+        -shuffle(): boolean
+    }
+
+    DeckManager -> "*" Card
+
+    +class TradeInManager {
+        -attemptedCards: Set<Card>
+        -setsTradedInSoFar: int
+        +startTrade(attemptedCards: Set<Card>): boolean
+        -verifyValidCombo(): boolean
+        -calculateNumNewPieces(): boolean
+        -updateSetsTradedIn(): boolean
+        -clearSavedSet(): boolean
+    }
+
+    TradeInManager -d-> "*" Card
+    TradeInManager .d.> Card
+
+    +class Player {
+        -cards: Set<Card>
+        -pieces: Set<Piece>
+    }
+
+    Player -> "*" Piece
+    Player -> "*" Card
+
+    +class Piece {
+        -pieceType: PieceType
+        -location: Territory
+    }
+
+    +enum PieceType {
+        ARTILLERY,
+        CAVALRY,
+        INFANTRY
+    }
+
+    Piece --> PieceType
+
+    +interface Card {
+        +{static}{final} isWild(): boolean
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+    }
+
+    +class WildCard {
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+        +{static}{final} isWild(): boolean
+    }
+
+    note "matchesPieceType and isWild returns true, matchesTerritory returns false" as N1
+    N1 .u. WildCard
+
+    +class TerritoryCard {
+        -territoryType: TerritoryType
+        -pieceType: PieceType
+        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
+        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+        +{static}{final} isWild(): boolean
+    }
+
+    TerritoryCard ..|> Card
+    WildCard ..|> Card
+    TerritoryCard --> PieceType
+    TerritoryCard --> TerritoryType
+
+    +enum TerritoryType {
+        ...
+    }
+
+    +class TerritoryGraph {
+        -territoryKeys: List<TerritoryType>
+        -territoryTypeToAdjacencies: Map<TerritoryType, Set<Territory>>
+        +TerritoryGraph()
+        +addNewKey(newKey: TerritoryType): boolean
+        +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
+        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
+        +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
+    }
+
+    TerritoryGraph --> "*" Territory
+    TerritoryGraph --> "*" TerritoryType
+
+    +class Territory {
+        -territoryType: TerritoryType
+        // initialized to NEUTRAL
+        -playerInControl: Player
+        -numArmiesPresent: int
+        +Territory(territoryType: TerritoryType)
+        +setPlayerInControl(newPlayer: Player): boolean 
+        +setNumArmiesPresent(newAmount: int): boolean
+    }
+
+    Territory --> Player
+    Territory --> TerritoryType
+
+    +enum Player {
+        NEUTRAL,
+        BLACK,
+        RED,
+        YELLOW,
+        BLUE,
+        GREEN,
+        PURPLE
+    }
+
+
 }
 
-+class PlayerTypeA{
-+ someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
+package datasource {
+    +interface StandardInput {
+        +read(): Object
+    }
+
+    +class PictureLoader {
+        +PictureLoader(filePath: String)
+        +read(): Object
+    }
+
+    PictureLoader .u.|> StandardInput
 }
-
-note left of PlayerTypeA::someMethodWhoseImplementationDiffersByPlayerType
-override this method here
-end note
-
-+class PlayerTypeB{
-+ someMethodWhoseImplementationDiffersByPlayerType(): some_return_type
-}
-
-Game -r->"*" Player
-PlayerTypeA -u-|> Player
-PlayerTypeB -u-|> Player
-
-note "See documentation at https://plantuml.com/class-diagram" as N2
 
 @enduml
+
