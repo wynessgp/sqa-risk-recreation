@@ -50,4 +50,8 @@ public class TerritoryGraph {
         }
         return result;
     }
+
+    public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
+        return false;
+    }
 }
