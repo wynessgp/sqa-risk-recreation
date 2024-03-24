@@ -403,5 +403,20 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test19_generateBattleResults_defenderRollsNotSorted_expectException() {
+        DieRollParser unitUnderTest = new DieRollParser();
+        List<Integer> defenderRolls = List.of(1, 2);
+        List<Integer> attackerRolls = List.of(5);
+
+        // perform the operation
+        String expectedMessage = "defenderRolls are not sorted in non-increasing order";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.generateBattleResults(defenderRolls, attackerRolls));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }

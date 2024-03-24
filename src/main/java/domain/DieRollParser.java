@@ -91,5 +91,10 @@ public class DieRollParser {
         if (attackerRolls.isEmpty() || defenderRolls.isEmpty()) {
             throw new IllegalArgumentException("Both arguments must have at least one element");
         }
+
+        if (!validateSortIsInNonIncreasingOrder(defenderRolls)) {
+            throw new IllegalArgumentException(
+                    "defenderRolls are not sorted in non-increasing order");
+        }
     }
 }
