@@ -46,10 +46,10 @@ Input:
   - Maximum possible value: 3
   - One more than max possible value: 4 (error case)
 - Underlying dice storage: Collection
-  - An empty collection (error case)
-  - Contains exactly one element (error case if amountDice exceeds)
-  - Contains \> 1 element (error case if amountDice exceeds)
-  - Maximum possible size (Limited to 3 by RISK rules) <!-- Consider expanding for flex -->
+  - An empty collection (ignored, should always be 3 by domain)
+  - Contains exactly one element (ignored)
+  - Contains \> 1 element (ignored)
+  - Maximum possible size (Limited to 3 by RISK rules) 
   - Using the first element (index 0)
   - Using the last element (index 2)
 
@@ -65,13 +65,13 @@ Output: Collection
 ### Test 1:
 - Input:
   - amountOfDiceToRoll = -1 
-  - Collection = []
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException 
   - message: "Valid amount of dice is in the range [1, 3]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll = 0
-  - Collection = []
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [1, 3]"
 ### Test 3:
@@ -82,35 +82,23 @@ Output: Collection
   - message: "Valid amount of dice is in the range [1, 3]"
 ### Test 4:
 - Input:
-  - amountOfDiceToRoll = 1
-  - Collection = []
-- Output: IllegalArgumentException
-  - message: "Not enough dice to fulfill requested amount to roll"
-### Test 5:
-- Input:
-  - amountOfDiceToRoll = 2
-  - Collection = [valid 6-sided die]
-- Output: IllegalArgumentException 
-  - message: "Not enough dice to fulfill requested amount to roll"
-### Test 6:
-- Input:
   - amountOfDiceToRoll = 3
   - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: Collection = [3, 2, 1]
-### Test 7:
+### Test 5:
 - Input:
   - amountOfDiceToRoll = 2
-  - Collection = [valid 6-sided die, valid 6-sided die]
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: Collection = [4, 4]
-### Test 8:
+### Test 6:
 - Input:
   - amountOfDiceToRoll = 1
-  - Collection = [valid 6-sided die]
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: Collection = [3]
-### Test 9: (testing without pre-chosen values for dice)
+### Test 7: (testing without pre-chosen values for dice)
 - Input:
   - amountOfDiceToRoll = 2
-  - Collection = [valid 6-sided die, valid 6-sided die]
+  - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: Collection = [ [1-6], number less than 1st one]
 
 # method: `rollDefenderDice(amountOfDiceToRoll: int): List<Integer>`
@@ -137,10 +125,10 @@ Input:
   - Maximum possible value: 2
   - One more than max possible value: 3 (error case)
 - Underlying dice storage: Collection
-  - An empty collection (error case)
-  - Contains exactly one element (error case if amountDice exceeds)
-  - Contains \> 1 element (error case if amountDice exceeds)
-  - Maximum possible size (Limited to 2 by RISK rules) <!-- Consider expanding for flexiblity -->
+  - An empty collection (ignored, should always have 2 defender dice)
+  - Contains exactly one element (ignored)
+  - Contains \> 1 element (ignored)
+  - Maximum possible size (Limited to 2 by RISK rules) 
   - Using the first element (index 0)
   - Using the last element (index 1)
 
@@ -156,13 +144,13 @@ Output: Collection
 ### Test 1:
 - Input:
   - amountOfDiceToRoll = -1
-  - Collection = []
+  - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [1, 2]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll = 0
-  - Collection = []
+  - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [1, 2]"
 ### Test 3:
@@ -173,32 +161,20 @@ Output: Collection
   - message: "Valid amount of dice is in the range [1, 2]
 ### Test 4:
 - Input:
-  - amountOfDiceToRoll = 1
-  - Collection = []
-- Output: IllegalArgumentException
-  - message: "Not enough dice to fulfill requested amount to roll"
-### Test 5:
-- Input:
-  - amountOfDiceToRoll = 2
-  - Collection = [valid 6-sided die]
-- Output: IllegalArgumentException
-  - message: "Not enough dice to fulfill requested amount to roll"
-### Test 6:
-- Input:
   - amountOfDiceToRoll = 2
   - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: Collection = [3, 2]
-### Test 7:
+### Test 5:
 - Input:
   - amountOfDiceToRoll = 2
   - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: Collection = [4, 4]
-### Test 8:
+### Test 6:
 - Input:
   - amountOfDiceToRoll = 1
-  - Collection = [valid die]
+  - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: Collection = [3]
-### Test 9: (testing without pre-chosen values for dice)
+### Test 7: (testing without pre-chosen values for dice)
 - Input:
   - amountOfDiceToRoll = 2
   - Collection = [valid 6-sided die, valid 6-sided die]
