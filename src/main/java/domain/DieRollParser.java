@@ -87,7 +87,6 @@ public class DieRollParser {
             List<Integer> defenderRolls, List<Integer> attackerRolls) throws IllegalArgumentException {
         validateListsAreNotEmpty(defenderRolls, attackerRolls);
         validateListsAreSortedProperly(defenderRolls, attackerRolls);
-
         List<BattleResult> battleResults = new ArrayList<>();
         int smallerListSize = Math.min(defenderRolls.size(), attackerRolls.size());
         for (int i = 0; i < smallerListSize; i++) {
