@@ -1,6 +1,6 @@
 package domain;
 
-public enum BattleResults {
+public enum BattleResult {
     DEFENDER_VICTORY,
     ATTACKER_VICTORY
 }
