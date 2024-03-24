@@ -122,7 +122,7 @@ Input: 13 traded-in sets, collection with one artillery card and three infantry 
 Output: 0, false
 
 ### Test value 18
-Input: 14 traded-in sets, collection with one wild card, one infantry card, one calvary card, and one infantry card
+Input: 14 traded-in sets, collection with one wild card, one infantry card, one calvary card, and one artillery card
 
 Output: 0, false
 
