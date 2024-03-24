@@ -96,5 +96,9 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "defenderRolls are not sorted in non-increasing order");
         }
+        if (!validateSortIsInNonIncreasingOrder(attackerRolls)) {
+            throw new IllegalArgumentException(
+                    "attackerRolls are not sorted in non-increasing order");
+        }
     }
 }
