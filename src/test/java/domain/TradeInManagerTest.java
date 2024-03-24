@@ -328,6 +328,17 @@ public class TradeInManagerTest {
 
 
     //test for startTrade()
+    @Test
+    public void test32_startTrade_0setEmptyCollection_expected0AndFalse(){
+        int expectedPieces = 0;     //check number of pieces given to player
+        int expectedSetsAfter = 0;  //check whether the number of traded-in sets is updated,
+                                    //  by checking the number of sets after the call is made:
+                                    //  same as before == not updated; 1 greater == updated
 
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
 
 }

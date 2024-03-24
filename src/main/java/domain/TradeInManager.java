@@ -11,6 +11,10 @@ public class TradeInManager {
         setsTradedInSoFar = 0;
     }
 
+    public int startTrade(List<Card> attemptedCards){
+        return 0;
+    }
+
     public boolean verifyValidCombo(List<Card> attemptedCards) {
         //check if size is 3
         if(attemptedCards.size() == 3){
@@ -52,4 +56,9 @@ public class TradeInManager {
         this.setsTradedInSoFar++;
         return true;
     }
+
+    public int getSetsTradedInSoFar(){
+        return this.setsTradedInSoFar;
+    }
+
 }
