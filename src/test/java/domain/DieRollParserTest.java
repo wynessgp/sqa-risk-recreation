@@ -495,5 +495,20 @@ public class DieRollParserTest {
                 actual);
     }
 
+    @Test
+    public void test25_generateBattleResults_attackerWinsOnce_expectOneAttackerVictory() {
+        DieRollParser unitUnderTest = new DieRollParser();
+        List<Integer> defenderRolls = List.of(3);
+        List<Integer> attackerRolls = List.of(4);
+
+        // perform the operation
+        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+                defenderRolls, attackerRolls);
+
+        // assertions
+        assertEquals(1, actual.size());
+        assertEquals(List.of(BattleResults.ATTACKER_VICTORY), actual);
+    }
+
 
 }
