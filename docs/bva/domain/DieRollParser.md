@@ -213,7 +213,7 @@ Output: The RISK rules determined result for what happened in each individual di
 - Namely, do a pairwise comparison of each side's dice when sorted in non-increasing order. 
   - If the defender's roll \>= attacker's roll, the defender wins that battle.
   - If the defender's roll \< attacker's roll, the attacker wins that battle.
-  - This should be done until the defender runs out of dice to pair with attacker dice.
+  - This should be done until the defender/attacker runs out of dice to pair with the opposing side.
 
 ## BVA Step 2
 Input: 
