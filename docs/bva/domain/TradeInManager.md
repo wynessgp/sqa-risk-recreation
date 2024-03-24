@@ -72,12 +72,12 @@ Input: 0 traded-in sets, collection with one wild card and two infantry cards
 Output: 4, true
 
 ### Test value 8
-Input: 13 traded-in sets, collection with one wild card, one calvary card, and one artillery card
+Input: 13 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
 
 Output: 55, true
 
 ### Test value 9
-Input: 14 traded-in sets, collection with one wild card, one calvary card, and one artillery card
+Input: 14 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
 
 Output: 0, false
 
