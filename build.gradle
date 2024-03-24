@@ -1,5 +1,9 @@
+import com.github.spotbugs.snom.SpotBugsReport
+
 plugins {
     id 'java'
+    id "com.github.spotbugs" version "6.0.9"
+    id 'checkstyle'
 }
 
 group 'edu.rose-hulman.csse'
@@ -18,4 +22,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
 }
