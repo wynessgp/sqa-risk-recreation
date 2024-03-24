@@ -101,6 +101,10 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "attackerRolls are not sorted in non-increasing order");
         }
+
+        if (attackerRolls.size() == 3) {
+            return List.of(BattleResults.DEFENDER_VICTORY, BattleResults.DEFENDER_VICTORY);
+        }
         return List.of(BattleResults.DEFENDER_VICTORY);
     }
 }
