@@ -251,7 +251,7 @@ Output:
 ## BVA Step 4
 ### Test 1:
 - Input:
-  - defenderRolls = [], attackerRolls = []
+  - defenderRolls = [5], attackerRolls = []
 - Output: IllegalArgumentException
   - message: "Both arguments must have at least 1 element"
 ### Test 2:
@@ -261,7 +261,7 @@ Output:
   - message: "Both arguments must have at least 1 element"
 ### Test 3:
 - Input:
-  - defenderRolls = [5], attackerRolls = []
+  - defenderRolls = [], attackerRolls = []
 - Output: IllegalArgumentException
   - message: "Both arguments must have at least 1 element"
 ### Test 4:
