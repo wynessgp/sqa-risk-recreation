@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                List.of(firstDie, secondDie, thirdDie), null, null);
+                List.of(firstDie, secondDie, thirdDie), List.of());
 
         // replay
         EasyMock.replay(firstDie, secondDie, thirdDie);
@@ -100,7 +99,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                List.of(firstDie, secondDie), null, null);
+                List.of(firstDie, secondDie), List.of());
 
         // replay
         EasyMock.replay(firstDie, secondDie);
@@ -128,7 +127,7 @@ public class DieRollParserTest {
         EasyMock.expect(firstDie.rollSingleDie(random)).andReturn(3);
 
         // provide the underlying dice collection to our class.
-        DieRollParser unitUnderTest = new DieRollParser(random, List.of(firstDie), null, null);
+        DieRollParser unitUnderTest = new DieRollParser(random, List.of(firstDie), List.of());
 
         // replay
         EasyMock.replay(firstDie);
@@ -192,7 +191,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                null, List.of(firstDie, secondDie), null);
+                List.of(), List.of(firstDie, secondDie));
 
         // replay
         EasyMock.replay(firstDie, secondDie);
@@ -223,7 +222,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                null, List.of(firstDie, secondDie), null);
+                List.of(), List.of(firstDie, secondDie));
 
         // replay
         EasyMock.replay(firstDie, secondDie);
@@ -251,7 +250,7 @@ public class DieRollParserTest {
 
         // provide the underlying dice collection to our class.
         DieRollParser unitUnderTest = new DieRollParser(random,
-                null, List.of(firstDie), null);
+                List.of(), List.of(firstDie));
 
         // replay
         EasyMock.replay(firstDie);
@@ -505,40 +504,18 @@ public class DieRollParserTest {
 
     @ParameterizedTest
     @ValueSource(ints = {2, 3, 4, 5, 6})
-    public void test26_rollDiceToDeterminePlayerOrder_structuredOutput_expectNoDuplicates(
+    public void test26_rollDiceToDeterminePlayerOrder_unstructuredOutput_expectNoDuplicates(
             int numDiceToRoll) {
-        // easy setup
-        Random random = new Random();
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
 
-        // programmatic setup...
-        List<Integer> expectedList = new ArrayList<>();
-        List<Die> setupDice = new ArrayList<>();
-        for (int i = 0; i < numDiceToRoll; i++) {
-            expectedList.add(i, i + 1); // set up the expected list
-
-            Die toAdd = EasyMock.mock(Die.class);
-            EasyMock.expect(toAdd.rollSingleDie(random))
-                    .andReturn(i + 1); // record
-            EasyMock.replay(toAdd); // replay
-            setupDice.add(toAdd);
-        }
-
-        // provide the class our setup dice, random object
-        DieRollParser unitUnderTest = new DieRollParser(random, null, null, setupDice);
-
-        // get necessary junit testing info
+        // the main point of this one is to see, if given no "set" dice values, we can
+        // get the method to return a list with no duplicates.
         List<Integer> actual = unitUnderTest.rollDiceToDeterminePlayerOrder(numDiceToRoll);
 
-        // verify
-        for (int i = 0; i < numDiceToRoll; i++) {
-            EasyMock.verify(setupDice.get(i));
-        }
-
-        // do regular junit assertions
+        // assertions
         assertEquals(numDiceToRoll, actual.size());
-        assertEquals(expectedList, actual);
-        assertEquals(numDiceToRoll, Set.copyOf(actual).size()); // set cannot have duplicates.
+        assertEquals(numDiceToRoll, Set.copyOf(actual).size());
     }
-
 
 }

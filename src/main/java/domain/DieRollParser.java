@@ -2,30 +2,32 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class DieRollParser {
 
     private final List<Die> attackerDice;
     private final List<Die> defenderDice;
-    private final List<Die> setupDice;
+    private Die setupDie;
     private final Random randomizer;
 
     public DieRollParser() {
         this.attackerDice = new ArrayList<>();
         this.defenderDice = new ArrayList<>();
-        this.setupDice = new ArrayList<>();
+        this.setupDie = new Die(); // this will be changed when needed
         this.randomizer = new Random();
     }
 
     // this constructor is to only be utilized for unit testing!
     DieRollParser(Random randomizer, List<Die> attackerDice,
-                  List<Die> defenderDice, List<Die> setupDice) {
+                  List<Die> defenderDice) {
         this.randomizer = randomizer;
         this.attackerDice = attackerDice;
         this.defenderDice = defenderDice;
-        this.setupDice = setupDice;
+        this.setupDie = new Die(); // this is changed when needed
     }
 
     public boolean buildDiceLists() {
@@ -42,11 +44,17 @@ public class DieRollParser {
         if (amountOfDiceToRoll < 2 || amountOfDiceToRoll > 6) {
             throw new IllegalArgumentException("Valid amount of dice is in the range [2, 6]");
         }
-        List<Integer> rollResults = new ArrayList<>();
-        for (int i = 0; i < amountOfDiceToRoll; i++) {
-            rollResults.add(setupDice.get(i).rollSingleDie(randomizer));
+        buildSetupDie(amountOfDiceToRoll);
+
+        Set<Integer> rollResults = new HashSet<>();
+        while (rollResults.size() != amountOfDiceToRoll) {
+            rollResults.add(setupDie.rollSingleDie(randomizer));
         }
-        return rollResults;
+        return List.copyOf(rollResults);
+    }
+
+    private void buildSetupDie(int setupDieUpperBound) {
+        setupDie = new Die(setupDieUpperBound, 1);
     }
 
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
