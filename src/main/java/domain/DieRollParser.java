@@ -40,10 +40,8 @@ public class DieRollParser {
         return true;
     }
 
-    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
-        if (amountOfDiceToRoll < 2 || amountOfDiceToRoll > 6) {
-            throw new IllegalArgumentException("Valid amount of dice is in the range [2, 6]");
-        }
+    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) throws IllegalArgumentException {
+        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 2, 6);
         buildSetupDie(amountOfDiceToRoll);
 
         Set<Integer> rollResults = new HashSet<>();
@@ -57,21 +55,22 @@ public class DieRollParser {
         setupDie = new Die(setupDieUpperBound, 1);
     }
 
-    public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 3);
+    public List<Integer> rollAttackerDice(int amountOfDiceToRoll) throws IllegalArgumentException {
+        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 3);
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
-    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 2);
+    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) throws IllegalArgumentException {
+        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 2);
         return rollDiceFromList(amountOfDiceToRoll, defenderDice);
     }
 
     private void validateRequestedAmountOfDiceToRollIsInRange(
-            int requestedAmount, int maxAllowedAmount) {
-        if (requestedAmount < 1 || requestedAmount > maxAllowedAmount) {
+            int requestedAmount, int minAllowedAmount, int maxAllowedAmount) throws IllegalArgumentException {
+        if (requestedAmount < minAllowedAmount || requestedAmount > maxAllowedAmount) {
             throw new IllegalArgumentException(
-                    "Valid amount of dice is in the range [1, " + maxAllowedAmount + "]");
+                    "Valid amount of dice is in the range [" + minAllowedAmount
+                            + ", " + maxAllowedAmount + "]");
         }
     }
 
@@ -85,7 +84,7 @@ public class DieRollParser {
     }
 
     public List<BattleResult> generateBattleResults(
-            List<Integer> defenderRolls, List<Integer> attackerRolls) {
+            List<Integer> defenderRolls, List<Integer> attackerRolls) throws IllegalArgumentException {
         validateListsAreNotEmpty(defenderRolls, attackerRolls);
         validateListsAreSortedProperly(defenderRolls, attackerRolls);
 
@@ -98,14 +97,14 @@ public class DieRollParser {
     }
 
     private void validateListsAreNotEmpty(
-            List<Integer> defenderRollsList, List<Integer> attackerRollsList) {
+            List<Integer> defenderRollsList, List<Integer> attackerRollsList) throws IllegalArgumentException {
         if (attackerRollsList.isEmpty() || defenderRollsList.isEmpty()) {
             throw new IllegalArgumentException("Both arguments must have at least one element");
         }
     }
 
     private void validateListsAreSortedProperly(
-            List<Integer> defenderRollsList, List<Integer> attackerRollsList) {
+            List<Integer> defenderRollsList, List<Integer> attackerRollsList) throws IllegalArgumentException {
         if (!validateSortIsInNonIncreasingOrder(defenderRollsList)) {
             throw new IllegalArgumentException(
                     "defenderRolls are not sorted in non-increasing order");
