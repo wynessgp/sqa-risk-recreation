@@ -88,7 +88,7 @@ public class DieRollParser {
     }
 
     public void generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
-        if (attackerRolls.isEmpty()) {
+        if (attackerRolls.isEmpty() || defenderRolls.isEmpty()) {
             throw new IllegalArgumentException("Both arguments must have at least one element");
         }
     }

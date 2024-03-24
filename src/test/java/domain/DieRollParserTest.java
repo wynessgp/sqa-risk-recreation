@@ -371,5 +371,21 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test17_generateBattleResults_emptyDefenderRolls_expectException() {
+        // variable setup
+        DieRollParser unitUnderTest = new DieRollParser();
+        List<Integer> defenderRolls = List.of();
+        List<Integer> attackerRolls = List.of(5);
+
+        // perform the operation
+        String expectedMessage = "Both arguments must have at least one element";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.generateBattleResults(defenderRolls, attackerRolls));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }
