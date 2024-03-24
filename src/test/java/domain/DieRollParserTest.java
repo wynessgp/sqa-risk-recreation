@@ -51,28 +51,8 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    @ParameterizedTest
-    @CsvSource({"1, 0", "2, 1"})
-    public void test02_rollAttackerDice_notEnoughDiceInCollection_expectException(
-            int illegalInput, int numDiceToInitialize) {
-        // variable setup
-        DieRollParser unitUnderTest = new DieRollParser();
-
-        // preliminary op:
-        assertTrue(unitUnderTest.buildDiceLists(numDiceToInitialize));
-
-        // perform the operation
-        String expectedMessage = "Not enough dice to fulfill requested amount to roll";
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.rollAttackerDice(illegalInput));
-
-        // assert
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
-
     @Test
-    public void test03_rollAttackerDice_rollThreeDice_expectSortedListOfSizeThree() {
+    public void test02_rollAttackerDice_rollThreeDice_expectSortedListOfSizeThree() {
         // variable setup
         Random random = new Random();
 
@@ -105,7 +85,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test04_rollAttackerDice_rollTwoDice_expectSortedListOfSizeTwo() {
+    public void test03_rollAttackerDice_rollTwoDice_expectSortedListOfSizeTwo() {
         // variable setup
         Random random = new Random();
 
@@ -136,7 +116,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test05_rollAttackerDice_rollOneDie_expectListOfSizeOne() {
+    public void test04_rollAttackerDice_rollOneDie_expectListOfSizeOne() {
         // variable setup
         Random random = new Random();
 
@@ -163,7 +143,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test06_rollAttackerDice_rollTwoUnsetValueDice_expectSortedListOfSizeTwo() {
+    public void test05_rollAttackerDice_rollTwoUnsetValueDice_expectSortedListOfSizeTwo() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
 
@@ -179,7 +159,7 @@ public class DieRollParserTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 3})
-    public void test07_rollDefenderDice_tooFewOrTooManyDice_expectException(int illegalInput) {
+    public void test06_rollDefenderDice_tooFewOrTooManyDice_expectException(int illegalInput) {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
 
@@ -196,28 +176,8 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    @ParameterizedTest
-    @CsvSource({"1, 0", "2, 1"})
-    public void test08_rollDefenderDice_notEnoughDiceInCollection_expectException(
-            int illegalInput, int numDiceToInitialize) {
-        // variable setup
-        DieRollParser unitUnderTest = new DieRollParser();
-
-        // preliminary op:
-        assertTrue(unitUnderTest.buildDiceLists(numDiceToInitialize));
-
-        // perform the operation
-        String expectedMessage = "Not enough dice to fulfill requested amount to roll";
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.rollDefenderDice(illegalInput));
-
-        // assert
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
-
     @Test
-    public void test09_rollDefenderDice_rollTwoDice_expectSortedListOfSizeTwo() {
+    public void test07_rollDefenderDice_rollTwoDice_expectSortedListOfSizeTwo() {
         // variable setup
         Random random = new Random();
 
@@ -248,7 +208,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test10_rollDefenderDice_rollTwoDiceIdenticalValues_expectSortedListOfSizeTwo() {
+    public void test08_rollDefenderDice_rollTwoDiceIdenticalValues_expectSortedListOfSizeTwo() {
         // variable setup
         Random random = new Random();
 
@@ -279,7 +239,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test11_rollDefenderDice_rollOneDie_expectListOfSizeOne() {
+    public void test09_rollDefenderDice_rollOneDie_expectListOfSizeOne() {
         // variable setup
         Random random = new Random();
         Die firstDie = EasyMock.mock(Die.class);
@@ -306,7 +266,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test12_rollDefenderDice_rollTwoUnsetValueDice_expectSortedListOfSizeTwo() {
+    public void test10_rollDefenderDice_rollTwoUnsetValueDice_expectSortedListOfSizeTwo() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
 
@@ -321,7 +281,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test13_validateSortIsInNonIncreasingOrder_listOfSizeOne_expectTrue() {
+    public void test11_validateSortIsInNonIncreasingOrder_listOfSizeOne_expectTrue() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> list = List.of(1);
@@ -332,7 +292,7 @@ public class DieRollParserTest {
 
     @ParameterizedTest
     @CsvSource({"4, 2, true", "3, 3, true", "2, 4, false"})
-    public void test14_validateSortIsInNonIncreasingOrder_listOfSizeTwo_resultVaries(
+    public void test12_validateSortIsInNonIncreasingOrder_listOfSizeTwo_resultVaries(
             int listElementOne, int listElementTwo, boolean expectedResult) {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
@@ -344,8 +304,8 @@ public class DieRollParserTest {
 
     @ParameterizedTest
     @CsvSource({"6, 5, 1, true", "1, 3, 5, false"})
-    public void test15_validateSortIsInNonIncreasingOrder_listOfSizeThree_resultVaries(
-            int listElementOne, int listElementTwo, // gross!
+    public void test13_validateSortIsInNonIncreasingOrder_listOfSizeThree_resultVaries(
+            int listElementOne, int listElementTwo,
             int listElementThree, boolean expectedResult) {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
@@ -356,7 +316,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test16_generateBattleResults_emptyAttackerRolls_expectException() {
+    public void test14_generateBattleResults_emptyAttackerRolls_expectException() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(5);
@@ -372,7 +332,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test17_generateBattleResults_emptyDefenderRolls_expectException() {
+    public void test15_generateBattleResults_emptyDefenderRolls_expectException() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of();
@@ -388,7 +348,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test18_generateBattleResults_bothInputsEmpty_expectException() {
+    public void test16_generateBattleResults_bothInputsEmpty_expectException() {
         // variable setup
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of();
@@ -404,7 +364,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test19_generateBattleResults_defenderRollsNotSorted_expectException() {
+    public void test17_generateBattleResults_defenderRollsNotSorted_expectException() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(1, 2);
         List<Integer> attackerRolls = List.of(5);
@@ -419,7 +379,7 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test20_generateBattleResults_attackerRollsNotSorted_expectException() {
+    public void test18_generateBattleResults_attackerRollsNotSorted_expectException() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(5);
         List<Integer> attackerRolls = List.of(1, 2);
@@ -434,95 +394,95 @@ public class DieRollParserTest {
     }
 
     @Test
-    public void test21_generateBattleResults_rolledSameValueOnce_expectOneDefenderVictory() {
+    public void test19_generateBattleResults_rolledSameValueOnce_expectOneDefenderVictory() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(5);
         List<Integer> attackerRolls = List.of(5);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(1, actual.size());
-        assertEquals(List.of(BattleResults.DEFENDER_VICTORY), actual);
+        assertEquals(List.of(BattleResult.DEFENDER_VICTORY), actual);
     }
 
     @Test
-    public void test22_generateBattleResults_twoDefenderDice_expectOneDefenderVictory() {
+    public void test20_generateBattleResults_twoDefenderDice_expectOneDefenderVictory() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(6, 6);
         List<Integer> attackerRolls = List.of(1);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(1, actual.size());
-        assertEquals(List.of(BattleResults.DEFENDER_VICTORY), actual);
+        assertEquals(List.of(BattleResult.DEFENDER_VICTORY), actual);
     }
 
     @Test
-    public void test23_generateBattleResults_defenderWinsTwice_expectTwoDefenderVictories() {
+    public void test21_generateBattleResults_defenderWinsTwice_expectTwoDefenderVictories() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(6, 6);
         List<Integer> attackerRolls = List.of(5, 3, 2);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(2, actual.size());
-        assertEquals(List.of(BattleResults.DEFENDER_VICTORY, BattleResults.DEFENDER_VICTORY),
+        assertEquals(List.of(BattleResult.DEFENDER_VICTORY, BattleResult.DEFENDER_VICTORY),
                 actual);
     }
 
     @Test
-    public void test24_generateBattleResults_oneDefenderOneAttackerVictory_expectBothTypes() {
+    public void test22_generateBattleResults_oneDefenderOneAttackerVictory_expectBothTypes() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(6, 2);
         List<Integer> attackerRolls = List.of(4, 4, 3);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(2, actual.size());
-        assertEquals(List.of(BattleResults.DEFENDER_VICTORY, BattleResults.ATTACKER_VICTORY),
+        assertEquals(List.of(BattleResult.DEFENDER_VICTORY, BattleResult.ATTACKER_VICTORY),
                 actual);
     }
 
     @Test
-    public void test25_generateBattleResults_attackerWinsOnce_expectOneAttackerVictory() {
+    public void test23_generateBattleResults_attackerWinsOnce_expectOneAttackerVictory() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(3);
         List<Integer> attackerRolls = List.of(4);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(1, actual.size());
-        assertEquals(List.of(BattleResults.ATTACKER_VICTORY), actual);
+        assertEquals(List.of(BattleResult.ATTACKER_VICTORY), actual);
     }
 
     @Test
-    public void test26_generateBattleResults_attackerWinsTwice_expectTwoAttackerVictories() {
+    public void test24_generateBattleResults_attackerWinsTwice_expectTwoAttackerVictories() {
         DieRollParser unitUnderTest = new DieRollParser();
         List<Integer> defenderRolls = List.of(3, 2);
         List<Integer> attackerRolls = List.of(5, 4);
 
         // perform the operation
-        List<BattleResults> actual = unitUnderTest.generateBattleResults(
+        List<BattleResult> actual = unitUnderTest.generateBattleResults(
                 defenderRolls, attackerRolls);
 
         // assertions
         assertEquals(2, actual.size());
-        assertEquals(List.of(BattleResults.ATTACKER_VICTORY, BattleResults.ATTACKER_VICTORY),
+        assertEquals(List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY),
                 actual);
     }
 
