@@ -52,7 +52,7 @@ Input: 5 traded-in sets, collection with one infantry card
 Output: 0, false
 
 ### Test value 4
-Input: 13 traded-in sets, collection with one calvary card
+Input: 13 traded-in sets, collection with one cavalry card
 
 Output: 0, false
 
