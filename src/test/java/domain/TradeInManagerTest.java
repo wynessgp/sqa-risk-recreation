@@ -494,7 +494,24 @@ public class TradeInManagerTest {
         assertEquals(expectedSetsAfter, actualSetsAfter);
     }
 
+    @Test
+    public void test42_startTrade_5setOneInfantryCardOneCavalryCardOneArtilleryCardCollection_expected15AndTrue(){
+        int expectedPieces = 15;
+        int expectedSetsAfter = 6;
 
+        for(int i = 0; i < 5; i++){
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+
+        cards.add(infantryCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
+
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
 
 
 
