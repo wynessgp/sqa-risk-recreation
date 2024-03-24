@@ -12,7 +12,14 @@ public class TradeInManager {
     }
 
     public int startTrade(List<Card> attemptedCards){
-        return 0;
+        if(this.verifyValidCombo(attemptedCards)){
+            int numNewPieces = this.calculateNumNewPieces();
+            updateSetsTradedIn();
+            return numNewPieces;
+        }
+        else{
+            return 0;
+        }
     }
 
     public boolean verifyValidCombo(List<Card> attemptedCards) {
