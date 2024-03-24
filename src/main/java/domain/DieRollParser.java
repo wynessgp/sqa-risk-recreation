@@ -9,19 +9,23 @@ public class DieRollParser {
 
     private final List<Die> attackerDice;
     private final List<Die> defenderDice;
+    private final List<Die> setupDice;
     private final Random randomizer;
 
     public DieRollParser() {
         this.attackerDice = new ArrayList<>();
         this.defenderDice = new ArrayList<>();
+        this.setupDice = new ArrayList<>();
         this.randomizer = new Random();
     }
 
     // this constructor is to only be utilized for unit testing!
-    DieRollParser(Random randomizer, List<Die> attackerDice, List<Die> defenderDice) {
+    DieRollParser(Random randomizer, List<Die> attackerDice,
+                  List<Die> defenderDice, List<Die> setupDice) {
         this.randomizer = randomizer;
         this.attackerDice = attackerDice;
         this.defenderDice = defenderDice;
+        this.setupDice = setupDice;
     }
 
     public boolean buildDiceLists() {
@@ -34,10 +38,15 @@ public class DieRollParser {
         return true;
     }
 
-    public void rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
+    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
         if (amountOfDiceToRoll < 2 || amountOfDiceToRoll > 6) {
             throw new IllegalArgumentException("Valid amount of dice is in the range [2, 6]");
         }
+        List<Integer> rollResults = new ArrayList<>();
+        for (int i = 0; i < amountOfDiceToRoll; i++) {
+            rollResults.add(setupDice.get(i).rollSingleDie(randomizer));
+        }
+        return rollResults;
     }
 
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
