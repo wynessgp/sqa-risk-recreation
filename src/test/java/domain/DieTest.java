@@ -41,8 +41,8 @@ public class DieTest {
         // capable of it)
         // Note that we also need to return forcedRoll - 1, as we add the lower bound due
         // to JDK11's restrictions.
-        EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1))
-                .andReturn(forcedRollForMock - minimumPossibleRoll);
+        EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1)).andReturn(
+                forcedRollForMock - minimumPossibleRoll);
 
         // Replay
         EasyMock.replay(random);
@@ -68,8 +68,8 @@ public class DieTest {
 
         // Note that we also need to return forcedRoll - 1, as we add the lower bound due to
         // JDK11's restrictions.
-        EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1))
-                .andReturn(expected - minimumPossibleRoll);
+        EasyMock.expect(random.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1)).andReturn(
+                expected - minimumPossibleRoll);
 
         // Replay
         EasyMock.replay(random);
