@@ -112,7 +112,7 @@ Input: 0 traded-in sets, collection with two wild cards and two infantry cards
 Output: 0, false
 
 ### Test value 16
-Input: 3 traded-in sets, collection with two infantry cards and two calvary cards
+Input: 3 traded-in sets, collection with two infantry cards and two cavalry cards
 
 Output: 0, false
 
