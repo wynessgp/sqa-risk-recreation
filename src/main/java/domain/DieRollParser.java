@@ -34,6 +34,12 @@ public class DieRollParser {
         return true;
     }
 
+    public void rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
+        if (amountOfDiceToRoll < 2 || amountOfDiceToRoll > 6) {
+            throw new IllegalArgumentException("Valid amount of dice is in the range [2, 6]");
+        }
+    }
+
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 3);
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);

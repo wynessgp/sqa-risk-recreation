@@ -486,5 +486,20 @@ public class DieRollParserTest {
                 actual);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 1, 7})
+    public void test25_rollDiceToDeterminePlayerOrder_invalidInput_expectException(
+            int illegalInput) {
+        DieRollParser unitUnderTest = new DieRollParser();
+
+        // perform the operation
+        String expectedMessage = "Valid amount of dice is in the range [2, 6]";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.rollDiceToDeterminePlayerOrder(illegalInput));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }
