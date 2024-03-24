@@ -102,9 +102,15 @@ public class DieRollParser {
                     "attackerRolls are not sorted in non-increasing order");
         }
 
-        if (attackerRolls.size() == 3) {
-            return List.of(BattleResults.DEFENDER_VICTORY, BattleResults.DEFENDER_VICTORY);
+        List<BattleResults> battleResults = new ArrayList<>();
+        int smallerListSize = Math.min(defenderRolls.size(), attackerRolls.size());
+        for (int i = 0; i < smallerListSize; i++) {
+            if (defenderRolls.get(i) >= attackerRolls.get(i)) {
+                battleResults.add(BattleResults.DEFENDER_VICTORY);
+            } else {
+                battleResults.add(BattleResults.ATTACKER_VICTORY);
+            }
         }
-        return List.of(BattleResults.DEFENDER_VICTORY);
+        return battleResults;
     }
 }
