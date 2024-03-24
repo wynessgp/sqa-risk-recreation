@@ -40,7 +40,7 @@ public class DieRollParser {
         return true;
     }
 
-    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) throws IllegalArgumentException {
+    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 2, 6);
         buildSetupDie(amountOfDiceToRoll);
 
@@ -55,22 +55,21 @@ public class DieRollParser {
         setupDie = new Die(setupDieUpperBound, 1);
     }
 
-    public List<Integer> rollAttackerDice(int amountOfDiceToRoll) throws IllegalArgumentException {
+    public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 3);
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
-    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) throws IllegalArgumentException {
+    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 2);
         return rollDiceFromList(amountOfDiceToRoll, defenderDice);
     }
 
     private void validateRequestedAmountOfDiceToRollIsInRange(
-            int requestedAmount, int minAllowedAmount, int maxAllowedAmount) throws IllegalArgumentException {
+            int requestedAmount, int minAllowedAmount, int maxAllowedAmount) {
         if (requestedAmount < minAllowedAmount || requestedAmount > maxAllowedAmount) {
-            throw new IllegalArgumentException(
-                    "Valid amount of dice is in the range [" + minAllowedAmount
-                            + ", " + maxAllowedAmount + "]");
+            throw new IllegalArgumentException(String.format(
+                    "Valid amount of dice is in the range [%d, %d]", minAllowedAmount, maxAllowedAmount));
         }
     }
 
@@ -83,8 +82,7 @@ public class DieRollParser {
         return rollResults;
     }
 
-    public List<BattleResult> generateBattleResults(
-            List<Integer> defenderRolls, List<Integer> attackerRolls) throws IllegalArgumentException {
+    public List<BattleResult> generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
         validateListsAreNotEmpty(defenderRolls, attackerRolls);
         validateListsAreSortedProperly(defenderRolls, attackerRolls);
         List<BattleResult> battleResults = new ArrayList<>();
@@ -95,28 +93,24 @@ public class DieRollParser {
         return battleResults;
     }
 
-    private void validateListsAreNotEmpty(
-            List<Integer> defenderRollsList, List<Integer> attackerRollsList) throws IllegalArgumentException {
+    private void validateListsAreNotEmpty(List<Integer> defenderRollsList, List<Integer> attackerRollsList) {
         if (attackerRollsList.isEmpty() || defenderRollsList.isEmpty()) {
             throw new IllegalArgumentException("Both arguments must have at least one element");
         }
     }
 
-    private void validateListsAreSortedProperly(
-            List<Integer> defenderRollsList, List<Integer> attackerRollsList) throws IllegalArgumentException {
+    private void validateListsAreSortedProperly(List<Integer> defenderRollsList, List<Integer> attackerRollsList) {
         if (!validateSortIsInNonIncreasingOrder(defenderRollsList)) {
-            throw new IllegalArgumentException(
-                    "defenderRolls are not sorted in non-increasing order");
+            throw new IllegalArgumentException("defenderRolls are not sorted in non-increasing order");
         }
+
         if (!validateSortIsInNonIncreasingOrder(attackerRollsList)) {
-            throw new IllegalArgumentException(
-                    "attackerRolls are not sorted in non-increasing order");
+            throw new IllegalArgumentException("attackerRolls are not sorted in non-increasing order");
         }
     }
 
     private BattleResult calculateBattleResult(Integer defenderRoll, Integer attackerRoll) {
-        return (defenderRoll >= attackerRoll) ? BattleResult.DEFENDER_VICTORY :
-                                                BattleResult.ATTACKER_VICTORY;
+        return (defenderRoll >= attackerRoll) ? BattleResult.DEFENDER_VICTORY : BattleResult.ATTACKER_VICTORY;
     }
 
     boolean validateSortIsInNonIncreasingOrder(List<Integer> listToCheck) {
