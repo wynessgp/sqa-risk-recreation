@@ -20,20 +20,19 @@ public class TerritoryGraph {
     }
 
     public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
-        if (!(territories.containsKey(startingTerritory)
-                && territories.containsKey(endingTerritory))) {
-            return false;
-        }
-        if (territories.get(startingTerritory).contains(endingTerritory)
-                && territories.get(endingTerritory).contains(startingTerritory)) {
-            return false;
-        }
-        if (startingTerritory == endingTerritory) {
+        if (!isValidAdjacency(startingTerritory, endingTerritory)) {
             return false;
         }
         territories.get(startingTerritory).add(endingTerritory);
         territories.get(endingTerritory).add(startingTerritory);
         return true;
+    }
+
+    private boolean isValidAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+        return territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory)
+                && (!territories.get(startingTerritory).contains(endingTerritory)
+                || !territories.get(endingTerritory).contains(startingTerritory))
+                && (startingTerritory != endingTerritory);
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
@@ -51,23 +50,36 @@ public class TerritoryGraph {
         return result;
     }
 
-    public boolean addSetOfAdjacencies(TerritoryType territoryType,
-                                       Set<TerritoryType> adjacencies) {
-        if (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()
-                || adjacencies.contains(territoryType)) {
+    public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
+        Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
+        if (graphContainsAdjacencies(territoryType, adjacencies, currentAdjacencies)) {
             return false;
         }
-        Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
+        addAdjaenciesToGraph(territoryType, adjacencies, currentAdjacencies);
+        return true;
+    }
+
+    private boolean graphContainsAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies,
+                                             Set<TerritoryType> currentAdjacencies) {
+        return (!territoryTypeToObject.containsKey(territoryType) || adjacencies.isEmpty()
+                || adjacencies.contains(territoryType)) || graphHasAdjacencyMapping(adjacencies, currentAdjacencies);
+    }
+
+    private boolean graphHasAdjacencyMapping(Set<TerritoryType> adjacencies, Set<TerritoryType> currentAdjacencies) {
         for (TerritoryType adjacentTerritoryType : adjacencies) {
             if (!territoryTypeToObject.containsKey(adjacentTerritoryType)
                     || currentAdjacencies.contains(adjacentTerritoryType)) {
-                return false;
+                return true;
             }
         }
+        return false;
+    }
+
+    private void addAdjaenciesToGraph(TerritoryType territoryType, Set<TerritoryType> adjacencies,
+                                         Set<TerritoryType> currentAdjacencies) {
         currentAdjacencies.addAll(adjacencies);
         for (TerritoryType adjacentTerritoryType : adjacencies) {
             territories.get(adjacentTerritoryType).add(territoryType);
         }
-        return true;
     }
 }
