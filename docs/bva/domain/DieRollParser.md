@@ -31,7 +31,7 @@ Output: A list which determines when each player goes, by index.
 ## BVA Step 2
 Input: 
 - amountOfDiceToRoll: Counts [2, 6]
-- Underlying storage for our setup dice: Collection
+- Set up die: Pointer
 
 Output: Collection 
 
@@ -44,9 +44,12 @@ Input:
   - 2 (RISK rules minimum allowed amount)
   - \> 2
   - Maximum possible value: 6 (RISK rules maximum allowed amount)
+- Setup die: Pointer
+  - Null pointer (will not be considered; die is generated upon request)
+  - A pointer to the true object
 
 Output: Collection
-- An empty collection (ignored, will always have setup dice)
+- An empty collection (ignored, will always have set up dice)
 - Contains exactly one element (ignored)
 - Contains exactly 2 elements
 - Contains \> 2 elements
@@ -57,58 +60,61 @@ Output: Collection
 ### Test 1:
 - Input:
   - amountOfDiceToRoll: -1
-  - Collection = [] (doesn't matter)
+  - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll: 0
-  - Collection = [] (doesn't matter)
+  - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll: 7
-  - Collection = [] (doesn't matter)
+  - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
   - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll: 2
-  - Collection = [valid 2-sided die, valid 2-sided die] (you can see where this is going)
-- Output: [2, 1]
+  - Set up die = valid 2-sided die (you can see where this is going)
+- Output: No restrictions on the ordering of the contents, but:
+  - Must contain all numbers from (0, 2]
+  - Must not have any duplicates
+  - |Output| = 2
 ### Test 5:
 - Input:
   - amountOfDiceToRoll: 3
-  - Collection = [valid 3-sided die, valid 3-sided die, valid 3-sided die]
-- Output: [3, 2, 1]
+  - Set up die = valid 3-sided die
+- Output: No restrictions on the ordering of the contents, but:
+  - Must contain all numbers from (0, 3]
+  - Must not have any duplicates
+  - |Output| = 3
 ### Test 6:
 - Input:
   - amountOfDiceToRoll: 4
-  - Collection = [valid 4-sided die, ...,  valid 4-sided die], |Collection| = 4
-- Output: [4, 3, 2, 1]
+  - Set up die = valid 4-sided die
+- Output: No restrictions on the ordering of the contents, but:
+  - Must contain all numbers from (0, 4]
+  - Must not have any duplicates
+  - |Output| = 4
 ### Test 7:
 - Input:
   - amountOfDiceToRoll: 5
-  - Collection = [valid 5-sided die, ...,  valid 5-sided die], |Collection| = 5
-- Output: [5, 4, 3, 2, 1]
+  - Set up die = valid 5-sided die
+- Output: No restrictions on the ordering of the contents, but:
+  - Must contain all numbers from (0, 5]
+  - Must not have any duplicates
+  - |Output| = 5
 ### Test 8:
 - Input:
   - amountOfDiceToRoll: 6
-  - Collection = [valid 6-sided die, ...,  valid 6-sided die], |Collection| = 6
-- Output: [6, 5, 4, 3, 2, 1]
-### Test 9:
-- Input:
-  - amountOfDiceToRoll: 6
-  - Collection = [valid 6-sided die, ...,  valid 6-sided die], |Collection| = 6
-- Output: Something that isn't perfectly ordered (consider: [5, 3, 2, 6, 1, 4], etc.)
-  - Only restriction is that it must not have duplicates!
-### Test 10:
-- Input:
-  - amountOfDiceToRoll: 4
-  - Collection = [valid 4-sided die, ...,  valid 4-sided die], |Collection| = 4
-- Output: Something that isn't perfectly ordered (consider: [3, 4, 1, 2], etc.)
-  - Only restriction is that it must not have duplicates!
+  - Set up die = valid 6-sided die
+- Output: No restrictions on the ordering of the contents, but:
+  - Must contain all numbers from (0, 6]
+  - Must not have any duplicates
+  - |Output| = 6
 
 # method: `rollAttackerDice(amountOfDiceToRoll: int): List<Integer>`
 
