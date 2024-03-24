@@ -326,7 +326,7 @@ Output:
   - Collection = [ATTACKER_VICTORY]
 ### Test 16:
 - Input:
-  - defenderRolls = [3, 4], attackerRolls = [4, 5]
+  - defenderRolls = [3, 2], attackerRolls = [4, 5]
 - Output:
   - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 ### Test 17:
