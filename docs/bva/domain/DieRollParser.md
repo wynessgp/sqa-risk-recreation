@@ -321,17 +321,17 @@ Output:
   - Collection = [ATTACKER_VICTORY]
 ### Test 15:
 - Input:
-  - defenderRolls = [2], attackerRolls = [3, 4, 5]
+  - defenderRolls = [2], attackerRolls = [5, 4, 3]
 - Output:
   - Collection = [ATTACKER_VICTORY]
 ### Test 16:
 - Input:
-  - defenderRolls = [3, 2], attackerRolls = [4, 5]
+  - defenderRolls = [3, 2], attackerRolls = [5, 4]
 - Output:
   - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 ### Test 17:
 - Input:
-  - defenderRolls = [2, 3], attackerRolls = [4, 4, 6]
+  - defenderRolls = [3, 2], attackerRolls = [6, 4, 4]
 - Output:
   - Collection = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 
