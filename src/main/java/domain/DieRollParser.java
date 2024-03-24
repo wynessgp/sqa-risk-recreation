@@ -86,4 +86,10 @@ public class DieRollParser {
         }
         return true;
     }
+
+    public void generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
+        if (attackerRolls.isEmpty()) {
+            throw new IllegalArgumentException("Both arguments must have at least one element");
+        }
+    }
 }
