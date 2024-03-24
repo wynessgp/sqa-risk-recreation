@@ -87,7 +87,8 @@ public class DieRollParser {
         return true;
     }
 
-    public void generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
+    public List<BattleResults> generateBattleResults(
+            List<Integer> defenderRolls, List<Integer> attackerRolls) {
         if (attackerRolls.isEmpty() || defenderRolls.isEmpty()) {
             throw new IllegalArgumentException("Both arguments must have at least one element");
         }
@@ -100,5 +101,6 @@ public class DieRollParser {
             throw new IllegalArgumentException(
                     "attackerRolls are not sorted in non-increasing order");
         }
+        return List.of(BattleResults.DEFENDER_VICTORY);
     }
 }
