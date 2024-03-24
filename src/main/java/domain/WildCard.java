@@ -4,12 +4,12 @@ public class WildCard implements Card {
 
     @Override
     public boolean matchesTerritory(TerritoryType territory) {
-        return false; // that's it.
+        return false;
     }
 
     @Override
     public boolean matchesPieceType(PieceType pieceType) {
-        return true; // easiest class I've ever written
+        return true;
     }
 
     @Override
