@@ -5,7 +5,7 @@
 - **Output**: Yes or no answer
 
 ### BVA Step 2
-- **Input**: Pointer, Territory object is initialized
+- **Input**: Pointer
 - **Output**: Boolean
 
 ### BVA Step 3
@@ -75,14 +75,14 @@
 
 ### BVA Step 2
 - **Input**: the state of the relying object (Player object) is set
-- **Output**: pointer or null
+- **Output**: pointer
 
 ### BVA Step 3
 - **Input**: Cases
-  - The first possibility: The territory has no player in control, call getter
-  - The second possibility: The territory has a player in control, call getter
+  - The first possibility: The territory has no player in control
+  - The second possibility: The territory has a player in control
   
-- **Output**: Pointers of Player object or null
+- **Output**: the assigned Player object
 
 ### BVA Step 4
 ### Test 1
@@ -110,8 +110,8 @@
 
 ### BVA Step 3
 - **Input**: Cases
-  - The first possibility: The territory has no armies present, call getter
-  - The second possibility: The territory has armies present, call getter
+  - The first possibility: The territory has no armies present
+  - The second possibility: The territory has armies present
 
 - **Output**: Integer
 - - The first possibility: 0
@@ -144,7 +144,7 @@
   - ...
   - WesternAustralia
 
-- **Output**: Pointer of TerritoryType
+- **Output**: Cases
 
 ### BVA Step 4
 
