@@ -59,19 +59,19 @@ Output: Collection
   - amountOfDiceToRoll: -1
   - Collection = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of players is in the range of [2, 6]"
+  - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll: 0
   - Collection = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of players is in the range of [2, 6]"
+  - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll: 7
   - Collection = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of players is in the range of [2, 6]"
+  - message: "Valid amount of dice is in the range [2, 6]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll: 2
