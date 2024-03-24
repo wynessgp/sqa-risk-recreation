@@ -78,7 +78,7 @@ public class DieRollParser {
         return rollResults;
     }
 
-    public boolean validateSortIsInNonIncreasingOrder(List<Integer> listToCheck) {
+    boolean validateSortIsInNonIncreasingOrder(List<Integer> listToCheck) {
         for (int i = 0; i < listToCheck.size() - 1; i++) {
             if (listToCheck.get(i) < listToCheck.get(i + 1)) {
                 return false;
