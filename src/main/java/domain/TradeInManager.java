@@ -15,9 +15,8 @@ public class TradeInManager {
             int numNewPieces = this.calculateNumNewPieces();
             updateSetsTradedIn();
             return numNewPieces;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     public boolean verifyValidCombo(List<Card> attemptedCards) {
@@ -57,9 +56,8 @@ public class TradeInManager {
             return 2 * this.setsTradedInSoFar + 4;
         } else if (this.setsTradedInSoFar >= 14) { //all cards traded in
             return 0;
-        } else {
-            return (this.setsTradedInSoFar - 5) * 5 + 15;
         }
+        return (this.setsTradedInSoFar - 5) * 5 + 15;
     }
 
     public boolean updateSetsTradedIn() {
