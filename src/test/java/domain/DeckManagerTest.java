@@ -50,6 +50,20 @@ public class DeckManagerTest {
         assertTrue(deckManager.getDeckOfCards().isEmpty());
     }
 
+    @Test
+    public void test04_shuffle_OneElementList_ExpectTrueAndSameList() {
+        deckManager.getDeckOfCards().add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
+
+        boolean result = deckManager.shuffle();
+
+        assertTrue(result);
+
+        List<Card> deck = deckManager.getDeckOfCards();
+        assertEquals(1, deck.size());
+//        assertEquals(TerritoryType.ALBERTA, ((TerritoryCard) deck.get(0)).getTerritory()); //getters are not implemented yet
+//        assertEquals(PieceType.INFANTRY, ((TerritoryCard) deck.get(0)).getPiece());
+    }
+
 
 
 }
