@@ -1,10 +1,11 @@
-# method: DeckManager():void
+# method: DeckManager()
 
 ## BVA Step 1
 Input: N/A
 
 Output: 
-- The initialized and shuffled list of cards (Note: contains only 42 territory cards and 2 wild cards for now)
+- Updated empty list to be the initialized and shuffled list of cards 
+  (Note: contains only 42 territory cards and 2 wild cards for now)
 
 ## BVA Step 2
 Input: N/A
