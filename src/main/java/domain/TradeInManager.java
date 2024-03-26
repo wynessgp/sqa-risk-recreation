@@ -20,36 +20,51 @@ public class TradeInManager {
     }
 
     public boolean verifyValidCombo(List<Card> attemptedCards) {
-        //check if size is 3
         if (attemptedCards.size() == 3) {
-            boolean hasInfantry = false;
-            boolean hasCavalry = false;
-            boolean hasArtillery = false;
-
-            for (Card card : attemptedCards) {
-                //check for wild card
-                if (card.isWild()) {
-                    return true;
-                }
-
-                //check which piece is in the list
-                if (card.matchesPieceType(PieceType.INFANTRY))  {
-                    hasInfantry = true;
-                } else if (card.matchesPieceType(PieceType.CAVALRY))  {
-                    hasCavalry = true;
-                } else if (card.matchesPieceType(PieceType.ARTILLERY))  {
-                    hasArtillery = true;
-                }
-            }
-
-            return (hasInfantry && hasCavalry && hasArtillery)      //one of each
-                    || (hasInfantry && !hasCavalry && !hasArtillery)  //3 infantry
-                    || (!hasInfantry && hasCavalry && !hasArtillery)  //3 cavalry
-                    || (!hasInfantry && !hasCavalry && hasArtillery); //3 artillery
+            return hasWild(attemptedCards)
+                    || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
+                    || (hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && !hasArtillery(attemptedCards))
+                    || (!hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && !hasArtillery(attemptedCards))
+                    || (!hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && hasArtillery(attemptedCards));
         }
         return false;
     }
 
+    private boolean hasWild(List<Card> attemptedCards) {
+        for (Card card : attemptedCards) {
+            if (card.isWild()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasInfantry(List<Card> attemptedCards) {
+        for (Card card : attemptedCards) {
+            if (card.matchesPieceType(PieceType.INFANTRY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasCavalry(List<Card> attemptedCards) {
+        for (Card card : attemptedCards) {
+            if (card.matchesPieceType(PieceType.CAVALRY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasArtillery(List<Card> attemptedCards) {
+        for (Card card : attemptedCards) {
+            if (card.matchesPieceType(PieceType.ARTILLERY)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int calculateNumNewPieces() {
         if (this.setsTradedInSoFar < 5) {
