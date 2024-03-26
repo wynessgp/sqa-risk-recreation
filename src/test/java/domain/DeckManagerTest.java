@@ -34,6 +34,12 @@ public class DeckManagerTest {
         //no checking for card type yet
 
     }
+    @Test
+    public void test02_initDeck_OneElementCollection_ExpectException() {
+        deckManager.getDeckOfCards().add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
+
+        assertThrows(IllegalStateException.class, () -> deckManager.initDeck());
+    }
 
 
 

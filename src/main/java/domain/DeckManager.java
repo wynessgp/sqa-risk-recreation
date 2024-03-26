@@ -11,20 +11,16 @@ public class DeckManager {
         this.deckOfCards = new ArrayList<>();
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     public boolean initDeck() {
-
         if (!this.deckOfCards.isEmpty()) {
-            return false;
+            throw new IllegalStateException("Cannot initialize a non-empty deck.");
         }
-
         for (TerritoryType territory : TerritoryType.values()) {
             this.deckOfCards.add(new TerritoryCard(territory, PieceType.INFANTRY));
         }
-
         this.deckOfCards.add(new WildCard());
         this.deckOfCards.add(new WildCard());
-
-
         return true;
     }
 
