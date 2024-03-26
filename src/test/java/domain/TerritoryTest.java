@@ -21,14 +21,7 @@ class TerritoryTest {
     }
 
 
-    @Test
-    void test02_ChangePlayerInControl_AnotherPlayer_ReturnTrue() {
-        Territory territory = new Territory(null);
-        Player playerA = new Player();
-        Player playerB = new Player();
-        territory.setPlayerInControl(playerA);
-        assertTrue(territory.setPlayerInControl(playerB));
-    }
+
 
     @Test
     void test03_SetNullPlayerInControl_SetNull_ReturnsFalse() {
@@ -89,12 +82,12 @@ class TerritoryTest {
     }
 
     @Test
-    void test11_GetPlayerInControl_ChangePlayer_ReturnsChangedPlayer() {
+    void test11_GetPlayerInControl_ChangePlayer_ConfirmAndReturnsChangedPlayer() {
         Territory territory = new Territory(null);
         Player playerA = new Player();
         Player playerB = new Player();
         territory.setPlayerInControl(playerA);
-        territory.setPlayerInControl(playerB);
+        assertTrue(territory.setPlayerInControl(playerB));
         assertSame(playerB, territory.getPlayerInControl());
     }
 

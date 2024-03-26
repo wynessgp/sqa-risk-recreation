@@ -45,7 +45,7 @@
 - **Output**: Boolean
 
 ### BVA Step 3
-- **Input**: -1,0, 1,>1, (No max due to rules)
+- **Input**: -1,0, 1,>1, ，max number of engine's limit， max number of engine's limit + 1
 - **Output**: true and false.
 
 ### BVA Step 4
@@ -82,7 +82,7 @@
   - The first possibility: The territory has no player in control
   - The second possibility: The territory has a player in control
   
-- **Output**: the assigned Player object
+- **Output**: the assigned Player object pointer or null
 
 ### BVA Step 4
 ### Test 1
@@ -109,13 +109,11 @@
 - **Output**: Integer
 
 ### BVA Step 3
-- **Input**: Cases
-  - The first possibility: The territory has no armies present
-  - The second possibility: The territory has armies present
+- **Input**: count
 
 - **Output**: Integer
-- - The first possibility: 0
-- - The second possibility: >0 (the number of armies present)
+- The first possibility: 0
+- The second possibility: >0 (the number of armies present)
 
 ### BVA Step 4
 ### Test 1
