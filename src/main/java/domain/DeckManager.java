@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -27,6 +28,17 @@ public class DeckManager {
     public List<Card> getDeckOfCards() {
         return this.deckOfCards;
     }
+
+    public boolean shuffle() {
+        if (this.deckOfCards.isEmpty()) {
+            return false;
+        }
+
+        Collections.shuffle(this.deckOfCards);
+        return true;
+    }
+
+
 
     
 }

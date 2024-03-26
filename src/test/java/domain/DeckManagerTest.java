@@ -1,9 +1,5 @@
 package domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -15,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class DeckManagerTest {
 
     private DeckManager deckManager;
@@ -39,6 +38,16 @@ public class DeckManagerTest {
         deckManager.getDeckOfCards().add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
 
         assertThrows(IllegalStateException.class, () -> deckManager.initDeck());
+    }
+    @Test
+    public void test03_shuffle_EmptyList_ExpectFalseAndEmptyList() {
+        deckManager.getDeckOfCards().clear();
+
+        boolean result = deckManager.shuffle();
+
+        assertFalse(result);
+
+        assertTrue(deckManager.getDeckOfCards().isEmpty());
     }
 
 
