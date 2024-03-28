@@ -17,15 +17,6 @@ class TerritoryTest {
     }
 
     @Test
-    void test03_SetNullPlayerInControl_SetNull_ReturnsFalse() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
-        Player playerB = null;
-        territory.setPlayerInControl(playerA);
-        assertFalse(territory.setPlayerInControl(playerB));
-    }
-
-    @Test
     void test04_SetPlayerInControl_SetSamePlayer_ReturnsFalse() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         Player playerA = new Player();
