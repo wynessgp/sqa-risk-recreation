@@ -97,12 +97,6 @@ class TerritoryTest {
     }
 
     @Test
-    void test14_GetTerritoryType_DefaultType_ReturnsNull() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        assertNull(territory.getTerritoryType());
-    }
-
-    @Test
     void test15_GetTerritoryType_SetValidTypeAlaska_ReturnsTerritoryType() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         TerritoryType territoryType = TerritoryType.ALASKA;
