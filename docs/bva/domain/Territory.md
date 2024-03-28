@@ -95,33 +95,29 @@ Output: Boolean
 # Method: `getPlayerInControl(): Player`
 
 ## BVA Step 1
-Input: the underlying Player object associated with the Territory.
+Input: N/A
 
-Output: The current Player in control or null if no player is in control
+Output: The current Player in control the territory
 
 ## BVA Step 2
-Input: the state of the underlying object (Player object) is set
+Input: N/A
 
-Output: pointer
+Output: Pointer
 
 ## BVA Step 3
-Input: Cases
-- The first possibility: The territory has no player in control
-- The second possibility: The territory has a player in control
+Input: N/A
   
-Output: the assigned Player object pointer or null
+Output: Pointer
+- A null pointer (cannot set, Martin's rules)
+- A pointer to a valid player object
 
 ## BVA Step 4
 ### Test 1:
-- Input: assigned player is null
-- Output: null
-
-### Test 2:
-- Input: a valid Player object (PlayerA)
+- Input: Territory's player = [PlayerA]
 - Output: PlayerA
 
-### Test 3:
-- Input: a valid Player object (PlayerB), when another valid Player object was previously in control (PlayerA)
+### Test 2:
+- Input:  Territory's player = [PlayerB]
 - Output: PlayerB
 
 # Method: `getNumArmiesPresent(): int`
