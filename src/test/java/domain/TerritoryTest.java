@@ -17,6 +17,16 @@ class TerritoryTest {
     }
 
     @Test
+    void test01_setPlayerInControl_twoDifferentPlayers_expectTrue() {
+        Territory territory = new Territory(TerritoryType.ALASKA);
+        Player playerA = new Player();
+        Player playerB = new Player();
+
+        assertTrue(territory.setPlayerInControl(playerA));
+        assertTrue(territory.setPlayerInControl(playerB));
+    }
+
+    @Test
     void test04_SetPlayerInControl_SetSamePlayer_ReturnsFalse() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         Player playerA = new Player();
