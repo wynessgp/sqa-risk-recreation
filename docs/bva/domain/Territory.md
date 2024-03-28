@@ -123,31 +123,33 @@ Output: Pointer
 # Method: `getNumArmiesPresent(): int`
 
 ## BVA Step 1
-Input: the underlying count of numArmiesPresent associated with the Territory.
+Input: N/A
 
 Output: The number of armies present on the territory
 
 ## BVA Step 2
-Input: the count of armies present on the territory
+Input: N/A
 
-Output: Integer
+Output: Counts [1, num armies present]
 
 ## BVA Step 3
-Input: count
+Input: N/A
 
-Output: Integer
-- The first possibility: 0
-- The second possibility: >0 (the number of armies present)
+Output: Counts
+- -1 (can't set)
+- 0 (can't set)
+- 1 
+- \> 1
+- The number of armies present
 
 ## BVA Step 4
 ### Test 1:
-- Input: number of armies set to 0
+- Input: num armies in territory = 1
 - Output: 0
 
 ### Test 2:
-- Input: number of armies set to 5
+- Input: number armies in territory = 5
 - Output: 5
-
 
 # Method: `getTerritoryType(): TerritoryType`
 
