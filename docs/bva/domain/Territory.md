@@ -154,34 +154,37 @@ Output: Counts
 # Method: `getTerritoryType(): TerritoryType`
 
 ## BVA Step 1
-Input: The territory type has been set.
+Input: N/A
 
-Output: The type of territory
+Output: The given territory's type
 
 ## BVA Step 2
-Input: cases
-
-Output: TerritoryType
-
-## BVA Step 3
-Input: Each possibility for TerritoryType (42 possibilities). Note that anything outside of these choices is not considered a valid input.
-- Alaska
-- WesternCanada
-- ...
-- WesternAustralia
+Input: N/A
 
 Output: Cases
+
+## BVA Step 3
+Input: N/A
+
+Output: Cases
+- The 1st possibility (ALASKA)
+- The 2nd possibility (ARGENTINA)
+- ...
+- The 42nd possibility (YAKUTSK)
+- The 0th, 43rd possibilities (can't set, Java enum)
 
 ## BVA Step 4
 
 ### Test 1
-- Input: territory type set to null
-- Output: null
-
-### Test 2
-- Input:territory type set to Alaska
+- Input: Territory's type = ALASKA
 - Output: ALASKA
 
-### Test 3
-- Input: territory type set to Western Australia
-- Output: WESTERN_AUSTRALIA
+### Test 2
+- Input: Territory's type = ARGENTINA
+- Output: ARGENTINA
+
+...
+
+### Test 42
+- Input: Territory's type = YAKUTSK
+- Output: YAKUTSK
