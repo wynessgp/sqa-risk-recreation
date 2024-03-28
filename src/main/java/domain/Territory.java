@@ -1,7 +1,7 @@
 package domain;
 
 public class Territory {
-    private TerritoryType territoryType;
+    private final TerritoryType territoryType;
     private Player playerInControl;
     private int numArmiesPresent;
 
@@ -14,7 +14,7 @@ public class Territory {
 
 
     public boolean setPlayerInControl(Player player) {
-        if (player == null || player.equals(playerInControl)) {
+        if (player.equals(playerInControl)) {
             return false;
         }
         this.playerInControl = player;
