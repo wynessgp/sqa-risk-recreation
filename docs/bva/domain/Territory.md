@@ -62,33 +62,35 @@ Output: Boolean
 ## BVA Step 3
 Input: 
 - -1 (error case)
-- 0 (error case) 
+- 0 (error case; it should only ever be 0 due to set up)
 - 1
 - \>1
-- Num armies the player has in total (can't set)
+- Num armies the player has in total 
 - Num armies the player has in total + 1 (can't set)
 
 Output: Boolean
-- 0
+- 0 (can't set)
 - 1
-- Something that is neither true nor false (can't set)
+- Something that is neither true nor false (Illegal arg exceptions)
 
 ## BVA Step 4
 ### Test 1:
-- Input: 5
-- Output: True
+- Input: newAmount = -1
+- Output: IllegalArgumentException
+  - message: "Number of armies to set should be greater than 0"
 
 ### Test 2:
-- Input: 0
-- Output: True
+- Input: newAmount = 0
+- Output: IllegalArgumentException
+  - message: "Number of armies to set should be greater than 0"
   
 ### Test 3:
-- Input: 1
+- Input: newAmount = 1
 - Output: True
 
 ### Test 4:
-- Input: invalid input (negative number -1)
-- Output: false
+- Input: newAmount = 24
+- Output: True
 
 # Method: `getPlayerInControl(): Player`
 
