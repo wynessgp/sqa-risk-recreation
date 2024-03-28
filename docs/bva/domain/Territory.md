@@ -13,32 +13,38 @@ Input:
 Output: Boolean (0, 1)
 
 ## BVA Step 3
-Input: Pointer
-- The null pointer (will not be tested, in accordance with Martin's rules)
-- A pointer to the true player object
-  - Assign control of a territory to a player when it previously had no player assigned
-  - Transition control from one player (PlayerA) to a different player (PlayerB)
-  - Assign control to the same player as the one controlling the territory.
+Input: Pointer(s)
+- player:
+  - The null pointer (will not be tested, in accordance with Martin's rules)
+  - A pointer to the true player object
+    - Assign control of a territory to a player when it previously had no player assigned
+    - Transition control from one player (PlayerA) to a different player (PlayerB)
+    - Assign control to the same player as the one controlling the territory.
+- Underlying player object:
+  - The null pointer (will not be tested)
+  - A pointer to a true player object
 
 Output: Boolean
-  - 0
-  - 1
+- 0
+- 1
   
 ## BVA Step 4
 ### Test 1:
-- Input: a valid Player object, The territory has no player in control
+- Input: 
+  - Underlying player in control = [valid player, color SETUP]
+  - player = [valid player, color BLUE]
 - Output: True
 
 ### Test 2:
-- Input: A valid player objects. The territory has been controlled by another player
-- Output: true
+- Input: 
+  - Underlying player in control = [valid player, color RED]
+  - player = [valid player, color PURPLE]
+- Output: True
 
 ### Test 3:
-- Input: null, The territory has been controlled by a valid player
-- Output: False
-
-### Test 4:
-- Input: a valid Player object, The territory has been controlled by the same player
+- Input: 
+  - Underlying player in control = [valid player, color GREEN]
+  - player = [valid player, color GREEN]
 - Output: False
 
 # Method: `setNumArmiesPresent(int newAmount): boolean`
