@@ -196,6 +196,9 @@ package domain {
         -territoryTypeToObject: Map<TerritoryType, Territory>
         +TerritoryGraph()
 
+        +getTerritory(territoryType: TerritoryType): Territory
+        +findAdjacentTerritories(territoryType: TerritoryType): Set<Territory>
+
         +addNewTerritory(territory: Territory): boolean
         +addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
         -isValidAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
