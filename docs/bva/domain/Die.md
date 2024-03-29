@@ -1,7 +1,7 @@
 # method: rollSingleDie(randomizer: Random): Integer
 
 ## BVA Step 1
-Input: A randomizer object with which to use for the Die rolling calculation, the maximum number my current die may roll (field on the class)
+Input: A randomizer object with which to use for the Die rolling calculation, the maximum/minimum number the die may roll
 
 Output: The result of the current Die getting rolled
 
@@ -29,16 +29,19 @@ Output: Counts
 - Input: 
     - randomizer = valid object
     - maxNumberPossible = 6
+    - minNumberPossible = 1
 - Output: 1
 ### Test 2:
 - Input:
     - randomizer = valid object
     - maxNumberPossible = 6
+    - minNumberPossible = 1
 - Output: 2
 ### Test 3:
 - Input: 
     - randomizer = valid object
     - maxNumberPossible = 6
+    - minNumberPossible = 1
 - Output: 6
 ### Test 4:
 (test that dice can go above 6, if we desire)
