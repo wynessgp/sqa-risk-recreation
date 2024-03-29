@@ -1,5 +1,3 @@
-# Instruction: please feel free to use this as a template for your weekly progress report. You may change the formatting or the content for it to be more helpful. But please make sure to include all the bare minimum content.
-
 # Part 1. Team Planning of the Week
 **Planning Date**: 3/24/2024
 
@@ -9,75 +7,52 @@
 3. Begin single turn phase
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 3/29/2024
 
 **Item Progress**:
-1. [50% done] abc
+1. [85% done] made some progress but not much, finishing early next week
 2. [done] using Java Swing
-3. [not started] abc
+3. [not started] starting next week
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/53
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/53
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/51
 
 ### Team member: Grant Wyness
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/51
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/53
 
 ### Team member: Harvey Yang
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- N/A
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- N/A
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- N/A
 
 
 ### Team member: Frank Zhang
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/51
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- N/A
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- N/A
