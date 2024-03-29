@@ -17,6 +17,7 @@ class TerritoryTest {
         Player playerA = new Player(PlayerColor.BLUE);
 
         assertTrue(territory.setPlayerInControl(playerA));
+        assertEquals(playerA, territory.getPlayerInControl());
     }
 
     @Test
@@ -27,6 +28,7 @@ class TerritoryTest {
 
         assertTrue(territory.setPlayerInControl(playerA));
         assertTrue(territory.setPlayerInControl(playerB));
+        assertEquals(playerB, territory.getPlayerInControl());
     }
 
     @Test
@@ -36,6 +38,7 @@ class TerritoryTest {
 
         assertTrue(territory.setPlayerInControl(playerA));
         assertFalse(territory.setPlayerInControl(playerA));
+        assertEquals(playerA, territory.getPlayerInControl());
     }
 
     @ParameterizedTest
