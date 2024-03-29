@@ -91,4 +91,3 @@ Output: Boolean
 ### Test 4:
 - Input: newAmount = 24
 - Output: True
-
