@@ -65,6 +65,7 @@ public class DeckManagerTest {
         cards = new ArrayList<>();
 
         //Mocks
+        wildCard = EasyMock.createMock(Card.class);
         alaskaCard = EasyMock.createMock(Card.class);
         albertaCard = EasyMock.createMock(Card.class);
         centralAmericaCard = EasyMock.createMock(Card.class);
@@ -108,48 +109,48 @@ public class DeckManagerTest {
         newGuineaCard = EasyMock.createMock(Card.class);
         westernAustraliaCard = EasyMock.createMock(Card.class);
 
-        EasyMock.expect(alaskaCard.matchesTerritory(TerritoryType.ALASKA)).andReturn(true);
-        EasyMock.expect(albertaCard.matchesTerritory(TerritoryType.ALBERTA)).andReturn(true);
-        EasyMock.expect(centralAmericaCard.matchesTerritory(TerritoryType.CENTRAL_AMERICA)).andReturn(true);
-        EasyMock.expect(easternUnitedStatesCard.matchesTerritory(TerritoryType.EASTERN_UNITED_STATES)).andReturn(true);
-        EasyMock.expect(greenlandCard.matchesTerritory(TerritoryType.GREENLAND)).andReturn(true);
-        EasyMock.expect(northwestTerritoryCard.matchesTerritory(TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
-        EasyMock.expect(ontarioCard.matchesTerritory(TerritoryType.ONTARIO)).andReturn(true);
-        EasyMock.expect(quebecCard.matchesTerritory(TerritoryType.QUEBEC)).andReturn(true);
-        EasyMock.expect(westernUnitedStatesCard.matchesTerritory(TerritoryType.WESTERN_UNITED_STATES)).andReturn(true);
-        EasyMock.expect(argentinaCard.matchesTerritory(TerritoryType.ARGENTINA)).andReturn(true);
-        EasyMock.expect(brazilCard.matchesTerritory(TerritoryType.BRAZIL)).andReturn(true);
-        EasyMock.expect(peruCard.matchesTerritory(TerritoryType.PERU)).andReturn(true);
-        EasyMock.expect(venezuelaCard.matchesTerritory(TerritoryType.VENEZUELA)).andReturn(true);
-        EasyMock.expect(easternEuropeCard.matchesTerritory(TerritoryType.EASTERN_EUROPE)).andReturn(true);
-        EasyMock.expect(greatBritainCard.matchesTerritory(TerritoryType.GREAT_BRITAIN)).andReturn(true);
-        EasyMock.expect(icelandCard.matchesTerritory(TerritoryType.ICELAND)).andReturn(true);
-        EasyMock.expect(northernEuropeCard.matchesTerritory(TerritoryType.NORTHERN_EUROPE)).andReturn(true);
-        EasyMock.expect(scandinaviaCard.matchesTerritory(TerritoryType.SCANDINAVIA)).andReturn(true);
-        EasyMock.expect(southernEuropeCard.matchesTerritory(TerritoryType.SOUTHERN_EUROPE)).andReturn(true);
-        EasyMock.expect(westernEuropeCard.matchesTerritory(TerritoryType.WESTERN_EUROPE)).andReturn(true);
-        EasyMock.expect(congoCard.matchesTerritory(TerritoryType.CONGO)).andReturn(true);
-        EasyMock.expect(eastAfricaCard.matchesTerritory(TerritoryType.EAST_AFRICA)).andReturn(true);
-        EasyMock.expect(egyptCard.matchesTerritory(TerritoryType.EGYPT)).andReturn(true);
-        EasyMock.expect(madagascarCard.matchesTerritory(TerritoryType.MADAGASCAR)).andReturn(true);
-        EasyMock.expect(northAfricaCard.matchesTerritory(TerritoryType.NORTH_AFRICA)).andReturn(true);
-        EasyMock.expect(southAfricaCard.matchesTerritory(TerritoryType.SOUTH_AFRICA)).andReturn(true);
-        EasyMock.expect(afghanistanCard.matchesTerritory(TerritoryType.AFGHANISTAN)).andReturn(true);
-        EasyMock.expect(chinaCard.matchesTerritory(TerritoryType.CHINA)).andReturn(true);
-        EasyMock.expect(indiaCard.matchesTerritory(TerritoryType.INDIA)).andReturn(true);
-        EasyMock.expect(irkutskCard.matchesTerritory(TerritoryType.IRKUTSK)).andReturn(true);
-        EasyMock.expect(japanCard.matchesTerritory(TerritoryType.JAPAN)).andReturn(true);
-        EasyMock.expect(kamchatkaCard.matchesTerritory(TerritoryType.KAMCHATKA)).andReturn(true);
-        EasyMock.expect(middleEastCard.matchesTerritory(TerritoryType.MIDDLE_EAST)).andReturn(true);
-        EasyMock.expect(mongoliaCard.matchesTerritory(TerritoryType.MONGOLIA)).andReturn(true);
-        EasyMock.expect(siamCard.matchesTerritory(TerritoryType.SIAM)).andReturn(true);
-        EasyMock.expect(siberiaCard.matchesTerritory(TerritoryType.SIBERIA)).andReturn(true);
-        EasyMock.expect(uralCard.matchesTerritory(TerritoryType.URAL)).andReturn(true);
-        EasyMock.expect(yakutskCard.matchesTerritory(TerritoryType.YAKUTSK)).andReturn(true);
-        EasyMock.expect(easternAustraliaCard.matchesTerritory(TerritoryType.EASTERN_AUSTRALIA)).andReturn(true);
-        EasyMock.expect(indonesiaCard.matchesTerritory(TerritoryType.INDONESIA)).andReturn(true);
-        EasyMock.expect(newGuineaCard.matchesTerritory(TerritoryType.NEW_GUINEA)).andReturn(true);
-        EasyMock.expect(westernAustraliaCard.matchesTerritory(TerritoryType.WESTERN_AUSTRALIA)).andReturn(true);
+        EasyMock.expect(alaskaCard.matchesTerritory(TerritoryType.ALASKA)).andReturn(true).anyTimes();
+        EasyMock.expect(albertaCard.matchesTerritory(TerritoryType.ALBERTA)).andReturn(true).anyTimes();
+        EasyMock.expect(centralAmericaCard.matchesTerritory(TerritoryType.CENTRAL_AMERICA)).andReturn(true).anyTimes();
+        EasyMock.expect(easternUnitedStatesCard.matchesTerritory(TerritoryType.EASTERN_UNITED_STATES)).andReturn(true).anyTimes();
+        EasyMock.expect(greenlandCard.matchesTerritory(TerritoryType.GREENLAND)).andReturn(true).anyTimes();
+        EasyMock.expect(northwestTerritoryCard.matchesTerritory(TerritoryType.NORTHWEST_TERRITORY)).andReturn(true).anyTimes();
+        EasyMock.expect(ontarioCard.matchesTerritory(TerritoryType.ONTARIO)).andReturn(true).anyTimes();
+        EasyMock.expect(quebecCard.matchesTerritory(TerritoryType.QUEBEC)).andReturn(true).anyTimes();
+        EasyMock.expect(westernUnitedStatesCard.matchesTerritory(TerritoryType.WESTERN_UNITED_STATES)).andReturn(true).anyTimes();
+        EasyMock.expect(argentinaCard.matchesTerritory(TerritoryType.ARGENTINA)).andReturn(true).anyTimes();
+        EasyMock.expect(brazilCard.matchesTerritory(TerritoryType.BRAZIL)).andReturn(true).anyTimes();
+        EasyMock.expect(peruCard.matchesTerritory(TerritoryType.PERU)).andReturn(true).anyTimes();
+        EasyMock.expect(venezuelaCard.matchesTerritory(TerritoryType.VENEZUELA)).andReturn(true).anyTimes();
+        EasyMock.expect(easternEuropeCard.matchesTerritory(TerritoryType.EASTERN_EUROPE)).andReturn(true).anyTimes();
+        EasyMock.expect(greatBritainCard.matchesTerritory(TerritoryType.GREAT_BRITAIN)).andReturn(true).anyTimes();
+        EasyMock.expect(icelandCard.matchesTerritory(TerritoryType.ICELAND)).andReturn(true).anyTimes();
+        EasyMock.expect(northernEuropeCard.matchesTerritory(TerritoryType.NORTHERN_EUROPE)).andReturn(true).anyTimes();
+        EasyMock.expect(scandinaviaCard.matchesTerritory(TerritoryType.SCANDINAVIA)).andReturn(true).anyTimes();
+        EasyMock.expect(southernEuropeCard.matchesTerritory(TerritoryType.SOUTHERN_EUROPE)).andReturn(true).anyTimes();
+        EasyMock.expect(westernEuropeCard.matchesTerritory(TerritoryType.WESTERN_EUROPE)).andReturn(true).anyTimes();
+        EasyMock.expect(congoCard.matchesTerritory(TerritoryType.CONGO)).andReturn(true).anyTimes();
+        EasyMock.expect(eastAfricaCard.matchesTerritory(TerritoryType.EAST_AFRICA)).andReturn(true).anyTimes();
+        EasyMock.expect(egyptCard.matchesTerritory(TerritoryType.EGYPT)).andReturn(true).anyTimes();
+        EasyMock.expect(madagascarCard.matchesTerritory(TerritoryType.MADAGASCAR)).andReturn(true).anyTimes();
+        EasyMock.expect(northAfricaCard.matchesTerritory(TerritoryType.NORTH_AFRICA)).andReturn(true).anyTimes();
+        EasyMock.expect(southAfricaCard.matchesTerritory(TerritoryType.SOUTH_AFRICA)).andReturn(true).anyTimes();
+        EasyMock.expect(afghanistanCard.matchesTerritory(TerritoryType.AFGHANISTAN)).andReturn(true).anyTimes();
+        EasyMock.expect(chinaCard.matchesTerritory(TerritoryType.CHINA)).andReturn(true).anyTimes();
+        EasyMock.expect(indiaCard.matchesTerritory(TerritoryType.INDIA)).andReturn(true).anyTimes();
+        EasyMock.expect(irkutskCard.matchesTerritory(TerritoryType.IRKUTSK)).andReturn(true).anyTimes();
+        EasyMock.expect(japanCard.matchesTerritory(TerritoryType.JAPAN)).andReturn(true).anyTimes();
+        EasyMock.expect(kamchatkaCard.matchesTerritory(TerritoryType.KAMCHATKA)).andReturn(true).anyTimes();
+        EasyMock.expect(middleEastCard.matchesTerritory(TerritoryType.MIDDLE_EAST)).andReturn(true).anyTimes();
+        EasyMock.expect(mongoliaCard.matchesTerritory(TerritoryType.MONGOLIA)).andReturn(true).anyTimes();
+        EasyMock.expect(siamCard.matchesTerritory(TerritoryType.SIAM)).andReturn(true).anyTimes();
+        EasyMock.expect(siberiaCard.matchesTerritory(TerritoryType.SIBERIA)).andReturn(true).anyTimes();
+        EasyMock.expect(uralCard.matchesTerritory(TerritoryType.URAL)).andReturn(true).anyTimes();
+        EasyMock.expect(yakutskCard.matchesTerritory(TerritoryType.YAKUTSK)).andReturn(true).anyTimes();
+        EasyMock.expect(easternAustraliaCard.matchesTerritory(TerritoryType.EASTERN_AUSTRALIA)).andReturn(true).anyTimes();
+        EasyMock.expect(indonesiaCard.matchesTerritory(TerritoryType.INDONESIA)).andReturn(true).anyTimes();
+        EasyMock.expect(newGuineaCard.matchesTerritory(TerritoryType.NEW_GUINEA)).andReturn(true).anyTimes();
+        EasyMock.expect(westernAustraliaCard.matchesTerritory(TerritoryType.WESTERN_AUSTRALIA)).andReturn(true).anyTimes();
 
         EasyMock.replay(
                 alaskaCard,
@@ -246,12 +247,12 @@ public class DeckManagerTest {
     @Test
     public void test01_initDeck_EmptyCollection_ExpectSuccess() {
         boolean result = deckManager.initDeck();
-
         assertTrue(result);
 
         List<Card> deck = deckManager.getDeckOfCards();
         assertEquals(44, deck.size());
         //no checking for card type yet
+//        assertTrue(deck.containsAll(cards));
     }
 
     @Test
