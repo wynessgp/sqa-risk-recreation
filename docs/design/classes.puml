@@ -205,12 +205,17 @@ package domain {
 
     +class TerritoryGraph {
         -territories: Map<TerritoryType, Set<Territory>>
+        -territoryTypeToObject: Map<TerritoryType, Territory>
         +TerritoryGraph()
+
         +addNewTerritory(territory: Territory): boolean
-        +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
-        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
-        +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
-        +findTerritoryByType(givenTerritory: TerritoryType): Territory
+        +addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+        -isValidAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+
+        +addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        -graphContainsAdjacencies(territoryType: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
+        -graphHasAdjacencyMapping(adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
+        -addAdjacenciesToGraph(territory: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): void
     }
 
     TerritoryGraph --> "*" Territory
