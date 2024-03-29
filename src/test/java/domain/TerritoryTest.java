@@ -52,6 +52,15 @@ class TerritoryTest {
         assertEquals(expectedMessage, actual);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 24})
+    void test04_setNumArmiesPresent_validNumber_expectTrue(int validInput) {
+        Territory territory = new Territory(TerritoryType.ALASKA);
+
+        assertTrue(territory.setNumArmiesPresent(validInput));
+        assertEquals(validInput, territory.getNumArmiesPresent());
+    }
+
     @Test
     void test10_GetPlayerInControl_SetPlayer_ReturnsPlayer() {
         Territory territory = new Territory(TerritoryType.ALASKA);
