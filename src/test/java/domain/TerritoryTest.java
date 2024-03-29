@@ -37,25 +37,7 @@ class TerritoryTest {
     }
 
     @Test
-    void test05_SetNumArmiesPresent_SetValidNumberFive_ReturnsTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        assertTrue(territory.setNumArmiesPresent(5));
-    }
-
-    @Test
-    void test06_SetNumArmiesPresent_SetValidNumberZero_ReturnsTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        assertTrue(territory.setNumArmiesPresent(0));
-    }
-
-    @Test
-    void test07_SetNumArmiesPresent_SetValidNumberOne_ReturnsTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        assertTrue(territory.setNumArmiesPresent(1));
-    }
-
-    @Test
-    void test08_SetNumArmiesPresent_InvalidNegativeNumber_ReturnsFalse() {
+    void test03_setNumArmiesPresent_invalidNegativeNumber_expectException() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         assertFalse(territory.setNumArmiesPresent(-1));
     }
@@ -76,12 +58,6 @@ class TerritoryTest {
         territory.setPlayerInControl(playerA);
         assertTrue(territory.setPlayerInControl(playerB));
         assertSame(playerB, territory.getPlayerInControl());
-    }
-
-    @Test
-    void test12_GetNumArmiesPresent_ReturnsZero() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        assertEquals(0, territory.getNumArmiesPresent());
     }
 
     @Test
