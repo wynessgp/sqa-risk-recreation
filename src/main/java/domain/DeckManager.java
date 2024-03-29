@@ -6,27 +6,30 @@ import java.util.List;
 
 
 public class DeckManager {
-    private List<Card> deckOfCards;
+    private final List<Card> deckOfCards;
 
     public DeckManager() {
         this.deckOfCards = new ArrayList<>();
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
+    protected DeckManager(List<Card> deckOfCards) {
+        this.deckOfCards = deckOfCards;
+    }
+
     public boolean initDeck() {
         if (!this.deckOfCards.isEmpty()) {
             throw new IllegalStateException("Cannot initialize a non-empty deck.");
         }
-        for (TerritoryType territory : TerritoryType.values()) {
-            this.deckOfCards.add(new TerritoryCard(territory, PieceType.INFANTRY));
-        }
+        generateTerritoryCards();
         this.deckOfCards.add(new WildCard());
         this.deckOfCards.add(new WildCard());
         return true;
     }
 
-    public List<Card> getDeckOfCards() {
-        return this.deckOfCards;
+    private void generateTerritoryCards() {
+        for (TerritoryType territory : TerritoryType.values()) {
+            this.deckOfCards.add(new TerritoryCard(territory, PieceType.INFANTRY));
+        }
     }
 
     public boolean shuffle() {
@@ -38,7 +41,8 @@ public class DeckManager {
         return true;
     }
 
+    protected int getDeckSize() {
+        return this.deckOfCards.size();
+    }
 
-
-    
 }

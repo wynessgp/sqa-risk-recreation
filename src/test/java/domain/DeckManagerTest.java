@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.*;
 import org.easymock.EasyMock;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DeckManagerTest {
-
     private DeckManager deckManager;
     List<Card> cards;
     private Card wildCard;
@@ -249,44 +249,33 @@ public class DeckManagerTest {
         boolean result = deckManager.initDeck();
         assertTrue(result);
 
-        List<Card> deck = deckManager.getDeckOfCards();
-        assertEquals(44, deck.size());
-        //no checking for card type yet
-//        assertTrue(deck.containsAll(cards));
+        assertEquals(44, deckManager.getDeckSize());
     }
 
     @Test
     public void test02_initDeck_OneElementCollection_ExpectException() {
-        deckManager.getDeckOfCards().add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
-
+        List<Card> nonEmptyDeck = new ArrayList<>();
+        nonEmptyDeck.add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
+        deckManager = new DeckManager(nonEmptyDeck);
         assertThrows(IllegalStateException.class, () -> deckManager.initDeck());
     }
 
     @Test
     public void test03_shuffle_EmptyList_ExpectFalseAndEmptyList() {
-        deckManager.getDeckOfCards().clear();
-
+        deckManager = new DeckManager(new ArrayList<>());
         boolean result = deckManager.shuffle();
-
         assertFalse(result);
-
-        assertTrue(deckManager.getDeckOfCards().isEmpty());
+        assertEquals(0, deckManager.getDeckSize());
     }
 
     @Test
     public void test04_shuffle_OneElementList_ExpectTrueAndSameList() {
-        deckManager.getDeckOfCards().add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
-
+        List<Card> singleCardDeck = new ArrayList<>();
+        singleCardDeck.add(new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY));
+        deckManager = new DeckManager(singleCardDeck);
         boolean result = deckManager.shuffle();
-
         assertTrue(result);
-
-        List<Card> deck = deckManager.getDeckOfCards();
-        assertEquals(1, deck.size());
-//        assertEquals(TerritoryType.ALBERTA, ((TerritoryCard) deck.get(0)).getTerritory()); //getters are not implemented yet
-//        assertEquals(PieceType.INFANTRY, ((TerritoryCard) deck.get(0)).getPiece());
+        assertEquals(1, deckManager.getDeckSize());
     }
-
-
 
 }
