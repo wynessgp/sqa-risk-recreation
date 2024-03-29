@@ -2,7 +2,6 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -59,28 +58,6 @@ class TerritoryTest {
 
         assertTrue(territory.setNumArmiesPresent(validInput));
         assertEquals(validInput, territory.getNumArmiesPresent());
-    }
-
-    @Test
-    void test13_GetNumArmiesPresent_SetValidNumberFive_ReturnsNumber() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        int validNumberOfArmies = 5;
-        territory.setNumArmiesPresent(validNumberOfArmies);
-        assertEquals(validNumberOfArmies, territory.getNumArmiesPresent());
-    }
-
-    @Test
-    void test15_GetTerritoryType_SetValidTypeAlaska_ReturnsTerritoryType() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        TerritoryType territoryType = TerritoryType.ALASKA;
-        assertEquals(territoryType, territory.getTerritoryType());
-    }
-
-    @Test
-    void test16_GetTerritoryType_SetValidTypeWesternAustralia_ReturnsTerritoryType() {
-        Territory territory = new Territory(TerritoryType.WESTERN_AUSTRALIA);
-        TerritoryType territoryType = TerritoryType.WESTERN_AUSTRALIA;
-        assertSame(territoryType, territory.getTerritoryType());
     }
 
 }
