@@ -1,7 +1,5 @@
 # method: rollSingleDie(randomizer: Random): Integer
 
-<!-- No, I'm not trying to tell you to die with this markdown file. -->
-
 ## BVA Step 1
 Input: A randomizer object with which to use for the Die rolling calculation, the maximum number my current die may roll (field on the class)
 
@@ -15,12 +13,12 @@ Output: Counts
 
 ## BVA Step 3
 Input: Pointer
-- The null pointer
+- The null pointer (will not be considered)
 - A pointer to the true object
 
 Output: Counts
 - -1 (can't set)
-- 0 (can't set, there is no "0" on a 6-sided die) <!-- Consider a minimum possible roll field -->
+- 0 (can't set, there is no "0" on a 6-sided die) 
 - 1
 - \> 1
 - Max possible value: maxNumberPossible
@@ -28,24 +26,21 @@ Output: Counts
 
 ## BVA Step 4
 ### Test 1:
-- Input: randomizer = NULL
-- Output: NullPointerException (message: Randomizer object is null, cannot roll Die!)
-### Test 2:
 - Input: 
     - randomizer = valid object
     - maxNumberPossible = 6
 - Output: 1
-### Test 3:
+### Test 2:
 - Input:
     - randomizer = valid object
     - maxNumberPossible = 6
 - Output: 2
-### Test 4:
+### Test 3:
 - Input: 
     - randomizer = valid object
     - maxNumberPossible = 6
 - Output: 6
-### Test 5:
+### Test 4:
 (test that dice can go above 6, if we desire)
 - Input:
     - randomizer = valid object

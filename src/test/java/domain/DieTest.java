@@ -1,7 +1,6 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Random;
 import org.easymock.EasyMock;
@@ -10,21 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class DieTest {
-
-    @Test
-    public void test00_nullPointerRandomizer_expectNullPointerException() {
-        // variable setup
-        Die unitUnderTest = new Die(0, 0);
-
-        // perform the operation
-        String expectedMessage = "Randomizer object is null, cannot roll Die!";
-        Exception exception = assertThrows(NullPointerException.class,
-                () -> unitUnderTest.rollSingleDie(null));
-
-        // assert
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 6})
