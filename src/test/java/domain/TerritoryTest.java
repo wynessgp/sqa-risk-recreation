@@ -10,9 +10,10 @@ import org.junit.jupiter.api.Test;
 class TerritoryTest {
 
     @Test
-    void test00_SetPlayerInControl_SetPlayer_ReturnsTrue() {
+    void test00_setPlayerInControl_setPlayer_expectTrue() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         Player playerA = new Player();
+
         assertTrue(territory.setPlayerInControl(playerA));
     }
 
