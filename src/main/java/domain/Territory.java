@@ -8,7 +8,7 @@ public class Territory {
 
     public Territory(TerritoryType territoryType) {
         this.territoryType = territoryType;
-        this.playerInControl = null;
+        this.playerInControl = new Player(PlayerColor.SETUP);
         this.numArmiesPresent = 0;
     }
 

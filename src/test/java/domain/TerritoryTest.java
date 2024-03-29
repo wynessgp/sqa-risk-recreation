@@ -12,7 +12,7 @@ class TerritoryTest {
     @Test
     void test00_setPlayerInControl_setPlayer_expectTrue() {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
+        Player playerA = new Player(PlayerColor.BLUE);
 
         assertTrue(territory.setPlayerInControl(playerA));
     }
@@ -20,8 +20,8 @@ class TerritoryTest {
     @Test
     void test01_setPlayerInControl_twoDifferentPlayers_expectTrue() {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
-        Player playerB = new Player();
+        Player playerA = new Player(PlayerColor.RED);
+        Player playerB = new Player(PlayerColor.PURPLE);
 
         assertTrue(territory.setPlayerInControl(playerA));
         assertTrue(territory.setPlayerInControl(playerB));
@@ -30,10 +30,9 @@ class TerritoryTest {
     @Test
     void test02_setPlayerInControl_samePlayerTwice_expectFalse() {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
+        Player playerA = new Player(PlayerColor.GREEN);
 
-        territory.setPlayerInControl(playerA);
-
+        assertTrue(territory.setPlayerInControl(playerA));
         assertFalse(territory.setPlayerInControl(playerA));
     }
 
@@ -64,7 +63,7 @@ class TerritoryTest {
     @Test
     void test10_GetPlayerInControl_SetPlayer_ReturnsPlayer() {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
+        Player playerA = new Player(PlayerColor.GREEN);
         territory.setPlayerInControl(playerA);
         assertSame(playerA, territory.getPlayerInControl());
     }
@@ -72,8 +71,8 @@ class TerritoryTest {
     @Test
     void test11_GetPlayerInControl_ChangePlayer_ConfirmAndReturnsChangedPlayer() {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player();
-        Player playerB = new Player();
+        Player playerA = new Player(PlayerColor.PURPLE);
+        Player playerB = new Player(PlayerColor.YELLOW);
         territory.setPlayerInControl(playerA);
         assertTrue(territory.setPlayerInControl(playerB));
         assertSame(playerB, territory.getPlayerInControl());
