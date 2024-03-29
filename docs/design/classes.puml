@@ -126,7 +126,6 @@ package domain {
         DEFENDER_VICTORY
     }
 
-    RiskCardDeck --> "*" Card
 
     +class TradeInParser {
         -setsTradedInSoFar: int
@@ -141,25 +140,18 @@ package domain {
 
     +class Player {
         -cards: Set<Card>
-        -pieces: Set<Piece>
         -color: PlayerColor
+        +Player(playerColor: PlayerColor)
     }
 
-    Player -u-> "*" Piece
     Player -u-> "*" Card
     Player -u-> PlayerColor
-
-    +class Piece {
-        -pieceType: PieceType
-    }
 
     +enum PieceType {
         ARTILLERY,
         CAVALRY,
         INFANTRY
     }
-
-    Piece --> PieceType
 
     +interface Card {
         +isWild(): boolean
@@ -184,22 +176,18 @@ package domain {
         +isWild(): boolean
     }
 
+    TerritoryCard --> PieceType
+    TerritoryCard --> TerritoryType
+
     +class SecretMissionCard {
         // behaves a little differently        
     }
 
     TerritoryCard ..|> Card
     WildCard ..|> Card
-    TerritoryCard --> PieceType
-    TerritoryCard --> TerritoryType
+    RiskCardDeck --> "*" Card
 
     +enum TerritoryType {
-        ...
-    }
-
-    +enum Continent {
-        NORTH_AMERICA,
-        SOUTH_AMERICA,
         ...
     }
 
@@ -220,27 +208,26 @@ package domain {
 
     TerritoryGraph --> "*" Territory
     TerritoryGraph --> "*" TerritoryType
-    TerritoryGraph ..> Territory
-    TerritoryGraph ..> TerritoryType
 
     +class Territory {
         -territoryType: TerritoryType
-        -playerInControl: PlayerColor
+        -playerInControl: Player
         -numArmiesPresent: int
-        -continent: Continent
         +Territory(territoryType: TerritoryType)
+
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
+
         +getPlayerInControl(): Player
         +getArmies(): int
         +getTerritoryType(): TerritoryType
     }
 
-    Territory --> PlayerColor
+    Territory --> Player
     Territory --> TerritoryType
-    Territory -> Continent
 
     +enum PlayerColor {
+        SETUP,
         NEUTRAL,
         BLACK,
         RED,
