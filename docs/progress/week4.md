@@ -28,6 +28,8 @@
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/57
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/58
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
