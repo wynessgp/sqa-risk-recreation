@@ -92,34 +92,6 @@ Output: Boolean
 - Input: newAmount = 24
 - Output: True
 
-# Method: `getPlayerInControl(): Player`
-
-## BVA Step 1
-Input: N/A
-
-Output: The current Player in control the territory
-
-## BVA Step 2
-Input: N/A
-
-Output: Pointer
-
-## BVA Step 3
-Input: N/A
-  
-Output: Pointer
-- A null pointer (cannot set, Martin's rules)
-- A pointer to a valid player object
-
-## BVA Step 4
-### Test 1:
-- Input: Territory's player = [PlayerA]
-- Output: PlayerA
-
-### Test 2:
-- Input:  Territory's player = [PlayerB]
-- Output: PlayerB
-
 # Method: `getNumArmiesPresent(): int`
 
 ## BVA Step 1

@@ -62,24 +62,6 @@ class TerritoryTest {
     }
 
     @Test
-    void test10_GetPlayerInControl_SetPlayer_ReturnsPlayer() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.GREEN);
-        territory.setPlayerInControl(playerA);
-        assertSame(playerA, territory.getPlayerInControl());
-    }
-
-    @Test
-    void test11_GetPlayerInControl_ChangePlayer_ConfirmAndReturnsChangedPlayer() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.PURPLE);
-        Player playerB = new Player(PlayerColor.YELLOW);
-        territory.setPlayerInControl(playerA);
-        assertTrue(territory.setPlayerInControl(playerB));
-        assertSame(playerB, territory.getPlayerInControl());
-    }
-
-    @Test
     void test13_GetNumArmiesPresent_SetValidNumberFive_ReturnsNumber() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         int validNumberOfArmies = 5;
