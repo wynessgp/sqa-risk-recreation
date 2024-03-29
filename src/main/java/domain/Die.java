@@ -7,10 +7,6 @@ public class Die {
     private final int maximumPossibleRoll;
     private final int minimumPossibleRoll;
 
-    protected Die() {
-        this(0, 0); // for testing purposes.
-    }
-
     public Die(int maximumPossibleRoll, int minimumPossibleRoll) {
         this.maximumPossibleRoll = maximumPossibleRoll;
         this.minimumPossibleRoll = minimumPossibleRoll;

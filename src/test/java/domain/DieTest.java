@@ -14,7 +14,7 @@ public class DieTest {
     @Test
     public void test00_nullPointerRandomizer_expectNullPointerException() {
         // variable setup
-        Die unitUnderTest = new Die();
+        Die unitUnderTest = new Die(0, 0);
 
         // perform the operation
         String expectedMessage = "Randomizer object is null, cannot roll Die!";
