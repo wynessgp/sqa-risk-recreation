@@ -28,10 +28,12 @@ class TerritoryTest {
     }
 
     @Test
-    void test04_SetPlayerInControl_SetSamePlayer_ReturnsFalse() {
+    void test02_setPlayerInControl_samePlayerTwice_expectFalse() {
         Territory territory = new Territory(TerritoryType.ALASKA);
         Player playerA = new Player();
+
         territory.setPlayerInControl(playerA);
+
         assertFalse(territory.setPlayerInControl(playerA));
     }
 
