@@ -83,28 +83,43 @@ package domain {
     }
 
     +class Die {
-        -maxNumberPossible: int
-        +Die(maxNumPossible: int)
+        -maximumPossibleRoll: int
+        -minimumPossibleRoll: int
+        +Die(maximumPossibleRoll: int, minimumPossibleRoll: int)
         +rollSingleDie(randomizer: Random): Integer
+
+        // {method} the below constructor is for unit testing purposes only!
+        ~Die()
     }
 
     +class DieRollParser {
-        -attackerDice: List<Die>
-        -defenderDice: List<Die>
-        -randomizer: Random
+        -{final} attackerDice: List<Die>
+        -{final} defenderDice: List<Die>
+        -{final}randomizer: Random
+        -setupDie: Die
         +DieRollParser()
-        -buildDiceLists(): boolean
+        +buildDiceLists(): boolean
+
+        +rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
+        -buildSetupDie(setupDieUpperBound: int): void
+
         +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
         +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
+        -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
+        -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
+
         +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
+        -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
+        -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
+        -calculateBattleResult(defenderRoll: Integer, attackerRoll: Integer): BattleResult
+        ~validateSortIsInNonIncreasingOrder(toCheck: List<Integer>): boolean
+
+        // {method} the below constructor is for unit testing purposes only!
+        ~DieRollParser(randomizer: Random, attackerDice: List<Die>, defenderDice: List<Die>)
     }
 
     DieRollParser --> "*" Die
-    DieRollParser ..> BattleResult 
-
-    note top of DieRollParser
-        rollAttackerDice() and rollDefenderDice() will order the lists in non-increasing order
-    end note
+    DieRollParser ..> BattleResult
 
     +enum BattleResult {
         ATTACKER_VICTORY,
@@ -205,7 +220,6 @@ package domain {
 
     +class Territory {
         -territoryType: TerritoryType
-        // initialized to NEUTRAL
         -playerInControl: PlayerColor
         -numArmiesPresent: int
         -continent: Continent
