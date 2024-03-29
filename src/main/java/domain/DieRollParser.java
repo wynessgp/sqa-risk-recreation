@@ -17,7 +17,8 @@ public class DieRollParser {
     public DieRollParser() {
         this.attackerDice = new ArrayList<>();
         this.defenderDice = new ArrayList<>();
-        this.setupDie = new Die(); // this will be changed when needed
+        // Changed when we go to roll it.
+        this.setupDie = new Die(0, 0);
         this.randomizer = new Random();
     }
 
@@ -27,7 +28,8 @@ public class DieRollParser {
         this.randomizer = randomizer;
         this.attackerDice = attackerDice;
         this.defenderDice = defenderDice;
-        this.setupDie = new Die(); // this is changed when needed
+        // Changed when we go to roll it.
+        this.setupDie = new Die(0, 0);
     }
 
     public boolean buildDiceLists() {
