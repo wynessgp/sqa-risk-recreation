@@ -47,10 +47,6 @@ package domain {
 
     }
 
-    +class SecretMission {
-
-    }
-
     +class CapitalRisk {
 
     }
@@ -71,7 +67,6 @@ package domain {
     GameEngine --> DieRollParser
 
     CapitalRisk --|> GameEngine
-    SecretMission --|> GameEngine
     WorldDomination --|> GameEngine
 
     +class RiskCardDeck {
@@ -87,9 +82,6 @@ package domain {
         -minimumPossibleRoll: int
         +Die(maximumPossibleRoll: int, minimumPossibleRoll: int)
         +rollSingleDie(randomizer: Random): Integer
-
-        // {method} the below constructor is for unit testing purposes only!
-        ~Die()
     }
 
     +class DieRollParser {
@@ -178,10 +170,6 @@ package domain {
 
     TerritoryCard --> PieceType
     TerritoryCard --> TerritoryType
-
-    +class SecretMissionCard {
-        // behaves a little differently        
-    }
 
     TerritoryCard ..|> Card
     WildCard ..|> Card
