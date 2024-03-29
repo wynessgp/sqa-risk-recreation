@@ -3,9 +3,12 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TerritoryTest {
 
@@ -36,10 +39,17 @@ class TerritoryTest {
         assertFalse(territory.setPlayerInControl(playerA));
     }
 
-    @Test
-    void test03_setNumArmiesPresent_invalidNegativeNumber_expectException() {
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void test03_setNumArmiesPresent_invalidNumber_expectException(int illegalInput) {
         Territory territory = new Territory(TerritoryType.ALASKA);
-        assertFalse(territory.setNumArmiesPresent(-1));
+
+        String expectedMessage = "Number of armies to set should be greater than 0";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> territory.setNumArmiesPresent(illegalInput));
+
+        String actual = exception.getMessage();
+        assertEquals(expectedMessage, actual);
     }
 
     @Test
