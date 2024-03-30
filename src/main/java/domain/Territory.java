@@ -12,6 +12,11 @@ public class Territory {
         this.numArmiesPresent = 0;
     }
 
+    Territory(Player playerToBeInControl, TerritoryType territoryType) {
+        this.territoryType = territoryType;
+        this.playerInControl = playerToBeInControl;
+        this.numArmiesPresent = 0;
+    }
 
     public boolean setPlayerInControl(Player player) {
         if (player.equals(playerInControl)) {
