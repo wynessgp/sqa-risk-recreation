@@ -34,18 +34,16 @@ package presentation {
 }
 
 package domain {
-    +abstract class GameRules {
+    +abstract class GameEngine {
         ~gamePhase: GamePhase
         ~gameGraph: TerritoryGraph
         ~tradeInChecker: TradeInManager
-        ~deckManager: DeckManager
+        ~riskCardDeck: RiskCardDeck
+        ~dieRollParser: DieRollParser
+
     }
 
     +class WorldDomination {
-
-    }
-
-    +class SecretMission {
 
     }
 
@@ -62,49 +60,84 @@ package domain {
         GAME_OVER
     }
 
-    GameRules --> GamePhase
-    GameRules --> TerritoryGraph
-    GameRules --> DeckManager
-    GameRules --> TradeInManager
-    CapitalRisk --|> GameRules
-    SecretMission --|> GameRules
-    WorldDomination --|> GameRules
+    GameEngine --> GamePhase
+    GameEngine --> TerritoryGraph
+    GameEngine --> RiskCardDeck
+    GameEngine --> TradeInParser
+    GameEngine --> DieRollParser
 
-    +class DeckManager {
+    CapitalRisk --|> GameEngine
+    WorldDomination --|> GameEngine
+
+    +class RiskCardDeck {
         -deckOfCards: List<Card>
-        +DeckManager()
-        +drawCard(): Card
-        +initDeck(): boolean
-        -shuffle(): boolean
+        +RiskCardDeck()
+        +drawCardFromDeck(): Card
+        +initializeDeck(): boolean
+        -shuffleDeck(): boolean
     }
 
-    DeckManager -> "*" Card
+    +class Die {
+        -maximumPossibleRoll: int
+        -minimumPossibleRoll: int
+        +Die(maximumPossibleRoll: int, minimumPossibleRoll: int)
+        +rollSingleDie(randomizer: Random): Integer
+    }
 
-    +class TradeInManager {
-        -attemptedCards: Set<Card>
+    +class DieRollParser {
+        -{final} attackerDice: List<Die>
+        -{final} defenderDice: List<Die>
+        -{final}randomizer: Random
+        -setupDie: Die
+        +DieRollParser()
+        +buildDiceLists(): boolean
+
+        +rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
+        -buildSetupDie(setupDieUpperBound: int): void
+
+        +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
+        +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
+        -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
+        -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
+
+        +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
+        -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
+        -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
+        -calculateBattleResult(defenderRoll: Integer, attackerRoll: Integer): BattleResult
+        ~validateSortIsInNonIncreasingOrder(toCheck: List<Integer>): boolean
+
+        // {method} the below constructor is for unit testing purposes only!
+        ~DieRollParser(randomizer: Random, attackerDice: List<Die>, defenderDice: List<Die>)
+    }
+
+    DieRollParser --> "*" Die
+    DieRollParser ..> BattleResult
+
+    +enum BattleResult {
+        ATTACKER_VICTORY,
+        DEFENDER_VICTORY
+    }
+
+
+    +class TradeInParser {
         -setsTradedInSoFar: int
-        +startTrade(attemptedCards: Set<Card>): boolean
-        -verifyValidCombo(): boolean
-        -calculateNumNewPieces(): boolean
-        -updateSetsTradedIn(): boolean
-        -clearSavedSet(): boolean
+        +TradeInParser()
+        +startTrade(attemptedCards: List<Card>): int
+        -verifyValidCombo(attemptedCards: List<Card>): boolean
+        -calculateNumNewPieces(attemptedCards: List<Card>): int
+        -updateSetsTradedIn(attemptedCards: List<Card>): boolean
     }
 
-    TradeInManager -d-> "*" Card
-    TradeInManager .d.> Card
+    TradeInParser .d.> Card
 
     +class Player {
         -cards: Set<Card>
-        -pieces: Set<Piece>
+        -color: PlayerColor
+        +Player(playerColor: PlayerColor)
     }
 
-    Player -> "*" Piece
-    Player -> "*" Card
-
-    +class Piece {
-        -pieceType: PieceType
-        -location: Territory
-    }
+    Player -u-> "*" Card
+    Player -u-> PlayerColor
 
     +enum PieceType {
         ARTILLERY,
@@ -112,18 +145,16 @@ package domain {
         INFANTRY
     }
 
-    Piece --> PieceType
-
     +interface Card {
-        +{static}{final} isWild(): boolean
-        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
-        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
+        +isWild(): boolean
+        +matchesTerritory(territory: TerritoryType): boolean
+        +matchesPieceType(pieceType: PieceType): boolean
     }
 
     +class WildCard {
-        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
-        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
-        +{static}{final} isWild(): boolean
+        +matchesTerritory(territory: TerritoryType): boolean
+        +matchesPieceType(pieceType: PieceType): boolean
+        +isWild(): boolean
     }
 
     note "matchesPieceType and isWild returns true, matchesTerritory returns false" as N1
@@ -132,29 +163,38 @@ package domain {
     +class TerritoryCard {
         -territoryType: TerritoryType
         -pieceType: PieceType
-        +{static}{final} matchesTerritory(territory: TerritoryType): boolean
-        +{static}{final} matchesPieceType(pieceType: PieceType): boolean
-        +{static}{final} isWild(): boolean
+        +matchesTerritory(territory: TerritoryType): boolean
+        +matchesPieceType(pieceType: PieceType): boolean
+        +isWild(): boolean
     }
+
+    TerritoryCard --> PieceType
+    TerritoryCard --> TerritoryType
 
     TerritoryCard ..|> Card
     WildCard ..|> Card
-    TerritoryCard --> PieceType
-    TerritoryCard --> TerritoryType
+    RiskCardDeck --> "*" Card
 
     +enum TerritoryType {
         ...
     }
 
     +class TerritoryGraph {
-        -territoryKeys: List<TerritoryType>
-        -territoryTypeToAdjacencies: Map<TerritoryType, Set<Territory>>
+        -territories: Map<TerritoryType, Set<Territory>>
+        -territoryTypeToObject: Map<TerritoryType, Territory>
         +TerritoryGraph()
-        +addNewKey(newKey: TerritoryType): boolean
-        +addNewAdjacency(keyToAddOn: TerritoryType, adjTerritory: Territory): boolean
-        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
-        +removeAdjacency(keyToRemoveFrom: TerritoryType, adjTerritory: Territory): boolean
-        +findAdjacentTerritories(givenTerritory: TerritoryType): Set<Territory>
+
+        +getTerritory(territoryType: TerritoryType): Territory
+        +findAdjacentTerritories(territoryType: TerritoryType): Set<Territory>
+
+        +addNewTerritory(territory: Territory): boolean
+        +addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+        -isValidAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+
+        +addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        -graphContainsAdjacencies(territoryType: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
+        -graphHasAdjacencyMapping(adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
+        -addAdjacenciesToGraph(territory: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): void
     }
 
     TerritoryGraph --> "*" Territory
@@ -162,18 +202,23 @@ package domain {
 
     +class Territory {
         -territoryType: TerritoryType
-        // initialized to NEUTRAL
         -playerInControl: Player
         -numArmiesPresent: int
         +Territory(territoryType: TerritoryType)
+
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
+
+        +getPlayerInControl(): Player
+        +getArmies(): int
+        +getTerritoryType(): TerritoryType
     }
 
     Territory --> Player
     Territory --> TerritoryType
 
-    +enum Player {
+    +enum PlayerColor {
+        SETUP,
         NEUTRAL,
         BLACK,
         RED,
