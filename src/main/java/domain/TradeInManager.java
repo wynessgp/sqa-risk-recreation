@@ -19,7 +19,7 @@ public class TradeInManager {
         return 0;
     }
 
-    public boolean verifyValidCombo(List<Card> attemptedCards) {
+    protected boolean verifyValidCombo(List<Card> attemptedCards) {
         if (attemptedCards.size() == 3) {
             return hasWild(attemptedCards)
                     || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
@@ -66,7 +66,7 @@ public class TradeInManager {
         return false;
     }
 
-    public int calculateNumNewPieces() {
+    protected int calculateNumNewPieces() {
         if (this.setsTradedInSoFar < 5) {
             return 2 * this.setsTradedInSoFar + 4;
         } else if (this.setsTradedInSoFar >= 14) { //all cards traded in
@@ -75,7 +75,7 @@ public class TradeInManager {
         return (this.setsTradedInSoFar - 5) * 5 + 15;
     }
 
-    public boolean updateSetsTradedIn() {
+    protected boolean updateSetsTradedIn() {
         if (this.setsTradedInSoFar >= 14) {
             return false; //add 1 would overflow
         }
