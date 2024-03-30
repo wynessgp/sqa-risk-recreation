@@ -1,4 +1,4 @@
-# method: startTrade(Set<Card> attemptedCards):boolean
+# method: startTrade(Set<Card> attemptedCards):int
 
 ## BVA Step 1
 Input: a set of cards that the user selects to be traded in for troops, and number of already traded-in set of cards
