@@ -11,7 +11,7 @@
 
 **Item Progress**:
 1. [85% done] made some progress but not much, finishing early next week
-2. [done] using Java Swing
+2. [done] using JavaFX (changing it up a little bit)
 3. [not started] starting next week
 
 # Part 3. Individual Progress of the Week
@@ -32,6 +32,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/57
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/58
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/60
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
