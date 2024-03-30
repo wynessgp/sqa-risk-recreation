@@ -1,0 +1,10 @@
+#bruhLabel {
+    -fx-background-color: #cccccc;
+}
+
+#diceImage {
+    -fx-background-image: url(images/risk.PNG);
+    -fx-background-size: stretch;
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+}

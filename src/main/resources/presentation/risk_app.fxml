@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?scenebuilder-stylesheet styles.css?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" minWidth="300.0" prefHeight="632.0" prefWidth="980.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints maxWidth="581.0" minWidth="5.0" prefWidth="491.0" />
+      <ColumnConstraints maxWidth="700.0" minWidth="10.0" prefWidth="491.0" />
+      <ColumnConstraints maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="15.0" prefWidth="489.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="250.0" minHeight="100.0" prefHeight="100.0" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="100.0" prefHeight="100.0" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="100.0" prefHeight="100.0" vgrow="ALWAYS" />
+  </rowConstraints>
+   <children>
+      <Label fx:id="diceImage" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="4" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="100.0" text="R  i  s  k" textAlignment="CENTER" textFill="RED" GridPane.columnSpan="4">
+         <font>
+            <Font name="Book Antiqua" size="96.0" />
+         </font>
+      </Label>
+      <TextField alignment="CENTER" maxHeight="75.0" maxWidth="1.7976931348623157E308" promptText="How many people are playing? [2, 6]" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextField>
+      <Button alignment="CENTER" contentDisplay="CENTER" maxHeight="50.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Submit" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets left="25.0" />
+         </GridPane.margin>
+      </Button>
+   </children>
+</GridPane>

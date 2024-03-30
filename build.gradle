@@ -4,10 +4,9 @@ plugins {
     id 'java'
     id "com.github.spotbugs" version "6.0.9"
     id 'checkstyle'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
-
-group 'edu.rose-hulman.csse'
-version '1.0'
 
 repositories {
     mavenCentral()
@@ -24,6 +23,11 @@ test {
     useJUnitPlatform()
 }
 
+javafx {
+    version = "17.0.10"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
 spotbugsMain {
     reports {
         html {
@@ -33,3 +37,7 @@ spotbugsMain {
         }
     }
 }
+
+mainClassName = 'presentation.RiskApp'
+group 'edu.rose-hulman.csse'
+version '1.0'
