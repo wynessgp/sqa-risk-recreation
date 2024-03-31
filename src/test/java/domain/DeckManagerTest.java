@@ -2,13 +2,14 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 
@@ -42,5 +43,13 @@ public class DeckManagerTest {
             EasyMock.verify(drawnCard);
         }
         assertTrue(deckManager.isDeckEmpty());
+    }
+
+    @Test
+    public void test02_shuffle_withEmptyDeck_returnsFalse() {
+        DeckManager deckManager = new DeckManager();
+        Random random = EasyMock.createMock(Random.class);
+
+        assertFalse(deckManager.shuffle(random));
     }
 }
