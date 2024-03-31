@@ -1,15 +1,18 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
 public class DeckManager {
-    List<Card> deckOfCards;
+    private List<Card> deckOfCards;
+    private Random random;
 
     public DeckManager() {
         this.deckOfCards = new ArrayList<>();
+        this.random = new Random();
     }
 
     public Card drawCard() {
@@ -20,11 +23,15 @@ public class DeckManager {
     }
 
     public boolean shuffle() {
-        return false;
+        if (this.deckOfCards.size() < 2) {
+            return false;
+        }
+        Collections.shuffle(deckOfCards, random);
+        return true;
     }
 
-    boolean shuffle(Random random) {
-        return shuffle();
+    void setRandom(Random random) {
+        this.random = random;
     }
 
     void setDeck(List<Card> deck) {

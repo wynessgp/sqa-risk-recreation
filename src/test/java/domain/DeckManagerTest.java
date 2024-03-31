@@ -12,6 +12,8 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class DeckManagerTest {
 
@@ -48,9 +50,7 @@ public class DeckManagerTest {
     @Test
     public void test02_shuffle_withEmptyDeck_returnsFalse() {
         DeckManager deckManager = new DeckManager();
-        Random random = EasyMock.createMock(Random.class);
-
-        assertFalse(deckManager.shuffle(random));
+        assertFalse(deckManager.shuffle());
     }
 
     @Test
@@ -61,9 +61,42 @@ public class DeckManagerTest {
         EasyMock.replay(cardToAdd);
         mockedCards.add(cardToAdd);
         deckManager.setDeck(mockedCards);
-        Random random = EasyMock.createMock(Random.class);
 
-        assertFalse(deckManager.shuffle(random));
-        EasyMock.verify(cardToAdd);
+        assertFalse(deckManager.shuffle());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {2, 43, 44})
+    public void test04_shuffle_withTwoOrMoreCards_returnsTrue(int startingSize) {
+        DeckManager deckManager = new DeckManager();
+        List<Card> mockedCards = new ArrayList<>();
+
+        for (int i = 0; i < startingSize; i++) {
+            Card cardToAdd = EasyMock.createMock(Card.class);
+            EasyMock.replay(cardToAdd);
+            mockedCards.add(cardToAdd);
+        }
+        deckManager.setDeck(mockedCards);
+
+        Random random = EasyMock.createMock(Random.class);
+        for (int i = startingSize - 1; i > 0; i--) {
+            EasyMock.expect(random.nextInt(i + 1)).andReturn(i % startingSize);
+        }
+        EasyMock.replay(random);
+
+        deckManager.setRandom(random);
+        assertTrue(deckManager.shuffle());
+        EasyMock.verify(random);
+
+        // Ensure at least one card is in a different location
+        boolean isListDifferent = false;
+        for (Card card : mockedCards) {
+            Card drawnCard = deckManager.drawCard();
+            if (!card.equals(drawnCard)) {
+                isListDifferent = true;
+            }
+            EasyMock.verify(card);
+        }
+        assertTrue(isListDifferent);
     }
 }

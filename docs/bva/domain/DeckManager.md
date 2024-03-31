@@ -42,8 +42,8 @@ Input: list containing one Card
 Output: pointer to the Card at index 0, list is now empty
 
 
-# method: shuffle(Random: random): boolean
-*Note:* This is a package private method that calls the public shuffle() method with our own version of Random. This allows us to mock the Random class and ensure shuffling the list actually works. It is possible that running shuffle() will result in the exact same order as before, which is not something we will test here.
+# method: shuffle(): boolean
+*Note:* This will use the package private method setRandom() during testing. This allows us to mock the Random class and ensure shuffling the list actually works. It is possible that running shuffle() will result in the exact same order as before, which is not something we will test here.
 
 ## BVA Step 1
 Input: Underlying list of Cards
