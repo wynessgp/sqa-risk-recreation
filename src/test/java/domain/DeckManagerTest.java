@@ -52,4 +52,18 @@ public class DeckManagerTest {
 
         assertFalse(deckManager.shuffle(random));
     }
+
+    @Test
+    public void test03_shuffle_withOneCard_returnsFalse() {
+        DeckManager deckManager = new DeckManager();
+        List<Card> mockedCards = new ArrayList<>();
+        Card cardToAdd = EasyMock.createMock(Card.class);
+        EasyMock.replay(cardToAdd);
+        mockedCards.add(cardToAdd);
+        deckManager.setDeck(mockedCards);
+        Random random = EasyMock.createMock(Random.class);
+
+        assertFalse(deckManager.shuffle(random));
+        EasyMock.verify(cardToAdd);
+    }
 }
