@@ -79,8 +79,8 @@ public class DeckManagerTest {
         deckManager.setDeck(mockedCards);
 
         Random random = EasyMock.createMock(Random.class);
-        for (int i = startingSize - 1; i > 0; i--) {
-            EasyMock.expect(random.nextInt(i + 1)).andReturn(i % startingSize);
+        for (int i = startingSize; i > 1; i--) {
+            EasyMock.expect(random.nextInt(i)).andReturn((i - 1) % startingSize);
         }
         EasyMock.replay(random);
 
