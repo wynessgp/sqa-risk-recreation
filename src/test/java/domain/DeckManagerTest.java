@@ -122,4 +122,27 @@ public class DeckManagerTest {
         assertEquals(expectedTerritoryCards, actualTerritoryCards);
         assertEquals(expectedWildCards, actualWildCards);
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 44})
+    public void test06_initDeck_withNonEmptyDeck_throwsException(int size) {
+        String expectedMessage = "Deck was previously initialized";
+        DeckManager deckManager = new DeckManager();
+        List<Card> cards = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            Card cardToAdd = EasyMock.createMock(Card.class);
+            EasyMock.replay(cardToAdd);
+            cards.add(cardToAdd);
+        }
+
+        deckManager.setDeck(cards);
+        Exception exception = assertThrows(IllegalStateException.class, deckManager::initDeck);
+        assertEquals(expectedMessage, exception.getMessage());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
+
 }

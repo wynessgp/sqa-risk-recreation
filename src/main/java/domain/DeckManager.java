@@ -16,6 +16,9 @@ public class DeckManager {
     }
 
     public boolean initDeck() {
+        if (!isDeckEmpty()) {
+            throw new IllegalStateException("Deck was previously initialized");
+        }
         addTerritoryCards();
         addWildCards();
         return true;
