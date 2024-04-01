@@ -93,10 +93,16 @@ package domain {
 
     +class RiskCardDeck {
         -deckOfCards: List<Card>
+        -random: Random
         +RiskCardDeck()
-        +drawCardFromDeck(): Card
-        +initializeDeck(): boolean
-        -shuffleDeck(): boolean
+        ~RiskCardDeck(random: Random)
+        ~initDeck(): boolean
+        -addTerritoryCards(): void
+        -addWildCards(): void
+        +drawCard(): Card
+        ~shuffle(): boolean
+        ~setDeck(deck: List<Card>): void
+        ~isDeckEmpty(): boolean
     }
 
     +class Die {
