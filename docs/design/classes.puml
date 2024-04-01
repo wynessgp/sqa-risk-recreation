@@ -74,11 +74,11 @@ package domain {
     }
 
     +enum GamePhase {
-        GAME_START,
-        SETUP,
-        PLACEMENT,
-        ATTACK,
-        FORTIFY,
+        GAME_START
+        SETUP
+        PLACEMENT
+        ATTACK
+        FORTIFY
         GAME_OVER
     }
 
@@ -142,7 +142,7 @@ package domain {
     DieRollParser ..> BattleResult
 
     +enum BattleResult {
-        ATTACKER_VICTORY,
+        ATTACKER_VICTORY
         DEFENDER_VICTORY
     }
 
@@ -168,8 +168,8 @@ package domain {
     Player -u-> PlayerColor
 
     +enum PieceType {
-        ARTILLERY,
-        CAVALRY,
+        ARTILLERY
+        CAVALRY
         INFANTRY
     }
 
@@ -233,6 +233,7 @@ package domain {
         -playerInControl: Player
         -numArmiesPresent: int
         +Territory(territoryType: TerritoryType)
+        ~Territory(playerToBeInControl: Player, territoryType: TerritoryType)
 
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
@@ -246,13 +247,13 @@ package domain {
     Territory --> TerritoryType
 
     +enum PlayerColor {
-        SETUP,
-        NEUTRAL,
-        BLACK,
-        RED,
-        YELLOW,
-        BLUE,
-        GREEN,
+        SETUP
+        NEUTRAL
+        BLACK
+        RED
+        YELLOW
+        BLUE
+        GREEN
         PURPLE
     }
 
