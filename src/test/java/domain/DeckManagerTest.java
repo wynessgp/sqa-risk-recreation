@@ -99,4 +99,27 @@ public class DeckManagerTest {
         }
         assertTrue(isListDifferent);
     }
+
+    @Test
+    public void test05_initDeck_withEmptyDeck_returnsTrue() {
+        int expectedTerritoryCards = 42;
+        int actualTerritoryCards = 0;
+        int expectedWildCards = 2;
+        int actualWildCards = 0;
+
+        DeckManager deckManager = new DeckManager();
+        assertTrue(deckManager.initDeck());
+
+        for (int i = 0; i < expectedTerritoryCards + expectedWildCards; i++) {
+            Card drawnCard = deckManager.drawCard();
+            if (drawnCard.isWild()) {
+                actualWildCards++;
+            } else {
+                actualTerritoryCards++;
+            }
+        }
+
+        assertEquals(expectedTerritoryCards, actualTerritoryCards);
+        assertEquals(expectedWildCards, actualWildCards);
+    }
 }

@@ -15,6 +15,27 @@ public class DeckManager {
         this.random = new Random();
     }
 
+    public boolean initDeck() {
+        addTerritoryCards();
+        addWildCards();
+        return true;
+    }
+
+    private void addTerritoryCards() {
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            deckOfCards.add(new TerritoryCard(territoryType, currentPiece));
+            pieceTypeCount++;
+        }
+    }
+
+    private void addWildCards() {
+        for (int i = 0; i < 2; i++) {
+            deckOfCards.add(new WildCard());
+        }
+    }
+
     public Card drawCard() {
         if (isDeckEmpty()) {
             throw new NoSuchElementException("Cannot draw card from an empty deck");
