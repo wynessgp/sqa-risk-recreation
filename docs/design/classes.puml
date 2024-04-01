@@ -41,7 +41,29 @@ package domain {
         ~riskCardDeck: RiskCardDeck
         ~dieRollParser: DieRollParser
 
+        -currentTurnIndex: Integer
+        -currentTurnIndexToPlayerColor: Map<Integer, PlayerColor>
+
+        {method} ------ set up phase ------
+        +GameEngine()
+        -initializeGameEngine(): boolean
+
+        +assignSetupArmiesToPlayers(int numPlayers): List<Integer>
+        +placeNewArmiesInTerritory(territory: TerritoryType, numArmies: int): boolean
+        +swapCurrentPlayer(): boolean
+
+        {method} ------ placement phase ------
+
+        +calculateTroopsReceivedThisTurn(): int
+        +swapGamePhase(): boolean
+
     }
+
+    note right of GameEngine::initializeGameEngine
+        initializeGameEngine() gets called by the constructor.
+        Its responsibility is to create the necessary objects
+        to start the game and have them ready for set up.
+    end note
 
     +class WorldDomination {
 
@@ -87,7 +109,7 @@ package domain {
     +class DieRollParser {
         -{final} attackerDice: List<Die>
         -{final} defenderDice: List<Die>
-        -{final}randomizer: Random
+        -{final} randomizer: Random
         -setupDie: Die
         +DieRollParser()
         +buildDiceLists(): boolean
