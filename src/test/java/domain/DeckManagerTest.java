@@ -20,7 +20,9 @@ public class DeckManagerTest {
     @Test
     public void test00_drawCard_withEmptyDeck_throwsException() {
         String expectedMessage = "Cannot draw card from an empty deck";
-        DeckManager deckManager = new DeckManager();
+        Random random = EasyMock.createMock(Random.class);
+        // Creating mocked random object to use test constructor (does not initDeck and shuffle)
+        DeckManager deckManager = new DeckManager(random);
 
         Exception exception = assertThrows(NoSuchElementException.class, deckManager::drawCard);
         assertEquals(expectedMessage, exception.getMessage());
@@ -28,8 +30,9 @@ public class DeckManagerTest {
 
     @Test
     public void test01_drawCard_withCompleteDeck_drawUntilEmpty() {
-        DeckManager deckManager = new DeckManager();
         int startingSize = 44;
+        Random random = EasyMock.createMock(Random.class);
+        DeckManager deckManager = new DeckManager(random);
         List<Card> mockedCards = new ArrayList<>();
 
         for (int i = 0; i < startingSize; i++) {
@@ -49,16 +52,21 @@ public class DeckManagerTest {
 
     @Test
     public void test02_shuffle_withEmptyDeck_returnsFalse() {
-        DeckManager deckManager = new DeckManager();
+        Random random = EasyMock.createMock(Random.class);
+        DeckManager deckManager = new DeckManager(random);
+
         assertFalse(deckManager.shuffle());
     }
 
     @Test
     public void test03_shuffle_withOneCard_returnsFalse() {
-        DeckManager deckManager = new DeckManager();
+        Random random = EasyMock.createMock(Random.class);
+        DeckManager deckManager = new DeckManager(random);
+
         List<Card> mockedCards = new ArrayList<>();
         Card cardToAdd = EasyMock.createMock(Card.class);
         EasyMock.replay(cardToAdd);
+
         mockedCards.add(cardToAdd);
         deckManager.setDeck(mockedCards);
 
@@ -68,15 +76,12 @@ public class DeckManagerTest {
     @ParameterizedTest
     @ValueSource(ints = {2, 43, 44})
     public void test04_shuffle_withTwoOrMoreCards_returnsTrue(int startingSize) {
-        DeckManager deckManager = new DeckManager();
         List<Card> mockedCards = new ArrayList<>();
-
         for (int i = 0; i < startingSize; i++) {
             Card cardToAdd = EasyMock.createMock(Card.class);
             EasyMock.replay(cardToAdd);
             mockedCards.add(cardToAdd);
         }
-        deckManager.setDeck(mockedCards);
 
         Random random = EasyMock.createMock(Random.class);
         for (int i = startingSize; i > 1; i--) {
@@ -84,7 +89,8 @@ public class DeckManagerTest {
         }
         EasyMock.replay(random);
 
-        deckManager.setRandom(random);
+        DeckManager deckManager = new DeckManager(random);
+        deckManager.setDeck(mockedCards);
         assertTrue(deckManager.shuffle());
         EasyMock.verify(random);
 
@@ -107,7 +113,8 @@ public class DeckManagerTest {
         int expectedWildCards = 2;
         int actualWildCards = 0;
 
-        DeckManager deckManager = new DeckManager();
+        Random random = EasyMock.createMock(Random.class);
+        DeckManager deckManager = new DeckManager(random);
         assertTrue(deckManager.initDeck());
 
         for (int i = 0; i < expectedTerritoryCards + expectedWildCards; i++) {
@@ -127,9 +134,10 @@ public class DeckManagerTest {
     @ValueSource(ints = {1, 44})
     public void test06_initDeck_withNonEmptyDeck_throwsException(int size) {
         String expectedMessage = "Deck was previously initialized";
-        DeckManager deckManager = new DeckManager();
-        List<Card> cards = new ArrayList<>();
+        Random random = EasyMock.createMock(Random.class);
+        DeckManager deckManager = new DeckManager(random);
 
+        List<Card> cards = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Card cardToAdd = EasyMock.createMock(Card.class);
             EasyMock.replay(cardToAdd);

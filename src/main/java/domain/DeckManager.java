@@ -8,14 +8,25 @@ import java.util.Random;
 
 public class DeckManager {
     private List<Card> deckOfCards;
-    private Random random;
+    private final Random random;
 
     public DeckManager() {
         this.deckOfCards = new ArrayList<>();
         this.random = new Random();
+        try {
+            initDeck();
+            shuffle();
+        } catch (Exception e) {
+            System.err.println("Error initializing deck: " + e.getMessage());
+        }
     }
 
-    public boolean initDeck() {
+    DeckManager(Random random) {
+        this.deckOfCards = new ArrayList<>();
+        this.random = random;
+    }
+
+    boolean initDeck() {
         if (!isDeckEmpty()) {
             throw new IllegalStateException("Deck was previously initialized");
         }
@@ -46,16 +57,12 @@ public class DeckManager {
         return deckOfCards.remove(deckOfCards.size() - 1);
     }
 
-    public boolean shuffle() {
+    boolean shuffle() {
         if (this.deckOfCards.size() < 2) {
             return false;
         }
         Collections.shuffle(deckOfCards, random);
         return true;
-    }
-
-    void setRandom(Random random) {
-        this.random = random;
     }
 
     void setDeck(List<Card> deck) {
