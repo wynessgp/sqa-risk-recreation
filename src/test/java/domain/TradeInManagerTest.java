@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,62 +17,65 @@ import org.junit.jupiter.api.Test;
 public class TradeInManagerTest {
 
     private TradeInManager tradeMgrUnderTest;
-    private List<Card> cards;
+    private Set<Card> cards;
     private Card wildCard;
+    private Card wildCard2;
     private Card infantryCard;
+    private Card infantryCard2;
+    private Card infantryCard3;
     private Card cavalryCard;
+    private Card cavalryCard2;
+    private Card cavalryCard3;
     private Card artilleryCard;
+    private Card artilleryCard2;
+    private Card artilleryCard3;
+
+    private Card createMockCard(boolean isWild, PieceType pieceType) {
+        Card card = EasyMock.createMock(Card.class);
+        EasyMock.expect(card.isWild()).andReturn(isWild).anyTimes();
+        for (PieceType type : PieceType.values()) {
+            if (type.equals(pieceType) && !isWild) {
+                EasyMock.expect(card.matchesPieceType(type)).andReturn(true).anyTimes();
+            } else {
+                EasyMock.expect(card.matchesPieceType(type)).andReturn(false).anyTimes();
+            }
+        }
+        EasyMock.replay(card);
+        return card;
+    }
 
     //mock setup for testing verifyValidCombo() and startTrade()
     @BeforeEach
     public void setUp() {
         tradeMgrUnderTest = new TradeInManager();
 
-        cards = new ArrayList<>();
-        wildCard = EasyMock.createMock(Card.class);
-        infantryCard = EasyMock.createMock(Card.class);
-        cavalryCard = EasyMock.createMock(Card.class);
-        artilleryCard = EasyMock.createMock(Card.class);
-
-        //wild card
-        EasyMock.expect(wildCard.isWild()).andReturn(true).anyTimes();
-        EasyMock.expect(wildCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
-        EasyMock.expect(wildCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
-        EasyMock.expect(wildCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
-
-        //infantry card
-        EasyMock.expect(infantryCard.isWild()).andReturn(false).anyTimes();
-        EasyMock.expect(infantryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(true).anyTimes();
-        EasyMock.expect(infantryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
-        EasyMock.expect(infantryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
-
-        //calvary card
-        EasyMock.expect(cavalryCard.isWild()).andReturn(false).anyTimes();
-        EasyMock.expect(cavalryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
-        EasyMock.expect(cavalryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(true).anyTimes();
-        EasyMock.expect(cavalryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(false).anyTimes();
-
-        //artillery card
-        EasyMock.expect(artilleryCard.isWild()).andReturn(false).anyTimes();
-        EasyMock.expect(artilleryCard.matchesPieceType(PieceType.INFANTRY)).andReturn(false).anyTimes();
-        EasyMock.expect(artilleryCard.matchesPieceType(PieceType.CAVALRY)).andReturn(false).anyTimes();
-        EasyMock.expect(artilleryCard.matchesPieceType(PieceType.ARTILLERY)).andReturn(true).anyTimes();
-
-        EasyMock.replay(wildCard, infantryCard, cavalryCard, artilleryCard);
+        cards = new HashSet<>();
+        wildCard = createMockCard(true, PieceType.INFANTRY);
+        wildCard2 = createMockCard(true, PieceType.INFANTRY);
+        infantryCard = createMockCard(false, PieceType.INFANTRY);
+        infantryCard2 = createMockCard(false, PieceType.INFANTRY);
+        infantryCard3 = createMockCard(false, PieceType.INFANTRY);
+        cavalryCard = createMockCard(false, PieceType.CAVALRY);
+        cavalryCard2 = createMockCard(false, PieceType.CAVALRY);
+        cavalryCard3 = createMockCard(false, PieceType.CAVALRY);
+        artilleryCard = createMockCard(false, PieceType.ARTILLERY);
+        artilleryCard2 = createMockCard(false, PieceType.ARTILLERY);
+        artilleryCard3 = createMockCard(false, PieceType.ARTILLERY);
     }
 
     @AfterEach
     public void tearDown() {
-        EasyMock.verify(wildCard);
-        EasyMock.verify(infantryCard);
-        EasyMock.verify(cavalryCard);
-        EasyMock.verify(artilleryCard);
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
     }
 
 
     //test for verifyValidCombo()
     @Test
     public void test00_verifyValidCombo_twoWild_expectedException() {
+        cards.add(wildCard);
+        cards.add(wildCard2);
         assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.verifyValidCombo(cards);
         });
@@ -79,6 +84,7 @@ public class TradeInManagerTest {
     @Test
     public void test01_verifyValidCombo_oneWildOneInfantry_expectedException() {
         cards.add(infantryCard);
+        cards.add(wildCard);
         assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.verifyValidCombo(cards);
         });
