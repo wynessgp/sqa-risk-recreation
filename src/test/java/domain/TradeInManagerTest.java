@@ -109,9 +109,12 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test04_verifyValidCombo_oneWild_expectedFalse() {
-        cards.add(wildCard);
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    public void test04_verifyValidCombo_twoArtillery_expectedException() {
+        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.verifyValidCombo(cards);
+        });
     }
 
     @Test
