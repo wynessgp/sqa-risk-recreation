@@ -407,19 +407,16 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test36_startTrade_14setOneArtilleryCardCollection_expected0AndFalse() {
+    public void test36_startTrade_14setTwoArtillery_expectedException() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(artilleryCard);
+        cards.add(artilleryCard2);
 
-        int expectedPieces = 0;
-        int expectedSetsAfter = 14;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
     }
 
     @Test
