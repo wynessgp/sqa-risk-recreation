@@ -6,22 +6,21 @@ Input: a set of cards that the user selects to be traded in for troops, and numb
 Output: the number of armies that the player should receive
 
 ## BVA Step 2
-Input: Collection, count
+Input: Collection, count (cases)
 
-Output: Count
+Output: Count (cases)
 
 ## BVA Step 3
 Input:
 - traded-in sets:
   - 0, 1, 2, 3, 4, 5, 6, 13, 14
 - collection size:
-  - empty collection
-  - collection with exactly 1 card
+  - collection with exactly 2 card
   - collection with exactly 3 cards
   - collection with exactly 4 cards
 - collection content:
   - collection containing one wild card
-  - collection containing more than one wild cards (based on my understanding should pass)
+  - collection containing more than one wild cards (based on my understanding should pass if size == 3)
   - collection containing no infantry cards
   - collection containing no calvary cards
   - collection containing no artillery cards
@@ -31,106 +30,106 @@ Input:
   - collection containing one of each cards (infantry, calvary, artillery)
 
 Output: 
-- integer values in [0, 55] for armies player should receive
-- true/false for whether number of traded-in sets are updated
+- 0, 4, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55
+- Illegal Argument Exception, Illegal State Exception
 
 ## BVA Step 4
 (Note: will be using Each-choice to test, instead of All-combination)
 ### Test value 1
-Input: 0 traded-in sets, empty collection
+Input: 0 traded-in sets, with one infantry card and one artillery card
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 2
-Input: 1 traded-in set, collection with one wild card
+Input: 1 traded-in set, collection with one cavalry card and one wild card
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 3
-Input: 5 traded-in sets, collection with one infantry card
+Input: 5 traded-in sets, collection with two infantry card
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 4
-Input: 13 traded-in sets, collection with one cavalry card
+Input: 13 traded-in sets, collection with two cavalry card
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 5
-Input: 14 traded-in sets, collection with one artillery card
+Input: 14 traded-in sets, collection with two artillery card
 
-Output: 0, false
+Output: illegal state exception
 
 ### Test value 6
 Input: 2 traded-in sets, collection with one infantry card and two cavalry cards
 
-Output: 0, false
+Output: 0
 
 ### Test value 7
 Input: 0 traded-in sets, collection with one wild card and two infantry cards
 
-Output: 4, true
+Output: 4
 
 ### Test value 8
 Input: 13 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
 
-Output: 55, true
+Output: 55
 
 ### Test value 9
 Input: 14 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
 
-Output: 0, false
+Output: illegal state exception
 
 ### Test value 10
 Input: 3 traded-in sets, collection with two wild card and one infantry cards
 
-Output: 10, true
+Output: 10
 
 ### Test value 11
 Input: 5 traded-in sets, collection with one infantry card, one calvary card, and one artillery card
 
-Output: 15, true
+Output: 15
 
 ### Test value 12
 Input: 6 traded-in sets, size 3 collection with only infantry
 
-Output: 20, true
+Output: 20
 
 ### Test value 13
 Input: 13 traded-in sets, size 3 collection with only cavalry
 
-Output: 55, true
+Output: 55
 
 ### Test value 14
 Input: 14 traded-in sets, size 3 collection with only artillery
 
-Output: 0, false
+Output: illegal state exception
 
 ### Test value 15
 Input: 0 traded-in sets, collection with two wild cards and two infantry cards
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 16
 Input: 3 traded-in sets, collection with two infantry cards and two cavalry cards
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 17
 Input: 13 traded-in sets, collection with one artillery card and three infantry cards
 
-Output: 0, false
+Output: illegal argument exception
 
 ### Test value 18
 Input: 14 traded-in sets, collection with one wild card, one infantry card, one calvary card, and one artillery card
 
-Output: 0, false
+Output: illegal state exception
 
 
-# method: verifyValidCombo():boolean
+# method: verifyValidCombo(attemptedCards: Set<Card>):boolean
 
 ## BVA Step 1
-Input: the set of cards
+Input: the set of 3 cards that the player chooses to trade in for troops
 
 Output: "yes" if the set is a valid set to be traded, else "no"
 
@@ -140,49 +139,50 @@ Input: Collection
 Output: Boolean
 
 ## BVA Step 3
-Input: 
-- empty collection
-- collection with exactly 1 card
+Input:
+- collection with exactly 2 card
 - collection with exactly 3 cards
 - collection with exactly 4 cards
 
 - collection containing any wild card
-- collection containing 2 wild cards (based on my understanding should pass)
+- collection containing more than one wild card (based on my understanding should pass if set size == 3)
 - collection containing no infantry cards
 - collection containing no calvary cards
 - collection containing no artillery cards
 - collection containing only infantry cards
 - collection containing only cavalry cards
 - collection containing only artillery cards
-- collection containing one of each cards (infantry, calvary, artillery)
+- collection containing one of each card (infantry, calvary, artillery)
 
-Output: true/false
+Output:
+- true or false
+- Illegal argument exception
 
 ## BVA Step 4
 ### Test value 1
-Input: empty collection
+Input: collection with two wild cards
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 2
-Input: collection with one wild card
+Input: collection with one wild card and one infantry card
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 3
-Input: collection with one infantry card
+Input: collection with two infantry card
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 4
-Input: collection with one calvary card
+Input: collection with two calvary card
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 5
-Input: collection with one artillery card
+Input: collection with two artillery card
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 6
 Input: collection with one infantry card and two calvary cards
@@ -232,22 +232,22 @@ Output: true
 ### Test value 15
 Input: collection with two wild cards and two infantry cards
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 16
 Input: collection with two infantry cards and two calvary cards
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 17
 Input: collection with one artillery card and three infantry cards
 
-Output: false
+Output: illegal argument exception
 
 ### Test value 18
 Input: collection with one wild card, one infantry card, one calvary card, and one infantry card
 
-Output: false
+Output: illegal argument exception
 
 
 # method: calculateNumNewPieces():int
@@ -258,14 +258,14 @@ Input: the number of already traded-in sets
 Output: the number of new army pieces the player should receive
 
 ## BVA Step 2
-Input: Count
+Input: Count (cases)
 
 Output: Count (cases)
 
 ## BVA Step 3
 Input: 0, 1, 2, 3, 4, 5, 6, 13, 14
 
-Output: 4, 6, 8, 10, 12, 15, 20, 55, 0
+Output: 4, 6, 8, 10, 12, 15, 20, 55, illegal state exception
 
 ## BVA Step 4
 ### Test value 1
@@ -311,7 +311,7 @@ Output: 55
 ### Test value 9
 Input: 14
 
-Output: 0
+Output: illegal state exception
 
 
 # method: updateSetsTradedIn():boolean
