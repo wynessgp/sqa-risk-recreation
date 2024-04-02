@@ -361,7 +361,7 @@ public class TradeInManagerTest {
 
     //test for startTrade()
     @Test
-    public void test32_startTrade_oneInfantryOneArtillery_expectedException() {
+    public void test32_startTrade_0setOneInfantryOneArtillery_expectedException() {
         //check number of pieces given to player
         cards.add(infantryCard);
         cards.add(artilleryCard);
@@ -371,7 +371,8 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test33_startTrade_oneCavalryOneWild_expectedException() {
+    public void test33_startTrade_1setOneCavalryOneWild_expectedException() {
+        tradeMgrUnderTest.updateSetsTradedIn();
         cards.add(cavalryCard);
         cards.add(wildCard);
         assertThrows(IllegalArgumentException.class, () -> {
