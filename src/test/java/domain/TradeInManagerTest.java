@@ -2,6 +2,7 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -69,8 +70,10 @@ public class TradeInManagerTest {
 
     //test for verifyValidCombo()
     @Test
-    public void test00_verifyValidCombo_emptySet_expectedFalse() {
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    public void test00_verifyValidCombo_twoWild_expectedException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.verifyValidCombo(cards);
+        });
     }
 
     @Test
