@@ -1,6 +1,5 @@
 package domain;
 
-//import java.util.List;
 import java.util.Set;
 
 public class TradeInManager {
@@ -20,7 +19,7 @@ public class TradeInManager {
         return 0;
     }
 
-    protected boolean verifyValidCombo(Set<Card> attemptedCards) throws IllegalArgumentException{
+    protected boolean verifyValidCombo(Set<Card> attemptedCards) throws IllegalArgumentException {
         if (attemptedCards.size() == 3) {
             return (hasWild(attemptedCards)
                     || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
@@ -67,7 +66,7 @@ public class TradeInManager {
         return false;
     }
 
-    protected int calculateNumNewPieces() throws IllegalStateException{
+    protected int calculateNumNewPieces() throws IllegalStateException {
         if (this.setsTradedInSoFar < 5) {
             return 2 * this.setsTradedInSoFar + 4;
         } else if (this.setsTradedInSoFar >= 14) { //all cards traded in
