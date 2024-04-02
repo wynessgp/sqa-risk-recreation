@@ -426,7 +426,7 @@ public class TradeInManagerTest {
         }
         cards.add(infantryCard);
         cards.add(cavalryCard);
-        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
 
         int expectedPieces = 0;
         int expectedSetsAfter = 2;
@@ -441,7 +441,7 @@ public class TradeInManagerTest {
     public void test38_startTrade_0setOneWildCardTwoInfantryCardCollection_expected4AndTrue() {
         cards.add(wildCard);
         cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
 
         int expectedPieces = 4;
         int expectedSetsAfter = 1;
@@ -471,7 +471,7 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test40_startTrade_14setOneWildCardOneCavalryCardOneArtilleryCardCollection_expected0AndFalse() {
+    public void test40_startTrade_14setOneWildCardOneCavalryCardOneArtilleryCardCollection_expectedException() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
@@ -479,13 +479,9 @@ public class TradeInManagerTest {
         cards.add(cavalryCard);
         cards.add(artilleryCard);
 
-        int expectedPieces = 0;
-        int expectedSetsAfter = 14;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
+        assertThrows(IllegalStateException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
     }
 
     @Test
