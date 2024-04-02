@@ -19,7 +19,7 @@ public class TradeInManager {
         return 0;
     }
 
-    protected boolean verifyValidCombo(List<Card> attemptedCards) {
+    protected boolean verifyValidCombo(List<Card> attemptedCards) throws IllegalArgumentException{
         if (attemptedCards.size() == 3) {
             return hasWild(attemptedCards)
                     || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
@@ -27,7 +27,7 @@ public class TradeInManager {
                     || (!hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && !hasArtillery(attemptedCards))
                     || (!hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && hasArtillery(attemptedCards));
         }
-        return false;
+        throw new IllegalArgumentException();
     }
 
     private boolean hasWild(List<Card> attemptedCards) {
