@@ -361,19 +361,13 @@ public class TradeInManagerTest {
 
     //test for startTrade()
     @Test
-    public void test32_startTrade_0setEmptyCollection_expected0AndFalse() {
+    public void test32_startTrade_oneInfantryOneArtillery_expectedException() {
         //check number of pieces given to player
-        int expectedPieces = 0;
-
-        //check whether the number of traded-in sets is updated,
-        //by checking the number of sets after the call is made:
-        //same as before == not updated; 1 greater == updated
-        int expectedSetsAfter = 0;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
+        cards.add(infantryCard);
+        cards.add(artilleryCard);
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
     }
 
     @Test
