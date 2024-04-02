@@ -13,3 +13,4 @@ Team 5: Canon Maranda, Grant Wyness, Harvey Yang, Frank Zhang
 - EasyMock: 4.2
 - SpotBugs: 6.0.9
 - Checkstyle: 10.14.2
+- JaCoCo: 0.8.8
