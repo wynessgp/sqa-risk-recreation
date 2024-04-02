@@ -67,11 +67,11 @@ public class TradeInManager {
         return false;
     }
 
-    protected int calculateNumNewPieces() {
+    protected int calculateNumNewPieces() throws IllegalStateException{
         if (this.setsTradedInSoFar < 5) {
             return 2 * this.setsTradedInSoFar + 4;
         } else if (this.setsTradedInSoFar >= 14) { //all cards traded in
-            return 0;
+            throw new IllegalStateException();
         }
         return (this.setsTradedInSoFar - 5) * 5 + 15;
     }
