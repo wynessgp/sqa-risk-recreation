@@ -217,7 +217,9 @@ public class TradeInManagerTest {
         cards.add(infantryCard2);
         cards.add(infantryCard3);
         cards.add(infantryCard);
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.verifyValidCombo(cards);
+        });
     }
 
     @Test
