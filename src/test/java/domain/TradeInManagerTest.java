@@ -197,7 +197,8 @@ public class TradeInManagerTest {
         cards.add(infantryCard2);
         assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.verifyValidCombo(cards);
-        });    }
+        });
+    }
 
     @Test
     public void test15_verifyValidCombo_twoAndTwoSetOf4_expectedException() {
@@ -205,7 +206,9 @@ public class TradeInManagerTest {
         cards.add(artilleryCard2);
         cards.add(infantryCard);
         cards.add(infantryCard2);
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+        assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.verifyValidCombo(cards);
+        });
     }
 
     @Test
