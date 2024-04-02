@@ -312,13 +312,13 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test26_calculateNumNewPieces_allCardsTradedIn_expected0() {
-        int expected = 0;
+    public void test26_calculateNumNewPieces_allCardsTradedIn_expectedException() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
+        assertThrows(IllegalStateException.class, () -> {
+            tradeMgrUnderTest.calculateNumNewPieces();
+        });
     }
 
 
