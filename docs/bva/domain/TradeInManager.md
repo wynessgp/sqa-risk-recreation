@@ -123,7 +123,7 @@ Output: illegal argument exception
 ### Test value 18
 Input: 14 traded-in sets, collection with one wild card, one infantry card, one calvary card, and one artillery card
 
-Output: illegal state exception
+Output: illegal argument exception
 
 
 # method: verifyValidCombo(attemptedCards: Set<Card>):boolean
