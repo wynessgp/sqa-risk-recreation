@@ -1,6 +1,7 @@
 package domain;
 
-import java.util.List;
+//import java.util.List;
+import java.util.Set;
 
 public class TradeInManager {
 
@@ -10,7 +11,7 @@ public class TradeInManager {
         setsTradedInSoFar = 0;
     }
 
-    public int startTrade(List<Card> attemptedCards) {
+    public int startTrade(Set<Card> attemptedCards) {
         if (this.verifyValidCombo(attemptedCards)) {
             int numNewPieces = this.calculateNumNewPieces();
             updateSetsTradedIn();
@@ -19,7 +20,7 @@ public class TradeInManager {
         return 0;
     }
 
-    protected boolean verifyValidCombo(List<Card> attemptedCards) throws IllegalArgumentException{
+    protected boolean verifyValidCombo(Set<Card> attemptedCards) throws IllegalArgumentException{
         if (attemptedCards.size() == 3) {
             return hasWild(attemptedCards)
                     || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
@@ -30,7 +31,7 @@ public class TradeInManager {
         throw new IllegalArgumentException();
     }
 
-    private boolean hasWild(List<Card> attemptedCards) {
+    private boolean hasWild(Set<Card> attemptedCards) {
         for (Card card : attemptedCards) {
             if (card.isWild()) {
                 return true;
@@ -39,7 +40,7 @@ public class TradeInManager {
         return false;
     }
 
-    private boolean hasInfantry(List<Card> attemptedCards) {
+    private boolean hasInfantry(Set<Card> attemptedCards) {
         for (Card card : attemptedCards) {
             if (card.matchesPieceType(PieceType.INFANTRY)) {
                 return true;
@@ -48,7 +49,7 @@ public class TradeInManager {
         return false;
     }
 
-    private boolean hasCavalry(List<Card> attemptedCards) {
+    private boolean hasCavalry(Set<Card> attemptedCards) {
         for (Card card : attemptedCards) {
             if (card.matchesPieceType(PieceType.CAVALRY)) {
                 return true;
@@ -57,7 +58,7 @@ public class TradeInManager {
         return false;
     }
 
-    private boolean hasArtillery(List<Card> attemptedCards) {
+    private boolean hasArtillery(Set<Card> attemptedCards) {
         for (Card card : attemptedCards) {
             if (card.matchesPieceType(PieceType.ARTILLERY)) {
                 return true;
