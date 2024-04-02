@@ -121,7 +121,7 @@ public class TradeInManagerTest {
     public void test05_verifyValidCombo_noInfantry_expectedFalse() {
         cards.add(cavalryCard);
         cards.add(artilleryCard);
-        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
@@ -129,7 +129,7 @@ public class TradeInManagerTest {
     public void test06_verifyValidCombo_noCavalry_expectedFalse() {
         cards.add(artilleryCard);
         cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
@@ -137,7 +137,7 @@ public class TradeInManagerTest {
     public void test07_verifyValidCombo_noArtillery_expectedFalse() {
         cards.add(infantryCard);
         cards.add(cavalryCard);
-        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
@@ -145,14 +145,14 @@ public class TradeInManagerTest {
     public void test08_verifyValidCombo_oneWildSetOf3_expectedTrue() {
         cards.add(wildCard);
         cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
     @Test
     public void test09_verifyValidCombo_twoWildSetOf3_expectedTrue() {
         cards.add(wildCard);
-        cards.add(wildCard);
+        cards.add(wildCard2);
         cards.add(infantryCard);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
@@ -168,56 +168,56 @@ public class TradeInManagerTest {
     @Test
     public void test11_verifyValidCombo_setOf3Infantry_expectedTrue() {
         cards.add(infantryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
     @Test
     public void test12_verifyValidCombo_setOf3Cavalry_expectedTrue() {
         cards.add(cavalryCard);
-        cards.add(cavalryCard);
-        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+        cards.add(cavalryCard3);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
     @Test
     public void test13_verifyValidCombo_setOf3Artillery_expectedTrue() {
         cards.add(artilleryCard);
-        cards.add(artilleryCard);
-        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
+        cards.add(artilleryCard3);
         assertTrue(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
     @Test
-    public void test14_verifyValidCombo_twoWildSetOf4_expectedFalse() {
+    public void test14_verifyValidCombo_twoWildSetOf4_expectedException() {
         cards.add(wildCard);
-        cards.add(wildCard);
+        cards.add(wildCard2);
         cards.add(infantryCard);
+        cards.add(infantryCard2);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test15_verifyValidCombo_twoAndTwoSetOf4_expectedException() {
+        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
+    }
+
+    @Test
+    public void test16_verifyValidCombo_oneAndThreeSetOf4_expectedException() {
+        cards.add(artilleryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
         cards.add(infantryCard);
         assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
     }
 
     @Test
-    public void test15_verifyValidCombo_twoAndTwoSetOf4_expectedFalse() {
-        cards.add(artilleryCard);
-        cards.add(artilleryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
-    }
-
-    @Test
-    public void test16_verifyValidCombo_oneAndThreeSetOf4_expectedFalse() {
-        cards.add(artilleryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
-        assertFalse(tradeMgrUnderTest.verifyValidCombo(cards));
-    }
-
-    @Test
-    public void test17_verifyValidCombo_oneOfEachWithWildSetOf4_expectedFalse() {
+    public void test17_verifyValidCombo_oneOfEachWithWildSetOf4_expectedException() {
         cards.add(wildCard);
         cards.add(artilleryCard);
         cards.add(cavalryCard);

@@ -22,11 +22,11 @@ public class TradeInManager {
 
     protected boolean verifyValidCombo(Set<Card> attemptedCards) throws IllegalArgumentException{
         if (attemptedCards.size() == 3) {
-            return hasWild(attemptedCards)
+            return (hasWild(attemptedCards)
                     || (hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && hasArtillery(attemptedCards))
                     || (hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && !hasArtillery(attemptedCards))
                     || (!hasInfantry(attemptedCards) && hasCavalry(attemptedCards) && !hasArtillery(attemptedCards))
-                    || (!hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && hasArtillery(attemptedCards));
+                    || (!hasInfantry(attemptedCards) && !hasCavalry(attemptedCards) && hasArtillery(attemptedCards)));
         }
         throw new IllegalArgumentException();
     }
