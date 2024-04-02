@@ -490,7 +490,7 @@ public class TradeInManagerTest {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(wildCard);
-        cards.add(wildCard);
+        cards.add(wildCard2);
         cards.add(infantryCard);
 
         int expectedPieces = 10;
@@ -526,8 +526,8 @@ public class TradeInManagerTest {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(infantryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
 
         int expectedPieces = 20;
         int expectedSetsAfter = 7;
@@ -544,8 +544,8 @@ public class TradeInManagerTest {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(cavalryCard);
-        cards.add(cavalryCard);
-        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+        cards.add(cavalryCard3);
 
         int expectedPieces = 55;
         int expectedSetsAfter = 14;
@@ -562,8 +562,8 @@ public class TradeInManagerTest {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(artilleryCard);
-        cards.add(artilleryCard);
-        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
+        cards.add(artilleryCard3);
 
         int expectedPieces = 0;
         int expectedSetsAfter = 14;
@@ -577,9 +577,9 @@ public class TradeInManagerTest {
     @Test
     public void test46_startTrade_0setTwoWildCardTwoInfantryCardCollection_expected0AndFalse() {
         cards.add(wildCard);
-        cards.add(wildCard);
+        cards.add(wildCard2);
         cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
 
         int expectedPieces = 0;
         int expectedSetsAfter = 0;
@@ -596,9 +596,9 @@ public class TradeInManagerTest {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
         cards.add(cavalryCard);
-        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
 
         int expectedPieces = 0;
         int expectedSetsAfter = 3;
@@ -616,8 +616,8 @@ public class TradeInManagerTest {
         }
         cards.add(artilleryCard);
         cards.add(infantryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
 
         int expectedPieces = 0;
         int expectedSetsAfter = 13;
