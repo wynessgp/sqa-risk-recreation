@@ -4,14 +4,16 @@
 Input: The amount of players to start the game with, and their respective turn order via their selected PlayerColor
 
 Output: A yes/no answer whether we could successfully initialize the game's relevant player storage
-given the respective order and number of plays
+given the respective order and number of players
 
 ## BVA Step 2
 Input:
 - playerOrder: Collection
 - amountOfPlayers: Interval [2, 6]
 
-Output: Boolean
+Output: 
+- Boolean (actual return statement)
+- Collection (underlying player storage)
 
 ## BVA Step 3
 Input: 
@@ -31,15 +33,24 @@ Input:
   - 7 (error case)
 
 Output:
-- 0 (can't set)
-- 1
-- Some value other than true or false
-  - Exception:
-    - The amount of players is invalid (not in [2, 6])
-    - The input list is malformed (duplicates, not the same length as numPlayers, contains SETUP)
-- Some other true value (can't set)
+- Actual return statement (Boolean)
+  - 0 (can't set)
+  - 1
+  - Some value other than true or false
+    - Exception:
+      - The amount of players is invalid (not in [2, 6])
+      - The input list is malformed (duplicates, not the same length as numPlayers, contains SETUP)
+  - Some other true value (can't set)
+- Underlying player storage (Collection)
+  - Must be the same size as playerOrder
+  - Must respect the arrangement of playerOrder
 
 ## BVA Step 4
+
+For the non-error test cases, I will indicate the underlying player storage via their assigned PlayerColor
+
+So the output would be something like: Collection = [RED, YELLOW], etc.
+
 ### Test 1:
 - Input: 
   - amountOfPlayers = 1
@@ -92,12 +103,16 @@ Output:
 - Input:
   - amountOfPlayers = 4
   - playerOrder = [RED, BLUE, PURPLE, BLACK]
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Collection = [RED, BLUE, PURPLE, BLACK]
 ### Test 10:
 - Input:
   - amountOfPlayers = 3
   - playerOrder = [BLUE, BLACK, RED]
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Collection = [BLUE, BLACK, RED]
 
 # method: `assignSetupArmiesToPlayers(): boolean`
 Note: this method does field modifications. It will MODIFY the players in our players list to give them their appropriate
