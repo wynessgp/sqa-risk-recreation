@@ -84,5 +84,20 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test05_initializePlayersList_playerOrderContainsDuplicatesListSizeFour_expectException() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> listWithDupes = List.of(
+                PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.RED);
+        int amountOfPlayers = 4;
+
+        String expectedMessage = "Player order contains duplicate entries";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(listWithDupes, amountOfPlayers));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }

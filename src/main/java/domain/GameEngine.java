@@ -6,7 +6,7 @@ public abstract class GameEngine {
 
     public void initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
-        if (amountOfPlayers == 3) {
+        if (amountOfPlayers == 3 || amountOfPlayers == 4) {
             throw new IllegalArgumentException("Player order contains duplicate entries");
         }
     }
