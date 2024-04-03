@@ -1,98 +1,205 @@
-# method: `startGame(amountOfPlayers: int): void`
+# method: `initializePlayersList(playerOrder: List<PlayerColor>, amountOfPlayers: int): boolean`
 
 ## BVA Step 1
-Input: The amount of players to start the game with
+Input: The amount of players to start the game with, and their respective turn order via their selected PlayerColor
 
-Output: N/A (exception if the amount of players is not in [2, 6])
+Output: A yes/no answer whether we could successfully initialize the game's relevant player storage
+given the respective order and number of plays
 
 ## BVA Step 2
-Input: Interval [2, 6]
+Input:
+- playerOrder: Collection
+- amountOfPlayers: Interval [2, 6]
 
-Output: N/A (or exception; this method simply assigns the numPlayers integer in GameEngine, if possible)
+Output: Boolean
 
 ## BVA Step 3
-Input: Interval
-- 2 - some number (can't set)
-- 2
-- 6
-- 6 + some number (can't set)
-- Normal value in range (4)
+Input: 
+- playerOrder: Collection
+  - An empty collection (error case)
+  - A collection with 1 element (error case)
+  - A collection with \> 1 element
+  - A collection with 6 elements (max size)
+  - A collection with the same PlayerColor twice (duplicates - error case)
+  - A collection with all unique PlayerColors
+  - A collection with a size not equal to the amountOfPlayers (error case)
+- amountOfPlayers: Interval
+  - 1 (error case)
+  - 2
+  - Normal value in range (4)
+  - 6
+  - 7 (error case)
 
 Output:
-- Exception for input case 1
-- Exception for input case 4
+- 0 (can't set)
+- 1
+- Some value other than true or false
+  - Exception:
+    - The amount of players is invalid (not in [2, 6])
+    - The input list is malformed (duplicates, not the same length as numPlayers, contains SETUP)
+- Some other true value (can't set)
 
 ## BVA Step 4
 ### Test 1:
-- Input: amountOfPlayers = 1
+- Input: 
+  - amountOfPlayers = 1
+  - playerOrder = []
 - Output: IllegalArgumentException
-  - message: "Amount of valid players is in [2, 6]"
+  - message: "amountOfPlayers is not within: [2, 6]"
 ### Test 2:
-- Input: amountOfPlayers = 7
+- Input: 
+  - amountOfPlayers = 7
+  - playerOrder = []
 - Output: IllegalArgumentException
-  - message: "Amount of valid players is in [2, 6]"
+  - message: "amountOfPlayers is not within: [2, 6]"
 ### Test 3:
-- Input: amountOfPlayers = 2
-- Output: None (valid input)
+- Input:
+  - amountOfPlayers = 7
+  - playerOrder = [BLUE, BLUE, SETUP, PURPLE, YELLOW, YELLOW, BLACK]
+- Output: IllegalArgumentException
+  - message: "amountOfPlayers is not within: [2, 6]"
 ### Test 4:
-- Input: amountOfPlayers = 4
-- Output: None (valid input)
-### Test 5: 
-- Input: amountOfPlayers = 6
-- Output: None (valid input)
+- Input:
+  - amountOfPlayers = 2
+  - playerOrder = []
+- Output: IllegalArgumentException
+  - message: "Size mismatch between playerOrder: 0 and amountOfPlayers: 2"
+### Test 5:
+- Input: 
+  - amountOfPlayers = 2
+  - playerOrder = [YELLOW, BLUE, PURPLE]
+- Output: IllegalArgumentException
+  - message: "Size mismatch between playerOrder: 3 and amountOfPlayers: 2"
+### Test 6:
+- Input:
+  - amountOfPlayers = 3
+  - playerOrder = [YELLOW, YELLOW, SETUP]
+- Output: IllegalArgumentException
+  - message: "Player order contains duplicate entries"
+### Test 7:
+- Input:
+  - amountOfPlayers = 4
+  - playerOrder = [RED, YELLOW, BLUE, RED]
+- Output: IllegalArgumentException
+  - message: "Player order contains duplicate entries"
+### Test 8: 
+- Input:
+  - amountOfPlayers = 5
+  - playerOrder = [RED, BLUE, SETUP, YELLOW, PURPLE]
+- Output: IllegalArgumentException
+  - message: "Player order contains SETUP as one of the players"
+### Test 9:
+- Input:
+  - amountOfPlayers = 4
+  - playerOrder = [RED, BLUE, PURPLE, BLACK]
+- Output: 1 (true)
+### Test 10:
+- Input:
+  - amountOfPlayers = 3
+  - playerOrder = [BLUE, BLACK, RED]
+- Output: 1 (true)
 
-# method: `assignSetupArmiesToPlayers(int numPlayers): List<Integer>`
-Note: this method assumes you've already called the corresponding startGame method from above,
-so exception handling will instead be handled by setupGame. I simply enumerate the BVA
-test cases here, so you can see their corresponding output. 
+# method: `assignSetupArmiesToPlayers(): boolean`
+Note: this method does field modifications. It will MODIFY the players in our players list to give them their appropriate
+number of troops each for the setup phase, so if it does not yet exist, or the number of players is invalid, this will
+throw an exception. Though generally, these exceptions will be handled by calling initializePlayersList.
 
 ## BVA Step 1
-Input: The amount of players that will be in the current game
+Input: The amount of players that will be in the current game (field), the underlying collection representing the players (field)
 
-Output: A collection of length `numPlayers`, filled with the amount of armies each player
-is to receive for the setup phase of the game at each index.
+Output: A yes/no answer whether we were able to successfully modify each player's list to 
+their setup-determined army counts.
 
 ## BVA Step 2
-Input: Cases
+Input: 
+- numPlayers: Interval [2, 6]
+- Underlying Player object storage: Collection
 
-Output: Collection, with specific values at each index.
-  - Think of it as a Collection of Cases.
+Output: 
+- Player object storage: Collection
+- Boolean
 
 ## BVA Step 3
-Input: Cases
-- The 1st possibility (2 players - special variant of Risk)
-- The 2nd possibility (3 players)
-- The 3rd possibility (4 players)
-- The 4th possibility (5 players)
-- The 5th possibility (6 players)
-- The 0th, 6th possibilities (error cases; error checking occurs when player assignment is done).
+Input: 
+- numPlayers (Interval):
+  - 0 (error case, we didn't manage to get through initializePlayersList as expected)
+  - [2, 6]
+- Player objects (Collection):
+  - An empty collection (error case)
+  - A collection with 2 elements -> interesting case, need to set up a "neutral" player too
+  - A collection with [3, 6] elements -> ensure we give players the correct number of armies.
 
-Output: Collection
-- An empty collection (error case; an exception would be thrown before this happens)
-- A collection with 1 or 2 elements (error case; exception would be thrown before this happens)
-- A collection \> 3 elements (valid: 3, 4, 5, 6)
-- A collection with 7 elements (error case; exception would be thrown before this happens)
+Note the lack of other error cases above - we expect whoever is calling us to have made the player collection, otherwise
+the other methods haven't done their job.
+
+Output: 
+- function output: (Boolean)
+  - 0 (can't set)
+  - 1
+  - Something other than true/false (Exceptions)
+- Players collection:
+  - Each element in the list should have their armies increased by the SETUP amount for the number of players
+  - Not really interested in any other cases, as we are not modifying the Collection itself, merely the items inside.
 
 ## BVA Step 4
-### Test 1:
-- Input: numPlayers = 2
-- Output: Collection = [40, 40, 40]
-  - It may not seem apparent, but the rules are slightly different for two players. 
-  - There is a "third" player in that the NEUTRAL "player" gets 40 armies to start, and things proceed from there.
-### Test 2:
-- Input: numPlayers = 3
-- Output: Collection = [35, 35, 35]
-### Test 3:
-- Input: numPlayers = 4
-- Output: Collection = [30, 30, 30, 30]
-### Test 4:
-- Input: numPlayers = 5
-- Output: Collection = [25, 25, 25, 25, 25]
-### Test 5:
-- Input: numPlayers = 6
-- Output: Collection = [20, 20, 20, 20, 20, 20]
 
-Any other input/output combination is an exception.
+I will be modeling the input/output collection by a series of numbers; those indicate the NEW values that each player should
+have for their number of armies. These should be verified as well.
+
+### Test 1:
+- Input: 
+  - numPlayers = 1
+  - Player objects = []
+- Output: IllegalArgumentException
+  - message: "numPlayers is not within [2, 6]"
+### Test 2:
+- Input:
+  - numPlayers = 7
+  - Player objects = []
+- Output: IllegalArgumentException
+  - message: "numPlayers is not within [2, 6]"
+### Test 3:
+- Input:
+  - numPlayers = 3
+  - Player objects = []
+- Output: IllegalStateException
+  - message: "No player objects exist, call initializePlayersList first with the correct arguments"
+### Test 4:
+- Input: 
+  - numPlayers = 2
+  - Player objects = [0, 0]
+- Output:
+  - 1 (true)
+  - Collection = [40, 40, 40] 
+    - We account for creating the "NEUTRAL" player.
+### Test 5:
+- Input: 
+  - numPlayers = 3
+  - Player objects = [0, 0, 0]
+- Output:
+  - 1 (true) 
+  - Collection = [35, 35, 35]
+### Test 6:
+- Input:
+  - numPlayers = 4
+  - Player objects = [0, 0, 0, 0]
+- Output:
+  - 1 (true)
+  - Collection = [30, 30, 30, 30]
+### Test 7:
+- Input:
+  - numPlayers = 5
+  - Player objects = [0, 0, 0, 0, 0]
+- Output:
+  - 1 (true)
+  - Collection = [25, 25, 25, 25, 25]
+### Test 8:
+- Input:
+  - numPlayers = 6
+  - Player objects = [0, 0, 0, 0, 0, 0]
+- Output:
+  - 1 (true)
+  - Collection = [20, 20, 20, 20, 20, 20]
 
 # method: `checkIfTerritoryIsClaimed(territory: TerritoryType): boolean`
 
@@ -225,10 +332,15 @@ Output: 1 (true)
 ### And many more...consider all combinations
 
 # method: `placeNewArmiesInTerritory(territory: TerritoryType, numArmies: int): boolean`
+Note: this method will seem like it has an incredible amount of responsibility based on the test cases below.
+It will be split up into separate helper functions, so much of the enumerated tests here will have their logic in code
+handled elsewhere, and split by phase.
 
 ## BVA Step 1
 Input: The respective territory the current user wants to place their armies in, as well as the
-number of new armies to place there. The state of who owns the respective territory is also taken into account.
+number of new armies to place there. 
+
+The state of who owns the respective territory is also taken into account, in addition to the current phase of the game.
 
 Output: A yes/no answer whether the armies were placed successfully; an exception if they were not able to be 
 placed successfully (i.e. another player owns the territory).
@@ -238,8 +350,11 @@ Input:
 - territory: Cases
 - numNewArmies: Counts [1, armies earned on player's turn]
 - State of who owns the territory: Cases
+- Game Phase: Cases 
 
 Output: Boolean
+
+## TODO: Elaborate more once attack/placement phase is being developed!
 
 ## BVA Step 3
 Input: 
@@ -262,117 +377,126 @@ Input:
   - ...
   - The 8th possibility (PURPLE)
   - The 0th, 9th possibilities (can't set)
+- Game Phase (Cases):
+  - The 1st possibility (SCRAMBLE)
+  - The 2nd possibility (SETUP)
+  - The 3rd possibility (PLACEMENT)
+  - ...
+  - The 6th possibility (GAME_OVER)
+  - The 0th, 7th possibility (can't set)
 
 Output: Boolean
 - 0 (can't set)
 - 1 (when the amount to place is valid, and the operation succeeds)
-- Some value other than 0 or 1 (namely, exceptions - for when the amount of troops is invalid)
+- Some value other than 0 or 1 (namely, exceptions - for when the amount of troops is invalid, or in the wrong phase)
 - Some true value other than 0 or 1 (can't set)
 
 ## BVA Step 4
+
+### SCRAMBLE PHASE
+
 ### Test 1:
-- Input:
-  - territory = ALASKA
-  - numArmies = -1
-  - Territory owner = SETUP
-- Output:
-  - IllegalArgumentException 
-    - message: "Cannot place \< 1 armies in a territory."
-### Test 2:
-- Input:
-  - territory = ARGENTINA
-  - numArmies = 0
-  - Territory owner = SETUP
-- Output:
-  - IllegalArgumentException
-    - message: "Cannot place \< 1 armies in a territory."
-### Test 3:
 - Input:
   - territory = CONGO
   - numArmies = num player earned this turn + 1
   - Territory owner = current player
+  - Game Phase = SCRAMBLE
 - Output:
-  - IllegalArgumentException
-    - message: "Cannot place more armies than you earned"
+  - IllegalStateException
+    - message: "Cannot place armies in a claimed territory until the scramble phase is over"
+### Test 2:
+- Input:
+  - territory = CONGO
+  - numArmies = 1
+  - Territory owner = NOT current player
+  - Game Phase = SCRAMBLE
+- Output:
+  - IllegalStateException
+    - message: "Cannot place armies in a claimed territory until the scramble phase is over"
+### Test 3:
+- Input:
+  - territory = YAKUTSK
+  - numArmies = 5
+  - Territory owner = SETUP
+  - Game Phase = SCRAMBLE
+- Output:
+  - IllegalArgumentException (IllegalStateException?)
+    - message: "You can only place 1 army on an unclaimed territory until the scramble phase is over"
 ### Test 4:
 - Input:
-  - Territory = 
-### Test 4: 
+  - territory = JAPAN
+  - numArmies = -1
+  - Territory owner = SETUP
+  - Game Phase = SCRAMBLE
+- Output:
+  - IllegalArgumentException (IllegalStateException?)
+    - message: "You can only place 1 army on an unclaimed territory until the scramble phase is over"
+### Test 5:
+- Input:
+  - territory = BRAZIL
+  - numArmies = 1
+  - Territory owner = SETUP
+  - Game Phase = SCRAMBLE
+- Output: 1 (true)
+### Test 6:
+- Input:
+  - territory = EASTERN_AMERICA
+  - numArmies = 1
+  - Territory owner = SETUP
+  - Game Phase = SCRAMBLE
+- Output: 1 (true)
+
+### SETUP PHASE
+
+### Test 7:
+- Input:
+  - territory = ALASKA
+  - numArmies = -1
+  - Territory owner = current player
+  - Game Phase = SETUP
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place \< 1 armies in a territory."
+### Test 8:
+- Input:
+  - territory = ARGENTINA
+  - numArmies = 0
+  - Territory owner = current player
+  - Game Phase = SETUP
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place \< 1 armies in a territory."
+### Test 9:
+- Input:
+  - territory = ALASKA
+  - numArmies = 2
+  - Territory owner = current player
+  - Game Phase = SETUP
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place more than 1 army at a time during setup phase"
+### Test 10: 
 - Input:
   - territory = ALASKA
   - numArmies = 1
   - Territory owner = NOT current player
+  - Game Phase = SETUP
 - Output:
   - IllegalArgumentException
-    - message: "Player does not own the selected territory"
-### Test 5:
+    - message: "Cannot place armies on a territory you do not own"
+### Test 11:
 - Input:
   - territory = ALASKA
   - numArmies = 1
   - Territory owner = current player
+  - Game Phase = SETUP
 - Output: 1 (true)
-### Test 6:
+### Test 12:
 - Input:
-  - territory = ALASKA
-  - numArmies = 5
+  - territory = BRAZIL
+  - numArmies = 1
   - Territory owner = current player
-- Output: 1 (true)
-### Test 7:
-- Input:
-  - territory = YAKUTSK
-  - numArmies = num player earned this turn
-  - Territory owner = current player
+  - Game Phase = SETUP
 - Output: 1 (true)
 
-# method: `calculateNewGamePhase(): GamePhase`
-
-## BVA Step 1
-Input: The current phase of the game
-
-Output: The next game phase that the game should enter
-(troop placement -> attack phase -> fortify, etc.)
-
-## BVA Step 2
-Input: Cases
-
-Output: Cases
-
-## BVA Step 3
-Input: Cases
-- The first possibility (game start)
-- The second possibility (setup)
-- The third possibility (placement)
-- The fourth possibility (attack)
-- The fifth possibility (fortify)
-- The sixth possibility (game over)
-- The 0th or 7th possibility (can't set)
-
-Output: Cases
-- The first possibility (game start)
-- The second possibility (setup)
-- The third possibility (placement)
-- The fourth possibility (attack)
-- The fifth possibility (fortify)
-- The sixth possibility (game over)
-- The 0th or 7th possibility (can't set)
-
-## BVA Step 4
-### Test 1:
-- Input: current phase = [GAME_START]
-- Output: [SETUP]
-### Test 2:
-- Input: current phase = [SETUP]
-- Output: [PLACEMENT]
-### Test 3:
-- Input: current phase = [PLACEMENT]
-- Output: [ATTACK]
-### Test 4: (a player wins the game)
-- Input: current phase = [ATTACK]
-- Output: [GAME_OVER]
-### Test 5: (player doesn't win the game)
-- Input: current phase = [ATTACK]
-- Output: [FORTIFY]
-### Test 6:
-- Input: current phase = [FORTIFY]
-- Output: [PLACEMENT]
-
+### TODO: ATTACK PHASE
