@@ -42,5 +42,19 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test02_initializePlayersList_sizeMismatchBetweenOrderAndNumberPlayers_expectException() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> emptyList = List.of();
+        int amountOfPlayers = 2;
+
+        String expectedMessage = "Size mismatch between playerOrder: 0 and amountOfPlayers: 2";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(emptyList, amountOfPlayers));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }
