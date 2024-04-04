@@ -67,3 +67,21 @@
 
 #### Other people's PR reviewed by you
 - N/A
+
+# Intructor feedback
+## Progress evaluation :scroll:
+Your team is on track finishing the Game Setup Phase!
+
+## Suggested next action items :fist:
+Given that there was unforseen and uncontrollable circumstances happened to one of your teammates, please plan as follows as a team:
+1. Your teammate Harvey will try his best catching up on the development the team has done in the past week. He will serve more as a code reviewer during Week 5.
+2. If situation allows, Harvey will be back to a developer in Week 6.
+3. In a previous office hours discussion, the instructor acknowledged that the team can cut the Secret Mission as a response to the teammate situation. This decision still stands. Keep doing what your team has been doing by making good planning (as your Projects Board can show) and making steady progress.
+
+## Highlight of your team's work :partying_face:
+1. Your team has been making steady progress since day 1. Keep up the good work!
+2. This report shows a improved workload balance among all the team members. Good job!
+3. I see meaningful refactoring work being done. This is great practice. It is definitely recommended to refactor while we develop, but not leaving all the refactoring at the end.
+
+## Improvements to consider :star:
+None :).
