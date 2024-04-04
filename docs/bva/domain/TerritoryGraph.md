@@ -230,13 +230,13 @@ Input:
 - Collection: empty map, map with one entry, map with 42 entries
 - Cases: each possibility from the TerritoryType enum (42 in total, all other options are impossible)
 
-Output: associated Territory object or null
+Output: associated Territory object or exception
 
 ## BVA Step 4
 ### Test value 1
 Input: empty map, each possible TerritoryType
 
-Output: null
+Output: NullPointerException "Territory does not exist"
 ### Test value 2
 Input: map with single entry from TerritoryType to its Territory objet, the same TerritoryType from the map
 
@@ -244,7 +244,7 @@ Output: associated Territory object
 ### Test value 3
 Input: map with single entry from TerritoryType to its Territory object, each possible TerritoryType not in the map
 
-Output: null
+Output: NullPointerException "Territory does not exist"
 ### Test value 4
 Input: maps with all 42 entries from TerritoryType to respective Territory objects, each possible TerritoryType
 

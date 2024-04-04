@@ -2,7 +2,7 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -306,8 +306,12 @@ public class TerritoryGraphTest {
     @ParameterizedTest
     @MethodSource("territoryGenerator")
     public void test11_getTerritory_withEmptyMap(TerritoryType territoryType) {
+        String expectedMessage = "Territory does not exist";
         TerritoryGraph territoryGraph = new TerritoryGraph();
-        assertNull(territoryGraph.getTerritory(territoryType));
+
+        Exception exception = assertThrows(NullPointerException.class, () ->
+                territoryGraph.getTerritory(territoryType));
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @ParameterizedTest()
@@ -331,10 +335,13 @@ public class TerritoryGraphTest {
         EasyMock.expect(existingTerritory.getTerritoryType()).andReturn(existingTerritoryType);
         EasyMock.replay(existingTerritory);
 
+        String expectedMessage = "Territory does not exist";
         territoryGraph.addNewTerritory(existingTerritory);
         for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
             if (territoryType != existingTerritoryType) {
-                assertNull(territoryGraph.getTerritory(territoryType));
+                Exception exception = assertThrows(NullPointerException.class, () ->
+                        territoryGraph.getTerritory(territoryType));
+                assertEquals(expectedMessage, exception.getMessage());
             }
         }
         EasyMock.verify(existingTerritory);
