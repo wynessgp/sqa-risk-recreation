@@ -13,7 +13,7 @@ Output: Boolean (0, 1)
 ## BVA Step 3
 Input: 
 - territory: Pointer
-    - Null object
+    - Null object (will not test)
     - Valid Territory object
 - Underlying list: Collection
     - Empty collection
@@ -65,7 +65,13 @@ Output: 0 (false) or 1 (true)
 
 ## BVA Step 3
 Input:
-- Collection: empty graph, graph with 1 vertex, graph with 2 vertices and 0 edges, graph with 2 vertices and 1 edge, graph with 42 vertices and 0 edges, complete graph with 42 vertices and 861 edges
+- Collection:
+  - empty graph
+  - graph with 1 vertex
+  - graph with 2 vertices and 0 edges
+  - graph with 2 vertices and 1 edge
+  - graph with 42 vertices and 0 edges
+  - complete graph with 42 vertices and 861 edges
 - Cases: each possibility from the TerritoryType enum (42 in total, all other options are impossible)
 
 Output: true when edge can be added, false otherwise (already exists or case not yet a vertex)
@@ -258,7 +264,12 @@ Output: Collection
 
 ## BVA Step 3
 Input:
-- Collection: empty graph, graph with 1 vertex, graph with 2 vertices and 1 edge, graph with 42 vertices and 0 edges, complete graph with 42 vertices and 861 edges
+- Collection:
+  - empty graph
+  - graph with 1 vertex
+  - graph with 2 vertices and 1 edge
+  - graph with 42 vertices and 0 edges
+  - complete graph with 42 vertices and 861 edges
 - Cases: each possibility from the TerritoryType enum (42 in total, all other options are impossible)
 
 Output: Empty set, set with one Territory, set with all 42 territories
