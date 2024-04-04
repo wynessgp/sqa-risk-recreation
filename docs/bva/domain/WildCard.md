@@ -24,8 +24,7 @@ Output: Boolean
 
 ## BVA Step 4
 ### Note:
-I will not be explicitly enumerating all of the territories in this markdown file, but each one
-is considered in the test.
+I will not be explicitly enumerating all of the territories in this markdown file, but each one is considered in the test.
 ### Test 1:
 - Input: Territory = Afghanistan
 - Output: Boolean = 0

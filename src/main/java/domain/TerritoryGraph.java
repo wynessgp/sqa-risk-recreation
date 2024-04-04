@@ -35,7 +35,10 @@ public class TerritoryGraph {
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
-        return territoryTypeToObject.getOrDefault(territoryType, null);
+        if (territoryTypeToObject.containsKey(territoryType)) {
+            return territoryTypeToObject.get(territoryType);
+        }
+        throw new NullPointerException("Territory does not exist");
     }
 
     public Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
