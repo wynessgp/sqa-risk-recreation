@@ -99,5 +99,18 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test06_initializePlayersList_playerOrderContainsSetupListSizeThree_expectException() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> listWithSetup = List.of(PlayerColor.BLUE, PlayerColor.RED, PlayerColor.SETUP);
+
+        String expectedMessage = "Player order contains SETUP as one of the players";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(listWithSetup, listWithSetup.size()));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }

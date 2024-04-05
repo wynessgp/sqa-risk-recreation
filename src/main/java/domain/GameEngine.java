@@ -1,13 +1,17 @@
 package domain;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class GameEngine {
 
     public void initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
-        if (amountOfPlayers == 3 || amountOfPlayers == 4) {
+        if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
             throw new IllegalArgumentException("Player order contains duplicate entries");
+        }
+        if (playerOrder.get(2).equals(PlayerColor.SETUP)) {
+            throw new IllegalArgumentException("Player order contains SETUP as one of the players");
         }
     }
 
