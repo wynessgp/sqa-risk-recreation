@@ -120,14 +120,13 @@ number of troops each for the setup phase, so if it does not yet exist, or the n
 throw an exception. Though generally, these exceptions will be handled by calling initializePlayersList.
 
 ## BVA Step 1
-Input: The amount of players that will be in the current game (field), the underlying collection representing the players (field)
+Input: The underlying collection representing the players (field)
 
 Output: A yes/no answer whether we were able to successfully modify each player's list to 
 their setup-determined army counts.
 
 ## BVA Step 2
 Input: 
-- numPlayers: Interval [2, 6]
 - Underlying PlayerColor storage: Collection
 
 Output: 
@@ -136,9 +135,6 @@ Output:
 
 ## BVA Step 3
 Input: 
-- numPlayers (Interval):
-  - 0 (error case, we didn't manage to get through initializePlayersList as expected)
-  - [2, 6]
 - PlayerColor objects (Collection):
   - An empty collection (error case)
   - A collection with 2 elements -> interesting case, need to set up a "neutral" player too
@@ -164,55 +160,37 @@ Output will be modeled by a collection of numbers; those indicate the NEW values
 have for their number of armies. These should be verified as well.
 
 ### Test 1:
-- Input: 
-  - numPlayers = 1
-  - Player objects = []
-- Output: IllegalArgumentException
-  - message: "numPlayers is not within [2, 6]"
-### Test 2:
 - Input:
-  - numPlayers = 7
-  - Player objects = []
-- Output: IllegalArgumentException
-  - message: "numPlayers is not within [2, 6]"
-### Test 3:
-- Input:
-  - numPlayers = 3
   - Player objects = []
 - Output: IllegalStateException
   - message: "No player objects exist, call initializePlayersList first with the correct arguments"
-### Test 4:
+### Test 2:
 - Input: 
-  - numPlayers = 2
   - Player objects = [Red, Yellow]
 - Output:
   - 1 (true)
   - Collection = [40, 40, 40] 
     - We account for creating the "NEUTRAL" player.
-### Test 5:
+### Test 3:
 - Input: 
-  - numPlayers = 3
   - Player objects = [Red, Yellow, Purple]
 - Output:
   - 1 (true) 
   - Collection = [35, 35, 35]
-### Test 6:
+### Test 4:
 - Input:
-  - numPlayers = 4
   - Player objects = [Red, Yellow, Purple, Green]
 - Output:
   - 1 (true)
   - Collection = [30, 30, 30, 30]
-### Test 7:
+### Test 5:
 - Input:
-  - numPlayers = 5
   - Player objects = [Red, Yellow, Purple, Green, Black]
 - Output:
   - 1 (true)
   - Collection = [25, 25, 25, 25, 25]
-### Test 8:
+### Test 6:
 - Input:
-  - numPlayers = 6
   - Player objects = [Red, Yellow, Purple, Green, Black, Blue]
 - Output:
   - 1 (true)
