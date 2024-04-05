@@ -1,18 +1,18 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public abstract class GameEngine {
 
+    private List<PlayerColor> playersList;
+
     public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
-        if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
-            throw new IllegalArgumentException("Player order contains duplicate entries");
-        }
-        if (playerOrder.contains(PlayerColor.SETUP)) {
-            throw new IllegalArgumentException("Player order contains SETUP as one of the players");
-        }
+        checkDuplicatesAndTypes(playerOrder);
+
+        this.playersList = new ArrayList<>(playerOrder);
         return true;
     }
 
@@ -24,5 +24,18 @@ public abstract class GameEngine {
             throw new IllegalArgumentException(String.format("Size mismatch between playerOrder: %d "
                    + "and amountOfPlayers: %d", playerOrderSize, amountOfPlayers));
         }
+    }
+
+    private void checkDuplicatesAndTypes(List<PlayerColor> playerOrder) {
+        if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
+            throw new IllegalArgumentException("Player order contains duplicate entries");
+        }
+        if (playerOrder.contains(PlayerColor.SETUP)) {
+            throw new IllegalArgumentException("Player order contains SETUP as one of the players");
+        }
+    }
+
+    protected List<PlayerColor> getPlayersList() {
+        return playersList;
     }
 }

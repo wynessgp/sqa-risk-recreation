@@ -179,4 +179,15 @@ public class AbstractGameEngineTest {
         assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder, amountOfPlayers));
     }
 
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesTwoThroughSix")
+    public void test09_initializePlayersList_validInputEnsureListIsSet_expectTrue(List<PlayerColor> validPlayerOrder) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        int amountOfPlayers = validPlayerOrder.size();
+
+        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder, amountOfPlayers));
+
+        assertEquals(validPlayerOrder, unitUnderTest.getPlayersList());
+    }
+
 }
