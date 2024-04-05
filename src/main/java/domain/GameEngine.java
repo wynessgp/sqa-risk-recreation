@@ -10,7 +10,7 @@ public abstract class GameEngine {
         if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
             throw new IllegalArgumentException("Player order contains duplicate entries");
         }
-        if (playerOrder.get(2).equals(PlayerColor.SETUP)) {
+        if (playerOrder.contains(PlayerColor.SETUP)) {
             throw new IllegalArgumentException("Player order contains SETUP as one of the players");
         }
     }

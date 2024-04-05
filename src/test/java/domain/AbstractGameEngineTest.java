@@ -3,9 +3,16 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class AbstractGameEngineTest {
@@ -112,5 +119,35 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generatePlayerLists_sizeSix_withSetupType() {
+        Set<Arguments> arguments = new HashSet<>();
+        Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
+        validPlayers.remove(PlayerColor.NEUTRAL);
+        validPlayers.remove(PlayerColor.SETUP);
 
+        for (PlayerColor player : validPlayers) {
+            List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
+            int indexToReplace = playerListVariant.indexOf(player);
+            playerListVariant.remove(indexToReplace);
+            playerListVariant.add(indexToReplace, PlayerColor.SETUP);
+            arguments.add(Arguments.of(playerListVariant));
+        }
+        return arguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizeSix_withSetupType")
+    public void test07_initializePlayersList_playerOrderContainsSetupSizeSixAllIndices_expectException(
+            List<PlayerColor> listWithSetup) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        int amountOfPlayers = 6;
+
+        String expectedMessage = "Player order contains SETUP as one of the players";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(listWithSetup, amountOfPlayers));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+    
 }
