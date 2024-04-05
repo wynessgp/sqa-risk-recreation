@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TradeInManagerTest {
 
@@ -67,7 +72,6 @@ public class TradeInManagerTest {
             EasyMock.verify(card);
         }
     }
-
 
     //test for verifyValidCombo()
     @Test
@@ -233,84 +237,26 @@ public class TradeInManagerTest {
 
 
     //test for calculateNumNewPieces()
-    @Test
-    public void test18_calculateNumNewPieces_0TradedInSets_expected4() {
-        int expected = 4;
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
+    private static Stream<Object[]> calcPiecesProvider() {
+        return Stream.of(
+                new Object[]{0, 4},
+                new Object[]{4, 12},
+                new Object[]{5, 15},
+                new Object[]{13, 55}
+        );
     }
 
-    @Test
-    public void test19_calculateNumNewPieces_1TradedInSets_expected6() {
-        int expected = 6;
-        tradeMgrUnderTest.updateSetsTradedIn();
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test20_calculateNumNewPieces_2TradedInSets_expected8() {
-        int expected = 8;
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test21_calculateNumNewPieces_3TradedInSets_expected10() {
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-
-        int expected = 10;
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test22_calculateNumNewPieces_4TradedInSets_expected12() {
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-        tradeMgrUnderTest.updateSetsTradedIn();
-        int expected = 12;
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test23_calculateNumNewPieces_5TradedInSets_expected15() {
-        int expected = 15;
-        for (int i = 0; i < 5; i++) {
+    @ParameterizedTest
+    @MethodSource("calcPiecesProvider")
+    public void test18_calculateNumNewPieces_withValidState_expectedInteger(int tradedIn, int expectedPieces) {
+        for (int i = 0; i < tradedIn; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
+        assertEquals(expectedPieces, tradeMgrUnderTest.calculateNumNewPieces());
     }
 
     @Test
-    public void test24_calculateNumNewPieces_6TradedInSets_expected20() {
-        int expected = 20;
-        for (int i = 0; i < 6; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test25_calculateNumNewPieces_13TradedInSets_expected60() {
-        int expected = 55;
-        for (int i = 0; i < 13; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        int actual = tradeMgrUnderTest.calculateNumNewPieces();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test26_calculateNumNewPieces_allCardsTradedIn_expectedException() {
+    public void test19_calculateNumNewPieces_allCardsTradedIn_expectedException() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
@@ -321,35 +267,17 @@ public class TradeInManagerTest {
 
 
     //test for updateSetsTradedIn()
-    @Test
-    public void test27_updateSetsTradeIn_0TradedInSets_expectedTrue() {
-        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
-    }
-
-    @Test
-    public void test28_updateSetsTradeIn_1TradedInSets_expectedTrue() {
-        tradeMgrUnderTest.updateSetsTradedIn();
-        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
-    }
-
-    @Test
-    public void test29_updateSetsTradeIn_10TradedInSets_expectedTrue() {
-        for (int i = 0; i < 10; i++) {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 5, 13})
+    public void test20_updateSetsTradeIn_withValidState_expectedTrue(int tradedIn) {
+        for (int i = 0; i < tradedIn; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
     }
 
     @Test
-    public void test30_updateSetsTradeIn_MaxIntMinusOneTradedInSets_expectedTrue() {
-        for (int i = 0; i < 13; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        assertTrue(tradeMgrUnderTest.updateSetsTradedIn());
-    }
-
-    @Test
-    public void test31_updateSetsTradeIn_MaxIntTradedInSets_expectedFalse() {
+    public void test21_updateSetsTradeIn_MaxIntTradedInSets_expectedFalse() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
@@ -359,149 +287,186 @@ public class TradeInManagerTest {
 
     //test for startTrade()
     @Test
-    public void test32_startTrade_0setOneInfantryOneArtillery_expectedException() {
+    public void test22_startTrade_oneInfantryOneArtillery_expectedException() {
         //check number of pieces given to player
         cards.add(infantryCard);
         cards.add(artilleryCard);
-        assertThrows(IllegalArgumentException.class, () -> {
+
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.startTrade(cards);
         });
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void test33_startTrade_1setOneCavalryOneWild_expectedException() {
+    public void test23_startTrade_oneCavalryOneWild_expectedException() {
         tradeMgrUnderTest.updateSetsTradedIn();
         cards.add(cavalryCard);
         cards.add(wildCard);
-        assertThrows(IllegalArgumentException.class, () -> {
+
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.startTrade(cards);
         });
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void test34_startTrade_5setTwoInfantry_expectedException() {
-        for (int i = 0; i < 5; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
+    public void test24_startTrade_twoWildCardTwoInfantryCardCollection_expectedException() {
+        cards.add(wildCard);
+        cards.add(wildCard2);
         cards.add(infantryCard);
         cards.add(infantryCard2);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.startTrade(cards);
         });
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void test35_startTrade_13setTwoCavalry_expectedException() {
-        for (int i = 0; i < 13; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(cavalryCard);
-        cards.add(cavalryCard2);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test36_startTrade_14setTwoArtillery_expectedException() {
-        for (int i = 0; i < 14; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(artilleryCard);
-        cards.add(artilleryCard2);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test37_startTrade_2setOneInfantryTwoCavalryCardCollection_expected0AndFalse() {
-        for (int i = 0; i < 2; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(infantryCard);
-        cards.add(cavalryCard);
-        cards.add(cavalryCard2);
-
-        int expectedPieces = 0;
-        int expectedSetsAfter = 2;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
-    }
-
-    @Test
-    public void test38_startTrade_0setOneWildCardTwoInfantryCardCollection_expected4AndTrue() {
-        cards.add(wildCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard2);
-
-        int expectedPieces = 4;
-        int expectedSetsAfter = 1;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
-    }
-
-    @Test
-    public void test39_startTrade_13setOneWildCardOneCavalryCardOneArtilleryCardCollection_expected55AndTrue() {
-        for (int i = 0; i < 13; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(wildCard);
-        cards.add(cavalryCard);
-        cards.add(artilleryCard);
-
-        int expectedPieces = 55;
-        int expectedSetsAfter = 14;
-
-        int actualPieces = tradeMgrUnderTest.startTrade(cards);
-        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
-        assertEquals(expectedPieces, actualPieces);
-        assertEquals(expectedSetsAfter, actualSetsAfter);
-    }
-
-    @Test
-    public void test40_startTrade_14setOneWildCardOneCavalryCardOneArtilleryCardCollection_expectedException() {
-        for (int i = 0; i < 14; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(wildCard);
-        cards.add(cavalryCard);
-        cards.add(artilleryCard);
-
-        assertThrows(IllegalStateException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test41_startTrade_3setTwoWildCardOneInfantryCardCollection_expected10AndTrue() {
+    public void test25_startTrade_twoInfantryCardTwoCavalryCardCollection_expectedException() {
         for (int i = 0; i < 3; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test26_startTrade_oneArtilleryCardThreeInfantryCardCollection_expectedException() {
+        for (int i = 0; i < 13; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(artilleryCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
+
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test27_startTrade_oneOfEachCardSizeFourCollection_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
+
+        String expectedMessage = "Has to have exactly 3 cards to trade in";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    private static Stream<Object[]> startTradeValidProvider() {
+        return Stream.of(
+                new Object[]{0, 4, 1},
+                new Object[]{4, 12, 5},
+                new Object[]{5, 15, 6},
+                new Object[]{13, 55, 14}
+        );
+    }
+
+    private static Stream<Object[]> startTradeInvalidProvider() {
+        return Stream.of(
+                new Object[]{0, 0, 0},
+                new Object[]{4, 0, 4},
+                new Object[]{5, 0, 5},
+                new Object[]{13, 0, 13}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("startTradeInvalidProvider")
+    public void test28_startTrade_oneInfantryTwoCavalryCardCollection_expected0(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(infantryCard);
+        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
+
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test29_startTrade_oneWildCardTwoInfantryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
+
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test30_startTrade_oneWildCardOneCavalryCardOneArtilleryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
+
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
+
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test31_startTrade_twoWildCardOneInfantryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(wildCard);
         cards.add(wildCard2);
         cards.add(infantryCard);
 
-        int expectedPieces = 10;
-        int expectedSetsAfter = 4;
-
         int actualPieces = tradeMgrUnderTest.startTrade(cards);
         int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
         assertEquals(expectedPieces, actualPieces);
         assertEquals(expectedSetsAfter, actualSetsAfter);
     }
 
-    @Test
-    public void test42_startTrade_5setOneInfantryCardOneCavalryCardOneArtilleryCardCollection_expected15AndTrue() {
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test32_startTrade_oneInfantryCardOneCavalryCardOneArtilleryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
         for (int i = 0; i < 5; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
@@ -509,44 +474,56 @@ public class TradeInManagerTest {
         cards.add(cavalryCard);
         cards.add(artilleryCard);
 
-        int expectedPieces = 15;
-        int expectedSetsAfter = 6;
-
         int actualPieces = tradeMgrUnderTest.startTrade(cards);
         int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
         assertEquals(expectedPieces, actualPieces);
         assertEquals(expectedSetsAfter, actualSetsAfter);
     }
 
-    @Test
-    public void test43_startTrade_6setThreeInfantryCardCollection_expected20AndTrue() {
-        for (int i = 0; i < 6; i++) {
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test33_startTrade_threeInfantryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(infantryCard);
         cards.add(infantryCard2);
         cards.add(infantryCard3);
 
-        int expectedPieces = 20;
-        int expectedSetsAfter = 7;
-
         int actualPieces = tradeMgrUnderTest.startTrade(cards);
         int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
         assertEquals(expectedPieces, actualPieces);
         assertEquals(expectedSetsAfter, actualSetsAfter);
     }
 
-    @Test
-    public void test44_startTrade_13setThreeCavalryCardCollection_expected55AndTrue() {
-        for (int i = 0; i < 13; i++) {
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test34_startTrade_threeCavalryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
         cards.add(cavalryCard);
         cards.add(cavalryCard2);
         cards.add(cavalryCard3);
 
-        int expectedPieces = 55;
-        int expectedSetsAfter = 14;
+        int actualPieces = tradeMgrUnderTest.startTrade(cards);
+        int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
+        assertEquals(expectedPieces, actualPieces);
+        assertEquals(expectedSetsAfter, actualSetsAfter);
+    }
+
+    @ParameterizedTest
+    @MethodSource("startTradeValidProvider")
+    public void test35_startTrade_threeArtilleryCardCollection_expectedCorrectIntValues(
+            int tradedIns, int expectedPieces, int expectedSetsAfter) {
+        for (int i = 0; i < tradedIns; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(artilleryCard);
+        cards.add(artilleryCard2);
+        cards.add(artilleryCard3);
 
         int actualPieces = tradeMgrUnderTest.startTrade(cards);
         int actualSetsAfter = tradeMgrUnderTest.getSetsTradedInSoFar();
@@ -555,7 +532,119 @@ public class TradeInManagerTest {
     }
 
     @Test
-    public void test45_startTrade_14setThreeArtilleryCardCollection_expectedException() {
+    public void test36_startTrade_14TradedInOneInfantryTwoCavalry_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(infantryCard);
+        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test37_startTrade_14TradedInOneWildTwoInfantry_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test38_startTrade_14TradedInOneWildOneCavalryOneArtillery_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test39_startTrade_14TradedInTwoWildOneInfantry_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(wildCard2);
+        cards.add(infantryCard);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test40_startTrade_14TradedInOneInfantryOneCavalryOneArtillery_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(wildCard);
+        cards.add(cavalryCard);
+        cards.add(artilleryCard);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test41_startTrade_14TradedInThreeInfantry_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(infantryCard);
+        cards.add(infantryCard2);
+        cards.add(infantryCard3);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test42_startTrade_14TradedInThreeCavalry_expectedException() {
+        for (int i = 0; i < 14; i++) {
+            tradeMgrUnderTest.updateSetsTradedIn();
+        }
+        cards.add(cavalryCard);
+        cards.add(cavalryCard2);
+        cards.add(cavalryCard3);
+
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            tradeMgrUnderTest.startTrade(cards);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test43_startTrade_14TradedInThreeArtillery_expectedException() {
         for (int i = 0; i < 14; i++) {
             tradeMgrUnderTest.updateSetsTradedIn();
         }
@@ -563,67 +652,11 @@ public class TradeInManagerTest {
         cards.add(artilleryCard2);
         cards.add(artilleryCard3);
 
-        assertThrows(IllegalStateException.class, () -> {
+        String expectedMessage = "Should not have enough cards to be traded in more than 14 times";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             tradeMgrUnderTest.startTrade(cards);
         });
+        assertEquals(expectedMessage, exception.getMessage());
     }
-
-    @Test
-    public void test46_startTrade_0setTwoWildCardTwoInfantryCardCollection_expectedException() {
-        cards.add(wildCard);
-        cards.add(wildCard2);
-        cards.add(infantryCard);
-        cards.add(infantryCard2);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test47_startTrade_3setTwoInfantryCardTwoCavalryCardCollection_expectedException() {
-        for (int i = 0; i < 3; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(infantryCard);
-        cards.add(infantryCard2);
-        cards.add(cavalryCard);
-        cards.add(cavalryCard2);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test48_startTrade_13setOneArtilleryCardThreeInfantryCardCollection_expectedException() {
-        for (int i = 0; i < 13; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(artilleryCard);
-        cards.add(infantryCard);
-        cards.add(infantryCard2);
-        cards.add(infantryCard3);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
-    @Test
-    public void test49_startTrade_14setOneOfEachCardSizeFourCollection_expectedException() {
-        for (int i = 0; i < 14; i++) {
-            tradeMgrUnderTest.updateSetsTradedIn();
-        }
-        cards.add(wildCard);
-        cards.add(infantryCard);
-        cards.add(cavalryCard);
-        cards.add(artilleryCard);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            tradeMgrUnderTest.startTrade(cards);
-        });
-    }
-
 
 }
