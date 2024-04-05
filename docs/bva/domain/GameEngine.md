@@ -95,8 +95,8 @@ So the output would be something like: Collection = [RED, YELLOW], etc.
   - message: "Player order contains duplicate entries"
 ### Test 8: 
 - Input:
-  - amountOfPlayers = 5
-  - playerOrder = [RED, BLUE, SETUP, YELLOW, PURPLE]
+  - amountOfPlayers = 3
+  - playerOrder = [RED, BLUE, SETUP]
 - Output: IllegalArgumentException
   - message: "Player order contains SETUP as one of the players"
 ### Test 9:
