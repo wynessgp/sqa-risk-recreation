@@ -2,6 +2,7 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,5 +150,33 @@ public class AbstractGameEngineTest {
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
-    
+
+    private static Stream<Arguments> generatePlayerLists_sizesTwoThroughSix() {
+        Set<Arguments> arguments = new HashSet<>();
+        Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
+        validPlayers.remove(PlayerColor.NEUTRAL);
+        validPlayers.remove(PlayerColor.SETUP);
+
+        int size = validPlayers.size();
+        for (PlayerColor player : new HashSet<>(validPlayers)) {
+            if (size < 3) {
+                continue;
+            }
+            List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
+            arguments.add(Arguments.of(playerListVariant));
+            validPlayers.remove(player);
+            size--;
+        }
+        return arguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesTwoThroughSix")
+    public void test08_initializePlayersList_validInput_expectTrue(List<PlayerColor> validPlayerOrder) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        int amountOfPlayers = validPlayerOrder.size();
+
+        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder, amountOfPlayers));
+    }
+
 }

@@ -5,7 +5,7 @@ import java.util.Set;
 
 public abstract class GameEngine {
 
-    public void initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
+    public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
         if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
             throw new IllegalArgumentException("Player order contains duplicate entries");
@@ -13,6 +13,7 @@ public abstract class GameEngine {
         if (playerOrder.contains(PlayerColor.SETUP)) {
             throw new IllegalArgumentException("Player order contains SETUP as one of the players");
         }
+        return true;
     }
 
     private void handleNumPlayersAndPlayerOrderSizeErrorChecking(int playerOrderSize, int amountOfPlayers) {
