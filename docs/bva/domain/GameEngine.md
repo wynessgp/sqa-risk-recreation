@@ -128,7 +128,7 @@ their setup-determined army counts.
 ## BVA Step 2
 Input: 
 - numPlayers: Interval [2, 6]
-- Underlying Player object storage: Collection
+- Underlying PlayerColor storage: Collection
 
 Output: 
 - Player object storage: Collection
@@ -139,7 +139,7 @@ Input:
 - numPlayers (Interval):
   - 0 (error case, we didn't manage to get through initializePlayersList as expected)
   - [2, 6]
-- Player objects (Collection):
+- PlayerColor objects (Collection):
   - An empty collection (error case)
   - A collection with 2 elements -> interesting case, need to set up a "neutral" player too
   - A collection with [3, 6] elements -> ensure we give players the correct number of armies.
@@ -158,7 +158,9 @@ Output:
 
 ## BVA Step 4
 
-I will be modeling the input/output collection by a series of numbers; those indicate the NEW values that each player should
+I will be modeling the input by the associated player color.
+
+Output will be modeled by a collection of numbers; those indicate the NEW values that each player should
 have for their number of armies. These should be verified as well.
 
 ### Test 1:
@@ -182,7 +184,7 @@ have for their number of armies. These should be verified as well.
 ### Test 4:
 - Input: 
   - numPlayers = 2
-  - Player objects = [0, 0]
+  - Player objects = [Red, Yellow]
 - Output:
   - 1 (true)
   - Collection = [40, 40, 40] 
@@ -190,28 +192,28 @@ have for their number of armies. These should be verified as well.
 ### Test 5:
 - Input: 
   - numPlayers = 3
-  - Player objects = [0, 0, 0]
+  - Player objects = [Red, Yellow, Purple]
 - Output:
   - 1 (true) 
   - Collection = [35, 35, 35]
 ### Test 6:
 - Input:
   - numPlayers = 4
-  - Player objects = [0, 0, 0, 0]
+  - Player objects = [Red, Yellow, Purple, Green]
 - Output:
   - 1 (true)
   - Collection = [30, 30, 30, 30]
 ### Test 7:
 - Input:
   - numPlayers = 5
-  - Player objects = [0, 0, 0, 0, 0]
+  - Player objects = [Red, Yellow, Purple, Green, Black]
 - Output:
   - 1 (true)
   - Collection = [25, 25, 25, 25, 25]
 ### Test 8:
 - Input:
   - numPlayers = 6
-  - Player objects = [0, 0, 0, 0, 0, 0]
+  - Player objects = [Red, Yellow, Purple, Green, Black, Blue]
 - Output:
   - 1 (true)
   - Collection = [20, 20, 20, 20, 20, 20]
