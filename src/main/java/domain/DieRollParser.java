@@ -37,7 +37,7 @@ public class DieRollParser {
         setupDie = new Die(amountOfDiceToRoll, 1);
 
         Set<Integer> rollResults = new HashSet<>();
-        while (rollResults.size() != amountOfDiceToRoll) {
+        while (rollResults.size() != amountOfDiceToRoll) { // continually re-roll the die until we have no duped rolls.
             rollResults.add(setupDie.rollSingleDie(randomizer));
         }
         return List.copyOf(rollResults);
