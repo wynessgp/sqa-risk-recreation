@@ -199,10 +199,9 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "No player objects exist, call initializePlayersList first with the correct arguments";
         Exception exception = assertThrows(IllegalStateException.class,
-                () -> unitUnderTest.assignSetupArmiesToPlayers());
+                unitUnderTest::assignSetupArmiesToPlayers);
 
         assertEquals(expectedMessage, exception.getMessage());
-
     }
 
 }
