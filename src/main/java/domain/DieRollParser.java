@@ -34,17 +34,13 @@ public class DieRollParser {
 
     public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 2, 6);
-        buildSetupDie(amountOfDiceToRoll);
+        setupDie = new Die(amountOfDiceToRoll, 1);
 
         Set<Integer> rollResults = new HashSet<>();
         while (rollResults.size() != amountOfDiceToRoll) {
             rollResults.add(setupDie.rollSingleDie(randomizer));
         }
         return List.copyOf(rollResults);
-    }
-
-    private void buildSetupDie(int setupDieUpperBound) {
-        setupDie = new Die(setupDieUpperBound, 1);
     }
 
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
