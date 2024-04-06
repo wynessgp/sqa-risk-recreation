@@ -24,15 +24,6 @@ public class DieRollParserTest {
         return true;
     }
 
-    @Test
-    public void test00_buildDiceLists_expectReturnsTrue() {
-        // variable setup
-        DieRollParser unitUnderTest = new DieRollParser();
-
-        // perform the operation
-        assertTrue(unitUnderTest.buildDiceLists());
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 4})
     public void test01_rollAttackerDice_tooFewOrTooManyDice_expectException(int illegalInput) {
@@ -40,7 +31,7 @@ public class DieRollParserTest {
         DieRollParser unitUnderTest = new DieRollParser();
 
         // preliminary operation:
-        assertTrue(unitUnderTest.buildDiceLists());
+        // assertTrue(unitUnderTest.buildDiceLists());
 
         // perform the operation
         String expectedMessage = "Valid amount of dice is in the range [1, 3]";
@@ -149,7 +140,7 @@ public class DieRollParserTest {
         DieRollParser unitUnderTest = new DieRollParser();
 
         // ok, create the dice lists.
-        assertTrue(unitUnderTest.buildDiceLists());
+        // assertTrue(unitUnderTest.buildDiceLists());
 
         // now attempt to roll the dice to ensure the UUT did its job
         List<Integer> actual = unitUnderTest.rollAttackerDice(2);
@@ -165,7 +156,7 @@ public class DieRollParserTest {
         DieRollParser unitUnderTest = new DieRollParser();
 
         // preliminary operation:
-        assertTrue(unitUnderTest.buildDiceLists());
+        // assertTrue(unitUnderTest.buildDiceLists());
 
         // perform the operation
         String expectedMessage = "Valid amount of dice is in the range [1, 2]";
@@ -272,7 +263,7 @@ public class DieRollParserTest {
         DieRollParser unitUnderTest = new DieRollParser();
 
         // ok, create the dice lists.
-        assertTrue(unitUnderTest.buildDiceLists());
+        // assertTrue(unitUnderTest.buildDiceLists());
 
         // now attempt to roll the dice to ensure the UUT did its job
         List<Integer> actual = unitUnderTest.rollDefenderDice(2);

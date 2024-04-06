@@ -15,8 +15,8 @@ public class DieRollParser {
     private final Random randomizer;
 
     public DieRollParser() {
-        this.attackerDice = new ArrayList<>();
-        this.defenderDice = new ArrayList<>();
+        this.attackerDice = List.of(new Die(6, 1), new Die(6, 1), new Die(6, 1));
+        this.defenderDice = List.of(new Die(6, 1), new Die(6, 1));
         // Changed when we go to roll it.
         this.setupDie = new Die(0, 0);
         this.randomizer = new Random();
@@ -30,16 +30,6 @@ public class DieRollParser {
         this.defenderDice = defenderDice;
         // Changed when we go to roll it.
         this.setupDie = new Die(0, 0);
-    }
-
-    public boolean buildDiceLists() {
-        for (int i = 0; i < 3; i++) {
-            attackerDice.add(new Die(6, 1));
-        }
-        for (int i = 0; i < 2; i++) {
-            defenderDice.add(new Die(6, 1));
-        }
-        return true;
     }
 
     public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
