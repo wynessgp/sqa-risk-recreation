@@ -6,7 +6,7 @@ import java.util.Set;
 
 public abstract class GameEngine {
 
-    private List<PlayerColor> playersList;
+    private List<PlayerColor> playersList = new ArrayList<>();
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
@@ -37,5 +37,16 @@ public abstract class GameEngine {
 
     protected List<PlayerColor> getPlayersList() {
         return playersList;
+    }
+
+    void setPlayerOrderList(List<PlayerColor> playersList) {
+        this.playersList = playersList;
+    }
+
+    public void assignSetupArmiesToPlayers() {
+        if (playersList.isEmpty()) {
+            throw new IllegalStateException(
+                    "No player objects exist, call initializePlayersList first with the correct arguments");
+        }
     }
 }

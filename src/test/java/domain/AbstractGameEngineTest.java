@@ -190,4 +190,19 @@ public class AbstractGameEngineTest {
         assertEquals(validPlayerOrder, unitUnderTest.getPlayersList());
     }
 
+    @Test
+    public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> emptyList = List.of();
+
+        unitUnderTest.setPlayerOrderList(emptyList);
+
+        String expectedMessage = "No player objects exist, call initializePlayersList first with the correct arguments";
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.assignSetupArmiesToPlayers());
+
+        assertEquals(expectedMessage, exception.getMessage());
+
+    }
+
 }
