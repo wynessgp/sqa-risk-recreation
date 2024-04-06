@@ -14,9 +14,21 @@ public class DieRollParser {
     private Die setupDie;
     private final Random randomizer;
 
+    private static final int MINIMUM_DIE_ROLL = 1;
+    private static final int MAXIMUM_DIE_ROLL = 6;
+
+    private static final int MINIMUM_VALID_AMOUNT_OF_SETUP_DICE = 2;
+    private static final int MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE = 6;
+
+    private static final int MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE = 1;
+    private static final int MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE = 2;
+    private static final int MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE = 3;
+
     public DieRollParser() {
-        this.attackerDice = List.of(new Die(6, 1), new Die(6, 1), new Die(6, 1));
-        this.defenderDice = List.of(new Die(6, 1), new Die(6, 1));
+        this.attackerDice = List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL),
+                new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL));
+        this.defenderDice = List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL),
+                new Die(MAXIMUM_DIE_ROLL, MAXIMUM_DIE_ROLL));
         // Changed when we go to roll it.
         this.setupDie = new Die(0, 0);
         this.randomizer = new Random();
@@ -33,9 +45,9 @@ public class DieRollParser {
     }
 
     public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 2, 6);
-        setupDie = new Die(amountOfDiceToRoll, 1);
-
+        validateRequestedAmountOfDiceToRollIsInRange(
+                amountOfDiceToRoll, MINIMUM_VALID_AMOUNT_OF_SETUP_DICE, MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE);
+        setupDie = new Die(amountOfDiceToRoll, MINIMUM_DIE_ROLL);
         Set<Integer> rollResults = new HashSet<>();
         while (rollResults.size() != amountOfDiceToRoll) { // continually re-roll the die until we have no duped rolls.
             rollResults.add(setupDie.rollSingleDie(randomizer));
@@ -44,12 +56,16 @@ public class DieRollParser {
     }
 
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 3);
+        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
+                MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE);
+
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
     public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll, 1, 2);
+        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
+                MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE);
+
         return rollDiceFromList(amountOfDiceToRoll, defenderDice);
     }
 
