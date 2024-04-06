@@ -10,7 +10,7 @@
 **Evaluation Date**: 4/5/2024
 
 **Item Progress**:
-1. [85% done] finishing connecting classes
+1. [90% done] finishing connecting classes over break
 2. [10% done] started UI, plan to continue work over break
 3. [done] running on builds, >90% coverage and mutation testing
 
@@ -28,6 +28,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/65
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/68
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/71
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/72
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/66
@@ -39,7 +40,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/73
 
 #### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/73
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/55
@@ -47,6 +48,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/66
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/68
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/71
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/72
 
 ### Team member: Harvey Yang
 #### PR created:
