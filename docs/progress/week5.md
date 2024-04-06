@@ -7,7 +7,7 @@
 3. Run code coverage and mutation tests
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 4/5/2024
 
 **Item Progress**:
 1. [85% done] finishing connecting classes
@@ -31,10 +31,12 @@
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/66
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/73
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/67
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/73
 
 #### PR done and approved
 - N/A
