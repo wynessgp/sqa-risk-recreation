@@ -65,7 +65,7 @@ Output: Boolean
   - Underlying color = RED
 - Output: 1 (true)
 
-# Method: `setNumArmiesPresent(int newAmount): boolean`
+# Method: `setNumArmiesPresent(newAmount: int): boolean`
 
 ## BVA Step 1
 Input: A positive number of armies to be placed on the territory.
