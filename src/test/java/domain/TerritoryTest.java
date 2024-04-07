@@ -64,14 +64,14 @@ class TerritoryTest {
                 }
             }
         }
-        Set<Arguments> territoryArguments = new HashSet<>();
+        Set<Arguments> playerPairs = new HashSet<>();
         for (Set<PlayerColor> playerPair : colorPairsNoDuplicates) {
             Iterator<PlayerColor> iterator = playerPair.iterator();
-            PlayerColor startingTerritoryType = iterator.next();
-            PlayerColor endingTerritoryType = iterator.next();
-            territoryArguments.add(Arguments.of(startingTerritoryType, endingTerritoryType));
+            PlayerColor firstPlayer = iterator.next();
+            PlayerColor secondPlayer = iterator.next();
+            playerPairs.add(Arguments.of(firstPlayer, secondPlayer));
         }
-        return territoryArguments.stream();
+        return playerPairs.stream();
     }
 
     @ParameterizedTest
