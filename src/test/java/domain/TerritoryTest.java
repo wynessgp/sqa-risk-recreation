@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -83,7 +84,6 @@ class TerritoryTest {
         assertEquals(inputColor, unitUnderTest.getPlayerInControl());
     }
 
-
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
     void test03_setNumArmiesPresent_invalidNumber_expectException(int illegalInput) {
@@ -104,6 +104,13 @@ class TerritoryTest {
 
         assertTrue(territory.setNumArmiesPresent(validInput));
         assertEquals(validInput, territory.getNumArmiesPresent());
+    }
+
+    @Test
+    void test05_getTerritoryType_validInput_expectValidOutput() {
+        Territory unitUnderTest = new Territory(TerritoryType.ALASKA);
+
+        assertEquals(TerritoryType.ALASKA, unitUnderTest.getTerritoryType());
     }
 
 }
