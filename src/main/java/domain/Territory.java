@@ -17,13 +17,15 @@ public class Territory {
         this.numArmiesPresent = 0;
     }
 
-    public void setPlayerInControl(PlayerColor player) {
+    public boolean setPlayerInControl(PlayerColor player) {
         if (player == PlayerColor.SETUP) {
             throw new IllegalArgumentException("Cannot set the player in control to setup");
         }
         if (player == playerInControl) {
             throw new IllegalArgumentException("Territory is already controlled by that player");
         }
+        this.playerInControl = player;
+        return true;
     }
 
     public boolean setNumArmiesPresent(int newAmount) {
@@ -40,5 +42,9 @@ public class Territory {
 
     public TerritoryType getTerritoryType() {
         return territoryType;
+    }
+
+    public PlayerColor getPlayerInControl() {
+        return playerInControl;
     }
 }

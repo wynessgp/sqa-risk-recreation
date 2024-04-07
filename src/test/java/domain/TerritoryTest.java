@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,6 +47,42 @@ class TerritoryTest {
         String actual = exception.getMessage();
         assertEquals(expectedMessage, actual);
     }
+
+    private static Stream<Arguments> generateAllNonDuplicatePlayerColorPairs() {
+        Set<Set<PlayerColor>> colorPairsNoDuplicates = new HashSet<>();
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+
+        for (PlayerColor firstPlayerColor : playerColors) {
+            for (PlayerColor secondPlayerColor : playerColors) {
+                if (firstPlayerColor != secondPlayerColor) {
+                    Set<PlayerColor> playerPair = new HashSet<>();
+                    playerPair.add(firstPlayerColor);
+                    playerPair.add(secondPlayerColor);
+                    colorPairsNoDuplicates.add(playerPair);
+                }
+            }
+        }
+        Set<Arguments> territoryArguments = new HashSet<>();
+        for (Set<PlayerColor> playerPair : colorPairsNoDuplicates) {
+            Iterator<PlayerColor> iterator = playerPair.iterator();
+            PlayerColor startingTerritoryType = iterator.next();
+            PlayerColor endingTerritoryType = iterator.next();
+            territoryArguments.add(Arguments.of(startingTerritoryType, endingTerritoryType));
+        }
+        return territoryArguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllNonDuplicatePlayerColorPairs")
+    public void test02_setPlayerInControl_underlyingAndPassedInDoNotMatch_expectTrueAndAppropriatelySet(
+            PlayerColor underlyingColor, PlayerColor inputColor) {
+        Territory unitUnderTest = new Territory(underlyingColor, TerritoryType.ALASKA);
+
+        assertTrue(unitUnderTest.setPlayerInControl(inputColor));
+        assertEquals(inputColor, unitUnderTest.getPlayerInControl());
+    }
+
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
