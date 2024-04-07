@@ -4,8 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerritoryTest {
@@ -18,6 +23,25 @@ class TerritoryTest {
         String expectedMessage = "Cannot set the player in control to setup";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.setPlayerInControl(PlayerColor.SETUP));
+
+        String actual = exception.getMessage();
+        assertEquals(expectedMessage, actual);
+    }
+
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetup() {
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+        return playerColors.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test01_setPlayerInControl_inputSameAsUnderlying_expectException(PlayerColor inputColor) {
+        Territory unitUnderTest = new Territory(inputColor, TerritoryType.ALASKA);
+
+        String expectedMessage = "Territory is already controlled by that player";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.setPlayerInControl(inputColor));
 
         String actual = exception.getMessage();
         assertEquals(expectedMessage, actual);

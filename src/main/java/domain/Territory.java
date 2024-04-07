@@ -3,21 +3,26 @@ package domain;
 public class Territory {
     private final TerritoryType territoryType;
     private int numArmiesPresent;
-
+    private PlayerColor playerInControl;
 
     public Territory(TerritoryType territoryType) {
         this.territoryType = territoryType;
+        this.playerInControl = PlayerColor.SETUP;
         this.numArmiesPresent = 0;
     }
 
     Territory(PlayerColor playerToBeInControl, TerritoryType territoryType) {
         this.territoryType = territoryType;
+        this.playerInControl = playerToBeInControl;
         this.numArmiesPresent = 0;
     }
 
     public void setPlayerInControl(PlayerColor player) {
         if (player == PlayerColor.SETUP) {
             throw new IllegalArgumentException("Cannot set the player in control to setup");
+        }
+        if (player == playerInControl) {
+            throw new IllegalArgumentException("Territory is already controlled by that player");
         }
     }
 
