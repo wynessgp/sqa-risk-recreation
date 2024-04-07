@@ -12,33 +12,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 class TerritoryTest {
 
     @Test
-    void test00_setPlayerInControl_setPlayer_expectTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.BLUE);
+    public void test00_setPlayerInControl_inputSetup_underlyingNotSetup_expectException() {
+        Territory unitUnderTest = new Territory(PlayerColor.BLUE, TerritoryType.ALASKA);
 
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertEquals(playerA, territory.getPlayerInControl());
-    }
+        String expectedMessage = "Cannot set the player in control to setup";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.setPlayerInControl(PlayerColor.SETUP));
 
-    @Test
-    void test01_setPlayerInControl_twoDifferentPlayers_expectTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.RED);
-        Player playerB = new Player(PlayerColor.PURPLE);
-
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertTrue(territory.setPlayerInControl(playerB));
-        assertEquals(playerB, territory.getPlayerInControl());
-    }
-
-    @Test
-    void test02_setPlayerInControl_samePlayerTwice_expectFalse() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.GREEN);
-
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertFalse(territory.setPlayerInControl(playerA));
-        assertEquals(playerA, territory.getPlayerInControl());
+        String actual = exception.getMessage();
+        assertEquals(expectedMessage, actual);
     }
 
     @ParameterizedTest
