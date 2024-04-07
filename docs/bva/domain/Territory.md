@@ -1,53 +1,71 @@
-# Method: `setPlayerInControl(Player player): boolean`
+# Method: `setPlayerInControl(player: PlayerColor): boolean`
 
 ## BVA Step 1
-Input: A player object to put in control of a territory
+Input: The PlayerColor associated with the player who should be put in control of the territory
 
-Output: A yes/no answer whether we could set the player object in control of the territory.
+Output: A yes/no answer whether we could appropriately set the player in control of the territory
 
 ## BVA Step 2
 Input: 
-- player: Pointer
-- Underlying player in control storage: Pointer
+- player: Cases
+- Underlying PlayerColor in storage: Cases
 
 Output: Boolean (0, 1)
 
 ## BVA Step 3
-Input: Pointer(s)
-- player:
-  - The null pointer (will not be tested, in accordance with Martin's rules)
-  - A pointer to the true player object
-    - Assign control of a territory to a player when it previously had no player assigned
-    - Transition control from one player (PlayerA) to a different player (PlayerB)
-    - Assign control to the same player as the one controlling the territory.
-- Underlying player object:
-  - The null pointer (will not be tested)
-  - A pointer to a true player object
+Input: 
+- player (Cases)
+  - The 1st possibility (SETUP - error case)
+  - The 2nd possibility (NEUTRAL)
+  - The 3rd possibility (RED)
+  - ...
+  - The 8th possibility (PURPLE)
+  - The 0th, 9th possibilities (can't set)
+- Underlying PlayerColor in storage:
+  - Note that this is the same enumerated type as the other input
+  - Matches input (error case)
+    - This is the only thing we're really interested in, everything else is valid
 
 Output: Boolean
-- 0
+- 0 (can't set, we throw exceptions instead)
 - 1
+- Something other than true/false (Exceptions)
   
 ## BVA Step 4
 ### Test 1:
-- Input: 
-  - Underlying player in control = [valid player, color SETUP]
-  - player = [valid player, color BLUE]
-- Output: True
-
+- Input:
+  - player = SETUP
+  - Underlying color = BLUE
+- Output:
+  - InvalidArgumentException
+    - message: "Cannot set the player in control to setup"
 ### Test 2:
-- Input: 
-  - Underlying player in control = [valid player, color RED]
-  - player = [valid player, color PURPLE]
-- Output: True
-
+- Input:
+  - player = SETUP
+  - Underlying color = SETUP
+- Output:
+  - InvalidArgumentException
+    - message: "Cannot set the player in control to setup"
+    - Note that this strictly supersedes input matching underlying storage
 ### Test 3:
-- Input: 
-  - Underlying player in control = [valid player, color GREEN]
-  - player = [valid player, color GREEN]
-- Output: False
+- Input:
+  - player = RED
+  - Underlying color = RED
+- Output:
+  - InvalidArgumentException
+    - message: "Territory is already controlled by that player"
+### Test 4:
+- Input:
+  - player = BLUE
+  - Underlying color = GREEN 
+- Output: 1 (true)
+### Test 5:
+- Input:
+  - player = PURPLE
+  - Underlying color = RED
+- Output: 1 (true)
 
-# Method: `setNumArmiesPresent(int newAmount): boolean`
+# Method: `setNumArmiesPresent(newAmount: int): boolean`
 
 ## BVA Step 1
 Input: A positive number of armies to be placed on the territory.
