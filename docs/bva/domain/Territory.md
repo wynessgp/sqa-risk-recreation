@@ -38,14 +38,14 @@ Output: Boolean
   - Underlying color = BLUE
 - Output:
   - InvalidArgumentException
-    - message: "Cannot set a territory's control to setup"
+    - message: "Cannot set the player in control to setup"
 ### Test 2:
 - Input:
   - player = SETUP
   - Underlying color = SETUP
 - Output:
   - InvalidArgumentException
-    - message: "Cannot set a territory's control to setup"
+    - message: "Cannot set the player in control to setup"
     - Note that this strictly supersedes input matching underlying storage
 ### Test 3:
 - Input:
