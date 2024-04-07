@@ -18,9 +18,11 @@
 ### Team member: Canon Maranda
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/53
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/56
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/53
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/56
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/51
@@ -39,6 +41,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/52
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/58
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/60
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/56
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/51
