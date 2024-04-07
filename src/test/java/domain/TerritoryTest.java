@@ -1,19 +1,19 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerritoryTest {
 
-    @Test
-    public void test00_setPlayerInControl_inputSetup_underlyingNotSetup_expectException() {
-        Territory unitUnderTest = new Territory(PlayerColor.BLUE, TerritoryType.ALASKA);
+    @ParameterizedTest
+    @EnumSource(PlayerColor.class)
+    public void test00_setPlayerInControl_inputSetup_anyUnderlying_expectException(PlayerColor underlyingColor) {
+        Territory unitUnderTest = new Territory(underlyingColor, TerritoryType.ALASKA);
 
         String expectedMessage = "Cannot set the player in control to setup";
         Exception exception = assertThrows(IllegalArgumentException.class,
