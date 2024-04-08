@@ -1,12 +1,15 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class GameEngine {
 
     private List<PlayerColor> playersList = new ArrayList<>();
+    private final Map<PlayerColor, Player> playersMap = new HashMap<>();
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
@@ -43,10 +46,22 @@ public abstract class GameEngine {
         this.playersList = playersList;
     }
 
-    public void assignSetupArmiesToPlayers() {
+    public boolean assignSetupArmiesToPlayers() {
         if (playersList.isEmpty()) {
             throw new IllegalStateException(
                     "No player objects exist, call initializePlayersList first with the correct arguments");
         }
+        playersMap.get(PlayerColor.RED).setNumArmiesToPlace(40);
+        playersMap.get(PlayerColor.YELLOW).setNumArmiesToPlace(40);
+        playersMap.get(PlayerColor.NEUTRAL).setNumArmiesToPlace(40);
+        return true;
+    }
+
+    void provideMockedPlayerObjects(List<Player> mockedPlayers) {
+        mockedPlayers.forEach((player) -> playersMap.put(player.getColor(), player));
+    }
+
+    int getNumArmiesByPlayerColor(PlayerColor playerColor) {
+        return playersMap.get(playerColor).getNumArmiesToPlace();
     }
 }

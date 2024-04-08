@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -202,6 +203,39 @@ public class AbstractGameEngineTest {
                 unitUnderTest::assignSetupArmiesToPlayers);
 
         assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void test11_assignSetupArmiesToPlayers_playerListSizeTwoAddNeutral_returnsTrueAndCorrectlyAssigns() {
+        // employ partial mocks for this method to ensure the Player objects are utilized correctly.
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> twoPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.NEUTRAL);
+        List<Player> mockedPlayers = new ArrayList<>();
+
+        unitUnderTest.setPlayerOrderList(twoPlayerList);
+
+        for (PlayerColor playerColor : twoPlayerList) {
+            Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                    .withConstructor(PlayerColor.class)
+                    .withArgs(playerColor)
+                    .addMockedMethod("setNumArmiesToPlace")
+                    .addMockedMethod("getNumArmiesToPlace")
+                    .createMock();
+            mockedPlayer.setNumArmiesToPlace(40);
+            EasyMock.expectLastCall().once();
+            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(40);
+            EasyMock.replay(mockedPlayer);
+            mockedPlayers.add(mockedPlayer);
+        }
+
+        unitUnderTest.provideMockedPlayerObjects(mockedPlayers);
+
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        for (Player mockedPlayer : mockedPlayers) {
+            assertEquals(40, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+            EasyMock.verify(mockedPlayer);
+        }
     }
 
 }
