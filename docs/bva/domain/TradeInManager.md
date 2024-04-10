@@ -1,14 +1,11 @@
 # method: startTrade(Set<Card> attemptedCards):int
 
 ## BVA Step 1
-Input: a set of cards that the user selects to be traded in for troops, and number of previously traded-in set of cards
+Input: set of cards to be traded in and number of previously traded in sets of cards
 
 (Only 42 cards, so maximum 14 sets of cards to trade in)
 
-Output: 
-- the number of armies that the player will receive
-- illegal argument exception
-- illegal state exception
+Output: number of armies to receive, or an exception
 
 ## BVA Step 2
 Input: Collection, Count
@@ -17,139 +14,154 @@ Output: Cases
 
 ## BVA Step 3
 Input:
-- traded-in sets:
-  - 0, 4, 5, 13, 14 (Based on the behavior of expected output in different cases)
-- collection size:
-  - collection with exactly 2 card
-  - collection with exactly 3 cards
-  - collection with exactly 4 cards
-- collection content:
-  - collection containing one wild card
-  - collection containing more than one wild cards (based on my understanding should pass if size == 3)
-  - collection containing no infantry cards
-  - collection containing no calvary cards
-  - collection containing no artillery cards
-  - collection containing only infantry cards
-  - collection containing only cavalry cards
-  - collection containing only artillery cards
-  - collection containing one of each card (infantry, calvary, artillery)
+- traded in sets:
+  - 0, 1, 2, ..., 13, 14
+- collection of Cards:
+  - empty collection
+  - collection with one card
+  - collection with two cards
+  - collection of size three with one of each card (infantry, calvary, artillery)
+  - collection with three of the same card
+  - collection with one wild card and two of any other card
+  - collection with one infantry and two cavalry cards
+  - (repeat above for each combination of infantry, calvary, and artillery cards)
+  - collection with two wild cards and one of any other card
+  - collection with four cards
 
-Output: (4, 12, 15, 55, illegal state exception)
-- for traded-in sets in [0, 4]: output = 4 + (2 * input)
-- for traded-in sets in [5, 13]: output = 15 + (5 * (input-5))
-- for traded-in sets > 13: illegal state exception (Should not have enough cards to be traded in more than 14 times)
-- Illegal Argument Exception (Has to have exactly 3 cards to trade in)
+Output:
+- 4, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55 (can only trade in 14 times as per game rules)
+- IllegalArgumentException
 
 ## BVA Step 4
 ### Test value 1
-Input: one infantry card and one artillery card collection
+Input: 0 previous trades, empty collection
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: IllegalArgumentException "must trade in exactly 3 cards"
 
 ### Test value 2
-Input: one wild card and one cavalry card collection
+Input: 0 previous trades, collection with one card
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: IllegalArgumentException "must trade in exactly 3 cards"
 
 ### Test value 3
-Input: collection with two wild cards and two infantry cards
+Input: 0 previous trades, collection with two cards
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: IllegalArgumentException "must trade in exactly 3 cards"
 
 ### Test value 4
-Input: collection with two infantry cards and two cavalry cards
+Input: 0 previous trades, collection with four cards
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: IllegalArgumentException "must trade in exactly 3 cards"
 
 ### Test value 5
-Input: collection with one artillery card and three infantry cards
+Input: 0 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: 4
 
 ### Test value 6
-Input: collection with one wild card, one infantry card, one calvary card, and one artillery card
+Input: 1 previous trade, collection with three infantry cards
 
-Output: illegal argument exception (Has to have exactly 3 cards to trade in)
+Output: 6
 
-### Test value 7-10
-Input: 0, 4, 5, 13 traded-in sets, collection with one infantry card and two cavalry cards
+### Test value 7
+Input: 2 previous trades, collection with three calvary cards
 
-Output: 0
+Output: 8
 
-### Test value 11-14
-Input: 0, 4, 5, 13 traded-in sets, collection with one wild card and two infantry cards
+### Test value 8
+Input: 3 previous trades, collection with three artillery cards
 
-Output: 4, 12, 15, 55
+Output: 10
 
-### Test value 15-18
-Input: 0, 4, 5, 13 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
+### Test value 9
+Input: 4 previous trades, collection with one wild and two infantry cards
 
-Output: 4, 12, 15, 55
+Output: 12
 
-### Test value 19-22
-Input: 0, 4, 5, 13 traded-in sets, collection with two wild card and one infantry cards
+### Test value 10
+Input: 5 previous trades, collection with one wild and two calvary cards
 
-Output: 4, 12, 15, 55
+Output: 15
 
-### Test value 23-26
-Input: 0, 4, 5, 13 traded-in sets, collection with one infantry card, one calvary card, and one artillery card
+### Test value 11
+Input: 6 previous trades, collection with one wild and two artillery cards
 
-Output: 4, 12, 15, 55
+Output: 20
 
-### Test value 27-30
-Input: 0, 4, 5, 13 traded-in sets, size 3 collection with only infantry
+### Test value 12
+Input: 7 previous trades, collection with one wild, one infantry, and one calvary card
 
-Output: 4, 12, 15, 55
+Output: 25
 
-### Test value 31-34
-Input: 0, 4, 5, 13 traded-in sets, size 3 collection with only cavalry
+### Test value 13
+Input: 8 previous trades, collection with one wild, one infantry, and one artillery card
 
-Output: 4, 12, 15, 55
+Output: 30
 
-### Test value 35-38
-Input: 0, 4, 5, 13 traded-in sets, size 3 collection with only artillery
+### Test value 14
+Input: 9 previous trades, collection with one wild, one calvary, and one artillery card
 
-Output: 4, 12, 15, 55
+Output: 35
 
-### Test value 39
-Input: 14 traded-in sets, collection with one infantry card and two cavalry cards
+### Test value 15
+Input: 10 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: 40
 
-### Test value 40
-Input: 14 traded-in sets, collection with one wild card and two infantry cards
+### Test value 16
+Input: 11 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: 45
 
-### Test value 41
-Input: 14 traded-in sets, collection with one wild card, one cavalry card, and one artillery card
+### Test value 17
+Input: 12 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: 50
 
-### Test value 42
-Input: 14 traded-in sets, collection with two wild card and one infantry cards
+### Test value 18
+Input: 13 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: 55
 
-### Test value 43
-Input: 14 traded-in sets, collection with one infantry card, one calvary card, and one artillery card
+### Test value 19
+Input: 14 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: IllegalArgumentException "no more cards to trade in"
 
-### Test value 44
-Input: 14 traded-in sets, size 3 collection with only infantry
+### Test value 20
+Input: 2 previous trades, collection with one infantry and two calvary cards
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: IllegalArgumentException "invalid trade in set"
 
-### Test value 45
-Input: 14 traded-in sets, size 3 collection with only cavalry
+### Test value 21
+Input: 2 previous trades, collection with one infantry and two artillery cards
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: IllegalArgumentException "invalid trade in set"
 
-### Test value 46
-Input: 14 traded-in sets, size 3 collection with only artillery
+### Test value 22
+Input: 2 previous trades, collection with one calvary and two artillery cards
 
-Output: illegal state exception (Should not have enough cards to be traded in more than 14 times)
+Output: IllegalArgumentException "invalid trade in set"
+
+### Test value 23
+Input: 2 previous trades, collection with one cavalry and two infantry cards
+
+Output: IllegalArgumentException "invalid trade in set"
+
+### Test value 24
+Input: 2 previous trades, collection with one artillery and two infantry cards
+
+Output: IllegalArgumentException "invalid trade in set"
+
+### Test value 25
+Input: 2 previous trades, collection with one artillery and two cavalry cards
+
+Output: IllegalArgumentException "invalid trade in set"
+
+### Test value 26
+Input: 2 previous trades, collection with two wild and one infantry cards
+
+Output: IllegalArgumentException "invalid trade in set"
 
 
 # method: verifyValidCombo(attemptedCards: Set<Card>):boolean
