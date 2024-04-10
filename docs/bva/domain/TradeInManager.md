@@ -1,4 +1,4 @@
-# method: startTrade(Set<Card> attemptedCards):int
+# method: `startTrade(Set<Card> attemptedCards): int`
 
 ## BVA Step 1
 Input: set of cards to be traded in and number of previously traded in sets of cards
