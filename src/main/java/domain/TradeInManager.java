@@ -5,11 +5,15 @@ import java.util.Set;
 public class TradeInManager {
 
     public int startTrade(Set<Card> cards) {
-        if (cards.size() == 3 && cards.stream().anyMatch(card -> card.matchesPieceType(PieceType.INFANTRY))
-                && cards.stream().anyMatch(card -> card.matchesPieceType(PieceType.CAVALRY))
-                && cards.stream().anyMatch(card -> card.matchesPieceType(PieceType.ARTILLERY))) {
+        if (cards.size() != 3) {
+            throw new IllegalArgumentException("Must trade in exactly three cards");
+        }
+        long infantry = cards.stream().filter(c -> c.matchesPieceType(PieceType.INFANTRY)).count();
+        long cavalry = cards.stream().filter(c -> c.matchesPieceType(PieceType.CAVALRY)).count();
+        long artillery = cards.stream().filter(c -> c.matchesPieceType(PieceType.ARTILLERY)).count();
+        if (infantry == 1 && cavalry == 1 && artillery == 1) {
             return 4;
         }
-        throw new IllegalArgumentException("Must trade in exactly three cards");
+        return 8;
     }
 }

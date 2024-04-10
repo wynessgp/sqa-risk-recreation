@@ -51,4 +51,24 @@ public class TradeInManagerTest {
             EasyMock.verify(card);
         }
     }
+
+    @Test
+    public void test02_startTrade_onePrevious_withThreeInfantry_returnsEight() {
+        Set<Card> cards = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+            Card card = EasyMock.createNiceMock(Card.class);
+            EasyMock.expect(card.matchesPieceType(PieceType.INFANTRY)).andReturn(true);
+            cards.add(card);
+            EasyMock.replay(card);
+        }
+
+        TradeInManager tradeIn = new TradeInManager();
+        int expected = 8;
+        int actual = tradeIn.startTrade(cards);
+        assertEquals(expected, actual);
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
 }
