@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.HashSet;
 import java.util.Set;
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -34,13 +35,14 @@ public class TradeInManagerTest {
 
     private Card createMockedCard(PieceType type) {
         Card card = EasyMock.createNiceMock(Card.class);
-        EasyMock.expect(card.matchesPieceType(type)).andReturn(true);
+        EasyMock.expect(card.matchesPieceType(type)).andReturn(true).anyTimes();
         EasyMock.replay(card);
         return card;
     }
 
-    private void testSuccessfulTradeIn(Set<Card> cards, int expected) {
+    private void testSuccessfulTradeIn(int previousTrades, Set<Card> cards, int expected) {
         TradeInManager tradeIn = new TradeInManager();
+        tradeIn.setSetsTradedIn(previousTrades);
         int actual = tradeIn.startTrade(cards);
         assertEquals(expected, actual);
 
@@ -55,15 +57,24 @@ public class TradeInManagerTest {
         for (PieceType type : PieceType.values()) {
             cards.add(createMockedCard(type));
         }
-        testSuccessfulTradeIn(cards, 4);
+        testSuccessfulTradeIn(0, cards, 4);
     }
 
     @Test
-    public void test02_startTrade_onePrevious_withThreeInfantry_returnsEight() {
+    public void test02_startTrade_onePrevious_withThreeInfantry_returnsSix() {
         Set<Card> cards = new HashSet<>();
         for (int i = 0; i < 3; i++) {
             cards.add(createMockedCard(PieceType.INFANTRY));
         }
-        testSuccessfulTradeIn(cards, 6);
+        testSuccessfulTradeIn(1, cards, 6);
+    }
+
+    @Test
+    public void test03_startTrade_twoPrevious_withThreeCavalry_returnsEight() {
+        Set<Card> cards = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+            cards.add(createMockedCard(PieceType.CAVALRY));
+        }
+        testSuccessfulTradeIn(2, cards, 8);
     }
 }
