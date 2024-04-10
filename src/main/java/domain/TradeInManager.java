@@ -11,9 +11,6 @@ public class TradeInManager {
         long infantry = cards.stream().filter(c -> c.matchesPieceType(PieceType.INFANTRY)).count();
         long cavalry = cards.stream().filter(c -> c.matchesPieceType(PieceType.CAVALRY)).count();
         long artillery = cards.stream().filter(c -> c.matchesPieceType(PieceType.ARTILLERY)).count();
-        if (infantry == 1 && cavalry == 1 && artillery == 1) {
-            return 4;
-        }
-        return 8;
+        return (infantry == 1 && cavalry == 1 && artillery == 1) ? 4 : 8;
     }
 }
