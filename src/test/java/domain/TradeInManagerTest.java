@@ -64,6 +64,6 @@ public class TradeInManagerTest {
         for (int i = 0; i < 3; i++) {
             cards.add(createMockedCard(PieceType.INFANTRY));
         }
-        testSuccessfulTradeIn(cards, 8);
+        testSuccessfulTradeIn(cards, 6);
     }
 }
