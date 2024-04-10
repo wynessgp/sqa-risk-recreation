@@ -32,18 +32,15 @@ public class TradeInManagerTest {
         }
     }
 
-    @Test
-    public void test01_startTrade_noPrevious_withOneOfEach_returnsFour() {
-        Set<Card> cards = new HashSet<>();
-        for (PieceType type : PieceType.values()) {
-            Card card = EasyMock.createNiceMock(Card.class);
-            EasyMock.expect(card.matchesPieceType(type)).andReturn(true);
-            cards.add(card);
-            EasyMock.replay(card);
-        }
+    private Card createMockedCard(PieceType type) {
+        Card card = EasyMock.createNiceMock(Card.class);
+        EasyMock.expect(card.matchesPieceType(type)).andReturn(true);
+        EasyMock.replay(card);
+        return card;
+    }
 
+    private void testSuccessfulTradeIn(Set<Card> cards, int expected) {
         TradeInManager tradeIn = new TradeInManager();
-        int expected = 4;
         int actual = tradeIn.startTrade(cards);
         assertEquals(expected, actual);
 
@@ -53,22 +50,20 @@ public class TradeInManagerTest {
     }
 
     @Test
+    public void test01_startTrade_noPrevious_withOneOfEach_returnsFour() {
+        Set<Card> cards = new HashSet<>();
+        for (PieceType type : PieceType.values()) {
+            cards.add(createMockedCard(type));
+        }
+        testSuccessfulTradeIn(cards, 4);
+    }
+
+    @Test
     public void test02_startTrade_onePrevious_withThreeInfantry_returnsEight() {
         Set<Card> cards = new HashSet<>();
         for (int i = 0; i < 3; i++) {
-            Card card = EasyMock.createNiceMock(Card.class);
-            EasyMock.expect(card.matchesPieceType(PieceType.INFANTRY)).andReturn(true);
-            cards.add(card);
-            EasyMock.replay(card);
+            cards.add(createMockedCard(PieceType.INFANTRY));
         }
-
-        TradeInManager tradeIn = new TradeInManager();
-        int expected = 8;
-        int actual = tradeIn.startTrade(cards);
-        assertEquals(expected, actual);
-
-        for (Card card : cards) {
-            EasyMock.verify(card);
-        }
+        testSuccessfulTradeIn(cards, 8);
     }
 }
