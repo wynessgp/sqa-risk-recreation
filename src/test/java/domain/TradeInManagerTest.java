@@ -3,11 +3,12 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.easymock.EasyMock;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import java.util.HashSet;
 import java.util.Set;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TradeInManagerTest {
 
@@ -25,6 +26,26 @@ public class TradeInManagerTest {
         String expected = "Must trade in exactly three cards";
         Exception exception = assertThrows(IllegalArgumentException.class, () -> tradeIn.startTrade(cards));
         assertEquals(expected, exception.getMessage());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
+
+    @Test
+    public void test01_startTrade_noPrevious_withOneOfEach_returnsFour() {
+        Set<Card> cards = new HashSet<>();
+        for (PieceType type : PieceType.values()) {
+            Card card = EasyMock.createNiceMock(Card.class);
+            EasyMock.expect(card.matchesPieceType(type)).andReturn(true);
+            cards.add(card);
+            EasyMock.replay(card);
+        }
+
+        TradeInManager tradeIn = new TradeInManager();
+        int expected = 4;
+        int actual = tradeIn.startTrade(cards);
+        assertEquals(expected, actual);
 
         for (Card card : cards) {
             EasyMock.verify(card);
