@@ -16,6 +16,12 @@ public abstract class GameEngine {
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
 
+    protected TerritoryGraph territoryGraph;
+
+    public GameEngine() {
+        territoryGraph = new TerritoryGraph();
+    }
+
     public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
         handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
         checkDuplicatesAndTypes(playerOrder);
@@ -90,5 +96,14 @@ public abstract class GameEngine {
 
     int getNumArmiesByPlayerColor(PlayerColor playerColor) {
         return playersMap.get(playerColor).getNumArmiesToPlace();
+    }
+
+    void provideMockedTerritoryGraph(TerritoryGraph mockedGraph) {
+        territoryGraph = mockedGraph;
+    }
+
+    public boolean checkIfTerritoryIsClaimed(TerritoryType territory) {
+        Territory territoryObject = territoryGraph.getTerritory(territory);
+        return territoryObject.getPlayerInControl() != PlayerColor.SETUP;
     }
 }
