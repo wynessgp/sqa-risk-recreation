@@ -19,7 +19,15 @@ public abstract class GameEngine {
     protected TerritoryGraph territoryGraph;
 
     public GameEngine() {
-        territoryGraph = new TerritoryGraph();
+        territoryGraph = initializeGraph();
+    }
+
+    private TerritoryGraph initializeGraph() {
+        TerritoryGraph graph = new TerritoryGraph();
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            graph.addNewTerritory(new Territory(territoryType));
+        }
+        return graph;
     }
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {

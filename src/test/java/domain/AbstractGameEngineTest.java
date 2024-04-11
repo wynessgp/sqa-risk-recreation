@@ -466,6 +466,15 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedGraph, mockedTerritory);
     }
 
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test20_checkIfTerritoryIsClaimedIntegrationTest_initialGraphAllUnclaimed_expectFalse(
+            TerritoryType relevantTerritory) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        assertFalse(unitUnderTest.checkIfTerritoryIsClaimed(relevantTerritory));
+    }
+
 
 
 }
