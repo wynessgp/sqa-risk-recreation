@@ -47,14 +47,27 @@ public abstract class GameEngine {
     }
 
     public boolean assignSetupArmiesToPlayers() {
+        checkIfPlayersListIsEmpty();
+
+        if (playersList.contains(PlayerColor.NEUTRAL)) {
+            handleArmyAssignment(2);
+        } else {
+            handleArmyAssignment(3);
+        }
+        return true;
+    }
+
+    private void checkIfPlayersListIsEmpty() {
         if (playersList.isEmpty()) {
             throw new IllegalStateException(
                     "No player objects exist, call initializePlayersList first with the correct arguments");
         }
-        playersMap.get(PlayerColor.RED).setNumArmiesToPlace(40);
-        playersMap.get(PlayerColor.YELLOW).setNumArmiesToPlace(40);
-        playersMap.get(PlayerColor.NEUTRAL).setNumArmiesToPlace(40);
-        return true;
+    }
+
+    private void handleArmyAssignment(int numPlayersInGame) {
+        for (Player player : playersMap.values()) {
+            player.setNumArmiesToPlace(40 - ((numPlayersInGame - 2) * 5));
+        }
     }
 
     void provideMockedPlayerObjects(List<Player> mockedPlayers) {
