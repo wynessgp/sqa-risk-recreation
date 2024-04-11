@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.HashSet;
 import java.util.Set;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -76,5 +75,14 @@ public class TradeInManagerTest {
             cards.add(createMockedCard(PieceType.CAVALRY));
         }
         testSuccessfulTradeIn(2, cards, 8);
+    }
+
+    @Test
+    public void test04_startTrade_twoPrevious_withThreeArtillery_returnsEight() {
+        Set<Card> cards = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+            cards.add(createMockedCard(PieceType.ARTILLERY));
+        }
+        testSuccessfulTradeIn(3, cards, 10);
     }
 }
