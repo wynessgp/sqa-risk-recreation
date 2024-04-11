@@ -288,4 +288,25 @@ public class AbstractGameEngineTest {
         }
     }
 
+    @Test
+    public void test14_assignSetupArmiesToPlayers_playerListSizeFive_returnsTrueAndCorrectlyAssigns() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> fivePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
+                PlayerColor.PURPLE, PlayerColor.GREEN, PlayerColor.BLACK);
+
+        unitUnderTest.setPlayerOrderList(fivePlayerList);
+
+        List<Player> playerMocks = createMockedPlayersList(fivePlayerList, fivePlayerList.size());
+
+        unitUnderTest.provideMockedPlayerObjects(playerMocks);
+
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        int expectedNumArmies = 25;
+
+        for (Player mockedPlayer : playerMocks) {
+            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+            EasyMock.verify(mockedPlayer);
+        }
+    }
+
 }
