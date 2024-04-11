@@ -376,4 +376,38 @@ public class AbstractGameEngineTest {
         assertEquals(40, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.NEUTRAL));
     }
 
+    private static Stream<Arguments> generatePlayerLists_sizesThreeThroughSix() {
+        Set<Arguments> arguments = new HashSet<>();
+        Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
+        validPlayers.remove(PlayerColor.NEUTRAL);
+        validPlayers.remove(PlayerColor.SETUP);
+
+        int size = validPlayers.size();
+        for (PlayerColor player : new HashSet<>(validPlayers)) {
+            if (size < 4) {
+                continue;
+            }
+            List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
+            arguments.add(Arguments.of(playerListVariant));
+            validPlayers.remove(player);
+            size--;
+        }
+        return arguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    public void test17_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
+            List<PlayerColor> playerColors) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        assertTrue(unitUnderTest.initializePlayersList(playerColors, playerColors.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        int expectedNumArmies = 40 - ((playerColors.size() - 2) * 5);
+        for (PlayerColor player : playerColors) {
+            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(player));
+        }
+    }
+
 }
