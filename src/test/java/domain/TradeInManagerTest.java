@@ -84,7 +84,11 @@ public class TradeInManagerTest {
     private static Stream<Arguments> wildCardTestGenerator() {
         return Stream.of(
                 Arguments.of(PieceType.INFANTRY, PieceType.INFANTRY, 4, 12),
-                Arguments.of(PieceType.CAVALRY, PieceType.CAVALRY, 5, 15)
+                Arguments.of(PieceType.CAVALRY, PieceType.CAVALRY, 5, 15),
+                Arguments.of(PieceType.ARTILLERY, PieceType.ARTILLERY, 6, 20),
+                Arguments.of(PieceType.INFANTRY, PieceType.CAVALRY, 7, 25),
+                Arguments.of(PieceType.INFANTRY, PieceType.ARTILLERY, 8, 30),
+                Arguments.of(PieceType.CAVALRY, PieceType.ARTILLERY, 9, 35)
         );
     }
 
