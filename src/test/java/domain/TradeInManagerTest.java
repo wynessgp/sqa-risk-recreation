@@ -151,7 +151,12 @@ public class TradeInManagerTest {
 
     private static Stream<Arguments> invalidTradeInGenerator() {
         return Stream.of(
-                Arguments.of(PieceType.INFANTRY, PieceType.CAVALRY, PieceType.CAVALRY)
+                Arguments.of(PieceType.INFANTRY, PieceType.CAVALRY, PieceType.CAVALRY),
+                Arguments.of(PieceType.INFANTRY, PieceType.ARTILLERY, PieceType.ARTILLERY),
+                Arguments.of(PieceType.CAVALRY, PieceType.ARTILLERY, PieceType.ARTILLERY),
+                Arguments.of(PieceType.CAVALRY, PieceType.INFANTRY, PieceType.INFANTRY),
+                Arguments.of(PieceType.ARTILLERY, PieceType.INFANTRY, PieceType.INFANTRY),
+                Arguments.of(PieceType.ARTILLERY, PieceType.CAVALRY, PieceType.CAVALRY)
         );
     }
 
