@@ -7,7 +7,10 @@ public class TradeInManager {
 
     public int startTrade(Set<Card> cards) {
         if (cards.size() != 3) {
-            throw new IllegalArgumentException("Must trade in exactly three cards");
+            throw new IllegalStateException("Must trade in exactly three cards");
+        }
+        if (setsTradedIn > 13) {
+            throw new IllegalStateException("No more cards to trade in");
         }
         if (hasOneOfEachType(cards) || hasThreeOfSameType(cards) || hasWild(cards)) {
             return setsTradedIn < 5 ? 4 + 2 * setsTradedIn++ : 15 + 5 * (setsTradedIn++ - 5);

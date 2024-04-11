@@ -27,7 +27,7 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         String expected = "Must trade in exactly three cards";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> tradeIn.startTrade(cards));
+        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
         assertEquals(expected, exception.getMessage());
 
         for (Card card : cards) {
@@ -125,6 +125,24 @@ public class TradeInManagerTest {
             assertEquals(expected, actual);
             expected += 5;
         }
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
+
+    @Test
+    public void test05_startTrade_withFourteenPrevious_throwsException() {
+        Set<Card> cards = new HashSet<>();
+        for (PieceType type : PieceType.values()) {
+            cards.add(createMockedCard(type));
+        }
+
+        TradeInManager tradeIn = new TradeInManager();
+        tradeIn.setSetsTradedIn(14);
+        String expected = "No more cards to trade in";
+        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
+        assertEquals(expected, exception.getMessage());
 
         for (Card card : cards) {
             EasyMock.verify(card);

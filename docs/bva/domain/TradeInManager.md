@@ -30,28 +30,28 @@ Input:
 
 Output:
 - 4, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55 (can only trade in 14 times as per game rules)
-- IllegalArgumentException
+- IllegalStateException
 
 ## BVA Step 4
 ### Test value 1
 Input: 0 previous trades, empty collection
 
-Output: IllegalArgumentException "must trade in exactly 3 cards"
+Output: IllegalStateException "must trade in exactly 3 cards"
 
 ### Test value 2
 Input: 0 previous trades, collection with one card
 
-Output: IllegalArgumentException "must trade in exactly 3 cards"
+Output: IllegalStateException "must trade in exactly 3 cards"
 
 ### Test value 3
 Input: 0 previous trades, collection with two cards
 
-Output: IllegalArgumentException "must trade in exactly 3 cards"
+Output: IllegalStateException "must trade in exactly 3 cards"
 
 ### Test value 4
 Input: 0 previous trades, collection with four cards
 
-Output: IllegalArgumentException "must trade in exactly 3 cards"
+Output: IllegalStateException "must trade in exactly 3 cards"
 
 ### Test value 5
 Input: 0 previous trades, collection with one infantry, one calvary, and one artillery card
@@ -126,39 +126,39 @@ Output: 55
 ### Test value 19
 Input: 14 previous trades, collection with one infantry, one calvary, and one artillery card
 
-Output: IllegalArgumentException "no more cards to trade in"
+Output: IllegalStateException "no more cards to trade in"
 
 ### Test value 20
 Input: 2 previous trades, collection with one infantry and two calvary cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 21
 Input: 2 previous trades, collection with one infantry and two artillery cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 22
 Input: 2 previous trades, collection with one calvary and two artillery cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 23
 Input: 2 previous trades, collection with one cavalry and two infantry cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 24
 Input: 2 previous trades, collection with one artillery and two infantry cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 25
 Input: 2 previous trades, collection with one artillery and two cavalry cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
 
 ### Test value 26
 Input: 2 previous trades, collection with two wild and one infantry cards
 
-Output: IllegalArgumentException "invalid trade in set"
+Output: IllegalStateException "invalid trade in set"
