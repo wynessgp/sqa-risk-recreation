@@ -109,4 +109,25 @@ public class TradeInManagerTest {
         cards.add(createMockedCard(thirdCard));
         testSuccessfulTradeIn(previousTrades, cards, expected);
     }
+
+    @Test
+    public void test04_startTrade_withTenPrevious_tradeFourTimes_returnsFiftyFive() {
+        Set<Card> cards = new HashSet<>();
+        for (PieceType type : PieceType.values()) {
+            cards.add(createMockedCard(type));
+        }
+
+        TradeInManager tradeIn = new TradeInManager();
+        tradeIn.setSetsTradedIn(10);
+        int expected = 40;
+        for (int i = 0; i < 4; i++) {
+            int actual = tradeIn.startTrade(cards);
+            assertEquals(expected, actual);
+            expected += 5;
+        }
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
 }

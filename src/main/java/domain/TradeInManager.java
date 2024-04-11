@@ -10,7 +10,7 @@ public class TradeInManager {
             throw new IllegalArgumentException("Must trade in exactly three cards");
         }
         if (hasOneOfEachType(cards) || hasThreeOfSameType(cards) || hasWild(cards)) {
-            return setsTradedIn < 5 ? 4 + 2 * setsTradedIn : 15 + 5 * (setsTradedIn - 5);
+            return setsTradedIn < 5 ? 4 + 2 * setsTradedIn++ : 15 + 5 * (setsTradedIn++ - 5);
         }
         return 0;
     }
