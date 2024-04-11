@@ -81,6 +81,12 @@ public class TradeInManagerTest {
         testSuccessfulTradeIn(previousTrades, cards, expected);
     }
 
+    private static Stream<Arguments> wildCardTestGenerator() {
+        return Stream.of(
+                Arguments.of(PieceType.INFANTRY, PieceType.INFANTRY, 4, 12)
+        );
+    }
+
     private Card createMockedWildCard() {
         Card card = EasyMock.createNiceMock(Card.class);
         EasyMock.expect(card.isWild()).andReturn(true).anyTimes();
@@ -88,12 +94,14 @@ public class TradeInManagerTest {
         return card;
     }
 
-    @Test
-    public void test03_startTrade_fourPrevious_withWildAndTwoInfantry_returnsTwelve() {
+    @ParameterizedTest
+    @MethodSource("wildCardTestGenerator")
+    public void test03_startTrade_withPrevious_withWildAndTwoOthers_returnsNumberOfArmies(
+            PieceType secondCard, PieceType thirdCard, int previousTrades, int expected) {
         Set<Card> cards = new HashSet<>();
         cards.add(createMockedWildCard());
-        cards.add(createMockedCard(PieceType.INFANTRY));
-        cards.add(createMockedCard(PieceType.INFANTRY));
-        testSuccessfulTradeIn(4, cards, 12);
+        cards.add(createMockedCard(secondCard));
+        cards.add(createMockedCard(thirdCard));
+        testSuccessfulTradeIn(previousTrades, cards, expected);
     }
 }
