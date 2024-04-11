@@ -21,6 +21,7 @@ public abstract class GameEngine {
         checkDuplicatesAndTypes(playerOrder);
 
         this.playersList = new ArrayList<>(playerOrder);
+        initializePlayerColorToPlayerMap(playerOrder);
         return true;
     }
 
@@ -40,6 +41,13 @@ public abstract class GameEngine {
         }
         if (playerOrder.contains(PlayerColor.SETUP)) {
             throw new IllegalArgumentException("Player order contains SETUP as one of the players");
+        }
+    }
+
+    private void initializePlayerColorToPlayerMap(List<PlayerColor> playerColors) {
+        playerColors.forEach((playerColor) -> playersMap.put(playerColor, new Player(playerColor)));
+        if (playerColors.size() == NUM_PLAYERS_WITH_NEUTRAL) { // add the neutral player, if needed.
+            playersMap.put(PlayerColor.NEUTRAL, new Player(PlayerColor.NEUTRAL));
         }
     }
 

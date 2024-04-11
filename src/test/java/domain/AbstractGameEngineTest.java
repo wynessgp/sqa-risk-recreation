@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -328,6 +329,51 @@ public class AbstractGameEngineTest {
             assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
             EasyMock.verify(mockedPlayer);
         }
+    }
+
+    private static Stream<Arguments> generateAllNonDuplicatePlayerColorPairs() {
+        Set<Set<PlayerColor>> colorPairsNoDuplicates = new HashSet<>();
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+        playerColors.remove(PlayerColor.NEUTRAL);
+
+        for (PlayerColor firstPlayerColor : playerColors) {
+            for (PlayerColor secondPlayerColor : playerColors) {
+                if (firstPlayerColor != secondPlayerColor) {
+                    Set<PlayerColor> playerPair = new HashSet<>();
+                    playerPair.add(firstPlayerColor);
+                    playerPair.add(secondPlayerColor);
+                    colorPairsNoDuplicates.add(playerPair);
+                }
+            }
+        }
+        Set<Arguments> playerPairs = new HashSet<>();
+        for (Set<PlayerColor> playerPair : colorPairsNoDuplicates) {
+            Iterator<PlayerColor> iterator = playerPair.iterator();
+            PlayerColor firstPlayer = iterator.next();
+            PlayerColor secondPlayer = iterator.next();
+            playerPairs.add(Arguments.of(firstPlayer, secondPlayer));
+        }
+        return playerPairs.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllNonDuplicatePlayerColorPairs")
+    public void test16_assignSetupArmiesToPlayersIntegrationTest_noMockedPlayersList_expectTrueAndCorrectlyAssigns(
+            PlayerColor firstPlayerColor, PlayerColor secondPlayerColor) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> twoPlayerList = List.of(firstPlayerColor, secondPlayerColor);
+
+        // this test is meant to act as an "integration" test between initializePlayersList and
+        // assignSetupArmiesToPlayers.
+        assertTrue(unitUnderTest.initializePlayersList(twoPlayerList, twoPlayerList.size()));
+        // if that worked, the mapping should now be set up.
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        for (PlayerColor player : twoPlayerList) {
+            assertEquals(40, unitUnderTest.getNumArmiesByPlayerColor(player));
+        } // check for neutral too.
+        assertEquals(40, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.NEUTRAL));
     }
 
 }
