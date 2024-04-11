@@ -259,9 +259,9 @@ Output:
   - Player in control = BLUE
 - Output = 1 (true)
 
-consider all combinations here
+Other tests as necessary to fulfill all combinations.
 
-# method: `validatePlayerOwnsTerritory(territory: TerritoryType, player: PlayerColor): boolean`
+# method: `checkIfPlayerOwnsTerritory(territory: TerritoryType, player: PlayerColor): boolean`
 
 ## BVA Step 1
 Input: A territory that's in question whether the given player owns it
@@ -300,13 +300,14 @@ Input:
 Output:
 - 0 
 - 1
+- Something neither true nor false (can't set)
 
 ## BVA Step 4
 ### Test 1:
 Input:
 - territory = ALASKA
 - player = BLUE
-- Territory object = [valid pointer, type = ALASKA, player = NEUTRAL]
+- Territory object = [type = ALASKA, player = NEUTRAL]
 
 Output = 0 (false)
 
@@ -314,14 +315,14 @@ Output = 0 (false)
 Input:
 - territory = YAKUTSK
 - player = RED
-- Territory object = [valid pointer, type = ALASKA, player = BLUE]
+- Territory object = [type = ALASKA, player = BLUE]
 
 Output: 0 (false)
 ### Test 3:
 Input:
 - territory = ALASKA
 - player = BLUE
-- Territory object = [valid pointer, type = ALASKA, player = BLUE]
+- Territory object = [type = ALASKA, player = BLUE]
 
 Output: 1 (true)
 ### And many more...consider all combinations
