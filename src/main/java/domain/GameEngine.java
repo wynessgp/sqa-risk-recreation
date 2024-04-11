@@ -8,6 +8,11 @@ import java.util.Set;
 
 public abstract class GameEngine {
 
+    private static final int MAXIMUM_ARMIES_POSSIBLE_IN_SETUP = 40;
+    private static final int ADDITIONAL_PLAYER_ARMY_OFFSET = 5;
+    private static final int PLAYER_LIST_SIZE_OFFSET = 2;
+    private static final int NUM_PLAYERS_WITH_NEUTRAL = 2;
+
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
 
@@ -50,7 +55,7 @@ public abstract class GameEngine {
         checkIfPlayersListIsEmpty();
 
         if (playersList.contains(PlayerColor.NEUTRAL)) {
-            handleArmyAssignment(2);
+            handleArmyAssignment(NUM_PLAYERS_WITH_NEUTRAL);
         } else {
             handleArmyAssignment(playersList.size());
         }
@@ -66,7 +71,8 @@ public abstract class GameEngine {
 
     private void handleArmyAssignment(int numPlayersInGame) {
         for (Player player : playersMap.values()) {
-            player.setNumArmiesToPlace(40 - ((numPlayersInGame - 2) * 5));
+            player.setNumArmiesToPlace(MAXIMUM_ARMIES_POSSIBLE_IN_SETUP - (
+                    (numPlayersInGame - PLAYER_LIST_SIZE_OFFSET) * ADDITIONAL_PLAYER_ARMY_OFFSET));
         }
     }
 
