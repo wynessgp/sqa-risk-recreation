@@ -52,7 +52,7 @@ public abstract class GameEngine {
         if (playersList.contains(PlayerColor.NEUTRAL)) {
             handleArmyAssignment(2);
         } else {
-            handleArmyAssignment(3);
+            handleArmyAssignment(playersList.size());
         }
         return true;
     }

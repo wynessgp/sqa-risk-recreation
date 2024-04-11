@@ -270,4 +270,37 @@ public class AbstractGameEngineTest {
         }
     }
 
+    @Test
+    public void test13_assignSetupArmiesToPlayers_playerListSizeFour_returnsTrueAndCorrectlyAssigns() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> threePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
+                PlayerColor.PURPLE, PlayerColor.GREEN);
+        List<Player> mockedPlayers = new ArrayList<>();
+
+        unitUnderTest.setPlayerOrderList(threePlayerList);
+
+        for (PlayerColor playerColor : threePlayerList) {
+            Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                    .withConstructor(PlayerColor.class)
+                    .withArgs(playerColor)
+                    .addMockedMethod("setNumArmiesToPlace")
+                    .addMockedMethod("getNumArmiesToPlace")
+                    .createMock();
+            mockedPlayer.setNumArmiesToPlace(30);
+            EasyMock.expectLastCall().once();
+            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(30);
+            EasyMock.replay(mockedPlayer);
+            mockedPlayers.add(mockedPlayer);
+        }
+
+        unitUnderTest.provideMockedPlayerObjects(mockedPlayers);
+
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        for (Player mockedPlayer : mockedPlayers) {
+            assertEquals(30, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+            EasyMock.verify(mockedPlayer);
+        }
+    }
+
 }
