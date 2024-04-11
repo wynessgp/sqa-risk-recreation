@@ -9,7 +9,7 @@ public class TradeInManager {
         if (cards.size() != 3) {
             throw new IllegalArgumentException("Must trade in exactly three cards");
         }
-        if (hasOneOfEachType(cards) || hasThreeOfSameType(cards)) {
+        if (hasOneOfEachType(cards) || hasThreeOfSameType(cards) || hasWild(cards)) {
             return 4 + 2 * setsTradedIn;
         }
         return 0;
@@ -29,6 +29,10 @@ public class TradeInManager {
 
     private long countPieceType(Set<Card> cards, PieceType type) {
         return cards.stream().filter(card -> card.matchesPieceType(type)).count();
+    }
+
+    private boolean hasWild(Set<Card> cards) {
+        return cards.stream().filter(Card::isWild).count() > 0;
     }
 
     void setSetsTradedIn(int setsTradedIn) {

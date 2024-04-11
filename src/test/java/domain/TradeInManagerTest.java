@@ -80,4 +80,20 @@ public class TradeInManagerTest {
         }
         testSuccessfulTradeIn(previousTrades, cards, expected);
     }
+
+    private Card createMockedWildCard() {
+        Card card = EasyMock.createNiceMock(Card.class);
+        EasyMock.expect(card.isWild()).andReturn(true).anyTimes();
+        EasyMock.replay(card);
+        return card;
+    }
+
+    @Test
+    public void test03_startTrade_fourPrevious_withWildAndTwoInfantry_returnsTwelve() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedWildCard());
+        cards.add(createMockedCard(PieceType.INFANTRY));
+        cards.add(createMockedCard(PieceType.INFANTRY));
+        testSuccessfulTradeIn(4, cards, 12);
+    }
 }
