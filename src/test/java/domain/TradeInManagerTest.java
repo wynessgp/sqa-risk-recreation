@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class TradeInManagerTest {
@@ -59,30 +62,22 @@ public class TradeInManagerTest {
         testSuccessfulTradeIn(0, cards, 4);
     }
 
-    @Test
-    public void test02_startTrade_onePrevious_withThreeInfantry_returnsSix() {
-        Set<Card> cards = new HashSet<>();
-        for (int i = 0; i < 3; i++) {
-            cards.add(createMockedCard(PieceType.INFANTRY));
-        }
-        testSuccessfulTradeIn(1, cards, 6);
+    private static Stream<Arguments> pieceTypeGenerator() {
+        return Stream.of(
+                Arguments.of(PieceType.INFANTRY, 1, 6),
+                Arguments.of(PieceType.CAVALRY, 2, 8),
+                Arguments.of(PieceType.ARTILLERY, 3, 10)
+        );
     }
 
-    @Test
-    public void test03_startTrade_twoPrevious_withThreeCavalry_returnsEight() {
+    @ParameterizedTest
+    @MethodSource("pieceTypeGenerator")
+    public void test02_startTrade_withPrevious_withThreeOfSameType_returnsNumberOfArmies(
+            PieceType piece, int previousTrades, int expected) {
         Set<Card> cards = new HashSet<>();
         for (int i = 0; i < 3; i++) {
-            cards.add(createMockedCard(PieceType.CAVALRY));
+            cards.add(createMockedCard(piece));
         }
-        testSuccessfulTradeIn(2, cards, 8);
-    }
-
-    @Test
-    public void test04_startTrade_twoPrevious_withThreeArtillery_returnsEight() {
-        Set<Card> cards = new HashSet<>();
-        for (int i = 0; i < 3; i++) {
-            cards.add(createMockedCard(PieceType.ARTILLERY));
-        }
-        testSuccessfulTradeIn(3, cards, 10);
+        testSuccessfulTradeIn(previousTrades, cards, expected);
     }
 }
