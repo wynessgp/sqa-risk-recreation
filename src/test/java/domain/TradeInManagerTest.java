@@ -177,4 +177,21 @@ public class TradeInManagerTest {
             EasyMock.verify(card);
         }
     }
+
+    @Test
+    public void test07_startTrade_withTwoWild_throwsException() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedWildCard());
+        cards.add(createMockedWildCard());
+        cards.add(createMockedCard(PieceType.INFANTRY));
+
+        TradeInManager tradeIn = new TradeInManager();
+        String expected = "Invalid trade in set";
+        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
+        assertEquals(expected, exception.getMessage());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
 }

@@ -39,7 +39,7 @@ public class TradeInManager {
     }
 
     private boolean hasWild(Set<Card> cards) {
-        return cards.stream().filter(Card::isWild).count() > 0;
+        return cards.stream().filter(Card::isWild).count() == 1;
     }
 
     void setSetsTradedIn(int setsTradedIn) {
