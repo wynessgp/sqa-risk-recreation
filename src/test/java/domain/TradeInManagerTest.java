@@ -148,4 +148,28 @@ public class TradeInManagerTest {
             EasyMock.verify(card);
         }
     }
+
+    private static Stream<Arguments> invalidTradeInGenerator() {
+        return Stream.of(
+                Arguments.of(PieceType.INFANTRY, PieceType.CAVALRY, PieceType.CAVALRY)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTradeInGenerator")
+    public void test06_startTrade_withInvalidCards_throwsException(PieceType first, PieceType second, PieceType third) {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedCard(first));
+        cards.add(createMockedCard(second));
+        cards.add(createMockedCard(third));
+
+        TradeInManager tradeIn = new TradeInManager();
+        String expected = "Invalid trade in set";
+        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
+        assertEquals(expected, exception.getMessage());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+    }
 }
