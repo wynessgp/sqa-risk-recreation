@@ -205,35 +205,44 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
-    @Test
-    public void test11_assignSetupArmiesToPlayers_playerListSizeTwoAddNeutral_returnsTrueAndCorrectlyAssigns() {
-        // employ partial mocks for this method to ensure the Player objects are utilized correctly.
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> twoPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.NEUTRAL);
-        List<Player> mockedPlayers = new ArrayList<>();
-
-        unitUnderTest.setPlayerOrderList(twoPlayerList);
-
-        for (PlayerColor playerColor : twoPlayerList) {
+    private List<Player> createMockedPlayersList(List<PlayerColor> playerColors, int numberOfPlayers) {
+        List<Player> listOfPlayersToReturn = new ArrayList<>();
+        for (PlayerColor playerColor : playerColors) {
             Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                     .withConstructor(PlayerColor.class)
                     .withArgs(playerColor)
                     .addMockedMethod("setNumArmiesToPlace")
                     .addMockedMethod("getNumArmiesToPlace")
                     .createMock();
-            mockedPlayer.setNumArmiesToPlace(40);
+            // 40 is the MAX (2 players), account for that offset on the size
+            // and lose 5 additional armies per extra player.
+            int expectedNumArmies = 40 - ((numberOfPlayers - 2) * 5);
+            mockedPlayer.setNumArmiesToPlace(expectedNumArmies);
             EasyMock.expectLastCall().once();
-            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(40);
+            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(expectedNumArmies);
             EasyMock.replay(mockedPlayer);
-            mockedPlayers.add(mockedPlayer);
+            listOfPlayersToReturn.add(mockedPlayer);
         }
+        return listOfPlayersToReturn;
+    }
 
-        unitUnderTest.provideMockedPlayerObjects(mockedPlayers);
+    @Test
+    public void test11_assignSetupArmiesToPlayers_playerListSizeTwoAddNeutral_returnsTrueAndCorrectlyAssigns() {
+        // employ partial mocks for this method to ensure the Player objects are utilized correctly.
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> twoPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.NEUTRAL);
+
+        unitUnderTest.setPlayerOrderList(twoPlayerList);
+
+        List<Player> playerMocks = createMockedPlayersList(twoPlayerList, 2); // "remove" neutral
+
+        unitUnderTest.provideMockedPlayerObjects(playerMocks);
 
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        int expectedNumArmies = 40;
 
-        for (Player mockedPlayer : mockedPlayers) {
-            assertEquals(40, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+        for (Player mockedPlayer : playerMocks) {
+            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
             EasyMock.verify(mockedPlayer);
         }
     }
@@ -242,30 +251,18 @@ public class AbstractGameEngineTest {
     public void test12_assignSetupArmiesToPlayers_playerListSizeThree_returnsTrueAndCorrectlyAssigns() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> threePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.PURPLE);
-        List<Player> mockedPlayers = new ArrayList<>();
 
         unitUnderTest.setPlayerOrderList(threePlayerList);
 
-        for (PlayerColor playerColor : threePlayerList) {
-            Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
-                    .withConstructor(PlayerColor.class)
-                    .withArgs(playerColor)
-                    .addMockedMethod("setNumArmiesToPlace")
-                    .addMockedMethod("getNumArmiesToPlace")
-                    .createMock();
-            mockedPlayer.setNumArmiesToPlace(35);
-            EasyMock.expectLastCall().once();
-            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(35);
-            EasyMock.replay(mockedPlayer);
-            mockedPlayers.add(mockedPlayer);
-        }
+        List<Player> playerMocks = createMockedPlayersList(threePlayerList, threePlayerList.size());
 
-        unitUnderTest.provideMockedPlayerObjects(mockedPlayers);
+        unitUnderTest.provideMockedPlayerObjects(playerMocks);
 
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        int expectedNumArmies = 35;
 
-        for (Player mockedPlayer : mockedPlayers) {
-            assertEquals(35, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+        for (Player mockedPlayer : playerMocks) {
+            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
             EasyMock.verify(mockedPlayer);
         }
     }
@@ -273,32 +270,20 @@ public class AbstractGameEngineTest {
     @Test
     public void test13_assignSetupArmiesToPlayers_playerListSizeFour_returnsTrueAndCorrectlyAssigns() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> threePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
+        List<PlayerColor> fourPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
                 PlayerColor.PURPLE, PlayerColor.GREEN);
-        List<Player> mockedPlayers = new ArrayList<>();
 
-        unitUnderTest.setPlayerOrderList(threePlayerList);
+        unitUnderTest.setPlayerOrderList(fourPlayerList);
 
-        for (PlayerColor playerColor : threePlayerList) {
-            Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
-                    .withConstructor(PlayerColor.class)
-                    .withArgs(playerColor)
-                    .addMockedMethod("setNumArmiesToPlace")
-                    .addMockedMethod("getNumArmiesToPlace")
-                    .createMock();
-            mockedPlayer.setNumArmiesToPlace(30);
-            EasyMock.expectLastCall().once();
-            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(30);
-            EasyMock.replay(mockedPlayer);
-            mockedPlayers.add(mockedPlayer);
-        }
+        List<Player> playerMocks = createMockedPlayersList(fourPlayerList, fourPlayerList.size());
 
-        unitUnderTest.provideMockedPlayerObjects(mockedPlayers);
+        unitUnderTest.provideMockedPlayerObjects(playerMocks);
 
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        int expectedNumArmies = 30;
 
-        for (Player mockedPlayer : mockedPlayers) {
-            assertEquals(30, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
+        for (Player mockedPlayer : playerMocks) {
+            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
             EasyMock.verify(mockedPlayer);
         }
     }
