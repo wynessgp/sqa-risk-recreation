@@ -475,6 +475,26 @@ public class AbstractGameEngineTest {
         assertFalse(unitUnderTest.checkIfTerritoryIsClaimed(relevantTerritory));
     }
 
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test21_checkIfPlayerOwnsTerritory_setupPlayerOwnsTerritory_inputIsBluePlayer_expectFalse(
+            TerritoryType relevantTerritory) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+
+        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
+
+        EasyMock.replay(mockedGraph, mockedTerritory);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertFalse(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.BLUE));
+
+        EasyMock.verify(mockedGraph, mockedTerritory);
+    }
+
 
 
 }

@@ -114,4 +114,8 @@ public abstract class GameEngine {
         Territory territoryObject = territoryGraph.getTerritory(territory);
         return territoryObject.getPlayerInControl() != PlayerColor.SETUP;
     }
+
+    public boolean checkIfPlayerOwnsTerritory(TerritoryType relevantTerritory, PlayerColor playerColor) {
+        return checkIfTerritoryIsClaimed(relevantTerritory);
+    }
 }
