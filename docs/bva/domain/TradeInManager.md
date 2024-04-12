@@ -1,4 +1,4 @@
-# method: `startTrade(Set<Card> attemptedCards): int`
+# method: `startTrade(attemptedCards: Set<Card>): int`
 
 ## BVA Step 1
 Input: set of cards to be traded in and number of previously traded in sets of cards
@@ -162,3 +162,64 @@ Output: IllegalStateException "invalid trade in set"
 Input: 2 previous trades, collection with two wild and one infantry cards
 
 Output: IllegalStateException "invalid trade in set"
+
+
+# method: `getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>`
+
+## BVA Step 1
+Input: set of cards to check and the player who traded them in
+
+Output: set of territories from the cards that match what the player occupies or an exception
+
+## BVA Step 2
+Input: Pointer, Collection
+
+Output: Collection
+
+## BVA Step 3
+Input:
+- Player pointer:
+  - occupies 0 territories (impossible, would be out of the game)
+  - occupies 1 territory
+  - occupies 2 territories
+  - ...
+  - occupies 41 territories
+- collection of Cards:
+  - empty collection
+  - collection with one card
+  - collection with two cards
+  - collection of size three with one of each card (infantry, calvary, artillery)
+  - collection with three of the same card
+  - collection with one wild card and two of any other card
+  - collection with one infantry and two cavalry cards
+  - (repeat above for each combination of infantry, calvary, and artillery cards)
+  - collection with two wild cards and one of any other card
+  - collection with four cards
+
+Output:
+- empty collection
+- collection with one TerritoryType
+- collection with two TerritoryTypes
+- collection with three TerritoryTypes
+- IllegalStateException
+
+## BVA Step 4
+### Test value 1
+Input: player with 1 territory, empty collection
+
+Output: IllegalStateException "invalid number of cards"
+
+### Test value 2
+Input: player with 1 territory, collection with one card
+
+Output: IllegalStateException "invalid number of cards"
+
+### Test value 3
+Input: player with 1 territory, collection with two cards
+
+Output: IllegalStateException "invalid number of cards"
+
+### Test value 4
+Input: player with 1 territory, collection with four cards
+
+Output: IllegalStateException "invalid number of cards"
