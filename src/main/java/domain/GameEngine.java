@@ -111,11 +111,16 @@ public abstract class GameEngine {
     }
 
     public boolean checkIfTerritoryIsClaimed(TerritoryType territory) {
-        Territory territoryObject = territoryGraph.getTerritory(territory);
-        return territoryObject.getPlayerInControl() != PlayerColor.SETUP;
+        return getPlayerInControlOfTerritory(territory) != PlayerColor.SETUP;
     }
 
     public boolean checkIfPlayerOwnsTerritory(TerritoryType relevantTerritory, PlayerColor playerColor) {
-        return checkIfTerritoryIsClaimed(relevantTerritory);
+        PlayerColor currentController = getPlayerInControlOfTerritory(relevantTerritory);
+        return currentController == playerColor;
+    }
+
+    private PlayerColor getPlayerInControlOfTerritory(TerritoryType relevantTerritory) {
+        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
+        return territoryObject.getPlayerInControl();
     }
 }
