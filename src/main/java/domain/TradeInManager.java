@@ -8,7 +8,8 @@ public class TradeInManager {
     public int startTrade(Set<Card> cards) {
         checkTradeInState(cards);
         if (hasOneOfEachType(cards) || hasThreeOfSameType(cards) || hasWild(cards)) {
-            return setsTradedIn < 5 ? 4 + 2 * setsTradedIn++ : 15 + 5 * (setsTradedIn++ - 5);
+            setsTradedIn++;
+            return setsTradedIn < 6 ? 4 + 2 * (setsTradedIn - 1) : 15 + 5 * (setsTradedIn - 6);
         }
         throw new IllegalStateException("Invalid trade in set");
     }
