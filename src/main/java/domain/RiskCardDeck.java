@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-public class DeckManager {
+public class RiskCardDeck {
     private List<Card> deckOfCards;
     private final Random random;
 
-    public DeckManager() {
+    public RiskCardDeck() {
         this.deckOfCards = new ArrayList<>();
         this.random = new Random();
         try {
@@ -21,7 +21,7 @@ public class DeckManager {
         }
     }
 
-    DeckManager(Random random) {
+    RiskCardDeck(Random random) {
         this.deckOfCards = new ArrayList<>();
         this.random = random;
     }
