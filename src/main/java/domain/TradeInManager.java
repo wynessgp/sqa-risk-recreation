@@ -2,6 +2,7 @@ package domain;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TradeInManager {
     private int setsTradedIn = 0;
@@ -19,10 +20,11 @@ public class TradeInManager {
         if (cards.size() != 3) {
             throw new IllegalStateException("Invalid number of cards");
         }
-        if (player.getTerritories() != null && player.getTerritories().contains(TerritoryType.ALASKA)) {
-            return new HashSet<>(Set.of(TerritoryType.ALASKA));
+        if (player.getTerritories() == null) {
+            return new HashSet<>();
         }
-        return new HashSet<>();
+        return player.getTerritories().stream().filter(territory -> cards.stream().anyMatch(card ->
+                card.matchesTerritory(territory))).collect(Collectors.toSet());
     }
 
     private void checkTradeInState(Set<Card> cards) {

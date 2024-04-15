@@ -247,6 +247,13 @@ public class TradeInManagerTest {
         EasyMock.verify(player);
     }
 
+    private Player createMockedPlayer(Set<TerritoryType> territories) {
+        Player player = EasyMock.createMock(Player.class);
+        EasyMock.expect(player.getTerritories()).andReturn(territories).anyTimes();
+        EasyMock.replay(player);
+        return player;
+    }
+
     @Test
     public void test10_getMatchedTerritories_withOneWildOneMatchOneOther_returnsMatchedCard() {
         Set<Card> cards = new HashSet<>();
@@ -254,14 +261,31 @@ public class TradeInManagerTest {
         cards.add(createMockedTerritoryCard(TerritoryType.ALASKA));
         cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
 
-        Player player = EasyMock.createMock(Player.class);
-        EasyMock.expect(player.getTerritories()).andReturn(Set.of(TerritoryType.ALASKA)).anyTimes();
-        EasyMock.replay(player);
+        Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(1, actual.size());
         assertEquals(TerritoryType.ALASKA, actual.iterator().next());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
+
+    @Test
+    public void test11_getMatchedTerritories_withThreeDifferentCardsNoMatches_returnsEmptySet() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
+        cards.add(createMockedTerritoryCard(TerritoryType.CENTRAL_AMERICA));
+        cards.add(createMockedTerritoryCard(TerritoryType.EASTERN_UNITED_STATES));
+
+        Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
+
+        TradeInManager tradeIn = new TradeInManager();
+        Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
+        assertEquals(0, actual.size());
 
         for (Card card : cards) {
             EasyMock.verify(card);
