@@ -7,6 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 
 public final class RiskCardDeck {
+    private static final int NUMBER_OF_WILD_CARDS = 2;
+    private static final int CARDS_PER_PIECE_TYPE = 14;
+
     private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
 
@@ -32,14 +35,14 @@ public final class RiskCardDeck {
     private void addTerritoryCards() {
         int pieceTypeCount = 0;
         for (TerritoryType territoryType : TerritoryType.values()) {
-            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / CARDS_PER_PIECE_TYPE];
             deckOfCards.add(new TerritoryCard(territoryType, currentPiece));
             pieceTypeCount++;
         }
     }
 
     private void addWildCards() {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < NUMBER_OF_WILD_CARDS; i++) {
             deckOfCards.add(new WildCard());
         }
     }
@@ -52,7 +55,7 @@ public final class RiskCardDeck {
     }
 
     boolean shuffle() {
-        if (this.deckOfCards.size() < 2) {
+        if (this.deckOfCards.size() <= 1) {
             return false;
         }
         Collections.shuffle(deckOfCards, random);
