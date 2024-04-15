@@ -397,4 +397,23 @@ public class TradeInManagerTest {
         }
         EasyMock.verify(player);
     }
+
+    @Test
+    public void test17_getMatchedTerritories_withOneWildTwoOthers_noPlayerMatches_returnsEmptySet() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedWildCard());
+        cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
+        cards.add(createMockedTerritoryCard(TerritoryType.CENTRAL_AMERICA));
+
+        Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
+
+        TradeInManager tradeIn = new TradeInManager();
+        Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
+        assertEquals(0, actual.size());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
 }
