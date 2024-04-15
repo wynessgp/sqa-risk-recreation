@@ -179,21 +179,21 @@ Output: Collection
 ## BVA Step 3
 Input:
 - Player pointer:
-  - occupies 0 territories (impossible, would be out of the game)
+  - occupies 0 territories
   - occupies 1 territory
   - occupies 2 territories
-  - ...
+  - occupies 3 territories
   - occupies 41 territories
 - collection of Cards:
   - empty collection
   - collection with one card
   - collection with two cards
-  - collection of size three with one of each card (infantry, calvary, artillery)
-  - collection with three of the same card
-  - collection with one wild card and two of any other card
-  - collection with one infantry and two cavalry cards
-  - (repeat above for each combination of infantry, calvary, and artillery cards)
-  - collection with two wild cards and one of any other card
+  - collection of size three with one wild and two different cards (by TerritoryType)
+    - contains one and two cards that match a territory the player occupies
+    - none of the cards match territories the player occupies
+  - collection of size three with three different non-wild cards
+    - contains one, two, and three cards that match a territory the player occupies
+    - none of the cards match territories the player occupies
   - collection with four cards
 
 Output:
@@ -223,3 +223,58 @@ Output: IllegalStateException "invalid number of cards"
 Input: player with 1 territory, collection with four cards
 
 Output: IllegalStateException "invalid number of cards"
+
+### Test value 6
+Input: player that occupies no territories, collection with [WILD, ALASKA, ALBERTA]
+
+Output: [] (empty collection)
+
+### Test value 7
+Input: player that occupies [ALASKA], collection with [WILD, ALASKA, ALBERTA]
+
+Output: [ALASKA]
+
+### Test value 8
+Input: player that occupies [ALASKA], collection with [ALBERTA, CENTRAL_AMERICA, EASTERN_UNITED_STATES]
+
+Output: []
+
+### Test value 9
+Input: player that occupies [ALASKA, ALBERTA], collection with [WILD, ALASKA, ALBERTA]
+
+Output: [ALASKA, ALBERTA]
+
+### Test value 10
+Input: player that occupies [ALBERTA, CENTRAL_AMERICA, EASTERN_UNITED_STATES], collection with [ALBERTA, CENTRAL_AMERICA, EASTERN_UNITED_STATES]
+
+Output: [ALBERTA, CENTRAL_AMERICA, EASTERN_UNITED_STATES]
+
+### Test value 11
+Input: player that occupies [ALBERTA, CENTRAL_AMERICA], collection with [ALASKA, ALBERTA, CENTRAL_AMERICA]
+
+Output: [ALBERTA, CENTRAL_AMERICA]
+
+### Test value 12
+Input: player that occupies [ALASKA], collection with [ALASKA, ALBERTA, EASTERN_UNITED_STATES]
+
+Output: [ALASKA]
+
+### Test value 13
+Input: player that occupies [], collection with [ALASKA, ALBERTA, EASTERN_UNITED_STATES]
+
+Output: []
+
+### Test value 14
+Input: player that occupies [ALASKA], collection with [WILD, ALBERTA, EASTERN_UNITED_STATES]
+
+Output: []
+
+### Test value 15
+Input: player that occupies all territories, collection with [WILD, ALASKA, ALBERTA]
+
+Output: [ALASKA, ALBERTA]
+
+### Test value 16
+Input: player that occupies all territories, collection with [ALASKA, ALBERTA, CENTRAL_AMERICA]
+
+Output: [ALASKA, ALBERTA, CENTRAL_AMERICA]
