@@ -6,23 +6,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-public class RiskCardDeck {
-    private List<Card> deckOfCards;
+public final class RiskCardDeck {
+    private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
 
     public RiskCardDeck() {
-        this.deckOfCards = new ArrayList<>();
         this.random = new Random();
-        try {
-            initDeck();
-            shuffle();
-        } catch (Exception e) {
-            System.err.println("Error initializing deck: " + e.getMessage());
-        }
+        initDeck();
+        shuffle();
     }
 
     RiskCardDeck(Random random) {
-        this.deckOfCards = new ArrayList<>();
         this.random = random;
     }
 
