@@ -313,4 +313,26 @@ public class TradeInManagerTest {
         }
         EasyMock.verify(player);
     }
+
+    @Test
+    public void test13_getMatchedTerritories_withThreeMatches_returnsMatchedCards() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
+        cards.add(createMockedTerritoryCard(TerritoryType.CENTRAL_AMERICA));
+        cards.add(createMockedTerritoryCard(TerritoryType.EASTERN_UNITED_STATES));
+
+        Set<TerritoryType> territories = Set.of(TerritoryType.ALBERTA, TerritoryType.CENTRAL_AMERICA,
+                TerritoryType.EASTERN_UNITED_STATES);
+        Player player = createMockedPlayer(territories);
+
+        TradeInManager tradeIn = new TradeInManager();
+        Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
+        assertEquals(3, actual.size());
+        assertEquals(territories, actual);
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
 }
