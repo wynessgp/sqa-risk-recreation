@@ -6,23 +6,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-public class DeckManager {
-    private List<Card> deckOfCards;
+public final class DeckManager {
+    private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
 
     public DeckManager() {
-        this.deckOfCards = new ArrayList<>();
         this.random = new Random();
-        try {
-            initDeck();
-            shuffle();
-        } catch (Exception e) {
-            System.err.println("Error initializing deck: " + e.getMessage());
-        }
+        initDeck();
+        shuffle();
     }
 
     DeckManager(Random random) {
-        this.deckOfCards = new ArrayList<>();
         this.random = random;
     }
 
