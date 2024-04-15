@@ -30,13 +30,15 @@ public class TerritoryGraph {
 
     private boolean isValidAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
         return territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory)
-                && (!territories.get(startingTerritory).contains(endingTerritory)
-                || !territories.get(endingTerritory).contains(startingTerritory))
+                && !territories.get(startingTerritory).contains(endingTerritory)
                 && (startingTerritory != endingTerritory);
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
-        return territoryTypeToObject.getOrDefault(territoryType, null);
+        if (territoryTypeToObject.containsKey(territoryType)) {
+            return territoryTypeToObject.get(territoryType);
+        }
+        throw new NullPointerException("Territory does not exist");
     }
 
     public Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
@@ -76,7 +78,7 @@ public class TerritoryGraph {
     }
 
     private void addAdjaenciesToGraph(TerritoryType territoryType, Set<TerritoryType> adjacencies,
-                                         Set<TerritoryType> currentAdjacencies) {
+                                      Set<TerritoryType> currentAdjacencies) {
         currentAdjacencies.addAll(adjacencies);
         for (TerritoryType adjacentTerritoryType : adjacencies) {
             territories.get(adjacentTerritoryType).add(territoryType);
