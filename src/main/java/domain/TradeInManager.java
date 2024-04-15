@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class TradeInManager {
@@ -15,7 +16,10 @@ public class TradeInManager {
     }
 
     public Set<TerritoryType> getMatchedTerritories(Player player, Set<Card> cards) {
-        throw new IllegalStateException("Invalid number of cards");
+        if (cards.size() != 3) {
+            throw new IllegalStateException("Invalid number of cards");
+        }
+        return new HashSet<>();
     }
 
     private void checkTradeInState(Set<Card> cards) {
