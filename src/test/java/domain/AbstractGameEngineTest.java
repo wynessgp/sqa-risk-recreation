@@ -452,6 +452,47 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedGraph, mockedTerritory);
     }
 
+    private static Stream<Arguments> generateAllTerritoryTypeAndPlayerMinusSetupCombinations() {
+        // each set is going to be a "tuple" of (TerritoryType, PlayerColor)
+        Set<Arguments> outputSet = new HashSet<>();
+        Set<TerritoryType> territoryTypes = Set.of(TerritoryType.values());
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+
+        for (TerritoryType territoryType : territoryTypes) {
+            for (PlayerColor playerColor : playerColors) {
+                outputSet.add(Arguments.of(territoryType, playerColor));
+            }
+        }
+        return outputSet.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    public void test23_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
+            TerritoryType relevantTerritory, PlayerColor playerInControl) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+
+        EasyMock.replay(mockedGraph, mockedTerritory);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        int numArmiesToPlace = 10;
+        String expectedMessage = "Cannot place armies in a claimed territory until the scramble phase is over";
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numArmiesToPlace));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedTerritory, mockedGraph);
+    }
+
 
 
 }

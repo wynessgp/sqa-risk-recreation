@@ -119,4 +119,11 @@ public abstract class GameEngine {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         return territoryObject.getPlayerInControl();
     }
+
+    public void placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        if (!checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.SETUP)) {
+            throw new IllegalStateException(
+                    "Cannot place armies in a claimed territory until the scramble phase is over");
+        }
+    }
 }
