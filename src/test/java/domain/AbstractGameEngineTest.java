@@ -414,69 +414,6 @@ public class AbstractGameEngineTest {
 
     @ParameterizedTest
     @EnumSource(TerritoryType.class)
-    public void test18_checkIfTerritoryIsClaimed_territoryIsNotClaimed_expectFalse(TerritoryType relevantTerritory) {
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
-
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
-
-        assertFalse(unitUnderTest.checkIfTerritoryIsClaimed(relevantTerritory));
-
-        EasyMock.verify(mockedGraph, mockedTerritory);
-    }
-
-    private static Stream<Arguments> generateAllTerritoryTypeAndPlayerMinusSetupCombinations() {
-        // each set is going to be a "tuple" of (TerritoryType, PlayerColor)
-        Set<Arguments> outputSet = new HashSet<>();
-        Set<TerritoryType> territoryTypes = Set.of(TerritoryType.values());
-        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
-        playerColors.remove(PlayerColor.SETUP);
-
-        for (TerritoryType territoryType : territoryTypes) {
-            for (PlayerColor playerColor : playerColors) {
-                outputSet.add(Arguments.of(territoryType, playerColor));
-            }
-        }
-        return outputSet.stream();
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
-    public void test19_checkIfTerritoryIsClaimed_territoryIsClaimed_expectTrue(
-            TerritoryType relevantTerritory, PlayerColor playerInControl) {
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
-
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
-
-        assertTrue(unitUnderTest.checkIfTerritoryIsClaimed(relevantTerritory));
-
-        EasyMock.verify(mockedGraph, mockedTerritory);
-    }
-
-    @ParameterizedTest
-    @EnumSource(TerritoryType.class)
-    public void test20_checkIfTerritoryIsClaimedIntegrationTest_initialGraphAllUnclaimed_expectFalse(
-            TerritoryType relevantTerritory) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-
-        assertFalse(unitUnderTest.checkIfTerritoryIsClaimed(relevantTerritory));
-    }
-
-    @ParameterizedTest
-    @EnumSource(TerritoryType.class)
     public void test21_checkIfPlayerOwnsTerritory_setupPlayerOwnsTerritory_inputIsBluePlayer_expectFalse(
             TerritoryType relevantTerritory) {
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);

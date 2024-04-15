@@ -110,10 +110,6 @@ public abstract class GameEngine {
         territoryGraph = mockedGraph;
     }
 
-    public boolean checkIfTerritoryIsClaimed(TerritoryType territory) {
-        return getPlayerInControlOfTerritory(territory) != PlayerColor.SETUP;
-    }
-
     public boolean checkIfPlayerOwnsTerritory(TerritoryType relevantTerritory, PlayerColor playerColor) {
         PlayerColor currentController = getPlayerInControlOfTerritory(relevantTerritory);
         return currentController == playerColor;
