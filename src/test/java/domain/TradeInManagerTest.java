@@ -306,7 +306,7 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
-        assertEquals(2, actual.size());
+        assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
 
         for (Card card : cards) {
@@ -328,7 +328,7 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
-        assertEquals(3, actual.size());
+        assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
 
         for (Card card : cards) {
@@ -349,7 +349,7 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
-        assertEquals(2, actual.size());
+        assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
 
         for (Card card : cards) {
@@ -370,7 +370,7 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
-        assertEquals(1, actual.size());
+        assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
 
         for (Card card : cards) {
