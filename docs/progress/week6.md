@@ -1,11 +1,11 @@
 # Part 1. Team Planning of the Week
-**Planning Date**: x/x/2024
+**Planning Date**: 4/15/2024
 
 **Items Planned**:
 Suggestions:
-1. [X% done] Finish up the setup phase
-2. [X% done] Start on single turns (placement, attack, fortify)
-3. [X% done] Meaningfully integrate GUI for setup / single turns
+1. Finish up the setup phase
+2. Start on single turns (placement, attack, fortify)
+3. Meaningfully integrate GUI for setup / single turns
 
 # Part 2. Team Progress of the Week
 **Evaluation Date**: x/x/2024
@@ -18,29 +18,23 @@ Suggestions:
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/74
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/76
 
 ### Team member: Grant Wyness
 #### PR created:
-- 
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/74
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/76
+
 #### PR done and approved
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/74
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/76
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
