@@ -14,6 +14,10 @@ public class TradeInManager {
         throw new IllegalStateException("Invalid trade in set");
     }
 
+    public Set<TerritoryType> getMatchedTerritories(Player player, Set<Card> cards) {
+        throw new IllegalStateException("Invalid number of cards");
+    }
+
     private void checkTradeInState(Set<Card> cards) {
         if (cards.size() != 3) {
             throw new IllegalStateException("Must trade in exactly three cards");

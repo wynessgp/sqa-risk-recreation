@@ -194,4 +194,28 @@ public class TradeInManagerTest {
             EasyMock.verify(card);
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 4})
+    public void test08_getMatchedTerritories_withWrongSizeCollection_throwsException(int size) {
+        Set<Card> cards = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            Card card = EasyMock.createMock(Card.class);
+            cards.add(card);
+            EasyMock.replay(card);
+        }
+
+        Player player = EasyMock.createMock(Player.class);
+        EasyMock.replay(player);
+
+        TradeInManager tradeIn = new TradeInManager();
+        String expected = "Invalid number of cards";
+        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.getMatchedTerritories(player, cards));
+        assertEquals(expected, exception.getMessage());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
 }

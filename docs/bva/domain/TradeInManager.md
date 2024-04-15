@@ -205,22 +205,22 @@ Output:
 
 ## BVA Step 4
 ### Test value 1
-Input: player with 1 territory, empty collection
+Input: player that occupies no territories, empty collection
 
 Output: IllegalStateException "invalid number of cards"
 
 ### Test value 2
-Input: player with 1 territory, collection with one card
+Input: player that occupies no territories, collection with one card
 
 Output: IllegalStateException "invalid number of cards"
 
 ### Test value 3
-Input: player with 1 territory, collection with two cards
+Input: player that occupies no territories, collection with two cards
 
 Output: IllegalStateException "invalid number of cards"
 
 ### Test value 4
-Input: player with 1 territory, collection with four cards
+Input: player that occupies no territories, collection with four cards
 
 Output: IllegalStateException "invalid number of cards"
 
