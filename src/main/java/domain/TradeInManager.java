@@ -20,9 +20,6 @@ public class TradeInManager {
         if (cards.size() != 3) {
             throw new IllegalStateException("Invalid number of cards");
         }
-        if (player.getTerritories() == null) {
-            return new HashSet<>();
-        }
         return player.getTerritories().stream().filter(territory -> cards.stream().anyMatch(card ->
                 card.matchesTerritory(territory))).collect(Collectors.toSet());
     }

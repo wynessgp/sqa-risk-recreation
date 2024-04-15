@@ -260,12 +260,12 @@ Input: player that occupies [ALASKA], collection with [ALASKA, ALBERTA, EASTERN_
 Output: [ALASKA]
 
 ### Test value 13
-Input: player that occupies [], collection with [ALASKA, ALBERTA, EASTERN_UNITED_STATES]
+Input: player that occupies [], collection with [ALASKA, ALBERTA, CENTRAL_AMERICA]
 
 Output: []
 
 ### Test value 14
-Input: player that occupies [ALASKA], collection with [WILD, ALBERTA, EASTERN_UNITED_STATES]
+Input: player that occupies [ALASKA], collection with [WILD, ALBERTA, CENTRAL_AMERICA]
 
 Output: []
 
