@@ -416,4 +416,24 @@ public class TradeInManagerTest {
         }
         EasyMock.verify(player);
     }
+
+    @Test
+    public void test18_getMatchedTerritories_playerOccupiesAllTerritories_withOneWildTwoOthers_returnsMatchedCards() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedWildCard());
+        cards.add(createMockedTerritoryCard(TerritoryType.ALASKA));
+        cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
+
+        Player player = createMockedPlayer(Set.of(TerritoryType.values()));
+
+        TradeInManager tradeIn = new TradeInManager();
+        Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
+        assertEquals(2, actual.size());
+        assertEquals(Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA), actual);
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
 }
