@@ -30,7 +30,6 @@ package presentation {
 
     }
 
-
 }
 
 package domain {
@@ -69,10 +68,6 @@ package domain {
 
     }
 
-    +class CapitalRisk {
-
-    }
-
     +enum GamePhase {
         GAME_START
         SETUP
@@ -88,12 +83,11 @@ package domain {
     GameEngine --> TradeInParser
     GameEngine --> DieRollParser
 
-    CapitalRisk --|> GameEngine
     WorldDomination --|> GameEngine
 
     +class RiskCardDeck {
         -deckOfCards: List<Card>
-        -random: Random
+        -{final} random: Random
         +RiskCardDeck()
         ~RiskCardDeck(random: Random)
         ~initDeck(): boolean
@@ -113,21 +107,26 @@ package domain {
     }
 
     +class DieRollParser {
+        -{static} {final} MINIMUM_DIE_ROLL: int
+        -{static} {final} MAXIMUM_DIE_ROLL: int
+        -{static} {final} MINIMUM_AMOUNT_OF_SETUP_DICE: int
+        -{static} {final} MAXIMUM_AMOUNT_OF_SETUP_DICE: int
+        -{static} {final} MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE: int
+        -{static} {final} MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE: int
+        -{static} {final} MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE: int
         -{final} attackerDice: List<Die>
         -{final} defenderDice: List<Die>
         -{final} randomizer: Random
         -setupDie: Die
+
         +DieRollParser()
         +buildDiceLists(): boolean
-
         +rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
         -buildSetupDie(setupDieUpperBound: int): void
-
         +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
         +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
         -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
         -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
-
         +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
         -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
@@ -148,20 +147,21 @@ package domain {
 
 
     +class TradeInParser {
-        -setsTradedInSoFar: int
-        +TradeInParser()
-        +startTrade(attemptedCards: List<Card>): int
-        -verifyValidCombo(attemptedCards: List<Card>): boolean
-        -calculateNumNewPieces(attemptedCards: List<Card>): int
-        -updateSetsTradedIn(attemptedCards: List<Card>): boolean
+        -setsTradedIn: int
+        +startTrade(cards: Set<Card>): int
+        +getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
+        -checkTradeInState(cards: Set<Card>): void
+        -hasOneOfEachType(cards: Set<Card>): boolean
+        -hasThreeOfSameType(cards: Set<Card>): boolean
+        -countPieceType(cards: Set<Card>, type: PieceType): long
+        -hasWild(cards: Set<Card>): boolean
+        ~setSetsTradedIn(setsTradedIn: int): void
     }
 
     TradeInParser .d.> Card
 
     +class Player {
-        -cards: Set<Card>
-        -color: PlayerColor
-        +Player(playerColor: PlayerColor)
+        +getTerritories(): Set<TerritoryType>
     }
 
     Player -u-> "*" Card
@@ -232,12 +232,11 @@ package domain {
         -territoryType: TerritoryType
         -playerInControl: Player
         -numArmiesPresent: int
+
         +Territory(territoryType: TerritoryType)
         ~Territory(playerToBeInControl: Player, territoryType: TerritoryType)
-
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
-
         +getPlayerInControl(): Player
         +getArmies(): int
         +getTerritoryType(): TerritoryType
@@ -257,7 +256,6 @@ package domain {
         PURPLE
     }
 
-
 }
 
 package datasource {
@@ -274,4 +272,3 @@ package datasource {
 }
 
 @enduml
-
