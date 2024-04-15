@@ -1,10 +1,9 @@
 package domain;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TradeInManager {
+public class TradeInParser {
     private int setsTradedIn = 0;
 
     public int startTrade(Set<Card> cards) {
