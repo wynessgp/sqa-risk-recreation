@@ -19,6 +19,9 @@ public class TradeInManager {
         if (cards.size() != 3) {
             throw new IllegalStateException("Invalid number of cards");
         }
+        if (player.getTerritories() != null && player.getTerritories().contains(TerritoryType.ALASKA)) {
+            return new HashSet<>(Set.of(TerritoryType.ALASKA));
+        }
         return new HashSet<>();
     }
 

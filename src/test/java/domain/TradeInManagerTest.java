@@ -210,7 +210,8 @@ public class TradeInManagerTest {
 
         TradeInManager tradeIn = new TradeInManager();
         String expected = "Invalid number of cards";
-        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.getMatchedTerritories(player, cards));
+        Exception exception = assertThrows(IllegalStateException.class, () ->
+                tradeIn.getMatchedTerritories(player, cards));
         assertEquals(expected, exception.getMessage());
 
         for (Card card : cards) {
@@ -233,12 +234,34 @@ public class TradeInManagerTest {
         cards.add(createMockedTerritoryCard(TerritoryType.ALASKA));
         cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
 
-        Player player = EasyMock.createMock(Player.class);
+        Player player = EasyMock.createNiceMock(Player.class);
         EasyMock.replay(player);
 
         TradeInManager tradeIn = new TradeInManager();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(0, actual.size());
+
+        for (Card card : cards) {
+            EasyMock.verify(card);
+        }
+        EasyMock.verify(player);
+    }
+
+    @Test
+    public void test10_getMatchedTerritories_withOneWildOneMatchOneOther_returnsMatchedCard() {
+        Set<Card> cards = new HashSet<>();
+        cards.add(createMockedWildCard());
+        cards.add(createMockedTerritoryCard(TerritoryType.ALASKA));
+        cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
+
+        Player player = EasyMock.createMock(Player.class);
+        EasyMock.expect(player.getTerritories()).andReturn(Set.of(TerritoryType.ALASKA)).anyTimes();
+        EasyMock.replay(player);
+
+        TradeInManager tradeIn = new TradeInManager();
+        Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
+        assertEquals(1, actual.size());
+        assertEquals(TerritoryType.ALASKA, actual.iterator().next());
 
         for (Card card : cards) {
             EasyMock.verify(card);
