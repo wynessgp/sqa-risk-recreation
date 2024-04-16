@@ -125,5 +125,9 @@ public abstract class GameEngine {
             throw new IllegalStateException(
                     "Cannot place armies in a claimed territory until the scramble phase is over");
         }
+        if (numArmiesToPlace != 1) {
+            throw new IllegalArgumentException(
+                    "You can only place 1 army on an unclaimed territory until the scramble phase is over");
+        }
     }
 }

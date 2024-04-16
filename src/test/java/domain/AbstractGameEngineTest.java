@@ -493,6 +493,44 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
+    private static Stream<Arguments> generateAllTerritoryTypesAndIllegalArmyInputs() {
+        Set<Arguments> outputSet = new HashSet<>();
+        Set<TerritoryType> territoryTypes = Set.of(TerritoryType.values());
+        Set<Integer> illegalArmyInputs = Set.of(-1, 0, 2, Integer.MAX_VALUE);
+
+        for (TerritoryType territoryType : territoryTypes) {
+            for (Integer illegalArmyInput : illegalArmyInputs) {
+                outputSet.add(Arguments.of(territoryType, illegalArmyInput));
+            }
+        }
+        return outputSet.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypesAndIllegalArmyInputs")
+    public void test24_placeNewArmiesInTerritory_moreThanOneArmyInScramblePhase_expectException(
+            TerritoryType relevantTerritory, int illegalArmyAmount) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
+
+        EasyMock.replay(mockedGraph, mockedTerritory);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        String expectedMessage = "You can only place 1 army on an unclaimed territory until the scramble phase is over";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, illegalArmyAmount));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedTerritory, mockedGraph);
+    }
+
 
 
 }
