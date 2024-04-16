@@ -8,6 +8,9 @@ import java.util.Set;
 
 public abstract class GameEngine {
 
+    private static final int MINIMUM_NUM_PLAYERS = 2;
+    private static final int MAXIMUM_NUM_PLAYERS = 6;
+
     private static final int MAXIMUM_ARMIES_POSSIBLE_IN_SETUP = 40;
     private static final int ADDITIONAL_PLAYER_ARMY_OFFSET = 5;
     private static final int PLAYER_LIST_SIZE_OFFSET = 2;
@@ -40,8 +43,9 @@ public abstract class GameEngine {
     }
 
     private void handleNumPlayersAndPlayerOrderSizeErrorChecking(int playerOrderSize, int amountOfPlayers) {
-        if (amountOfPlayers < 2 || amountOfPlayers > 6) {
-            throw new IllegalArgumentException("amountOfPlayers is not within: [2, 6]");
+        if (amountOfPlayers < MINIMUM_NUM_PLAYERS || amountOfPlayers > MAXIMUM_NUM_PLAYERS) {
+            throw new IllegalArgumentException(String.format("amountOfPlayers is not within: [%d, %d]",
+                    MINIMUM_NUM_PLAYERS, MAXIMUM_NUM_PLAYERS));
         }
         if (amountOfPlayers != playerOrderSize) {
             throw new IllegalArgumentException(String.format("Size mismatch between playerOrder: %d "
