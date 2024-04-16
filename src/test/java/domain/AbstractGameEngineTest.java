@@ -531,6 +531,26 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test25_placeNewArmiesInTerritory_validInput_expectTrue(TerritoryType relevantTerritory) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
+
+        EasyMock.replay(mockedGraph, mockedTerritory);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        int validNumArmies = 1;
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
+
+        EasyMock.verify(mockedTerritory, mockedGraph);
+    }
+
 
 
 }

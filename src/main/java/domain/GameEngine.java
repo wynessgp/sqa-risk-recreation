@@ -120,14 +120,20 @@ public abstract class GameEngine {
         return territoryObject.getPlayerInControl();
     }
 
-    public void placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        if (!checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.SETUP)) {
-            throw new IllegalStateException(
-                    "Cannot place armies in a claimed territory until the scramble phase is over");
-        }
+    public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkIfTerritoryIsUnclaimed(relevantTerritory);
+
         if (numArmiesToPlace != 1) {
             throw new IllegalArgumentException(
                     "You can only place 1 army on an unclaimed territory until the scramble phase is over");
+        }
+        return true;
+    }
+
+    private void checkIfTerritoryIsUnclaimed(TerritoryType relevantTerritory) {
+        if (!checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.SETUP)) {
+            throw new IllegalStateException(
+                    "Cannot place armies in a claimed territory until the scramble phase is over");
         }
     }
 }
