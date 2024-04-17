@@ -532,23 +532,27 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
+    private Territory createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
+            int numArmiesToExpect, PlayerColor playerToExpect, PlayerColor playerColorToReturn) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+        EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesToExpect)).andReturn(true);
+        EasyMock.expect(mockedTerritory.setPlayerInControl(playerToExpect)).andReturn(true);
+
+        EasyMock.replay(mockedTerritory);
+        return mockedTerritory;
+    }
+
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
     public void test25_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
             TerritoryType relevantTerritory, PlayerColor currentlyGoingPlayer) {
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory).times(2);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
-
         int validNumArmies = 1;
-        // Check that we actually set the number of armies in the territory
-        EasyMock.expect(mockedTerritory.setNumArmiesPresent(validNumArmies)).andReturn(true);
-        // Check that the proper player gets put in control during the scramble phase
-        EasyMock.expect(mockedTerritory.setPlayerInControl(currentlyGoingPlayer)).andReturn(true);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
+        Territory mockedTerritory = createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
+                1, currentlyGoingPlayer, PlayerColor.SETUP);
+        // we ask for the territory twice here, so make sure we indicate that.
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
