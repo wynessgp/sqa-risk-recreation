@@ -412,17 +412,33 @@ public class AbstractGameEngineTest {
         }
     }
 
+    private Territory createMockedTerritoryWithExpectations(PlayerColor playerColorToReturn) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+
+        EasyMock.replay(mockedTerritory);
+        return mockedTerritory;
+    }
+
+    private TerritoryGraph createMockedGraphWithExpectations(
+            TerritoryType relevantTerritory, Territory mockedTerritory, int numTimesToGetTerritory) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory))
+                .andReturn(mockedTerritory)
+                .times(numTimesToGetTerritory);
+
+        EasyMock.replay(mockedGraph);
+        return mockedGraph;
+    }
+
     @ParameterizedTest
     @EnumSource(TerritoryType.class)
     public void test21_checkIfPlayerOwnsTerritory_setupPlayerOwnsTerritory_inputIsBluePlayer_expectFalse(
             TerritoryType relevantTerritory) {
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
