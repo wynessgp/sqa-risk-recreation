@@ -482,13 +482,8 @@ public class AbstractGameEngineTest {
     @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
     public void test23_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl) {
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
