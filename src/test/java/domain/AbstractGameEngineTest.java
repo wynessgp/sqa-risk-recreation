@@ -516,13 +516,8 @@ public class AbstractGameEngineTest {
     @MethodSource("generateAllTerritoryTypesAndIllegalArmyInputs")
     public void test24_placeNewArmiesInTerritory_moreThanOneArmyInScramblePhase_expectException(
             TerritoryType relevantTerritory, int illegalArmyAmount) {
-        Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-
-        EasyMock.expect(mockedGraph.getTerritory(relevantTerritory)).andReturn(mockedTerritory);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(PlayerColor.SETUP);
-
-        EasyMock.replay(mockedGraph, mockedTerritory);
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
