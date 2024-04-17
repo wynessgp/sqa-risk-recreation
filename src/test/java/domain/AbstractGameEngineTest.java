@@ -563,4 +563,29 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
+    @Test
+    public void test26_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE);
+        TerritoryType targetTerritory = TerritoryType.ALASKA;
+        int numArmiesToPlace = 1;
+
+        assertTrue(unitUnderTest.initializePlayersList(playerColors, playerColors.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        // since it is an expectation that the GameEngine handles whose turn it is FOR us,
+        // we will try placing an army as RED, then the current player should be PURPLE.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
+
+        assertEquals(PlayerColor.PURPLE, unitUnderTest.getCurrentPlayer());
+
+        // now we'll try to place an army in the same place RED just did.
+        String expectedMessage = "Cannot place armies in a claimed territory until the scramble phase is over";
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

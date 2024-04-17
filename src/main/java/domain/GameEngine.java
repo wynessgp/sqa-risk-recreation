@@ -40,6 +40,7 @@ public abstract class GameEngine {
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
+        currentPlayer = PlayerColor.RED;
         return true;
     }
 
@@ -132,6 +133,7 @@ public abstract class GameEngine {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
+        currentPlayer = PlayerColor.PURPLE;
         return true;
     }
 
@@ -151,5 +153,9 @@ public abstract class GameEngine {
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
+    }
+
+    public PlayerColor getCurrentPlayer() {
+        return currentPlayer;
     }
 }
