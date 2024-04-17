@@ -40,7 +40,7 @@ public abstract class GameEngine {
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
-        currentPlayer = PlayerColor.RED;
+        currentPlayer = playerOrder.get(0);
         return true;
     }
 
@@ -133,7 +133,7 @@ public abstract class GameEngine {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
-        currentPlayer = PlayerColor.PURPLE;
+        updateCurrentPlayer();
         return true;
     }
 
@@ -151,8 +151,15 @@ public abstract class GameEngine {
         }
     }
 
+    private void updateCurrentPlayer() {
+        int currentPlayerIndex = playersList.indexOf(currentPlayer);
+        currentPlayer = playersList.get((currentPlayerIndex + 1) % playersList.size());
+    }
+
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
+        // also, add this to the players list, otherwise we'll error out on trying to swap turns.
+        playersList.add(currentPlayer);
     }
 
     public PlayerColor getCurrentPlayer() {

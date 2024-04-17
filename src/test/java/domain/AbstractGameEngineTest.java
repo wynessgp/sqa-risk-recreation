@@ -588,4 +588,23 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    public void test27_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
+            List<PlayerColor> players) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        int numArmiesToPlace = 1;
+
+        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        // let everyone go once, with a valid territory. Check that it wraps back around as well.
+        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+            assertEquals(players.get(playerIndex), unitUnderTest.getCurrentPlayer());
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
+        }
+
+        assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
+    }
 }
