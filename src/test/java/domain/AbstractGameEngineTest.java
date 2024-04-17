@@ -532,9 +532,9 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @EnumSource(TerritoryType.class)
-    public void test25_placeNewArmiesInTerritory_validInput_expectTrueAndTerritoryGetsArmies(
-            TerritoryType relevantTerritory) {
+    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    public void test25_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
+            TerritoryType relevantTerritory, PlayerColor currentlyGoingPlayer) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
 
@@ -544,17 +544,18 @@ public class AbstractGameEngineTest {
         int validNumArmies = 1;
         // Check that we actually set the number of armies in the territory
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(validNumArmies)).andReturn(true);
+        // Check that the proper player gets put in control during the scramble phase
+        EasyMock.expect(mockedTerritory.setPlayerInControl(currentlyGoingPlayer)).andReturn(true);
 
         EasyMock.replay(mockedGraph, mockedTerritory);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(currentlyGoingPlayer);
 
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
 
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
-
-
 
 }

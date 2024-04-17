@@ -18,6 +18,7 @@ public abstract class GameEngine {
 
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
+    private PlayerColor currentPlayer;
 
     protected TerritoryGraph territoryGraph;
 
@@ -130,6 +131,7 @@ public abstract class GameEngine {
 
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
+        territoryObject.setPlayerInControl(currentPlayer);
         return true;
     }
 
@@ -145,5 +147,9 @@ public abstract class GameEngine {
             throw new IllegalArgumentException(
                     "You can only place 1 army on an unclaimed territory until the scramble phase is over");
         }
+    }
+
+    void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
+        currentPlayer = currentlyGoingPlayer;
     }
 }
