@@ -274,7 +274,8 @@ number of new armies to place there.
 The state of who owns the respective territory is also taken into account, in addition to the current phase of the game.
 
 Output: A yes/no answer whether the armies were placed successfully; an exception if they were not able to be 
-placed successfully (i.e. another player owns the territory).
+placed successfully (i.e. another player owns the territory). Additionally, we care about if the territory
+was updated correctly - this means claiming in the scramble phase, or just ensuring the army count was updated.
 
 ## BVA Step 2
 Input:
@@ -283,7 +284,9 @@ Input:
 - State of who owns the territory: Cases
 - Game Phase: Cases 
 
-Output: Boolean
+Output: 
+- function return value: Boolean
+- Territory: Pointer
 
 ## TODO: Elaborate more once attack/placement phase is being developed!
 
@@ -316,11 +319,18 @@ Input:
   - The 6th possibility (GAME_OVER)
   - The 0th, 7th possibility (can't set)
 
-Output: Boolean
-- 0 (can't set)
-- 1 (when the amount to place is valid, and the operation succeeds)
-- Some value other than 0 or 1 (namely, exceptions - for when the amount of troops is invalid, or in the wrong phase)
-- Some true value other than 0 or 1 (can't set)
+Output: 
+- function return value: Boolean
+  - 0 (can't set)
+  - 1 (when the amount to place is valid, and the operation succeeds)
+  - Some value other than 0 or 1 (namely, exceptions - for when the amount of troops is invalid, or in the wrong phase)
+  - Some true value other than 0 or 1 (can't set)
+- Territory object: Pointer
+  - Null pointer (can't set, per Martin's suggestions)
+  - A pointer to the true object
+    - Mostly concerned about checking two things in our Territory object:
+      - The PlayerColor should be updated if we're in the SCRAMBLE phase
+      - The army count should be updated regardless of phase
 
 ## BVA Step 4
 
@@ -368,14 +378,18 @@ Output: Boolean
   - numArmies = 1
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Territory pointer: [numArmies = 1, PlayerColor = currently going player]
 ### Test 6:
 - Input:
   - territory = EASTERN_AMERICA
   - numArmies = 1
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Territory pointer: [numArmies = 1, PlayerColor = currently going player]
 
 ### SETUP PHASE
 
@@ -421,13 +435,17 @@ Output: Boolean
   - numArmies = 1
   - Territory owner = current player
   - Game Phase = SETUP
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Territory pointer: [numArmies = 2, PlayerColor = current player]
 ### Test 12:
 - Input:
   - territory = BRAZIL
   - numArmies = 1
   - Territory owner = current player
   - Game Phase = SETUP
-- Output: 1 (true)
+- Output: 
+  - Function output: 1 (true)
+  - Territory pointer: [numArmies = 2, PlayerColor = current player]
 
 ### TODO: ATTACK PHASE
