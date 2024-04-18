@@ -130,11 +130,11 @@ public abstract class GameEngine {
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
             checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
-            if (!checkIfPlayerOwnsTerritory(relevantTerritory, currentPlayer)) {
-                throw new IllegalArgumentException("Cannot place armies on a territory you do not own");
-            }
+            checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+            modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        } else {
+            handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         }
-        handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         return true;
     }
 
@@ -146,6 +146,12 @@ public abstract class GameEngine {
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
         updateCurrentPlayer();
+    }
+
+    private void checkIfCurrentPlayerOwnsTerritory(TerritoryType relevantTerritory) {
+        if (!checkIfPlayerOwnsTerritory(relevantTerritory, currentPlayer)) {
+            throw new IllegalArgumentException("Cannot place armies on a territory you do not own");
+        }
     }
 
     private void checkIfTerritoryIsUnclaimed(TerritoryType relevantTerritory) {
@@ -160,6 +166,12 @@ public abstract class GameEngine {
             throw new IllegalArgumentException(
                     "You can only place 1 army on an unclaimed territory until the scramble phase is over");
         }
+    }
+
+    private void modifyNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
+        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
+        int previousNumArmies = territoryObject.getNumArmiesPresent();
+        territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
     }
 
     private void updateCurrentPlayer() {
