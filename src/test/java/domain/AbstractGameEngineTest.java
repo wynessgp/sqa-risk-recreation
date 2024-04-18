@@ -719,6 +719,13 @@ public class AbstractGameEngineTest {
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
                 .andReturn(true);
 
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerInControl)
+                .createMock();
+        mockedPlayer.setNumArmiesToPlace(40); // we're not testing for this,
+        // but we still rely on having a player object exist.
+
         EasyMock.replay(mockedTerritory);
 
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
@@ -727,10 +734,47 @@ public class AbstractGameEngineTest {
         unitUnderTest.setGamePhase(GamePhase.SETUP);
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
 
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numValidArmies));
 
         EasyMock.verify(mockedTerritory, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts")
+    public void test31_placeNewArmiesInTerritory_setupPhase_validInput_decrementPlayerArmiesToPlace(
+            TerritoryType relevantTerritory, PlayerColor playerInControl, int numArmiesPreviouslyPresent) {
+        int numValidArmies = 1;
+
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+        EasyMock.expect(mockedTerritory.getNumArmiesPresent()).andReturn(numArmiesPreviouslyPresent);
+        EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
+                .andReturn(true);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerInControl)
+                .addMockedMethod("setNumArmiesToPlace")
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(14);
+        mockedPlayer.setNumArmiesToPlace(13);
+        EasyMock.expectLastCall().once();
+
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
+        EasyMock.replay(mockedTerritory, mockedPlayer);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numValidArmies));
+
+        EasyMock.verify(mockedTerritory, mockedPlayer);
     }
 
 }

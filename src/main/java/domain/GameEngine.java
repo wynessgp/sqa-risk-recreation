@@ -115,9 +115,7 @@ public abstract class GameEngine {
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
-            checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
-            checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
-            modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+            handleSetupPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         } else {
             handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         }
@@ -133,6 +131,13 @@ public abstract class GameEngine {
         numUnclaimedTerritories--;
         updateCurrentPlayer();
         checkForSetupPhaseEndCondition();
+    }
+
+    private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
+        checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
     }
 
     private void checkForSetupPhaseEndCondition() {
@@ -177,6 +182,13 @@ public abstract class GameEngine {
             throw new IllegalArgumentException(
                     "Cannot place anything other than 1 army in a territory during setup phase");
         }
+    }
+
+    private void modifyNumArmiesCurrentPlayerHasToPlace(int numArmiesToPlace) {
+        int currentNumArmies = playersMap.get(currentPlayer).getNumArmiesToPlace();
+        // FIXME: this should cause an error if we dip below 0!
+        int newNumArmies = currentNumArmies - numArmiesToPlace;
+        playersMap.get(currentPlayer).setNumArmiesToPlace(newNumArmies);
     }
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
