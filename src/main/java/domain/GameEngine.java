@@ -129,8 +129,10 @@ public abstract class GameEngine {
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
-            throw new IllegalArgumentException(
-                    "Cannot place anything other than 1 army in a territory during setup phase");
+            checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
+            if (!checkIfPlayerOwnsTerritory(relevantTerritory, currentPlayer)) {
+                throw new IllegalArgumentException("Cannot place armies on a territory you do not own");
+            }
         }
         handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         return true;
@@ -163,6 +165,13 @@ public abstract class GameEngine {
     private void updateCurrentPlayer() {
         int currentPlayerIndex = playersList.indexOf(currentPlayer);
         currentPlayer = playersList.get((currentPlayerIndex + 1) % playersList.size());
+    }
+
+    private void checkNumArmiesToPlaceIsValidForSetup(int numArmiesToPlace) {
+        if (numArmiesToPlace != 1) {
+            throw new IllegalArgumentException(
+                    "Cannot place anything other than 1 army in a territory during setup phase");
+        }
     }
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {

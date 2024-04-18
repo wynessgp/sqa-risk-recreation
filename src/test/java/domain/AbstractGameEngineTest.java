@@ -623,4 +623,53 @@ public class AbstractGameEngineTest {
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
+
+    private static Stream<Arguments> generateAllTerritoriesAndDistinctPlayerPairs() {
+        Set<Set<PlayerColor>> playerPairsNoDupes = new HashSet<>();
+        List<PlayerColor> playerColorsNoSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        playerColorsNoSetup.remove(PlayerColor.SETUP);
+
+        for (PlayerColor playerOne : playerColorsNoSetup) {
+            for (PlayerColor playerTwo : playerColorsNoSetup) {
+                if (playerOne != playerTwo) {
+                    Set<PlayerColor> playerPair = new HashSet<>();
+                    playerPair.add(playerOne);
+                    playerPair.add(playerTwo);
+                    playerPairsNoDupes.add(playerPair);
+                }
+            }
+        }
+        Set<Arguments> allTerritoriesAndPlayerPairs = new HashSet<>();
+        for (Set<PlayerColor> playerPair : playerPairsNoDupes) {
+            Iterator<PlayerColor> iter = playerPair.iterator();
+            PlayerColor playerOne = iter.next();
+            PlayerColor playerTwo = iter.next();
+            for (TerritoryType territory : TerritoryType.values()) {
+                allTerritoriesAndPlayerPairs.add(Arguments.of(territory, playerOne, playerTwo));
+            }
+        }
+        return allTerritoriesAndPlayerPairs.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoriesAndDistinctPlayerPairs")
+    public void test29_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
+            TerritoryType relevantTerritory, PlayerColor playerInControl, PlayerColor playerAttemptingToPlace) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
+
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(playerAttemptingToPlace);
+
+        int numArmiesToPlace = 1;
+        String expectedMessage = "Cannot place armies on a territory you do not own";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numArmiesToPlace));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
