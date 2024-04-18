@@ -607,4 +607,20 @@ public class AbstractGameEngineTest {
 
         assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 14})
+    public void test28_placeNewArmiesInTerritory_setupPhase_invalidArmyInput_expectException(int illegalInput) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        TerritoryType targetTerritory = TerritoryType.ALASKA;
+
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+
+        String expectedMessage = "Cannot place anything other than 1 army in a territory during setup phase";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(targetTerritory, illegalInput));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

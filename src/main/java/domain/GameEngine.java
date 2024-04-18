@@ -21,6 +21,7 @@ public abstract class GameEngine {
     private PlayerColor currentPlayer;
 
     protected TerritoryGraph territoryGraph;
+    protected GamePhase currentGamePhase;
 
     public GameEngine() {
         territoryGraph = initializeGraph();
@@ -127,6 +128,15 @@ public abstract class GameEngine {
     }
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        if (currentGamePhase == GamePhase.SETUP) {
+            throw new IllegalArgumentException(
+                    "Cannot place anything other than 1 army in a territory during setup phase");
+        }
+        handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
+        return true;
+    }
+
+    private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
         checkIfTerritoryIsUnclaimed(relevantTerritory);
         checkNumArmiesToPlaceIsValid(numArmiesToPlace);
 
@@ -134,7 +144,6 @@ public abstract class GameEngine {
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
         updateCurrentPlayer();
-        return true;
     }
 
     private void checkIfTerritoryIsUnclaimed(TerritoryType relevantTerritory) {
@@ -164,5 +173,9 @@ public abstract class GameEngine {
 
     public PlayerColor getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    void setGamePhase(GamePhase gamePhase) {
+        currentGamePhase = gamePhase;
     }
 }
