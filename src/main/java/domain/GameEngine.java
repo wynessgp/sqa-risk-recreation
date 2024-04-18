@@ -16,6 +16,8 @@ public abstract class GameEngine {
     private static final int PLAYER_LIST_SIZE_OFFSET = 2;
     private static final int NUM_PLAYERS_WITH_NEUTRAL = 2;
 
+    private static final int INITIAL_NUM_UNCLAIMED_TERRITORIES = 42;
+
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
@@ -27,7 +29,7 @@ public abstract class GameEngine {
 
     public GameEngine() {
         territoryGraph = initializeGraph();
-        numUnclaimedTerritories = 42;
+        numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
 
     private TerritoryGraph initializeGraph() {
