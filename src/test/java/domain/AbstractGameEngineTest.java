@@ -609,6 +609,23 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    public void test31_placeNewArmiesInTerritoryScrambleIntegrationTest_allTerritoriesClaimedAdvancePhase(
+            List<PlayerColor> players) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        int numArmiesToPlace = 1;
+
+        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
+        }
+
+        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {-1, 0, 14})
     public void test28_placeNewArmiesInTerritory_setupPhase_invalidArmyInput_expectException(int illegalInput) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();

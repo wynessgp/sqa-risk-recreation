@@ -20,11 +20,14 @@ public abstract class GameEngine {
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
 
+    private int numUnclaimedTerritories;
+
     protected TerritoryGraph territoryGraph;
     protected GamePhase currentGamePhase;
 
     public GameEngine() {
         territoryGraph = initializeGraph();
+        numUnclaimedTerritories = 42;
     }
 
     private TerritoryGraph initializeGraph() {
@@ -121,11 +124,18 @@ public abstract class GameEngine {
     private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
         checkIfTerritoryIsUnclaimed(relevantTerritory);
         checkNumArmiesToPlaceIsValid(numArmiesToPlace);
-
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
+        numUnclaimedTerritories--;
         updateCurrentPlayer();
+        checkForSetupPhaseEndCondition();
+    }
+
+    private void checkForSetupPhaseEndCondition() {
+        if (numUnclaimedTerritories == 0) {
+            currentGamePhase = GamePhase.SETUP;
+        }
     }
 
     private void checkIfCurrentPlayerOwnsTerritory(TerritoryType relevantTerritory) {
@@ -198,5 +208,9 @@ public abstract class GameEngine {
 
     void provideMockedTerritoryGraph(TerritoryGraph mockedGraph) {
         territoryGraph = mockedGraph;
+    }
+
+    public GamePhase getCurrentGamePhase() {
+        return currentGamePhase;
     }
 }
