@@ -72,14 +72,6 @@ public abstract class GameEngine {
         }
     }
 
-    protected List<PlayerColor> getPlayersList() {
-        return playersList;
-    }
-
-    void setPlayerOrderList(List<PlayerColor> playersList) {
-        this.playersList = playersList;
-    }
-
     public boolean assignSetupArmiesToPlayers() {
         checkIfPlayersListIsEmpty();
 
@@ -103,18 +95,6 @@ public abstract class GameEngine {
             player.setNumArmiesToPlace(MAXIMUM_ARMIES_POSSIBLE_IN_SETUP - (
                     (numPlayersInGame - PLAYER_LIST_SIZE_OFFSET) * ADDITIONAL_PLAYER_ARMY_OFFSET));
         }
-    }
-
-    void provideMockedPlayerObjects(List<Player> mockedPlayers) {
-        mockedPlayers.forEach((player) -> playersMap.put(player.getColor(), player));
-    }
-
-    int getNumArmiesByPlayerColor(PlayerColor playerColor) {
-        return playersMap.get(playerColor).getNumArmiesToPlace();
-    }
-
-    void provideMockedTerritoryGraph(TerritoryGraph mockedGraph) {
-        territoryGraph = mockedGraph;
     }
 
     public boolean checkIfPlayerOwnsTerritory(TerritoryType relevantTerritory, PlayerColor playerColor) {
@@ -198,5 +178,25 @@ public abstract class GameEngine {
 
     void setGamePhase(GamePhase gamePhase) {
         currentGamePhase = gamePhase;
+    }
+
+    List<PlayerColor> getPlayersList() {
+        return playersList;
+    }
+
+    void setPlayerOrderList(List<PlayerColor> playersList) {
+        this.playersList = playersList;
+    }
+
+    void provideMockedPlayerObjects(List<Player> mockedPlayers) {
+        mockedPlayers.forEach((player) -> playersMap.put(player.getColor(), player));
+    }
+
+    int getNumArmiesByPlayerColor(PlayerColor playerColor) {
+        return playersMap.get(playerColor).getNumArmiesToPlace();
+    }
+
+    void provideMockedTerritoryGraph(TerritoryGraph mockedGraph) {
+        territoryGraph = mockedGraph;
     }
 }
