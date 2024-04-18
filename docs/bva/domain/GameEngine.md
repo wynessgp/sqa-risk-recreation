@@ -401,7 +401,7 @@ Output:
   - Game Phase = SETUP
 - Output:
   - IllegalArgumentException
-    - message: "Cannot place \< 1 armies in a territory."
+    - message: "Cannot place anything other than 1 army in a territory during setup phase"
 ### Test 8:
 - Input:
   - territory = ARGENTINA
@@ -410,17 +410,8 @@ Output:
   - Game Phase = SETUP
 - Output:
   - IllegalArgumentException
-    - message: "Cannot place \< 1 armies in a territory."
-### Test 9:
-- Input:
-  - territory = ALASKA
-  - numArmies = 2
-  - Territory owner = current player
-  - Game Phase = SETUP
-- Output:
-  - IllegalArgumentException
-    - message: "Cannot place more than 1 army at a time during setup phase"
-### Test 10: 
+    - message: "Cannot place anything other than 1 army in a territory during setup phase"
+### Test 9: 
 - Input:
   - territory = ALASKA
   - numArmies = 1
@@ -429,7 +420,7 @@ Output:
 - Output:
   - IllegalArgumentException
     - message: "Cannot place armies on a territory you do not own"
-### Test 11:
+### Test 10:
 - Input:
   - territory = ALASKA
   - numArmies = 1
@@ -438,7 +429,7 @@ Output:
 - Output: 
   - Function output: 1 (true)
   - Territory pointer: [numArmies = 2, PlayerColor = current player]
-### Test 12:
+### Test 11:
 - Input:
   - territory = BRAZIL
   - numArmies = 1
