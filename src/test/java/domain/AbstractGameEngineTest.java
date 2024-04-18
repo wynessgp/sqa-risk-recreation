@@ -691,7 +691,7 @@ public class AbstractGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts")
-    public void test30_placeNewArmiesInTerritory_setupPhase_playerOwnsTerritory_expectTrueAndIncreaseArmies(
+    public void test30_placeNewArmiesInTerritory_setupPhase_playerOwnsTerritory_expectTrueAndIncreaseArmiesInTerritory(
             TerritoryType relevantTerritory, PlayerColor playerInControl, int numArmiesPreviouslyPresent) {
         int numValidArmies = 1;
 
@@ -714,4 +714,5 @@ public class AbstractGameEngineTest {
 
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
+
 }
