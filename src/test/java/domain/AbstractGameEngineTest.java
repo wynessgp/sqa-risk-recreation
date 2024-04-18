@@ -619,6 +619,7 @@ public class AbstractGameEngineTest {
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         for (TerritoryType territory : TerritoryType.values()) {
+            assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
             assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
         }
 

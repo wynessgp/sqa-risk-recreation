@@ -29,6 +29,7 @@ public abstract class GameEngine {
 
     public GameEngine() {
         territoryGraph = initializeGraph();
+        currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
 
