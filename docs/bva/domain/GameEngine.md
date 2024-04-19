@@ -1,15 +1,14 @@
-# method: `initializePlayersList(playerOrder: List<PlayerColor>, amountOfPlayers: int): boolean`
+# method: `initializePlayersList(playerOrder: List<PlayerColor>): boolean`
 
 ## BVA Step 1
-Input: The amount of players to start the game with, and their respective turn order via their selected PlayerColor
+Input: The respective turn order of players via their assigned PlayerColor
 
 Output: A yes/no answer whether we could successfully initialize the game's relevant player storage
-given the respective order and number of players
+given the respective order
 
 ## BVA Step 2
 Input:
 - playerOrder: Collection
-- amountOfPlayers: Interval [2, 6]
 
 Output: 
 - Boolean (actual return statement)
@@ -19,18 +18,12 @@ Output:
 Input: 
 - playerOrder: Collection
   - An empty collection (error case)
-  - A collection with 1 element (error case)
-  - A collection with \> 1 element
+  - A collection with \< 3 elements (error case)
+  - A collection with [3, 6] elements 
   - A collection with 6 elements (max size)
+  - A collection with \> 6 elements (error case)
   - A collection with the same PlayerColor twice (duplicates - error case)
   - A collection with all unique PlayerColors
-  - A collection with a size not equal to the amountOfPlayers (error case)
-- amountOfPlayers: Interval
-  - 1 (error case)
-  - 2
-  - Normal value in range (4)
-  - 6
-  - 7 (error case)
 
 Output:
 - Actual return statement (Boolean)
@@ -38,7 +31,7 @@ Output:
   - 1
   - Some value other than true or false
     - Exception:
-      - The amount of players is invalid (not in [2, 6])
+      - The size of the list is not within [3, 6]
       - The input list is malformed (duplicates, not the same length as numPlayers, contains SETUP)
   - Some other true value (can't set)
 - Underlying player storage (Collection)
@@ -46,67 +39,62 @@ Output:
   - Must respect the arrangement of playerOrder
 
 ## BVA Step 4
-
 For the non-error test cases, I will indicate the underlying player storage via their assigned PlayerColor
 
-So the output would be something like: Collection = [RED, YELLOW], etc.
+So the output would be something like: Collection = [RED, YELLOW, PURPLE], etc.
 
 ### Test 1:
 - Input: 
-  - amountOfPlayers = 1
   - playerOrder = []
 - Output: IllegalArgumentException
-  - message: "amountOfPlayers is not within: [2, 6]"
+  - message: "playerOrder's size is not within: [3, 6]"
 ### Test 2:
-- Input: 
-  - amountOfPlayers = 7
-  - playerOrder = []
-- Output: IllegalArgumentException
-  - message: "amountOfPlayers is not within: [2, 6]"
-### Test 3:
 - Input:
-  - amountOfPlayers = 7
-  - playerOrder = [BLUE, BLUE, SETUP, PURPLE, YELLOW, YELLOW, BLACK]
+  - playerOrder = [YELLOW]
 - Output: IllegalArgumentException
-  - message: "amountOfPlayers is not within: [2, 6]"
+  - message: "playerOrder's size is not within: [3, 6]"
+### Test 3:
+- Input
+  - playerOrder = [BLUE, RED]
+- Output: IllegalArgumentException
+  - message: "playerOrder's size is not within: [3, 6]"
 ### Test 4:
 - Input:
-  - amountOfPlayers = 2
-  - playerOrder = []
+  - playerOrder = [BLUE, BLUE, SETUP, PURPLE, YELLOW, YELLOW, BLACK]
 - Output: IllegalArgumentException
-  - message: "Size mismatch between playerOrder: 0 and amountOfPlayers: 2"
+  - message: "playerOrder's size is not within: [3, 6]"
 ### Test 5:
-- Input: 
-  - amountOfPlayers = 2
-  - playerOrder = [YELLOW, BLUE, PURPLE]
+- Input:
+  - playerOrder = [BLUE, BLUE, BLUE, BLUE, RED, RED, RED, RED, BLACK, BLACK, BLACK, BLACK, ...]
 - Output: IllegalArgumentException
-  - message: "Size mismatch between playerOrder: 3 and amountOfPlayers: 2"
+  - message: "playerOrder's size is not within: [3, 6]"
 ### Test 6:
 - Input:
-  - amountOfPlayers = 3
   - playerOrder = [YELLOW, YELLOW, SETUP]
 - Output: IllegalArgumentException
   - message: "Player order contains duplicate entries"
 ### Test 7:
 - Input:
-  - amountOfPlayers = 4
   - playerOrder = [RED, YELLOW, BLUE, RED]
 - Output: IllegalArgumentException
   - message: "Player order contains duplicate entries"
 ### Test 8: 
 - Input:
-  - amountOfPlayers = 3
   - playerOrder = [RED, BLUE, SETUP]
 - Output: IllegalArgumentException
   - message: "Player order contains SETUP as one of the players"
 ### Test 9:
 - Input:
-  - amountOfPlayers = 4
+  - playerOrder = [PURPLE, BLUE, BLACK, YELLOW, SETUP, RED]
+- Output: IllegalArgumentException
+  - message: "Player order contains SETUP as one of the players"
+### Test 10:
+- Input:
   - playerOrder = [RED, BLUE, PURPLE, BLACK]
 - Output: 
   - Function output: 1 (true)
   - Collection = [RED, BLUE, PURPLE, BLACK]
-### Test 10:
+### Test 11:
 - Input:
   - amountOfPlayers = 3
   - playerOrder = [BLUE, BLACK, RED]
