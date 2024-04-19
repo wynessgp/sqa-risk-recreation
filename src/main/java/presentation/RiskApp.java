@@ -16,7 +16,7 @@ public class RiskApp extends Application {
     private final String iconImageString = Objects.requireNonNull(
             getClass().getResource("images/smile.PNG")).toExternalForm();
     private final URL fxmlFileUrl = Objects.requireNonNull(
-            getClass().getResource("risk_app.fxml"));
+            getClass().getResource("start_screen.fxml"));
 
     @Override
     public void start(Stage stage) throws Exception {
