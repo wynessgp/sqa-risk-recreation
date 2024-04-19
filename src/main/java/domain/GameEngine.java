@@ -125,12 +125,24 @@ public abstract class GameEngine {
     private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
         checkIfTerritoryIsUnclaimed(relevantTerritory);
         checkNumArmiesToPlaceIsValid(numArmiesToPlace);
-        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
-        territoryObject.setNumArmiesPresent(numArmiesToPlace);
-        territoryObject.setPlayerInControl(currentPlayer);
+        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
+        updateTerritoryObjectWithValidSetupArguments(relevantTerritory, numArmiesToPlace);
         numUnclaimedTerritories--;
         updateCurrentPlayer();
         checkForSetupPhaseEndCondition();
+    }
+
+    private void checkIfPlayerHasEnoughArmiesToPlace(int numNewArmiesToPlace) {
+        int numArmiesPlayerHasToPlace = playersMap.get(currentPlayer).getNumArmiesToPlace();
+        if (numArmiesPlayerHasToPlace < numNewArmiesToPlace) {
+            throw new IllegalArgumentException("Player does not have enough armies to place!");
+        }
+    }
+
+    private void updateTerritoryObjectWithValidSetupArguments(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
+        territoryObject.setNumArmiesPresent(numArmiesToPlace);
+        territoryObject.setPlayerInControl(currentPlayer);
     }
 
     private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {

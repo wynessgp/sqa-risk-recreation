@@ -499,6 +499,35 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    public void test24_placeNewArmiesInTerritory_invalidAmountOfPlayerArmies_expectException(
+            TerritoryType relevantTerritory, PlayerColor playerToTakeControl) {
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerToTakeControl)
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(0);
+
+        EasyMock.replay(mockedPlayer);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(playerToTakeControl);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        int validNumArmies = 1;
+        String expectedMessage = "Player does not have enough armies to place!";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
     private static Stream<Arguments> generateAllTerritoryTypesAndIllegalArmyInputs() {
         Set<Arguments> outputSet = new HashSet<>();
         Set<TerritoryType> territoryTypes = Set.of(TerritoryType.values());
@@ -548,16 +577,25 @@ public class AbstractGameEngineTest {
     @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
     public void test25_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
             TerritoryType relevantTerritory, PlayerColor currentlyGoingPlayer) {
-        int validNumArmies = 1;
         Territory mockedTerritory = createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
                 1, currentlyGoingPlayer, PlayerColor.SETUP);
         // we ask for the territory twice here, so make sure we indicate that.
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentlyGoingPlayer)
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(10);
+
+        EasyMock.replay(mockedPlayer);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(currentlyGoingPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
 
+        int validNumArmies = 1;
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
 
         EasyMock.verify(mockedTerritory, mockedGraph);
