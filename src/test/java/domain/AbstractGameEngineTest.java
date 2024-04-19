@@ -816,7 +816,7 @@ public class AbstractGameEngineTest {
 
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numValidArmies));
 
-        EasyMock.verify(mockedTerritory, mockedPlayer);
+        EasyMock.verify(mockedTerritory, mockedGraph, mockedPlayer);
     }
 
     @ParameterizedTest
