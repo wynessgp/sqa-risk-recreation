@@ -8,12 +8,12 @@ Suggestions:
 3. Meaningfully integrate GUI for setup / single turns
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 4/19/2024
 
 **Item Progress**:
-1. [done] abc
-2. [not started] abc
-3. [80% done] abc
+1. [95% done] finishing up integration tests for setup phase
+2. [10% done] part of GameEngine, planning to work over weekend
+3. [started] learing JavaFX
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -21,11 +21,13 @@ Suggestions:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/81
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/82
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/84
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/81
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/82
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/84
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/74
@@ -44,3 +46,4 @@ Suggestions:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/80
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/81
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/82
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/84
