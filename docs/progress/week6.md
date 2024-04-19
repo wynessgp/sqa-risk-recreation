@@ -11,9 +11,9 @@ Suggestions:
 **Evaluation Date**: 4/19/2024
 
 **Item Progress**:
-1. [95% done] finishing up integration tests for setup phase
-2. [10% done] part of GameEngine, planning to work over weekend
-3. [started] learing JavaFX
+1. [done] finishing up integration tests for setup phase (now in review)
+2. [30% done] part of GameEngine, planning to work over weekend
+3. [started] learning JavaFX
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
