@@ -22,16 +22,33 @@ public class RiskApp extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(fxmlFileUrl);
         Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
-        stage.getIcons().add(new Image(iconImageString));
+        SceneController.setRoot(cssModifiedScene);
+        prepareScenes();
         stage.setScene(cssModifiedScene);
-        stage.setTitle("Risk");
-        stage.setResizable(false);
-        stage.show();
+        performStageSetup(stage);
     }
 
     private Scene addCssFileToScene(String cssFileString, Scene sceneInQuestion) {
         sceneInQuestion.getStylesheets().add(cssFileString);
         return sceneInQuestion;
+    }
+
+    private void prepareScenes() {
+        for (SceneType scene : SceneType.values()) {
+            try {
+                SceneController.getInstance().add(scene, FXMLLoader.load(Objects.requireNonNull(getClass()
+                        .getResource(scene.getSceneName()))));
+            } catch (Exception e) {
+                System.err.println("Error loading scene: " + scene.getSceneName());
+            }
+        }
+    }
+
+    private void performStageSetup(Stage stage) {
+        stage.getIcons().add(new Image(iconImageString));
+        stage.setTitle("Risk");
+        stage.setResizable(false);
+        stage.show();
     }
 
     public static void main(String[] args) {

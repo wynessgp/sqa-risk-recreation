@@ -6,8 +6,7 @@ public class RiskStartPageController {
 
     @FXML
     private void onStartButtonClick() {
-        // go to the color selection scene
-        System.out.println("bruh bruh bruh");
+        SceneController.getInstance().activate(SceneType.PLAYER_SELECT);
     }
 
 }
