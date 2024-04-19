@@ -197,6 +197,8 @@ have for their number of armies. These should be verified as well.
   - Collection = [20, 20, 20, 20, 20, 20]
 
 # method: `checkIfPlayerOwnsTerritory(territory: TerritoryType, player: PlayerColor): boolean`
+Note: communication is done STRICTLY through the graph to check for ownership.
+Our player's territories owned are merely for our TradeInParser to "plug" in to.
 
 ## BVA Step 1
 Input: A territory that's in question whether the given player owns it
@@ -267,15 +269,29 @@ Note: this method will seem like it has an incredible amount of responsibility b
 It will be split up into separate helper functions, so much of the enumerated tests here will have their logic in code
 handled elsewhere, and split by phase.
 
+These will also largely be integration tests, especially on the methods that do not throw an Exception. They will
+be marked as such.
+
 ## BVA Step 1
 Input: The respective territory the current user wants to place their armies in, as well as the
 number of new armies to place there. 
 
-The state of who owns the respective territory is also taken into account, in addition to the current phase of the game.
+Additionally, we need to know: 
+- if the current Player can place this many armies
+- if the amount of armies to place is valid in our current game phase
+- if the user owns the territory. (Check done via the graph)
 
-Output: A yes/no answer whether the armies were placed successfully; an exception if they were not able to be 
-placed successfully (i.e. another player owns the territory). Additionally, we care about if the territory
-was updated correctly - this means claiming in the scramble phase, or just ensuring the army count was updated.
+Output: A yes/no answer whether the armies were placed successfully. The "no" 
+case will not occur - instead, an exception will be thrown if the armies were 
+not able to be placed successfully (i.e. another player owns the territory). 
+
+Additionally, we care about:
+- if the territory was updated correctly
+  - this means claiming in the scramble phase, or just ensuring the army count was updated.
+- decrementing the number of armies left to place for our player
+- updating who's turn it is, if necessary.
+  - This action should occur automatically for the phases:
+    - SCRAMBLE, SETUP, PLACEMENT (if numArmiesToPlace for the player IS 0)
 
 ## BVA Step 2
 Input:
@@ -283,10 +299,12 @@ Input:
 - numNewArmies: Counts [1, armies earned on player's turn]
 - State of who owns the territory: Cases
 - Game Phase: Cases 
+- Current player object: Pointer
 
 Output: 
 - function return value: Boolean
 - Territory: Pointer
+- Current player object: Pointer
 
 ## TODO: Elaborate more once attack/placement phase is being developed!
 
@@ -318,6 +336,11 @@ Input:
   - ...
   - The 6th possibility (GAME_OVER)
   - The 0th, 7th possibility (can't set)
+- Player object (Pointer):
+  - Null pointer (can't set, per Martin's suggestions)
+  - A valid pointer
+    - We're mostly concerned about checking the number of armies they currently have
+    - If they try to place too many and drop below 0, we should throw an error.
 
 Output: 
 - function return value: Boolean
@@ -330,7 +353,10 @@ Output:
   - A pointer to the true object
     - Mostly concerned about checking two things in our Territory object:
       - The PlayerColor should be updated if we're in the SCRAMBLE phase
-      - The army count should be updated regardless of phase
+      - The army count should be updated regardless of phase, if possible
+- Player object: Pointer
+  - The number of armies they have to place should be updated
+  - Territories held should be updated if in SCRAMBLE (maybe attack too).
 
 ## BVA Step 4
 
@@ -342,6 +368,7 @@ Output:
   - numArmies = num player earned this turn + 1
   - Territory owner = current player
   - Game Phase = SCRAMBLE
+  - Current player = [Color = ANY, numArmiesToPlace is valid amount, territories owned = {CONGO} ]
 - Output:
   - IllegalStateException
     - message: "Cannot place armies in a claimed territory until the scramble phase is over"
@@ -349,8 +376,9 @@ Output:
 - Input:
   - territory = CONGO
   - numArmies = 1
-  - Territory owner = NOT current player
+  - Territory owner = NOT current player (BLUE)
   - Game Phase = SCRAMBLE
+  - Current player = [Color = RED, numArmiesToPlace is \> 1, territories owned = {}]
 - Output:
   - IllegalStateException
     - message: "Cannot place armies in a claimed territory until the scramble phase is over"
@@ -360,8 +388,9 @@ Output:
   - numArmies = 5
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
+  - Current player = [Color = BLUE, numArmiesToPlace is \> 1, territories owned = {}]
 - Output:
-  - IllegalArgumentException (IllegalStateException?)
+  - IllegalArgumentException
     - message: "You can only place 1 army on an unclaimed territory until the scramble phase is over"
 ### Test 4:
 - Input:
@@ -369,27 +398,49 @@ Output:
   - numArmies = -1
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
+  - Current player = [Color = BLUE, numArmiesToPlace is \> 1, territories owned = {}]
 - Output:
-  - IllegalArgumentException (IllegalStateException?)
+  - IllegalArgumentException
     - message: "You can only place 1 army on an unclaimed territory until the scramble phase is over"
 ### Test 5:
+- Input:
+  - territory = CHINA
+  - numArmies = 1
+  - Territory owner = SETUP
+  - Game Phase = SCRAMBLE
+  - Current player = [Color = BLUE, numArmiesToPlace = 0, territories owned = {}]
+- Output: 
+  - IllegalArgumentException
+    - message: "Player does not have enough armies to place!"
+    - They would end up with -1 armies if we allowed the operation to proceed.
+
+### Scramble phase integration tests
+
+### Test 6:
 - Input:
   - territory = BRAZIL
   - numArmies = 1
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
+  - Current player = [Color = BLUE, numArmiesToPlace = 10, territories owned = {}]
 - Output: 
   - Function output: 1 (true)
-  - Territory pointer: [numArmies = 1, PlayerColor = currently going player]
-### Test 6:
+  - Territory pointer: [numArmies = 1, PlayerColor = BLUE]
+  - Current player = [Color = BLUE, numArmiesToPlace = 9, territories owned = {BRAZIL}]
+  - Update to say we're on the next player's turn
+### Test 7:
 - Input:
   - territory = EASTERN_AMERICA
   - numArmies = 1
   - Territory owner = SETUP
   - Game Phase = SCRAMBLE
+  - Current player = [Color = GREEN, numArmiesToPlace = 1, territories owned = {}]
 - Output: 
   - Function output: 1 (true)
-  - Territory pointer: [numArmies = 1, PlayerColor = currently going player]
+  - Territory pointer: [numArmies = 1, PlayerColor = GREEN]
+  - Current player = [Color = GREEN, numArmiesToPlace = 0, territories owned = {EASTERN_AMERICA}]
+    - Players should have more territories than this in a scramble phase; we'll let it slip for a test.
+  - Update to say we're on the next player's turn
 
 ### SETUP PHASE
 
@@ -399,6 +450,7 @@ Output:
   - numArmies = -1
   - Territory owner = current player
   - Game Phase = SETUP
+  - Current player = [Color = BLUE, numArmiesToPlace = 12, territories owned = {ALASKA}]
 - Output:
   - IllegalArgumentException
     - message: "Cannot place anything other than 1 army in a territory during setup phase"
@@ -408,6 +460,7 @@ Output:
   - numArmies = 0
   - Territory owner = current player
   - Game Phase = SETUP
+  - Current player = [Color = PURPLE, numArmiesToPlace = 6]
 - Output:
   - IllegalArgumentException
     - message: "Cannot place anything other than 1 army in a territory during setup phase"
@@ -415,8 +468,9 @@ Output:
 - Input:
   - territory = ALASKA
   - numArmies = 1
-  - Territory owner = NOT current player
+  - Territory owner = RED
   - Game Phase = SETUP
+  - Current player = [Color = BLUE, numArmiesToPlace = 7]
 - Output:
   - IllegalArgumentException
     - message: "Cannot place armies on a territory you do not own"
@@ -426,17 +480,35 @@ Output:
   - numArmies = 1
   - Territory owner = current player
   - Game Phase = SETUP
+  - Current player = [Color = YELLOW, numArmiesToPlace = 0]
+- Output:
+  - IllegalArgumentException
+    - message: "Player does not have enough armies to place!"
+### Test 10:
+- Input:
+  - territory = ALASKA
+  - numArmies = 1
+  - Territory owner = current player
+    - Territory only has one army in it before this
+  - Game Phase = SETUP
+  - Current player = [Color = BLUE, numArmiesToPlace = 3]
 - Output: 
   - Function output: 1 (true)
   - Territory pointer: [numArmies = 2, PlayerColor = current player]
+  - Current player = [Color = BLUE, numArmiesToPlace = 2]
+  - Update to say we're on the next player's turn
 ### Test 11:
 - Input:
   - territory = BRAZIL
   - numArmies = 1
   - Territory owner = current player
+    - Territory has more than one army present before this operation (say, 5)
   - Game Phase = SETUP
+  - Current player = [Color = BLACK, numArmiesToPlace = 7]
 - Output: 
   - Function output: 1 (true)
-  - Territory pointer: [numArmies = 2, PlayerColor = current player]
+  - Territory pointer: [numArmies = 6, PlayerColor = current player]
+  - Current player = [Color = BLACK, numArmiesToPlace = 6]
+  - Update to say we're on the next player's turn
 
 ### TODO: ATTACK PHASE
