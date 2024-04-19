@@ -729,6 +729,8 @@ public class AbstractGameEngineTest {
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedTerritory, mockedGraph);
     }
 
     private static Stream<Arguments> generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts() {
