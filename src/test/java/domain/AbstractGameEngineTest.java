@@ -526,6 +526,8 @@ public class AbstractGameEngineTest {
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedTerritory, mockedGraph);
     }
 
     private static Stream<Arguments> generateAllTerritoryTypesAndIllegalArmyInputs() {
