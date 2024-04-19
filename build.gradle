@@ -6,10 +6,29 @@ plugins {
     id 'checkstyle'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'jacoco'
+    id 'info.solidsoft.pitest' version '1.15.0'
 }
 
 repositories {
     mavenCentral()
+}
+
+apply plugin : "java"
+ext {
+    javaMainClass = "presentation.RiskApp"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
 }
 
 dependencies {
