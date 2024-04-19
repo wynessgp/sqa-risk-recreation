@@ -309,8 +309,9 @@ public class TerritoryGraphTest {
         String expectedMessage = "Territory does not exist";
         TerritoryGraph territoryGraph = new TerritoryGraph();
 
-        Exception exception = assertThrows(NullPointerException.class, () ->
-                territoryGraph.getTerritory(territoryType));
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            Territory ignored = territoryGraph.getTerritory(territoryType);
+        });
         assertEquals(expectedMessage, exception.getMessage());
     }
 
@@ -339,8 +340,9 @@ public class TerritoryGraphTest {
         territoryGraph.addNewTerritory(existingTerritory);
         for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
             if (territoryType != existingTerritoryType) {
-                Exception exception = assertThrows(NullPointerException.class, () ->
-                        territoryGraph.getTerritory(territoryType));
+                Exception exception = assertThrows(NullPointerException.class, () -> {
+                    Territory ignored = territoryGraph.getTerritory(territoryType);
+                });
                 assertEquals(expectedMessage, exception.getMessage());
             }
         }
