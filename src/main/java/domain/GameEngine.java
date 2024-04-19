@@ -23,6 +23,7 @@ public abstract class GameEngine {
     private PlayerColor currentPlayer;
 
     private int numUnclaimedTerritories;
+    private int totalUnplacedArmiesLeft;
 
     protected TerritoryGraph territoryGraph;
     protected GamePhase currentGamePhase;
@@ -130,7 +131,7 @@ public abstract class GameEngine {
         numUnclaimedTerritories--;
         addTerritoryToCurrentPlayerCollection(relevantTerritory);
         updateCurrentPlayer();
-        checkForSetupPhaseEndCondition();
+        checkScramblePhaseEndCondition();
     }
 
     private void checkIfTerritoryIsUnclaimed(TerritoryType relevantTerritory) {
@@ -170,10 +171,19 @@ public abstract class GameEngine {
         currentPlayer = playersList.get((currentPlayerIndex + 1) % playersList.size());
     }
 
-    private void checkForSetupPhaseEndCondition() {
+    private void checkScramblePhaseEndCondition() {
         if (numUnclaimedTerritories == 0) {
             currentGamePhase = GamePhase.SETUP;
+            calculateNumUnplacedArmiesLeft();
         }
+    }
+
+    private void calculateNumUnplacedArmiesLeft() {
+        List<Integer> numArmiesLeftByPlayer = new ArrayList<>();
+        for (Player player : playersMap.values()) {
+            numArmiesLeftByPlayer.add(player.getNumArmiesToPlace());
+        }
+        totalUnplacedArmiesLeft = numArmiesLeftByPlayer.stream().mapToInt(Integer::intValue).sum();
     }
 
     private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
@@ -182,7 +192,15 @@ public abstract class GameEngine {
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
+        totalUnplacedArmiesLeft--;
         updateCurrentPlayer();
+        checkSetupPhaseEndCondition();
+    }
+
+    private void checkSetupPhaseEndCondition() {
+        if (totalUnplacedArmiesLeft == 0) {
+            currentGamePhase = GamePhase.PLACEMENT;
+        }
     }
 
     private void checkNumArmiesToPlaceIsValidForSetup(int numArmiesToPlace) {
