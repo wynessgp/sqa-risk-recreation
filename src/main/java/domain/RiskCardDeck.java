@@ -6,23 +6,20 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-public class DeckManager {
-    private List<Card> deckOfCards;
+public final class RiskCardDeck {
+    private static final int NUMBER_OF_WILD_CARDS = 2;
+    private static final int CARDS_PER_PIECE_TYPE = 14;
+
+    private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
 
-    public DeckManager() {
-        this.deckOfCards = new ArrayList<>();
+    public RiskCardDeck() {
         this.random = new Random();
-        try {
-            initDeck();
-            shuffle();
-        } catch (Exception e) {
-            System.err.println("Error initializing deck: " + e.getMessage());
-        }
+        initDeck();
+        shuffle();
     }
 
-    DeckManager(Random random) {
-        this.deckOfCards = new ArrayList<>();
+    RiskCardDeck(Random random) {
         this.random = random;
     }
 
@@ -38,14 +35,14 @@ public class DeckManager {
     private void addTerritoryCards() {
         int pieceTypeCount = 0;
         for (TerritoryType territoryType : TerritoryType.values()) {
-            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / CARDS_PER_PIECE_TYPE];
             deckOfCards.add(new TerritoryCard(territoryType, currentPiece));
             pieceTypeCount++;
         }
     }
 
     private void addWildCards() {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < NUMBER_OF_WILD_CARDS; i++) {
             deckOfCards.add(new WildCard());
         }
     }
@@ -58,7 +55,7 @@ public class DeckManager {
     }
 
     boolean shuffle() {
-        if (this.deckOfCards.size() < 2) {
+        if (this.deckOfCards.size() <= 1) {
             return false;
         }
         Collections.shuffle(deckOfCards, random);

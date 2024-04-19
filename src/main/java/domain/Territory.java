@@ -2,25 +2,27 @@ package domain;
 
 public class Territory {
     private final TerritoryType territoryType;
-    private Player playerInControl;
     private int numArmiesPresent;
-
+    private PlayerColor playerInControl;
 
     public Territory(TerritoryType territoryType) {
         this.territoryType = territoryType;
-        this.playerInControl = new Player(PlayerColor.SETUP);
+        this.playerInControl = PlayerColor.SETUP;
         this.numArmiesPresent = 0;
     }
 
-    Territory(Player playerToBeInControl, TerritoryType territoryType) {
+    Territory(PlayerColor playerToBeInControl, TerritoryType territoryType) {
         this.territoryType = territoryType;
         this.playerInControl = playerToBeInControl;
         this.numArmiesPresent = 0;
     }
 
-    public boolean setPlayerInControl(Player player) {
-        if (player.equals(playerInControl)) {
-            return false;
+    public boolean setPlayerInControl(PlayerColor player) {
+        if (player == PlayerColor.SETUP) {
+            throw new IllegalArgumentException("Cannot set the player in control to setup");
+        }
+        if (player == playerInControl) {
+            throw new IllegalArgumentException("Territory is already controlled by that player");
         }
         this.playerInControl = player;
         return true;
@@ -34,15 +36,15 @@ public class Territory {
         return true;
     }
 
-    public Player getPlayerInControl() {
-        return playerInControl;
-    }
-
     public int getNumArmiesPresent() {
         return numArmiesPresent;
     }
 
     public TerritoryType getTerritoryType() {
         return territoryType;
+    }
+
+    public PlayerColor getPlayerInControl() {
+        return playerInControl;
     }
 }

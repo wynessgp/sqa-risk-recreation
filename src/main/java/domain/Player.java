@@ -1,10 +1,10 @@
 package domain;
 
+import java.util.Set;
+
 public class Player {
-    private final PlayerColor playerColor;
 
-    public Player(PlayerColor playerColor) {
-        this.playerColor = playerColor;
+    public Set<TerritoryType> getTerritories() {
+        return null;
     }
-
 }

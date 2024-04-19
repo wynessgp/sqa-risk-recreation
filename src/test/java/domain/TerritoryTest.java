@@ -1,44 +1,87 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerritoryTest {
 
-    @Test
-    void test00_setPlayerInControl_setPlayer_expectTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.BLUE);
+    @ParameterizedTest
+    @EnumSource(PlayerColor.class)
+    public void test00_setPlayerInControl_inputSetup_anyUnderlying_expectException(PlayerColor underlyingColor) {
+        Territory unitUnderTest = new Territory(underlyingColor, TerritoryType.ALASKA);
 
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertEquals(playerA, territory.getPlayerInControl());
+        String expectedMessage = "Cannot set the player in control to setup";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.setPlayerInControl(PlayerColor.SETUP));
+
+        String actual = exception.getMessage();
+        assertEquals(expectedMessage, actual);
     }
 
-    @Test
-    void test01_setPlayerInControl_twoDifferentPlayers_expectTrue() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.RED);
-        Player playerB = new Player(PlayerColor.PURPLE);
-
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertTrue(territory.setPlayerInControl(playerB));
-        assertEquals(playerB, territory.getPlayerInControl());
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetup() {
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+        return playerColors.stream().map(Arguments::of);
     }
 
-    @Test
-    void test02_setPlayerInControl_samePlayerTwice_expectFalse() {
-        Territory territory = new Territory(TerritoryType.ALASKA);
-        Player playerA = new Player(PlayerColor.GREEN);
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test01_setPlayerInControl_inputSameAsUnderlying_expectException(PlayerColor inputColor) {
+        Territory unitUnderTest = new Territory(inputColor, TerritoryType.ALASKA);
 
-        assertTrue(territory.setPlayerInControl(playerA));
-        assertFalse(territory.setPlayerInControl(playerA));
-        assertEquals(playerA, territory.getPlayerInControl());
+        String expectedMessage = "Territory is already controlled by that player";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.setPlayerInControl(inputColor));
+
+        String actual = exception.getMessage();
+        assertEquals(expectedMessage, actual);
+    }
+
+    private static Stream<Arguments> generateAllNonDuplicatePlayerColorPairs() {
+        Set<Set<PlayerColor>> colorPairsNoDuplicates = new HashSet<>();
+        Set<PlayerColor> playerColors = new HashSet<>(Set.of(PlayerColor.values()));
+        playerColors.remove(PlayerColor.SETUP);
+
+        for (PlayerColor firstPlayerColor : playerColors) {
+            for (PlayerColor secondPlayerColor : playerColors) {
+                if (firstPlayerColor != secondPlayerColor) {
+                    Set<PlayerColor> playerPair = new HashSet<>();
+                    playerPair.add(firstPlayerColor);
+                    playerPair.add(secondPlayerColor);
+                    colorPairsNoDuplicates.add(playerPair);
+                }
+            }
+        }
+        Set<Arguments> playerPairs = new HashSet<>();
+        for (Set<PlayerColor> playerPair : colorPairsNoDuplicates) {
+            Iterator<PlayerColor> iterator = playerPair.iterator();
+            PlayerColor firstPlayer = iterator.next();
+            PlayerColor secondPlayer = iterator.next();
+            playerPairs.add(Arguments.of(firstPlayer, secondPlayer));
+        }
+        return playerPairs.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllNonDuplicatePlayerColorPairs")
+    public void test02_setPlayerInControl_underlyingAndPassedInDoNotMatch_expectTrueAndAppropriatelySet(
+            PlayerColor underlyingColor, PlayerColor inputColor) {
+        Territory unitUnderTest = new Territory(underlyingColor, TerritoryType.ALASKA);
+
+        assertTrue(unitUnderTest.setPlayerInControl(inputColor));
+        assertEquals(inputColor, unitUnderTest.getPlayerInControl());
     }
 
     @ParameterizedTest
@@ -61,6 +104,13 @@ class TerritoryTest {
 
         assertTrue(territory.setNumArmiesPresent(validInput));
         assertEquals(validInput, territory.getNumArmiesPresent());
+    }
+
+    @Test
+    void test05_getTerritoryType_validInput_expectValidOutput() {
+        Territory unitUnderTest = new Territory(TerritoryType.ALASKA);
+
+        assertEquals(TerritoryType.ALASKA, unitUnderTest.getTerritoryType());
     }
 
 }
