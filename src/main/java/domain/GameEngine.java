@@ -134,7 +134,7 @@ public abstract class GameEngine {
 
     private void checkIfPlayerHasEnoughArmiesToPlace(int numNewArmiesToPlace) {
         int numArmiesPlayerHasToPlace = playersMap.get(currentPlayer).getNumArmiesToPlace();
-        if (numArmiesPlayerHasToPlace < numNewArmiesToPlace) {
+        if (numArmiesPlayerHasToPlace - numNewArmiesToPlace <= -1) {
             throw new IllegalArgumentException("Player does not have enough armies to place!");
         }
     }

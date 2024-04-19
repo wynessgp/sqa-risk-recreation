@@ -734,7 +734,7 @@ public class AbstractGameEngineTest {
         List<PlayerColor> playerColorsMinusSetup = new ArrayList<>(List.of(PlayerColor.values()));
         playerColorsMinusSetup.remove(PlayerColor.SETUP);
 
-        List<Integer> armyCounts = List.of(2, 3, 4, 5, 6, 7);
+        List<Integer> armyCounts = List.of(1, 2, 3, 4, 5, 6, 7);
         for (TerritoryType territory : TerritoryType.values()) {
             for (PlayerColor playerColor : playerColorsMinusSetup) {
                 for (Integer armyCount : armyCounts) {
