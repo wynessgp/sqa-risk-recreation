@@ -797,7 +797,7 @@ public class AbstractGameEngineTest {
                 .addMockedMethod("setNumArmiesToPlace")
                 .addMockedMethod("getNumArmiesToPlace")
                 .createMock();
-        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(14);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(14).times(2);
         mockedPlayer.setNumArmiesToPlace(13);
         EasyMock.expectLastCall().once();
 
@@ -815,4 +815,33 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedPlayer);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    public void test31_placeNewArmiesInTerritory_setupPhase_playerHasTooFewArmiesToPlace_expectException(
+            TerritoryType relevantTerritory, PlayerColor playerInControl) {
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerInControl)
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(0);
+
+        EasyMock.replay(mockedPlayer);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+
+        int validNumArmies = 1;
+        String expectedMessage = "Player does not have enough armies to place!";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

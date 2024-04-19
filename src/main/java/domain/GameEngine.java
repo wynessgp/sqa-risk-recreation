@@ -148,6 +148,7 @@ public abstract class GameEngine {
     private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
         checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
     }
