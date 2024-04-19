@@ -132,39 +132,6 @@ public abstract class GameEngine {
         checkForSetupPhaseEndCondition();
     }
 
-    private void checkIfPlayerHasEnoughArmiesToPlace(int numNewArmiesToPlace) {
-        int numArmiesPlayerHasToPlace = playersMap.get(currentPlayer).getNumArmiesToPlace();
-        if (numArmiesPlayerHasToPlace - numNewArmiesToPlace <= -1) {
-            throw new IllegalArgumentException("Player does not have enough armies to place!");
-        }
-    }
-
-    private void updateTerritoryObjectWithValidSetupArguments(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
-        territoryObject.setNumArmiesPresent(numArmiesToPlace);
-        territoryObject.setPlayerInControl(currentPlayer);
-    }
-
-    private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
-        checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
-        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
-        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
-    }
-
-    private void checkForSetupPhaseEndCondition() {
-        if (numUnclaimedTerritories == 0) {
-            currentGamePhase = GamePhase.SETUP;
-        }
-    }
-
-    private void checkIfCurrentPlayerOwnsTerritory(TerritoryType relevantTerritory) {
-        if (!checkIfPlayerOwnsTerritory(relevantTerritory, currentPlayer)) {
-            throw new IllegalArgumentException("Cannot place armies on a territory you do not own");
-        }
-    }
-
     private void checkIfTerritoryIsUnclaimed(TerritoryType relevantTerritory) {
         if (!checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.SETUP)) {
             throw new IllegalStateException(
@@ -179,15 +146,36 @@ public abstract class GameEngine {
         }
     }
 
-    private void modifyNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
+    private void checkIfPlayerHasEnoughArmiesToPlace(int numNewArmiesToPlace) {
+        int numArmiesPlayerHasToPlace = playersMap.get(currentPlayer).getNumArmiesToPlace();
+        if (numArmiesPlayerHasToPlace - numNewArmiesToPlace <= -1) {
+            throw new IllegalArgumentException("Player does not have enough armies to place!");
+        }
+    }
+
+    private void updateTerritoryObjectWithValidSetupArguments(TerritoryType relevantTerritory, int numArmiesToPlace) {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
-        int previousNumArmies = territoryObject.getNumArmiesPresent();
-        territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
+        territoryObject.setNumArmiesPresent(numArmiesToPlace);
+        territoryObject.setPlayerInControl(currentPlayer);
     }
 
     private void updateCurrentPlayer() {
         int currentPlayerIndex = playersList.indexOf(currentPlayer);
         currentPlayer = playersList.get((currentPlayerIndex + 1) % playersList.size());
+    }
+
+    private void checkForSetupPhaseEndCondition() {
+        if (numUnclaimedTerritories == 0) {
+            currentGamePhase = GamePhase.SETUP;
+        }
+    }
+
+    private void handleSetupPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
+        checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
+        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
     }
 
     private void checkNumArmiesToPlaceIsValidForSetup(int numArmiesToPlace) {
@@ -197,9 +185,20 @@ public abstract class GameEngine {
         }
     }
 
+    private void checkIfCurrentPlayerOwnsTerritory(TerritoryType relevantTerritory) {
+        if (!checkIfPlayerOwnsTerritory(relevantTerritory, currentPlayer)) {
+            throw new IllegalArgumentException("Cannot place armies on a territory you do not own");
+        }
+    }
+
+    private void modifyNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
+        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
+        int previousNumArmies = territoryObject.getNumArmiesPresent();
+        territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
+    }
+
     private void modifyNumArmiesCurrentPlayerHasToPlace(int numArmiesToPlace) {
         int currentNumArmies = playersMap.get(currentPlayer).getNumArmiesToPlace();
-        // FIXME: this should cause an error if we dip below 0!
         int newNumArmies = currentNumArmies - numArmiesToPlace;
         playersMap.get(currentPlayer).setNumArmiesToPlace(newNumArmies);
     }
