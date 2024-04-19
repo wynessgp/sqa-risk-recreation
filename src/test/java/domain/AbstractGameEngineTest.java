@@ -600,7 +600,7 @@ public class AbstractGameEngineTest {
         int validNumArmies = 1;
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
 
-        EasyMock.verify(mockedTerritory, mockedGraph);
+        EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
     }
 
     @Test
