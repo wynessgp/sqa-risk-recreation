@@ -182,6 +182,7 @@ public abstract class GameEngine {
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
+        updateCurrentPlayer();
     }
 
     private void checkNumArmiesToPlaceIsValidForSetup(int numArmiesToPlace) {

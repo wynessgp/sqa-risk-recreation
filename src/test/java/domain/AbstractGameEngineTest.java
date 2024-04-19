@@ -881,4 +881,35 @@ public class AbstractGameEngineTest {
 
         EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
     }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
+            List<PlayerColor> players) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        int numArmiesToPlace = 1;
+
+        // start by claiming all the territories.
+        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
+        }
+
+        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+
+        // rebase the game to start at the first player here on purpose. this is not a part of
+        // the normal game flow, but we're ensuring we can make a full cycle in the setup phase.
+        unitUnderTest.provideCurrentPlayerForTurn(players.get(0));
+
+        // now do one more cycle's worth of players to ensure we change players each time.
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+            assertEquals(players.get(playerIndex), unitUnderTest.getCurrentPlayer());
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
+        }
+
+        assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
+    }
 }
