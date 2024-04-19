@@ -912,4 +912,34 @@ public class AbstractGameEngineTest {
 
         assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
     }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
+            List<PlayerColor> players) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        int numArmiesToPlace = 1;
+
+        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+
+        // here's the tricky bit about testing this: placeArmiesInTerritory automatically advances the
+        // player going. So we'll need to ask for a particular player.
+        int playerIndex = 0;
+        for (; playerIndex < players.size(); playerIndex++) {
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
+            assertEquals(Set.of(territories.get(playerIndex)),
+                    unitUnderTest.getClaimedTerritoriesForPlayer(players.get(playerIndex)));
+        }
+
+        // go forward another player's list worth of indices, just to ensure the set can actually grow.
+        for (; playerIndex < players.size() * 2; playerIndex++) {
+            int previousIterationIndex = playerIndex - players.size();
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
+            assertEquals(Set.of(territories.get(playerIndex), territories.get(previousIterationIndex)),
+                    unitUnderTest.getClaimedTerritoriesForPlayer(players.get(previousIterationIndex)));
+        }
+    }
+
 }

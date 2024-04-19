@@ -1,17 +1,19 @@
 package domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Player {
     private final PlayerColor playerColor;
     private int numArmiesToPlace;
+    private final Set<TerritoryType> claimedTerritories = new HashSet<>();
 
     public Player(PlayerColor playerColor) {
         this.playerColor = playerColor;
     }
 
     public Set<TerritoryType> getTerritories() {
-        return null;
+        return Set.copyOf(claimedTerritories);
     }
 
     public void setNumArmiesToPlace(int newAmount) {
@@ -27,6 +29,6 @@ public class Player {
     }
 
     public void addTerritoryToCollection(TerritoryType relevantTerritory) {
-
+        claimedTerritories.add(relevantTerritory);
     }
 }

@@ -247,4 +247,8 @@ public abstract class GameEngine {
     public GamePhase getCurrentGamePhase() {
         return currentGamePhase;
     }
+
+    Set<TerritoryType> getClaimedTerritoriesForPlayer(PlayerColor playerInQuestion) {
+        return playersMap.get(playerInQuestion).getTerritories();
+    }
 }
