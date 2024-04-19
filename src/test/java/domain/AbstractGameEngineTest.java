@@ -844,4 +844,35 @@ public class AbstractGameEngineTest {
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    public void test32_placeNewArmiesInTerritory_scramblePhase_validInput_ensurePlayerObjectHasTerritoryAdded(
+            TerritoryType relevantTerritory, PlayerColor currentPlayer) {
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("addTerritoryToCollection")
+                .createMock();
+        mockedPlayer.setNumArmiesToPlace(10);
+        mockedPlayer.addTerritoryToCollection(relevantTerritory);
+        EasyMock.expectLastCall().once();
+
+        EasyMock.replay(mockedPlayer);
+
+        Territory mockedTerritory = createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
+                1, currentPlayer, PlayerColor.SETUP);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        int validNumArmies = 1;
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
+
+        EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
+    }
 }

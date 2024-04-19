@@ -128,6 +128,7 @@ public abstract class GameEngine {
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         updateTerritoryObjectWithValidSetupArguments(relevantTerritory, numArmiesToPlace);
         numUnclaimedTerritories--;
+        addTerritoryToCurrentPlayerCollection(relevantTerritory);
         updateCurrentPlayer();
         checkForSetupPhaseEndCondition();
     }
@@ -157,6 +158,11 @@ public abstract class GameEngine {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
+    }
+
+    private void addTerritoryToCurrentPlayerCollection(TerritoryType relevantTerritory) {
+        Player playerObject = playersMap.get(currentPlayer);
+        playerObject.addTerritoryToCollection(relevantTerritory);
     }
 
     private void updateCurrentPlayer() {

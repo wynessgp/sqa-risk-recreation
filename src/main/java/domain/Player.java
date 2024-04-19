@@ -25,4 +25,8 @@ public class Player {
     public int getNumArmiesToPlace() {
         return numArmiesToPlace;
     }
+
+    public void addTerritoryToCollection(TerritoryType relevantTerritory) {
+
+    }
 }
