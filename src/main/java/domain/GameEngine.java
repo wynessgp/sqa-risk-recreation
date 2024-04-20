@@ -11,10 +11,9 @@ public abstract class GameEngine {
     private static final int MINIMUM_NUM_PLAYERS = 3;
     private static final int MAXIMUM_NUM_PLAYERS = 6;
 
-    private static final int MAXIMUM_ARMIES_POSSIBLE_IN_SETUP = 40;
+    private static final int MAXIMUM_ARMIES_POSSIBLE_IN_SETUP = 35;
     private static final int ADDITIONAL_PLAYER_ARMY_OFFSET = 5;
-    private static final int PLAYER_LIST_SIZE_OFFSET = 2;
-    private static final int NUM_PLAYERS_WITH_NEUTRAL = 2;
+    private static final int PLAYER_LIST_SIZE_OFFSET = 3;
 
     private static final int INITIAL_NUM_UNCLAIMED_TERRITORIES = 42;
 
@@ -75,11 +74,7 @@ public abstract class GameEngine {
     public boolean assignSetupArmiesToPlayers() {
         checkIfPlayersListIsEmpty();
 
-        if (playersList.contains(PlayerColor.NEUTRAL)) {
-            handleArmyAssignment(NUM_PLAYERS_WITH_NEUTRAL);
-        } else {
-            handleArmyAssignment(playersList.size());
-        }
+        handleArmyAssignment(playersList.size());
         return true;
     }
 
