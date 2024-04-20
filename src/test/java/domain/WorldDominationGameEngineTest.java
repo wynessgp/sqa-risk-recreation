@@ -19,10 +19,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class AbstractGameEngineTest {
-
-    // this testing file will only test things ALL the win conditions share.
-    // namely, the non-abstract methods in GameEngine.
+public class WorldDominationGameEngineTest {
 
     private static final int GET_TERRITORY_ONCE = 1;
 
@@ -47,7 +44,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateVariousIllegalPlayerOrderLists")
     public void test00_initializePlayersList_playerOrderSizeOutsideOfAcceptableRange_expectException(
             List<PlayerColor> illegalPlayerOrder) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         String expectedMessage = "playerOrder's size is not within: [3, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
@@ -98,7 +95,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateListsOfVaryingSizeAllContainingDuplicates")
     public void test01_initializePlayersList_playerOrderContainsDuplicates_expectException(
             List<PlayerColor> playerOrderWithDuplicates) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         String expectedMessage = "playerOrder contains duplicate entries";
         Exception exception = assertThrows(IllegalArgumentException.class,
@@ -141,7 +138,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateListsOfVaryingSizeAndSetupAtDifferentIndices")
     public void test02_initializePlayersList_playerOrderContainsSetup_expectException(
             List<PlayerColor> playerOrderWithSetup) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         String expectedMessage = "playerOrder contains SETUP as one of the players";
         Exception exception = assertThrows(IllegalArgumentException.class,
@@ -173,7 +170,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test03_initializePlayersList_playerOrderIsValid_expectTrueAndCheckStorageIsSameAsInput(
             List<PlayerColor> validPlayerOrder) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder));
         assertEquals(validPlayerOrder, unitUnderTest.getPlayerOrder());
@@ -182,7 +179,7 @@ public class AbstractGameEngineTest {
 
     @Test
     public void test04_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> emptyList = List.of();
 
         unitUnderTest.setPlayerOrderList(emptyList);
@@ -216,7 +213,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test05_assignSetupArmiesToPlayers_playerListSizeVaries_returnsTrueAndAssignsExpectedAmount(
             List<PlayerColor> playerColorList) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setPlayerOrderList(playerColorList);
 
         List<Player> playerMocks = createMockedPlayersList(playerColorList, playerColorList.size());
@@ -234,7 +231,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test06_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
             List<PlayerColor> playerColors) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         assertTrue(unitUnderTest.initializePlayersList(playerColors));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
@@ -302,7 +299,7 @@ public class AbstractGameEngineTest {
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
                 relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
 
         assertFalse(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, notInControl));
@@ -328,7 +325,7 @@ public class AbstractGameEngineTest {
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
                 relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
 
         assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, playerInControlOfTerritory));
@@ -338,7 +335,7 @@ public class AbstractGameEngineTest {
 
     @Test
     public void test09_checkIfPlayerOwnsTerritoryIntegrationTest_doesSetupOwnAllTerritories_expectTrue() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         // don't need to initialize anything else, just make sure the Graph is ready for us to play on.
         for (TerritoryType territory : TerritoryType.values()) {
@@ -368,7 +365,7 @@ public class AbstractGameEngineTest {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
 
         int numArmiesToPlace = 10;
@@ -397,7 +394,7 @@ public class AbstractGameEngineTest {
 
         EasyMock.replay(mockedPlayer);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(playerToTakeControl);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
@@ -433,7 +430,7 @@ public class AbstractGameEngineTest {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
 
         String expectedMessage = "You can only place 1 army on an unclaimed territory until the scramble phase is over";
@@ -475,7 +472,7 @@ public class AbstractGameEngineTest {
 
         EasyMock.replay(mockedPlayer);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(currentlyGoingPlayer);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
@@ -488,7 +485,7 @@ public class AbstractGameEngineTest {
 
     @Test
     public void test24_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
         TerritoryType targetTerritory = TerritoryType.ALASKA;
         int numArmiesToPlace = 1;
@@ -496,7 +493,7 @@ public class AbstractGameEngineTest {
         assertTrue(unitUnderTest.initializePlayersList(playerColors));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
-        // since it is an expectation that the GameEngine handles whose turn it is FOR us,
+        // since it is an expectation that the WorldDominationGameEngine handles whose turn it is FOR us,
         // we will try placing an army as RED, then the current player should be PURPLE.
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
 
@@ -515,7 +512,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
@@ -535,7 +532,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test26_placeNewArmiesInTerritoryScrambleIntegrationTest_allTerritoriesClaimedAdvancePhase(
             List<PlayerColor> players) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         int numArmiesToPlace = 1;
 
         assertTrue(unitUnderTest.initializePlayersList(players));
@@ -552,7 +549,7 @@ public class AbstractGameEngineTest {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 14})
     public void test27_placeNewArmiesInTerritory_setupPhase_invalidArmyInput_expectException(int illegalInput) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         TerritoryType targetTerritory = TerritoryType.ALASKA;
 
         unitUnderTest.setGamePhase(GamePhase.SETUP);
@@ -569,7 +566,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
     public void test28_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl, PlayerColor playerAttemptingToPlace) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
@@ -628,7 +625,7 @@ public class AbstractGameEngineTest {
 
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.SETUP);
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
@@ -664,7 +661,7 @@ public class AbstractGameEngineTest {
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
         EasyMock.replay(mockedTerritory, mockedPlayer);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.SETUP);
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
@@ -690,7 +687,7 @@ public class AbstractGameEngineTest {
 
         EasyMock.replay(mockedPlayer);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(playerInControl);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
@@ -727,7 +724,7 @@ public class AbstractGameEngineTest {
                 1, currentPlayer, PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 2);
 
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
@@ -742,7 +739,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         int numArmiesToPlace = 1;
 
         // start by claiming all the territories.
@@ -773,7 +770,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
             List<PlayerColor> players) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
@@ -802,7 +799,7 @@ public class AbstractGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
             List<PlayerColor> players) {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
@@ -817,7 +814,7 @@ public class AbstractGameEngineTest {
         assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
 
         // in order to enter the placement phase in RISK, we need to exhaust each and every player's armies
-        // that they acquire during the game's setup. Let's "peek" into the GameEngine a bit and figure
+        // that they acquire during the game's setup. Let's "peek" into the WorldDominationGameEngine a bit and figure
         // out when that is.
         List<Integer> numArmiesByPlayer = new ArrayList<>();
         for (PlayerColor player : players) {
