@@ -206,27 +206,28 @@ Input:
   - The 42nd possibility (YAKUTSK)
   - The 0th or 43rd possibility (can't set)
 - Player (Cases):
-  - The 1st possibility (SETUP - not considered, will be handled by checkIfTerritoryIsClaimed)
-  - The 2nd possibility (NEUTRAL)
-  - The 3rd possibility (BLUE)
+  - The 1st possibility (SETUP)
+  - The 2nd possibility (BLUE)
   - ...
-  - The 8th possibility (PURPLE)
-  - The 0th or 9th possibility (can't set)
+  - The 7th possibility (PURPLE)
+  - The 0th or 8th possibility (can't set)
 - Underlying territory object:
   - Null pointer (can't set, Martin's rules)
   - A pointer to the actual object
+    - If the PlayerColor in the Territory object does not match, return false. 
 
 Output:
 - 0 
 - 1
 - Something neither true nor false (can't set)
+- Some true value other than 1 (can't set)
 
 ## BVA Step 4
 ### Test 1:
 Input:
 - territory = ALASKA
 - player = BLUE
-- Territory object = [type = ALASKA, player = NEUTRAL]
+- Territory object = [type = ALASKA, player = PURPLE]
 
 Output = 0 (false)
 
@@ -244,7 +245,7 @@ Input:
 - Territory object = [type = ALASKA, player = BLUE]
 
 Output: 1 (true)
-### And many more...consider all combinations
+### More tests are included, but not explicitly enumerated here. We aim to pursue all combos.
 
 # method: `placeNewArmiesInTerritory(territory: TerritoryType, numArmies: int): boolean`
 Note: this method will seem like it has an incredible amount of responsibility based on the test cases below.
