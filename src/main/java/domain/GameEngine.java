@@ -43,14 +43,21 @@ public abstract class GameEngine {
     }
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder) {
-        if (playerOrder.size() < 3 || playerOrder.size() > 6) {
-            throw new IllegalArgumentException("playerOrder's size is not within: [3, 6]");
-        }
+        handleErrorCheckingForOrderSizeAndContents(playerOrder);
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
         currentPlayer = playerOrder.get(0);
         return true;
+    }
+
+    private void handleErrorCheckingForOrderSizeAndContents(List<PlayerColor> playerOrder) {
+        if (playerOrder.size() < 3 || playerOrder.size() > 6) {
+            throw new IllegalArgumentException("playerOrder's size is not within: [3, 6]");
+        }
+        if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
+            throw new IllegalArgumentException("playerOrder contains duplicate entries");
+        }
     }
 
     private void initializePlayerColorToPlayerMap(List<PlayerColor> playerColors) {

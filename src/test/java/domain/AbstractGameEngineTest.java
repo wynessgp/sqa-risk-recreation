@@ -56,6 +56,58 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generateListsOfVaryingSizeAllContainingDuplicates() {
+        Set<Arguments> duplicatePlayerColorArguments = new HashSet<>();
+        // size 3 duplicate lists
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.RED, PlayerColor.BLACK, PlayerColor.RED)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.YELLOW, PlayerColor.YELLOW, PlayerColor.SETUP)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.PURPLE, PlayerColor.SETUP, PlayerColor.SETUP)));
+
+        // size 4 duplicate lists
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.YELLOW, PlayerColor.BLACK)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.RED)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.BLACK, PlayerColor.BLACK, PlayerColor.BLACK, PlayerColor.BLUE)));
+
+        // size 5 duplicate lists
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.PURPLE)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.GREEN, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.SETUP, PlayerColor.GREEN)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.BLACK, PlayerColor.YELLOW, PlayerColor.BLUE)));
+
+        // size 6 duplicate lists
+        duplicatePlayerColorArguments.add(Arguments.of(List.of(PlayerColor.RED, PlayerColor.BLUE, PlayerColor.SETUP,
+                PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.RED)));
+        duplicatePlayerColorArguments.add(Arguments.of(List.of(PlayerColor.BLUE, PlayerColor.PURPLE, PlayerColor.RED,
+                PlayerColor.BLACK, PlayerColor.YELLOW, PlayerColor.BLUE)));
+        duplicatePlayerColorArguments.add(Arguments.of(List.of(PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.SETUP,
+                PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.YELLOW)));
+
+        return duplicatePlayerColorArguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateListsOfVaryingSizeAllContainingDuplicates")
+    public void test01_initializePlayersList_playerOrderContainsDuplicates_expectException(
+            List<PlayerColor> playerOrderWithDuplicates) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        String expectedMessage = "playerOrder contains duplicate entries";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(playerOrderWithDuplicates));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+
     @Test
     public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
