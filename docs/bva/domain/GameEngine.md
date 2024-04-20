@@ -32,7 +32,7 @@ Output:
   - Some value other than true or false
     - Exception:
       - The size of the list is not within [3, 6]
-      - The input list is malformed (duplicates, not the same length as numPlayers, contains SETUP)
+      - The input list is malformed (duplicates, contains SETUP)
   - Some other true value (can't set)
 - Underlying player storage (Collection)
   - Must be the same size as playerOrder
