@@ -181,7 +181,7 @@ public class AbstractGameEngineTest {
 
 
     @Test
-    public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
+    public void test04_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> emptyList = List.of();
 
@@ -232,14 +232,14 @@ public class AbstractGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test17_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
+    public void test06_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
             List<PlayerColor> playerColors) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
 
         assertTrue(unitUnderTest.initializePlayersList(playerColors));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
-        int expectedNumArmies = 40 - ((playerColors.size() - 2) * 5);
+        int expectedNumArmies = 35 - ((playerColors.size() - 3) * 5);
         for (PlayerColor player : playerColors) {
             assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(player));
         }
