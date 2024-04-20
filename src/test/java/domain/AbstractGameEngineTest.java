@@ -25,6 +25,37 @@ public class AbstractGameEngineTest {
     // this testing file will only test things ALL the win conditions share.
     // namely, the non-abstract methods in GameEngine.
 
+    private static Stream<Arguments> generateVariousIllegalPlayerOrderLists() {
+        Set<Arguments> illegalPlayerOrderArguments = new HashSet<>();
+        illegalPlayerOrderArguments.add(Arguments.of(List.of()));
+        illegalPlayerOrderArguments.add(Arguments.of(List.of(PlayerColor.YELLOW)));
+        illegalPlayerOrderArguments.add(Arguments.of(List.of(PlayerColor.BLUE, PlayerColor.RED)));
+        illegalPlayerOrderArguments.add(Arguments.of(List.of(PlayerColor.BLUE, PlayerColor.BLUE, PlayerColor.SETUP,
+                PlayerColor.PURPLE, PlayerColor.YELLOW, PlayerColor.YELLOW, PlayerColor.BLACK)));
+
+        List<PlayerColor> listWithFourOfEachPlayerColor = new ArrayList<>();
+        for (PlayerColor playerColor : PlayerColor.values()) {
+            listWithFourOfEachPlayerColor.addAll(List.of(playerColor, playerColor, playerColor, playerColor));
+        }
+        illegalPlayerOrderArguments.add(Arguments.of(listWithFourOfEachPlayerColor));
+
+        return illegalPlayerOrderArguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateVariousIllegalPlayerOrderLists")
+    public void test00_initializePlayersList_playerOrderSizeOutsideOfAcceptableRange_expectException(
+            List<PlayerColor> illegalPlayerOrder) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        String expectedMessage = "playerOrder's size is not within: [3, 6]";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(illegalPlayerOrder));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
     @Test
     public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();

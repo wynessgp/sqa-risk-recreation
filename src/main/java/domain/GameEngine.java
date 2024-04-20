@@ -43,6 +43,9 @@ public abstract class GameEngine {
     }
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder) {
+        if (playerOrder.size() < 3 || playerOrder.size() > 6) {
+            throw new IllegalArgumentException("playerOrder's size is not within: [3, 6]");
+        }
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
