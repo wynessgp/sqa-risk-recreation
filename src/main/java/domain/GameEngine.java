@@ -42,8 +42,8 @@ public abstract class GameEngine {
         return graph;
     }
 
-    public boolean initializePlayersList(List<PlayerColor> playerOrder, int amountOfPlayers) {
-        handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size(), amountOfPlayers);
+    public boolean initializePlayersList(List<PlayerColor> playerOrder) {
+        handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size());
         checkDuplicatesAndTypes(playerOrder);
 
         this.playersList = new ArrayList<>(playerOrder);
@@ -52,14 +52,10 @@ public abstract class GameEngine {
         return true;
     }
 
-    private void handleNumPlayersAndPlayerOrderSizeErrorChecking(int playerOrderSize, int amountOfPlayers) {
-        if (amountOfPlayers < MINIMUM_NUM_PLAYERS || amountOfPlayers > MAXIMUM_NUM_PLAYERS) {
+    private void handleNumPlayersAndPlayerOrderSizeErrorChecking(int playerOrderSize) {
+        if (playerOrderSize < MINIMUM_NUM_PLAYERS || playerOrderSize > MAXIMUM_NUM_PLAYERS) {
             throw new IllegalArgumentException(String.format("amountOfPlayers is not within: [%d, %d]",
                     MINIMUM_NUM_PLAYERS, MAXIMUM_NUM_PLAYERS));
-        }
-        if (amountOfPlayers != playerOrderSize) {
-            throw new IllegalArgumentException(String.format("Size mismatch between playerOrder: %d "
-                   + "and amountOfPlayers: %d", playerOrderSize, amountOfPlayers));
         }
     }
 

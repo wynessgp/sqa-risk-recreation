@@ -33,7 +33,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "amountOfPlayers is not within: [2, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(emptyPlayerColorList, illegalInput));
+                () -> unitUnderTest.initializePlayersList(emptyPlayerColorList));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -48,7 +48,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "amountOfPlayers is not within: [2, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(sizeSevenPlayerColorList, amountOfPlayers));
+                () -> unitUnderTest.initializePlayersList(sizeSevenPlayerColorList));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -62,7 +62,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "Player order contains duplicate entries";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(listWithDupes, amountOfPlayers));
+                () -> unitUnderTest.initializePlayersList(listWithDupes));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -77,7 +77,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "Player order contains duplicate entries";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(listWithDupes, amountOfPlayers));
+                () -> unitUnderTest.initializePlayersList(listWithDupes));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -90,7 +90,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "Player order contains SETUP as one of the players";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(listWithSetup, listWithSetup.size()));
+                () -> unitUnderTest.initializePlayersList(listWithSetup));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -121,7 +121,7 @@ public class AbstractGameEngineTest {
 
         String expectedMessage = "Player order contains SETUP as one of the players";
         Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(listWithSetup, amountOfPlayers));
+                () -> unitUnderTest.initializePlayersList(listWithSetup));
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -150,18 +150,16 @@ public class AbstractGameEngineTest {
     @MethodSource("generatePlayerLists_sizesTwoThroughSix")
     public void test08_initializePlayersList_validInput_expectTrue(List<PlayerColor> validPlayerOrder) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
-        int amountOfPlayers = validPlayerOrder.size();
 
-        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder, amountOfPlayers));
+        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder));
     }
 
     @ParameterizedTest
     @MethodSource("generatePlayerLists_sizesTwoThroughSix")
     public void test09_initializePlayersList_validInputEnsureListIsSet_expectTrue(List<PlayerColor> validPlayerOrder) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
-        int amountOfPlayers = validPlayerOrder.size();
 
-        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder, amountOfPlayers));
+        unitUnderTest.initializePlayersList(validPlayerOrder);
 
         assertEquals(validPlayerOrder, unitUnderTest.getPlayersList());
     }
@@ -340,7 +338,7 @@ public class AbstractGameEngineTest {
 
         // this test is meant to act as an "integration" test between initializePlayersList and
         // assignSetupArmiesToPlayers.
-        assertTrue(unitUnderTest.initializePlayersList(twoPlayerList, twoPlayerList.size()));
+        assertTrue(unitUnderTest.initializePlayersList(twoPlayerList));
         // if that worked, the mapping should now be set up.
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
@@ -375,7 +373,7 @@ public class AbstractGameEngineTest {
             List<PlayerColor> playerColors) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
 
-        assertTrue(unitUnderTest.initializePlayersList(playerColors, playerColors.size()));
+        assertTrue(unitUnderTest.initializePlayersList(playerColors));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         int expectedNumArmies = 40 - ((playerColors.size() - 2) * 5);
@@ -582,7 +580,7 @@ public class AbstractGameEngineTest {
         TerritoryType targetTerritory = TerritoryType.ALASKA;
         int numArmiesToPlace = 1;
 
-        assertTrue(unitUnderTest.initializePlayersList(playerColors, playerColors.size()));
+        assertTrue(unitUnderTest.initializePlayersList(playerColors));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // since it is an expectation that the GameEngine handles whose turn it is FOR us,
@@ -608,7 +606,7 @@ public class AbstractGameEngineTest {
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
-        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // let everyone go once, with a valid territory. Check that it wraps back around as well.
@@ -627,7 +625,7 @@ public class AbstractGameEngineTest {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         int numArmiesToPlace = 1;
 
-        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         for (TerritoryType territory : TerritoryType.values()) {
@@ -862,7 +860,7 @@ public class AbstractGameEngineTest {
         int numArmiesToPlace = 1;
 
         // start by claiming all the territories.
-        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         for (TerritoryType territory : TerritoryType.values()) {
@@ -893,7 +891,7 @@ public class AbstractGameEngineTest {
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
-        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // here's the tricky bit about testing this: placeArmiesInTerritory automatically advances the
@@ -920,7 +918,7 @@ public class AbstractGameEngineTest {
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
 
-        assertTrue(unitUnderTest.initializePlayersList(players, players.size()));
+        assertTrue(unitUnderTest.initializePlayersList(players));
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // claim all the territories, ensure we enter the setup phase.
