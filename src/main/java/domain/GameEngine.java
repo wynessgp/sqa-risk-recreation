@@ -43,29 +43,11 @@ public abstract class GameEngine {
     }
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder) {
-        handleNumPlayersAndPlayerOrderSizeErrorChecking(playerOrder.size());
-        checkDuplicatesAndTypes(playerOrder);
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
         currentPlayer = playerOrder.get(0);
         return true;
-    }
-
-    private void handleNumPlayersAndPlayerOrderSizeErrorChecking(int playerOrderSize) {
-        if (playerOrderSize < MINIMUM_NUM_PLAYERS || playerOrderSize > MAXIMUM_NUM_PLAYERS) {
-            throw new IllegalArgumentException(String.format("amountOfPlayers is not within: [%d, %d]",
-                    MINIMUM_NUM_PLAYERS, MAXIMUM_NUM_PLAYERS));
-        }
-    }
-
-    private void checkDuplicatesAndTypes(List<PlayerColor> playerOrder) {
-        if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
-            throw new IllegalArgumentException("Player order contains duplicate entries");
-        }
-        if (playerOrder.contains(PlayerColor.SETUP)) {
-            throw new IllegalArgumentException("Player order contains SETUP as one of the players");
-        }
     }
 
     private void initializePlayerColorToPlayerMap(List<PlayerColor> playerColors) {
