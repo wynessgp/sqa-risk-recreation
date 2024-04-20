@@ -203,9 +203,8 @@ public class AbstractGameEngineTest {
                     .addMockedMethod("setNumArmiesToPlace")
                     .addMockedMethod("getNumArmiesToPlace")
                     .createMock();
-            // 40 is the MAX (2 players), account for that offset on the size
-            // and lose 5 additional armies per extra player.
-            int expectedNumArmies = 40 - ((numberOfPlayers - 2) * 5);
+            // 35 is the MAX (3 players), lose 5 additional armies per extra player.
+            int expectedNumArmies = 35 - ((numberOfPlayers - 3) * 5);
             mockedPlayer.setNumArmiesToPlace(expectedNumArmies);
             EasyMock.expectLastCall().once();
             EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(expectedNumArmies);
@@ -213,27 +212,6 @@ public class AbstractGameEngineTest {
             listOfPlayersToReturn.add(mockedPlayer);
         }
         return listOfPlayersToReturn;
-    }
-
-    @Test
-    public void test11_assignSetupArmiesToPlayers_playerListSizeTwoAddNeutral_returnsTrueAndCorrectlyAssigns() {
-        // employ partial mocks for this method to ensure the Player objects are utilized correctly.
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> twoPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.NEUTRAL);
-
-        unitUnderTest.setPlayerOrderList(twoPlayerList);
-
-        List<Player> playerMocks = createMockedPlayersList(twoPlayerList, 2); // "remove" neutral
-
-        unitUnderTest.provideMockedPlayerObjects(playerMocks);
-
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
-        int expectedNumArmies = 40;
-
-        for (Player mockedPlayer : playerMocks) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
-            EasyMock.verify(mockedPlayer);
-        }
     }
 
     @Test
