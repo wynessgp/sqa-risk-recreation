@@ -25,6 +25,8 @@ public class AbstractGameEngineTest {
     // this testing file will only test things ALL the win conditions share.
     // namely, the non-abstract methods in GameEngine.
 
+    private static final int GET_TERRITORY_ONCE = 1;
+
     private static Stream<Arguments> generateVariousIllegalPlayerOrderLists() {
         Set<Arguments> illegalPlayerOrderArguments = new HashSet<>();
         illegalPlayerOrderArguments.add(Arguments.of(List.of()));
@@ -153,7 +155,6 @@ public class AbstractGameEngineTest {
     private static Stream<Arguments> generateValidPlayerListsSizesThreeThroughSix() {
         Set<Arguments> arguments = new HashSet<>();
         Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
-        validPlayers.remove(PlayerColor.NEUTRAL);
         validPlayers.remove(PlayerColor.SETUP);
 
         int size = validPlayers.size();
@@ -264,6 +265,50 @@ public class AbstractGameEngineTest {
 
         EasyMock.replay(mockedGraph);
         return mockedGraph;
+    }
+
+    private static Stream<Arguments> generateAllTerritoryTypesAndDistinctPlayerPairs() {
+        Set<Set<PlayerColor>> playerPairsNoDupes = new HashSet<>();
+        List<PlayerColor> playerColorsNoSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        playerColorsNoSetup.remove(PlayerColor.SETUP);
+
+        for (PlayerColor playerOne : playerColorsNoSetup) {
+            for (PlayerColor playerTwo : playerColorsNoSetup) {
+                if (playerOne != playerTwo) {
+                    Set<PlayerColor> playerPair = new HashSet<>();
+                    playerPair.add(playerOne);
+                    playerPair.add(playerTwo);
+                    playerPairsNoDupes.add(playerPair);
+                }
+            }
+        }
+        Set<Arguments> allTerritoriesAndPlayerPairs = new HashSet<>();
+        for (Set<PlayerColor> playerPair : playerPairsNoDupes) {
+            Iterator<PlayerColor> iter = playerPair.iterator();
+            PlayerColor playerOne = iter.next();
+            PlayerColor playerTwo = iter.next();
+            for (TerritoryType territory : TerritoryType.values()) {
+                allTerritoriesAndPlayerPairs.add(Arguments.of(territory, playerOne, playerTwo));
+            }
+        }
+        return allTerritoriesAndPlayerPairs.stream();
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
+    public void test07_checkIfPlayerOwnsTerritory_playerDoesNotOwnTerritory_expectFalse(
+            TerritoryType relevantTerritory, PlayerColor playerInControlOfTerritory, PlayerColor notInControl) {
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControlOfTerritory);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
+                relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
+
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertFalse(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, notInControl));
+
+        EasyMock.verify(mockedGraph, mockedTerritory);
     }
 
     @ParameterizedTest
@@ -515,35 +560,8 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    private static Stream<Arguments> generateAllTerritoriesAndDistinctPlayerPairs() {
-        Set<Set<PlayerColor>> playerPairsNoDupes = new HashSet<>();
-        List<PlayerColor> playerColorsNoSetup = new ArrayList<>(List.of(PlayerColor.values()));
-        playerColorsNoSetup.remove(PlayerColor.SETUP);
-
-        for (PlayerColor playerOne : playerColorsNoSetup) {
-            for (PlayerColor playerTwo : playerColorsNoSetup) {
-                if (playerOne != playerTwo) {
-                    Set<PlayerColor> playerPair = new HashSet<>();
-                    playerPair.add(playerOne);
-                    playerPair.add(playerTwo);
-                    playerPairsNoDupes.add(playerPair);
-                }
-            }
-        }
-        Set<Arguments> allTerritoriesAndPlayerPairs = new HashSet<>();
-        for (Set<PlayerColor> playerPair : playerPairsNoDupes) {
-            Iterator<PlayerColor> iter = playerPair.iterator();
-            PlayerColor playerOne = iter.next();
-            PlayerColor playerTwo = iter.next();
-            for (TerritoryType territory : TerritoryType.values()) {
-                allTerritoriesAndPlayerPairs.add(Arguments.of(territory, playerOne, playerTwo));
-            }
-        }
-        return allTerritoriesAndPlayerPairs.stream();
-    }
-
     @ParameterizedTest
-    @MethodSource("generateAllTerritoriesAndDistinctPlayerPairs")
+    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
     public void test28_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl, PlayerColor playerAttemptingToPlace) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
