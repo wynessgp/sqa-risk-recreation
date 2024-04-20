@@ -158,7 +158,7 @@ public class AbstractGameEngineTest {
 
         int size = validPlayers.size();
         for (PlayerColor player : new HashSet<>(validPlayers)) {
-            if (size < 4) {
+            if (size < 3) {
                 continue;
             }
             List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
@@ -201,98 +201,31 @@ public class AbstractGameEngineTest {
                     .withConstructor(PlayerColor.class)
                     .withArgs(playerColor)
                     .addMockedMethod("setNumArmiesToPlace")
-                    .addMockedMethod("getNumArmiesToPlace")
                     .createMock();
             // 35 is the MAX (3 players), lose 5 additional armies per extra player.
             int expectedNumArmies = 35 - ((numberOfPlayers - 3) * 5);
             mockedPlayer.setNumArmiesToPlace(expectedNumArmies);
             EasyMock.expectLastCall().once();
-            EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(expectedNumArmies);
             EasyMock.replay(mockedPlayer);
             listOfPlayersToReturn.add(mockedPlayer);
         }
         return listOfPlayersToReturn;
     }
 
-    @Test
-    public void test12_assignSetupArmiesToPlayers_playerListSizeThree_returnsTrueAndCorrectlyAssigns() {
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test05_assignSetupArmiesToPlayers_playerListSizeVaries_returnsTrueAndAssignsExpectedAmount(
+            List<PlayerColor> playerColorList) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> threePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.PURPLE);
+        unitUnderTest.setPlayerOrderList(playerColorList);
 
-        unitUnderTest.setPlayerOrderList(threePlayerList);
-
-        List<Player> playerMocks = createMockedPlayersList(threePlayerList, threePlayerList.size());
+        List<Player> playerMocks = createMockedPlayersList(playerColorList, playerColorList.size());
 
         unitUnderTest.provideMockedPlayerObjects(playerMocks);
 
         assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
-        int expectedNumArmies = 35;
 
         for (Player mockedPlayer : playerMocks) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
-            EasyMock.verify(mockedPlayer);
-        }
-    }
-
-    @Test
-    public void test13_assignSetupArmiesToPlayers_playerListSizeFour_returnsTrueAndCorrectlyAssigns() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> fourPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
-                PlayerColor.PURPLE, PlayerColor.GREEN);
-
-        unitUnderTest.setPlayerOrderList(fourPlayerList);
-
-        List<Player> playerMocks = createMockedPlayersList(fourPlayerList, fourPlayerList.size());
-
-        unitUnderTest.provideMockedPlayerObjects(playerMocks);
-
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
-        int expectedNumArmies = 30;
-
-        for (Player mockedPlayer : playerMocks) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
-            EasyMock.verify(mockedPlayer);
-        }
-    }
-
-    @Test
-    public void test14_assignSetupArmiesToPlayers_playerListSizeFive_returnsTrueAndCorrectlyAssigns() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> fivePlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW,
-                PlayerColor.PURPLE, PlayerColor.GREEN, PlayerColor.BLACK);
-
-        unitUnderTest.setPlayerOrderList(fivePlayerList);
-
-        List<Player> playerMocks = createMockedPlayersList(fivePlayerList, fivePlayerList.size());
-
-        unitUnderTest.provideMockedPlayerObjects(playerMocks);
-
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
-        int expectedNumArmies = 25;
-
-        for (Player mockedPlayer : playerMocks) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
-            EasyMock.verify(mockedPlayer);
-        }
-    }
-
-    @Test
-    public void test15_assignSetupArmiesToPlayers_playerListSizeSix_returnsTrueAndCorrectlyAssigns() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> sixPlayerList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.PURPLE,
-                PlayerColor.GREEN, PlayerColor.BLACK, PlayerColor.BLUE);
-
-        unitUnderTest.setPlayerOrderList(sixPlayerList);
-
-        List<Player> playerMocks = createMockedPlayersList(sixPlayerList, sixPlayerList.size());
-
-        unitUnderTest.provideMockedPlayerObjects(playerMocks);
-
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
-        int expectedNumArmies = 20;
-
-        for (Player mockedPlayer : playerMocks) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(mockedPlayer.getColor()));
             EasyMock.verify(mockedPlayer);
         }
     }
