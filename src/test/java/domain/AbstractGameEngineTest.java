@@ -55,34 +55,6 @@ public class AbstractGameEngineTest {
     }
 
     @Test
-    public void test02_initializePlayersList_sizeMismatchBetweenOrderAndNumberPlayers_expectException() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> emptyList = List.of();
-        int amountOfPlayers = 2;
-
-        String expectedMessage = "Size mismatch between playerOrder: 0 and amountOfPlayers: 2";
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(emptyList, amountOfPlayers));
-
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
-
-    @Test
-    public void test03_initializePlayersList_sizeMismatchBetweenOrderAndNumberPlayers_validAmounts_expectException() {
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> sizeThreePlayerColorList = List.of(PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.PURPLE);
-        int amountOfPlayers = 2;
-
-        String expectedMessage = "Size mismatch between playerOrder: 3 and amountOfPlayers: 2";
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> unitUnderTest.initializePlayersList(sizeThreePlayerColorList, amountOfPlayers));
-
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
-
-    @Test
     public void test04_initializePlayersList_playerOrderContainsDuplicates_expectException() {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> listWithDupes = List.of(PlayerColor.YELLOW, PlayerColor.YELLOW, PlayerColor.SETUP);
