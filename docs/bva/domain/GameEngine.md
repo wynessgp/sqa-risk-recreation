@@ -307,14 +307,13 @@ Input:
   - Maximum possible value (number of armies the player earns on that turn)
   - One larger than the maximum possible value (error case)
 - Player who owns the territory (Cases):
-  - The 1st possibility (SETUP - interesting case; restricts placement to 1)
-  - The 2nd possibility (NEUTRAL)
+  - The 1st possibility (SETUP - should ONLY happen in SCRAMBLE)
   - ...
-  - The 8th possibility (PURPLE)
-  - The 0th, 9th possibilities (can't set)
+  - The 7th possibility (PURPLE)
+  - The 0th, 8th possibilities (can't set)
 - Game Phase (Cases):
-  - The 1st possibility (SCRAMBLE)
-  - The 2nd possibility (SETUP)
+  - The 1st possibility (SCRAMBLE -> restrict army placement to 1)
+  - The 2nd possibility (SETUP -> restrict army placement to 1)
   - The 3rd possibility (PLACEMENT)
   - ...
   - The 6th possibility (GAME_OVER)
@@ -329,14 +328,20 @@ Output:
 - function return value: Boolean
   - 0 (can't set)
   - 1 (when the amount to place is valid, and the operation succeeds)
-  - Some value other than 0 or 1 (namely, exceptions - for when the amount of troops is invalid, or in the wrong phase)
+  - Some value other than 0 or 1 (exceptions)
+    - If the game phase is SCRAMBLE or SETUP, our players can't place more than 1 army at a time.
   - Some true value other than 0 or 1 (can't set)
 - Territory object: Pointer
   - Null pointer (can't set, per Martin's suggestions)
   - A pointer to the true object
     - Mostly concerned about checking two things in our Territory object:
       - The PlayerColor should be updated if we're in the SCRAMBLE phase
-      - The army count should be updated regardless of phase, if possible
+      - The army count should be updated in appropriate phases:
+        - SCRAMBLE
+        - SETUP
+        - PLACEMENT
+        - FORTIFY
+        - ATTACK(?)
 - Player object: Pointer
   - The number of armies they have to place should be updated
   - Territories held should be updated if in SCRAMBLE (maybe attack too).
@@ -427,7 +432,7 @@ Output:
 
 ### SETUP PHASE
 
-### Test 7:
+### Test 8:
 - Input:
   - territory = ALASKA
   - numArmies = -1
@@ -437,7 +442,7 @@ Output:
 - Output:
   - IllegalArgumentException
     - message: "Cannot place anything other than 1 army in a territory during setup phase"
-### Test 8:
+### Test 9:
 - Input:
   - territory = ARGENTINA
   - numArmies = 0
@@ -447,7 +452,7 @@ Output:
 - Output:
   - IllegalArgumentException
     - message: "Cannot place anything other than 1 army in a territory during setup phase"
-### Test 9: 
+### Test 10: 
 - Input:
   - territory = ALASKA
   - numArmies = 1
@@ -457,7 +462,7 @@ Output:
 - Output:
   - IllegalArgumentException
     - message: "Cannot place armies on a territory you do not own"
-### Test 10:
+### Test 11:
 - Input:
   - territory = ALASKA
   - numArmies = 1
@@ -467,7 +472,7 @@ Output:
 - Output:
   - IllegalArgumentException
     - message: "Player does not have enough armies to place!"
-### Test 10:
+### Test 12:
 - Input:
   - territory = ALASKA
   - numArmies = 1
@@ -480,7 +485,7 @@ Output:
   - Territory pointer: [numArmies = 2, PlayerColor = current player]
   - Current player = [Color = BLUE, numArmiesToPlace = 2]
   - Update to say we're on the next player's turn
-### Test 11:
+### Test 13:
 - Input:
   - territory = BRAZIL
   - numArmies = 1
