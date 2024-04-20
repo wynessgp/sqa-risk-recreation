@@ -8,7 +8,7 @@ import java.util.Set;
 
 public abstract class GameEngine {
 
-    private static final int MINIMUM_NUM_PLAYERS = 2;
+    private static final int MINIMUM_NUM_PLAYERS = 3;
     private static final int MAXIMUM_NUM_PLAYERS = 6;
 
     private static final int MAXIMUM_ARMIES_POSSIBLE_IN_SETUP = 40;
@@ -53,8 +53,9 @@ public abstract class GameEngine {
     }
 
     private void handleErrorCheckingForOrderSize(List<PlayerColor> playerOrder) {
-        if (playerOrder.size() < 3 || playerOrder.size() > 6) {
-            throw new IllegalArgumentException("playerOrder's size is not within: [3, 6]");
+        if (playerOrder.size() < MINIMUM_NUM_PLAYERS || playerOrder.size() > MAXIMUM_NUM_PLAYERS) {
+            throw new IllegalArgumentException(String.format(
+                    "playerOrder's size is not within: [%d, %d]", MINIMUM_NUM_PLAYERS, MAXIMUM_NUM_PLAYERS));
         }
     }
 
@@ -69,9 +70,6 @@ public abstract class GameEngine {
 
     private void initializePlayerColorToPlayerMap(List<PlayerColor> playerColors) {
         playerColors.forEach((playerColor) -> playersMap.put(playerColor, new Player(playerColor)));
-        if (playerColors.size() == NUM_PLAYERS_WITH_NEUTRAL) { // add the neutral player, if needed.
-            playersMap.put(PlayerColor.NEUTRAL, new Player(PlayerColor.NEUTRAL));
-        }
     }
 
     public boolean assignSetupArmiesToPlayers() {
@@ -235,10 +233,6 @@ public abstract class GameEngine {
 
     void setGamePhase(GamePhase gamePhase) {
         currentGamePhase = gamePhase;
-    }
-
-    List<PlayerColor> getPlayersList() {
-        return playersList;
     }
 
     void setPlayerOrderList(List<PlayerColor> playersList) {
