@@ -258,4 +258,8 @@ public abstract class GameEngine {
     Set<TerritoryType> getClaimedTerritoriesForPlayer(PlayerColor playerInQuestion) {
         return playersMap.get(playerInQuestion).getTerritories();
     }
+
+    List<PlayerColor> getPlayerOrder() {
+        return playersList;
+    }
 }

@@ -150,6 +150,35 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generateValidPlayerListsSizesThreeThroughSix() {
+        Set<Arguments> arguments = new HashSet<>();
+        Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
+        validPlayers.remove(PlayerColor.NEUTRAL);
+        validPlayers.remove(PlayerColor.SETUP);
+
+        int size = validPlayers.size();
+        for (PlayerColor player : new HashSet<>(validPlayers)) {
+            if (size < 4) {
+                continue;
+            }
+            List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
+            arguments.add(Arguments.of(playerListVariant));
+            validPlayers.remove(player);
+            size--;
+        }
+        return arguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test03_initializePlayersList_playerOrderIsValid_expectTrueAndCheckStorageIsSameAsInput(
+            List<PlayerColor> validPlayerOrder) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        assertTrue(unitUnderTest.initializePlayersList(validPlayerOrder));
+        assertEquals(validPlayerOrder, unitUnderTest.getPlayerOrder());
+    }
+
 
     @Test
     public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {
@@ -290,27 +319,8 @@ public class AbstractGameEngineTest {
         }
     }
 
-    private static Stream<Arguments> generatePlayerLists_sizesThreeThroughSix() {
-        Set<Arguments> arguments = new HashSet<>();
-        Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
-        validPlayers.remove(PlayerColor.NEUTRAL);
-        validPlayers.remove(PlayerColor.SETUP);
-
-        int size = validPlayers.size();
-        for (PlayerColor player : new HashSet<>(validPlayers)) {
-            if (size < 4) {
-                continue;
-            }
-            List<PlayerColor> playerListVariant = new ArrayList<>(validPlayers);
-            arguments.add(Arguments.of(playerListVariant));
-            validPlayers.remove(player);
-            size--;
-        }
-        return arguments.stream();
-    }
-
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test17_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
             List<PlayerColor> playerColors) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -541,7 +551,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -561,7 +571,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test26_placeNewArmiesInTerritoryScrambleIntegrationTest_allTerritoriesClaimedAdvancePhase(
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -795,7 +805,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -826,7 +836,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -855,7 +865,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generatePlayerLists_sizesThreeThroughSix")
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
             List<PlayerColor> players) {
         GameEngine unitUnderTest = new WorldDominationGameEngine();
