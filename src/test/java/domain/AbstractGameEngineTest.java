@@ -336,7 +336,17 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedGraph, mockedTerritory);
     }
 
-    private static Stream<Arguments> generateAllTerritoryTypeAndPlayerMinusSetupCombinations() {
+    @Test
+    public void test09_checkIfPlayerOwnsTerritoryIntegrationTest_doesSetupOwnAllTerritories_expectTrue() {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        // don't need to initialize anything else, just make sure the Graph is ready for us to play on.
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(territory, PlayerColor.SETUP));
+        }
+    }
+
+    private static Stream<Arguments> generateAllTerritoryTypesAndPlayerMinusSetupCombinations() {
         // each set is going to be a "tuple" of (TerritoryType, PlayerColor)
         Set<Arguments> outputSet = new HashSet<>();
         Set<TerritoryType> territoryTypes = Set.of(TerritoryType.values());
@@ -352,7 +362,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
     public void test20_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
@@ -373,7 +383,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
     public void test21_placeNewArmiesInTerritory_invalidAmountOfPlayerArmies_expectException(
             TerritoryType relevantTerritory, PlayerColor playerToTakeControl) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
@@ -449,7 +459,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
     public void test23_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
             TerritoryType relevantTerritory, PlayerColor currentlyGoingPlayer) {
         Territory mockedTerritory = createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
@@ -666,7 +676,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
     public void test31_placeNewArmiesInTerritory_setupPhase_playerHasTooFewArmiesToPlace_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
@@ -698,7 +708,7 @@ public class AbstractGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypeAndPlayerMinusSetupCombinations")
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
     public void test32_placeNewArmiesInTerritory_scramblePhase_validInput_ensurePlayerObjectHasTerritoryAdded(
             TerritoryType relevantTerritory, PlayerColor currentPlayer) {
 
