@@ -16,7 +16,6 @@ import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -311,32 +310,28 @@ public class AbstractGameEngineTest {
         EasyMock.verify(mockedGraph, mockedTerritory);
     }
 
-    @ParameterizedTest
-    @EnumSource(TerritoryType.class)
-    public void test18_checkIfPlayerOwnsTerritory_setupPlayerOwnsTerritory_inputIsBluePlayer_expectFalse(
-            TerritoryType relevantTerritory) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
-        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
-
-        GameEngine unitUnderTest = new WorldDominationGameEngine();
-        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
-
-        assertFalse(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.BLUE));
-
-        EasyMock.verify(mockedGraph, mockedTerritory);
+    private static Stream<Arguments> generateAllTerritoryTypesAndPlayerColors() {
+        Set<Arguments> allTerritoriesAndPlayerColors = new HashSet<>();
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            for (PlayerColor playerColor : PlayerColor.values()) {
+                allTerritoriesAndPlayerColors.add(Arguments.of(territoryType, playerColor));
+            }
+        }
+        return allTerritoriesAndPlayerColors.stream();
     }
 
     @ParameterizedTest
-    @EnumSource(TerritoryType.class)
-    public void test19_checkIfPlayerOwnsTerritory_nonSetupPlayerOwnsTerritory_inputIsBluePlayer_expectFalse(
-            TerritoryType relevantTerritory) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.RED);
-        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
+    @MethodSource("generateAllTerritoryTypesAndPlayerColors")
+    public void test08_checkIfPlayerOwnsTerritory_playerOwnsTerritory_expectTrue(
+            TerritoryType relevantTerritory, PlayerColor playerInControlOfTerritory) {
+        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControlOfTerritory);
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
+                relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
 
         GameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
 
-        assertFalse(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, PlayerColor.BLUE));
+        assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, playerInControlOfTerritory));
 
         EasyMock.verify(mockedGraph, mockedTerritory);
     }
