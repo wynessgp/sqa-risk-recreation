@@ -107,6 +107,49 @@ public class AbstractGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generateListsOfVaryingSizeAndSetupAtDifferentIndices() {
+        Set<Arguments> duplicatePlayerColorArguments = new HashSet<>();
+        // size 3 with setup
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.SETUP, PlayerColor.BLACK, PlayerColor.RED)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.RED, PlayerColor.BLUE, PlayerColor.SETUP)));
+
+        // size 4 with setup
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.YELLOW, PlayerColor.SETUP, PlayerColor.RED, PlayerColor.BLACK)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.SETUP)));
+
+        // size 5 with setup
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.BLUE, PlayerColor.SETUP, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.PURPLE)));
+        duplicatePlayerColorArguments.add(Arguments.of(
+                List.of(PlayerColor.GREEN, PlayerColor.BLACK, PlayerColor.RED, PlayerColor.BLUE, PlayerColor.SETUP)));
+
+        // size 6 with setup
+        duplicatePlayerColorArguments.add(Arguments.of(List.of(PlayerColor.PURPLE, PlayerColor.BLUE, PlayerColor.BLACK,
+                PlayerColor.YELLOW, PlayerColor.SETUP, PlayerColor.RED)));
+        duplicatePlayerColorArguments.add(Arguments.of(List.of(PlayerColor.BLUE, PlayerColor.PURPLE, PlayerColor.RED,
+                PlayerColor.BLACK, PlayerColor.YELLOW, PlayerColor.SETUP)));
+
+        return duplicatePlayerColorArguments.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateListsOfVaryingSizeAndSetupAtDifferentIndices")
+    public void test02_initializePlayersList_playerOrderContainsSetup_expectException(
+            List<PlayerColor> playerOrderWithSetup) {
+        GameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        String expectedMessage = "playerOrder contains SETUP as one of the players";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.initializePlayersList(playerOrderWithSetup));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
     @Test
     public void test10_assignSetupArmiesToPlayers_playerColorListIsEmpty_expectException() {

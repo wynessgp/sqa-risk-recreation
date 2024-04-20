@@ -43,7 +43,8 @@ public abstract class GameEngine {
     }
 
     public boolean initializePlayersList(List<PlayerColor> playerOrder) {
-        handleErrorCheckingForOrderSizeAndContents(playerOrder);
+        handleErrorCheckingForOrderSize(playerOrder);
+        handleErrorCheckingForOrderContents(playerOrder);
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
@@ -51,12 +52,18 @@ public abstract class GameEngine {
         return true;
     }
 
-    private void handleErrorCheckingForOrderSizeAndContents(List<PlayerColor> playerOrder) {
+    private void handleErrorCheckingForOrderSize(List<PlayerColor> playerOrder) {
         if (playerOrder.size() < 3 || playerOrder.size() > 6) {
             throw new IllegalArgumentException("playerOrder's size is not within: [3, 6]");
         }
+    }
+
+    private void handleErrorCheckingForOrderContents(List<PlayerColor> playerOrder) {
         if (Set.copyOf(playerOrder).size() != playerOrder.size()) {
             throw new IllegalArgumentException("playerOrder contains duplicate entries");
+        }
+        if (playerOrder.contains(PlayerColor.SETUP)) {
+            throw new IllegalArgumentException("playerOrder contains SETUP as one of the players");
         }
     }
 
