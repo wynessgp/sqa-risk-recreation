@@ -231,10 +231,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test06_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
             List<PlayerColor> playerColors) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-
-        assertTrue(unitUnderTest.initializePlayersList(playerColors));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors);
 
         int expectedNumArmies = 35 - ((playerColors.size() - 3) * 5);
         for (PlayerColor player : playerColors) {
@@ -485,13 +482,10 @@ public class WorldDominationGameEngineTest {
 
     @Test
     public void test24_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors);
         TerritoryType targetTerritory = TerritoryType.ALASKA;
         int numArmiesToPlace = 1;
-
-        assertTrue(unitUnderTest.initializePlayersList(playerColors));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // since it is an expectation that the WorldDominationGameEngine handles whose turn it is FOR us,
         // we will try placing an army as RED, then the current player should be PURPLE.
@@ -512,12 +506,9 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
-
-        assertTrue(unitUnderTest.initializePlayersList(players));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // let everyone go once, with a valid territory. Check that it wraps back around as well.
         for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
@@ -532,11 +523,8 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test26_placeNewArmiesInTerritoryScrambleIntegrationTest_allTerritoriesClaimedAdvancePhase(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
         int numArmiesToPlace = 1;
-
-        assertTrue(unitUnderTest.initializePlayersList(players));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         for (TerritoryType territory : TerritoryType.values()) {
             assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
@@ -739,12 +727,8 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
         int numArmiesToPlace = 1;
-
-        // start by claiming all the territories.
-        assertTrue(unitUnderTest.initializePlayersList(players));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         for (TerritoryType territory : TerritoryType.values()) {
             assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
@@ -770,12 +754,9 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
-
-        assertTrue(unitUnderTest.initializePlayersList(players));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
 
         // here's the tricky bit about testing this: placeArmiesInTerritory automatically advances the
         // player going. So we'll need to ask for a particular player.
@@ -799,10 +780,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-
-        assertTrue(unitUnderTest.initializePlayersList(players));
-        assertTrue(unitUnderTest.assignSetupArmiesToPlayers());
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
 
         // claim all the territories, ensure we enter the setup phase.
         int numArmiesToPlace = 1;
