@@ -235,7 +235,8 @@ public class TradeInParserTest {
         cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
 
         Player player = EasyMock.createMock(Player.class);
-        EasyMock.expect(player.getTerritories()).andReturn(new HashSet<>()).anyTimes();
+        EasyMock.expect(player.ownsTerritory(TerritoryType.ALASKA)).andReturn(false).anyTimes();
+        EasyMock.expect(player.ownsTerritory(TerritoryType.ALBERTA)).andReturn(false).anyTimes();
         EasyMock.replay(player);
 
         TradeInParser tradeIn = new TradeInParser();
@@ -250,7 +251,14 @@ public class TradeInParserTest {
 
     private Player createMockedPlayer(Set<TerritoryType> territories) {
         Player player = EasyMock.createMock(Player.class);
-        EasyMock.expect(player.getTerritories()).andReturn(territories).anyTimes();
+        for (TerritoryType territory : territories) {
+            EasyMock.expect(player.ownsTerritory(territory)).andReturn(true).anyTimes();
+        }
+        for (TerritoryType territory : Set.of(TerritoryType.values())) {
+            if (!territories.contains(territory)) {
+                EasyMock.expect(player.ownsTerritory(territory)).andReturn(false).anyTimes();
+            }
+        }
         EasyMock.replay(player);
         return player;
     }
