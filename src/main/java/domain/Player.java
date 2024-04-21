@@ -6,29 +6,41 @@ import java.util.Set;
 public class Player {
     private final PlayerColor playerColor;
     private int numArmiesToPlace;
-    private final Set<TerritoryType> claimedTerritories = new HashSet<>();
+    private Set<TerritoryType> territories = new HashSet<>();
 
     public Player(PlayerColor playerColor) {
         this.playerColor = playerColor;
     }
 
-    public Set<TerritoryType> getTerritories() {
-        return Set.copyOf(claimedTerritories);
+    public boolean ownsTerritory(TerritoryType territory) {
+        return territories.contains(territory);
     }
 
     public void setNumArmiesToPlace(int newAmount) {
         numArmiesToPlace = newAmount;
     }
 
-    public PlayerColor getColor() {
-        return playerColor;
-    }
-
     public int getNumArmiesToPlace() {
         return numArmiesToPlace;
     }
 
+    public PlayerColor getColor() {
+        return playerColor;
+    }
+
     public void addTerritoryToCollection(TerritoryType relevantTerritory) {
-        claimedTerritories.add(relevantTerritory);
+        this.territories.add(relevantTerritory);
+    }
+
+    void setTerritories(Set<TerritoryType> territories) {
+        this.territories = territories;
+    }
+
+    Set<TerritoryType> getTerritories() {
+        return territories;
+    }
+
+    Player() {
+        playerColor = PlayerColor.SETUP;
     }
 }
