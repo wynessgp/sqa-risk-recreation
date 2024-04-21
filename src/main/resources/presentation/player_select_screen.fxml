@@ -16,7 +16,7 @@
          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
-      <Button fx:id="blackPlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: black;" text="Black" textFill="WHITE">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: black;" text="Black" textFill="WHITE">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
@@ -24,7 +24,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="redPlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: red;" text="Red" textFill="WHITE" GridPane.columnIndex="1">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: red;" text="Red" textFill="WHITE" GridPane.columnIndex="1">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
@@ -32,7 +32,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="yellowPlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: yellow;" text="Yellow" GridPane.columnIndex="2">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: yellow;" text="Yellow" GridPane.columnIndex="2">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
@@ -40,7 +40,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="bluePlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: blue;" text="Blue" textFill="WHITE" GridPane.rowIndex="1">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: blue;" text="Blue" textFill="WHITE" GridPane.rowIndex="1">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
@@ -48,7 +48,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="greenPlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: green;" text="Green" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: green;" text="Green" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
@@ -56,7 +56,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="purplePlayer" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: purple;" text="Purple" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
+      <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: purple;" text="Purple" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <font>
             <Font name="Arial Black" size="26.0" />
          </font>
