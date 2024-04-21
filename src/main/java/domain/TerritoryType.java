@@ -57,5 +57,5 @@ public enum TerritoryType {
     EASTERN_AUSTRALIA,
     INDONESIA,
     NEW_GUINEA,
-    WESTERN_AUSTRALIA 
+    WESTERN_AUSTRALIA
 }

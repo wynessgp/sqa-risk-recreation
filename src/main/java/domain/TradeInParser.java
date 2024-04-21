@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,18 @@ public class TradeInParser {
         if (cards.size() != TRADE_IN_SET_LENGTH) {
             throw new IllegalStateException("Invalid number of cards");
         }
-        return player.getTerritories().stream().filter(territory -> cards.stream().anyMatch(card ->
-                card.matchesTerritory(territory))).collect(Collectors.toSet());
+        return checkPlayerTerritories(player, cards);
+    }
+
+    private Set<TerritoryType> checkPlayerTerritories(Player player, Set<Card> cards) {
+        Set<TerritoryType> matches = new HashSet<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (cards.stream().map(card -> card.matchesTerritory(territory)).collect(Collectors.toList())
+                    .contains(true)) {
+                matches.add(territory);
+            }
+        }
+        return matches.stream().filter(player::ownsTerritory).collect(Collectors.toSet());
     }
 
     private void checkTradeInState(Set<Card> cards) {
