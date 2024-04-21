@@ -1,8 +1,10 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,6 +21,14 @@ public class PlayerTest {
     public void test00_ownsTerritory_withNoneOwned_returnsFalse(TerritoryType territory) {
         Player player = new Player();
         assertFalse(player.ownsTerritory(territory));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryTypeGenerator")
+    public void test01_ownsTerritory_withOneOwnedMatchesInput_returnsTrue(TerritoryType territory) {
+        Player player = new Player();
+        player.setTerritories(Set.of(territory));
+        assertTrue(player.ownsTerritory(territory));
     }
 
 }
