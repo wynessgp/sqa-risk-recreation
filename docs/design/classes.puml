@@ -33,43 +33,90 @@ package presentation {
 }
 
 package domain {
-    +abstract class GameEngine {
-        ~gamePhase: GamePhase
-        ~gameGraph: TerritoryGraph
-        ~tradeInChecker: TradeInManager
-        ~riskCardDeck: RiskCardDeck
-        ~dieRollParser: DieRollParser
+    +class WorldDominationGameEngine {
+        -{static}{final} MINIMUM_NUM_PLAYERS
+        -{static}{final} MAXIMUM_NUM_PLAYERS
 
-        -currentTurnIndex: Integer
-        -currentTurnIndexToPlayerColor: Map<Integer, PlayerColor>
+        -{static}{final} MAXIMUM_ARMIES_POSSIBLE_IN_SETUP
+        -{static}{final} ADDITIONAL_PLAYER_ARMY_OFFSET
+        -{static}{final} PLAYER_LIST_SIZE_OFFSET
 
-        {method} ------ set up phase ------
-        +GameEngine()
-        -initializeGameEngine(): boolean
+        -{static}{final} INITIAL_NUM_UNCLAIMED_TERRITORIES
 
-        +assignSetupArmiesToPlayers(int numPlayers): List<Integer>
-        +placeNewArmiesInTerritory(territory: TerritoryType, numArmies: int): boolean
-        +swapCurrentPlayer(): boolean
+        -playersList: List<PlayerColor>
+        -playersMap: Map<PlayerColor, Player>
+        -currentPlayer: PlayerColor
 
-        {method} ------ placement phase ------
+        -numUnclaimedTerritoriesLeft: int
+        -totalUnplacedArmiesLeft: int
 
-        +calculateTroopsReceivedThisTurn(): int
-        +swapGamePhase(): boolean
+        -territoryGraph: TerritoryGraph
+        -currentGamePhase: GamePhase
 
+        +WorldDominationGameEngine()
+        -initializeGraph(): boolean
+
+        +initializePlayersList(playerOrder: List<PlayerColor>): boolean
+        -handleErrorCheckingForOrderSize(playerOrder: List<PlayerColor>): void
+        -handleErrorCheckingForOrderContents(playerOrder: List<PlayerColor>): void
+        -initializePlayerColorToPlayerMap(playerColors: List<PlayerColor>): void
+
+        +assignSetupArmiesToPlayers(): boolean
+        -checkIfPlayersListIsEmpty(): void
+        -handleArmyAssignment(numPlayersInGame: int): void
+
+        +checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean
+        -getPlayerInControlOfTerritory(relevantTerritory: TerritoryType): PlayerColor
+
+        +placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean
+
+        -handleScramblePhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkIfTerritoryIsUnclaimed(relevantTerritory: TerritoryType): void
+        -checkNumArmiesToPlaceIsValid(numArmiesToPlace: int): void
+        -checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace: int): void
+        -addTerritoryToCurrentPlayerCollection(relevantTerritory: TerritoryType): void
+        -updateCurrentPlayer(): void
+        -checkScramblePhaseEndCondition(): void
+        -calculateNumUnplacedArmiesLeft(): void
+
+        -handleSetupPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace: int): void
+        -checkIfCurrentPlayerOwnsTerritory(relevantTerritory: TerritoryType): void
+        -modifyNumArmiesInTerritory(relevantTerritory: TerritoryType, additionalArmies: int): void
+        -modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace: int): void
+        -checkSetupPhaseEndCondition(): void
+
+        ~provideCurrentPlayerForTurn(currentlyGoingPlayer: PlayerColor): void
+        ~setGamePhase(gamePhase: GamePhase): void
+        ~setPlayerOrderList(playersList: List<PlayerColor>): void
+        ~provideMockedPlayerObjects(mockedPlayers: List<Player>): void
+        ~getNumArmiesByPlayerColor(playerColor: PlayerColor): int
+        ~provideMockedTerritoryGraph(mockedGraph: TerritoryGraph): void
+        ~getClaimedTerritoriesForPlayer(playerInQuestion: PlayerColor): Set<TerritoryType>
+        ~getPlayerOrder(): List<PlayerColor>
+        +getCurrentPlayer(): PlayerColor
+        +getCurrentGamePhase(): GamePhase
     }
 
-    note right of GameEngine::initializeGameEngine
-        initializeGameEngine() gets called by the constructor.
-        Its responsibility is to create the necessary objects
-        to start the game and have them ready for set up.
-    end note
+    WorldDominationGameEngine --> "*" Player
 
-    +class WorldDomination {
-
+    +class Player {
+        -{final} playerColor: PlayerColor
+        -numArmiesToPlace: int
+        -{final} claimedTerritories: Set<TerritoryType>
+        +Player(playerColor: PlayerColor)
+        +getTerritories(): Set<TerritoryType>
+        +setNumArmiesToPlace(newAmount: int): void
+        +getColor(): PlayerColor
+        +getNumArmiesToPlace(): int
+        +addTerritoryToCollection(relevantTerritory: TerritoryType): void
     }
+
+    Player --> PlayerColor
+    Player --> "*" TerritoryType
 
     +enum GamePhase {
-        GAME_START
+        SCRAMBLE
         SETUP
         PLACEMENT
         ATTACK
@@ -77,13 +124,10 @@ package domain {
         GAME_OVER
     }
 
-    GameEngine --> GamePhase
-    GameEngine --> TerritoryGraph
-    GameEngine --> RiskCardDeck
-    GameEngine --> TradeInParser
-    GameEngine --> DieRollParser
-
-    WorldDomination --|> GameEngine
+    WorldDominationGameEngine --> GamePhase
+    WorldDominationGameEngine --> TerritoryGraph
+    WorldDominationGameEngine ..> TerritoryType
+    WorldDominationGameEngine ..> PlayerColor
 
     +class RiskCardDeck {
         -deckOfCards: List<Card>
@@ -159,13 +203,7 @@ package domain {
     }
 
     TradeInParser .d.> Card
-
-    +class Player {
-        +getTerritories(): Set<TerritoryType>
-    }
-
-    Player -u-> "*" Card
-    Player -u-> PlayerColor
+    TradeInParser ..> Player
 
     +enum PieceType {
         ARTILLERY
@@ -230,7 +268,7 @@ package domain {
 
     +class Territory {
         -territoryType: TerritoryType
-        -playerInControl: Player
+        -playerInControl: PlayerColor
         -numArmiesPresent: int
 
         +Territory(territoryType: TerritoryType)
@@ -242,12 +280,11 @@ package domain {
         +getTerritoryType(): TerritoryType
     }
 
-    Territory --> Player
+    Territory --> PlayerColor
     Territory --> TerritoryType
 
     +enum PlayerColor {
         SETUP
-        NEUTRAL
         BLACK
         RED
         YELLOW
