@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="632.0" prefWidth="980.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.PlayerSelectScreenController">
+<AnchorPane prefHeight="632.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.PlayerSelectScreenController">
    <GridPane hgap="10.0" layoutX="265.0" layoutY="166.0" prefHeight="300.0" prefWidth="450.0" vgap="10.0">
       <columnConstraints>
          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -23,6 +24,10 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
       <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: red;" text="Red" textFill="WHITE" GridPane.columnIndex="1">
          <font>
@@ -31,6 +36,10 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
       <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: yellow;" text="Yellow" GridPane.columnIndex="2">
          <font>
@@ -39,6 +48,10 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
       <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: blue;" text="Blue" textFill="WHITE" GridPane.rowIndex="1">
          <font>
@@ -47,6 +60,10 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
       <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: green;" text="Green" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <font>
@@ -55,6 +72,10 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
       <Button mnemonicParsing="false" onAction="#onPlayerSelect" prefHeight="150.0" prefWidth="150.0" style="-fx-background-color: purple;" text="Purple" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <font>
@@ -63,7 +84,15 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <styleClass>
+            <String fx:value="colorButton" />
+            <String fx:value="button" />
+         </styleClass>
       </Button>
    </GridPane>
-   <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick" text="Back" />
+   <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick" text="Back">
+      <styleClass>
+         <String fx:value="defaultButton" />
+         <String fx:value="button" />
+      </styleClass></Button>
 </AnchorPane>

@@ -1,10 +1,23 @@
-#bruhLabel {
-    -fx-background-color: #cccccc;
+.container {
+    -fx-background-color: #121212;
 }
 
-#diceImage {
-    -fx-background-image: url(images/risk.PNG);
-    -fx-background-size: stretch;
-    -fx-background-repeat: stretch;
-    -fx-background-position: center center;
+.button {
+    -fx-border-radius: 0.5em;
+    -fx-background-radius: 0.5em;
+    -fx-cursor: "hand";
+}
+
+.defaultButton {
+    -fx-background-color: #dd9181;
+    -fx-text-fill: black;
+}
+
+.text {
+    -fx-text-fill: white;
+}
+
+.colorButton {
+    -fx-border-color: white;
+    -fx-border-width: 2px;
 }
