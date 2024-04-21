@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class WorldDominationGameEngine {
+public final class WorldDominationGameEngine {
 
     private static final int MINIMUM_NUM_PLAYERS = 3;
     private static final int MAXIMUM_NUM_PLAYERS = 6;
@@ -24,13 +24,15 @@ public class WorldDominationGameEngine {
     private int numUnclaimedTerritories;
     private int totalUnplacedArmiesLeft;
 
-    protected TerritoryGraph territoryGraph;
-    protected GamePhase currentGamePhase;
+    private TerritoryGraph territoryGraph;
+    private GamePhase currentGamePhase;
 
-    public WorldDominationGameEngine() {
+    public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
         territoryGraph = initializeGraph();
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
+        initializePlayersList(playerOrder);
+        assignSetupArmiesToPlayers();
     }
 
     private TerritoryGraph initializeGraph() {
@@ -41,7 +43,7 @@ public class WorldDominationGameEngine {
         return graph;
     }
 
-    public boolean initializePlayersList(List<PlayerColor> playerOrder) {
+    boolean initializePlayersList(List<PlayerColor> playerOrder) {
         handleErrorCheckingForOrderSize(playerOrder);
         handleErrorCheckingForOrderContents(playerOrder);
 
@@ -71,7 +73,7 @@ public class WorldDominationGameEngine {
         playerColors.forEach((playerColor) -> playersMap.put(playerColor, new Player(playerColor)));
     }
 
-    public boolean assignSetupArmiesToPlayers() {
+    boolean assignSetupArmiesToPlayers() {
         checkIfPlayersListIsEmpty();
 
         handleArmyAssignment(playersList.size());
@@ -185,12 +187,6 @@ public class WorldDominationGameEngine {
         checkSetupPhaseEndCondition();
     }
 
-    private void checkSetupPhaseEndCondition() {
-        if (totalUnplacedArmiesLeft == 0) {
-            currentGamePhase = GamePhase.PLACEMENT;
-        }
-    }
-
     private void checkNumArmiesToPlaceIsValidForSetup(int numArmiesToPlace) {
         if (numArmiesToPlace != 1) {
             throw new IllegalArgumentException(
@@ -214,6 +210,12 @@ public class WorldDominationGameEngine {
         int currentNumArmies = playersMap.get(currentPlayer).getNumArmiesToPlace();
         int newNumArmies = currentNumArmies - numArmiesToPlace;
         playersMap.get(currentPlayer).setNumArmiesToPlace(newNumArmies);
+    }
+
+    private void checkSetupPhaseEndCondition() {
+        if (totalUnplacedArmiesLeft == 0) {
+            currentGamePhase = GamePhase.PLACEMENT;
+        }
     }
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
@@ -256,5 +258,11 @@ public class WorldDominationGameEngine {
 
     List<PlayerColor> getPlayerOrder() {
         return playersList;
+    }
+
+    WorldDominationGameEngine() {
+        territoryGraph = initializeGraph();
+        currentGamePhase = GamePhase.SCRAMBLE;
+        numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
 }
