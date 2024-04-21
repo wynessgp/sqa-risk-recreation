@@ -42,4 +42,12 @@ public class PlayerTest {
         assertFalse(player.ownsTerritory(territory));
     }
 
+    @ParameterizedTest
+    @MethodSource("territoryTypeGenerator")
+    public void test02_ownsTerritory_ownsAll_returnsTrue(TerritoryType territory) {
+        Player player = new Player();
+        player.setTerritories(Set.of(TerritoryType.values()));
+        assertTrue(player.ownsTerritory(territory));
+    }
+
 }
