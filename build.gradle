@@ -4,10 +4,10 @@ plugins {
     id 'java'
     id "com.github.spotbugs" version "6.0.9"
     id 'checkstyle'
-    id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'jacoco'
+    id 'application'
     id 'info.solidsoft.pitest' version '1.15.0'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 repositories {
@@ -42,11 +42,6 @@ test {
     useJUnitPlatform()
 }
 
-javafx {
-    version = "17.0.10"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
-}
-
 spotbugsMain {
     reports {
         html {
@@ -57,6 +52,64 @@ spotbugsMain {
     }
 }
 
-mainClassName = 'presentation.RiskApp'
+javafx {
+    version = "17.0.10"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+    dependsOn test
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+    }
+}
+
+test.finalizedBy(jacocoTestReport)
+
+task codeCoverageInfo (dependsOn: jacocoTestReport) {
+    ext.srcFile = file("${reportsDir}/jacoco/test/jacocoTestReport.xml")
+
+    doLast {
+        println "Transforming source file."
+
+        def parser = new XmlParser()
+        parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl",
+                false);
+        parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        parser.setFeature("http://xml.org/sax/features/namespaces", false)
+
+        def reportNode = parser.parse(srcFile)
+        reportNode.children().each {
+            if(it.name() == 'counter') {
+                String type = it.@type
+                float missed = it.@missed as float
+                float covered = it.@covered as float
+                float percentage = covered / (missed + covered) * 100
+                println "Code Coverage[$type]: $percentage%"
+            }
+        }
+    }
+}
+
+jacocoTestReport.finalizedBy(codeCoverageInfo)
+
+build.dependsOn 'pitest'
+check.dependsOn 'pitest'
+
+pitest {
+    targetClasses = ['domain.*', 'datasource.*']
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+    junit5PluginVersion = '1.0.0'
+}
+
 group 'edu.rose-hulman.csse'
 version '1.0'
