@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,6 +30,16 @@ public class PlayerTest {
         Player player = new Player();
         player.setTerritories(Set.of(territory));
         assertTrue(player.ownsTerritory(territory));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryTypeGenerator")
+    public void test02_ownsTerritory_ownsAllButInput_returnsFalse(TerritoryType territory) {
+        Player player = new Player();
+        Set<TerritoryType> territories = new HashSet<>(Set.of(TerritoryType.values()));
+        territories.remove(territory);
+        player.setTerritories(territories);
+        assertFalse(player.ownsTerritory(territory));
     }
 
 }
