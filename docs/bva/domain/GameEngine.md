@@ -23,6 +23,7 @@ Input:
   - A collection with 6 elements (max size)
   - A collection with \> 6 elements (error case)
   - A collection with the same PlayerColor twice (duplicates - error case)
+  - A collection containing PlayerColor SETUP (error case)
   - A collection with all unique PlayerColors
 
 Output:
@@ -96,7 +97,6 @@ So the output would be something like: Collection = [RED, YELLOW, PURPLE], etc.
   - Collection = [RED, BLUE, PURPLE, BLACK]
 ### Test 11:
 - Input:
-  - amountOfPlayers = 3
   - playerOrder = [BLUE, BLACK, RED]
 - Output: 
   - Function output: 1 (true)
@@ -353,7 +353,7 @@ Output:
 ### Test 1:
 - Input:
   - territory = CONGO
-  - numArmies = num player earned this turn + 1
+  - numArmies = 3
   - Territory owner = current player
   - Game Phase = SCRAMBLE
   - Current player = [Color = ANY, numArmiesToPlace is valid amount, territories owned = {CONGO} ]
