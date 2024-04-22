@@ -17,20 +17,21 @@
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/88
 
 #### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/88
 
 #### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/67
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/96
 
 ### Team member: Grant Wyness
 #### PR created:
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/96
 
 #### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/67
 
 #### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/88
