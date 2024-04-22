@@ -16,6 +16,7 @@ import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -242,7 +243,7 @@ public class WorldDominationGameEngineTest {
     private Territory createMockedTerritoryWithExpectations(PlayerColor playerColorToReturn) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerColorToReturn)).andReturn(true);
 
         EasyMock.replay(mockedTerritory);
         return mockedTerritory;
@@ -260,39 +261,20 @@ public class WorldDominationGameEngineTest {
         return mockedGraph;
     }
 
-    private static Stream<Arguments> generateAllTerritoryTypesAndDistinctPlayerPairs() {
-        Set<Set<PlayerColor>> playerPairsNoDupes = new HashSet<>();
-        List<PlayerColor> playerColorsNoSetup = new ArrayList<>(List.of(PlayerColor.values()));
-        playerColorsNoSetup.remove(PlayerColor.SETUP);
+    private Territory createMockedTerritoryReturnsFalseForIsOwnedBy(PlayerColor toReturnFalseWith) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        for (PlayerColor playerOne : playerColorsNoSetup) {
-            for (PlayerColor playerTwo : playerColorsNoSetup) {
-                if (playerOne != playerTwo) {
-                    Set<PlayerColor> playerPair = new HashSet<>();
-                    playerPair.add(playerOne);
-                    playerPair.add(playerTwo);
-                    playerPairsNoDupes.add(playerPair);
-                }
-            }
-        }
-        Set<Arguments> allTerritoriesAndPlayerPairs = new HashSet<>();
-        for (Set<PlayerColor> playerPair : playerPairsNoDupes) {
-            Iterator<PlayerColor> iter = playerPair.iterator();
-            PlayerColor playerOne = iter.next();
-            PlayerColor playerTwo = iter.next();
-            for (TerritoryType territory : TerritoryType.values()) {
-                allTerritoriesAndPlayerPairs.add(Arguments.of(territory, playerOne, playerTwo));
-            }
-        }
-        return allTerritoriesAndPlayerPairs.stream();
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(toReturnFalseWith)).andReturn(false);
+
+        EasyMock.replay(mockedTerritory);
+        return mockedTerritory;
     }
 
-
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
+    @MethodSource("generateAllTerritoryTypesAndPlayerColors")
     public void test07_checkIfPlayerOwnsTerritory_playerDoesNotOwnTerritory_expectFalse(
-            TerritoryType relevantTerritory, PlayerColor playerInControlOfTerritory, PlayerColor notInControl) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControlOfTerritory);
+            TerritoryType relevantTerritory, PlayerColor notInControl) {
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(notInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
                 relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
 
@@ -356,10 +338,10 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
+    @EnumSource(TerritoryType.class)
     public void test20_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
-            TerritoryType relevantTerritory, PlayerColor playerInControl) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+            TerritoryType relevantTerritory) {
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -444,7 +426,7 @@ public class WorldDominationGameEngineTest {
             int numArmiesToExpect, PlayerColor playerToExpect, PlayerColor playerColorToReturn) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerColorToReturn)).andReturn(true);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesToExpect)).andReturn(true);
         EasyMock.expect(mockedTerritory.setPlayerInControl(playerToExpect)).andReturn(true);
 
@@ -551,12 +533,12 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
+    @MethodSource("generateAllTerritoryTypesAndPlayerColors")
     public void test28_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
-            TerritoryType relevantTerritory, PlayerColor playerInControl, PlayerColor playerAttemptingToPlace) {
+            TerritoryType relevantTerritory, PlayerColor playerAttemptingToPlace) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(playerAttemptingToPlace);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         unitUnderTest.setGamePhase(GamePhase.SETUP);
@@ -597,7 +579,7 @@ public class WorldDominationGameEngineTest {
         int numValidArmies = 1;
 
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerInControl)).andReturn(true);
         EasyMock.expect(mockedTerritory.getNumArmiesPresent()).andReturn(numArmiesPreviouslyPresent);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
                 .andReturn(true);
@@ -631,7 +613,7 @@ public class WorldDominationGameEngineTest {
         int numValidArmies = 1;
 
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerInControl)).andReturn(true);
         EasyMock.expect(mockedTerritory.getNumArmiesPresent()).andReturn(numArmiesPreviouslyPresent);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
                 .andReturn(true);

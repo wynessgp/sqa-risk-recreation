@@ -16,11 +16,10 @@ Output: Boolean (0, 1)
 Input: 
 - player (Cases)
   - The 1st possibility (SETUP - error case)
-  - The 2nd possibility (NEUTRAL)
-  - The 3rd possibility (RED)
+  - The 2nd possibility (RED)
   - ...
-  - The 8th possibility (PURPLE)
-  - The 0th, 9th possibilities (can't set)
+  - The 7th possibility (PURPLE)
+  - The 0th, 8th possibilities (can't set)
 - Underlying PlayerColor in storage:
   - Note that this is the same enumerated type as the other input
   - Matches input (error case)
@@ -30,6 +29,7 @@ Output: Boolean
 - 0 (can't set, we throw exceptions instead)
 - 1
 - Something other than true/false (Exceptions)
+- Some other true value (can't set)
   
 ## BVA Step 4
 ### Test 1:
@@ -109,3 +109,56 @@ Output: Boolean
 ### Test 4:
 - Input: newAmount = 24
 - Output: True
+
+# Method: `isOwnedByPlayer(playerColor: PlayerColor): boolean`
+
+## BVA Step 1
+Input: The player we are trying to check and see if they own the territory
+
+Output: A yes/no answer whether the given player owns the territory
+
+## BVA Step 2
+Input: Cases (for both underlying territory storage and given parameter)
+
+Output: Boolean
+
+## BVA Step 3
+- Input:
+  - playerColor (Cases):
+    - The 1st possibility (SETUP)
+    - The 2nd possibility (RED)
+    - ...
+    - The 0th, 8th possibility (can't set)
+  - Underlying territory's playerColor (Cases):
+    - Same cases as above
+    - Interested in cases where they match
+    - And don't match
+- Output (Boolean):
+  - 0 (false) if the PlayerColors do not match
+  - 1 (true) if they do match
+  - Some value other than true/false (can't set)
+  - Some other true value (can't set)
+
+## BVA Step 4
+### Test 1:
+Input:
+- playerColor = BLUE
+- territory controlled by = SETUP
+
+Output:
+- 0 (false)
+### Test 2:
+Input:
+- playerColor = RED
+- territory controlled by = PURPLE
+
+Output:
+- 0 (false)
+### Test 3:
+- playerColor = YELLOW
+- territory controlled by = YELLOW
+
+Output:
+- 1 (true)
+
+We will test all true and false combinations

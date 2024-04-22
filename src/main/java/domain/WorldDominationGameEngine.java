@@ -96,13 +96,12 @@ public final class WorldDominationGameEngine {
     }
 
     public boolean checkIfPlayerOwnsTerritory(TerritoryType relevantTerritory, PlayerColor playerColor) {
-        PlayerColor currentController = getPlayerInControlOfTerritory(relevantTerritory);
-        return currentController == playerColor;
+        Territory territoryObject = getTerritoryFromType(relevantTerritory);
+        return territoryObject.isOwnedByPlayer(playerColor);
     }
 
-    private PlayerColor getPlayerInControlOfTerritory(TerritoryType relevantTerritory) {
-        Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
-        return territoryObject.getPlayerInControl();
+    private Territory getTerritoryFromType(TerritoryType relevantTerritory) {
+        return territoryGraph.getTerritory(relevantTerritory);
     }
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
