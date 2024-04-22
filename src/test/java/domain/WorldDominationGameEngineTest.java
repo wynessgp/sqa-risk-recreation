@@ -824,7 +824,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.setPlayerOrderList(players);
 
         DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(List.of(6, 2, 1));
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(List.of(1, 2, 6));
         EasyMock.replay(parser);
 
         List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED);
@@ -843,7 +843,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.setPlayerOrderList(players);
 
         DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(List.of(3, 2, 1, 5));
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(List.of(2, 3, 5, 1));
         EasyMock.replay(parser);
 
         List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED,

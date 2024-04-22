@@ -544,20 +544,20 @@ Output:
 ### Test value 1
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: Boolean = 1, Players = [GREEN, YELLOW, RED], Dice = [6, 2, 1]
+Output: Boolean = 1, Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
 ### Test value 2
 Input: Collection = [RED, YELLOW, GREEN, BLUE], Pointer = valid DieRollParser object
 
-Output: Boolean = 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [3, 2, 1, 5]
+Output: Boolean = 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
 ### Test value 3
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE], Pointer = valid DieRollParser object
 
-Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [2, 4, 1, 5, 6]
+Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
 ### Test value 4
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK], Pointer = valid DieRollParser object
 
-Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [2, 3, 1, 5, 6, 4]
+Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
 ### Test value 5
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: Boolean = 1, Players = [RED, YELLOW, GREEN], Dice = [1, 2, 3]
+Output: Boolean = 1, Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]

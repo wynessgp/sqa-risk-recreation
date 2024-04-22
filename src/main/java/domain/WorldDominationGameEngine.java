@@ -273,7 +273,7 @@ public final class WorldDominationGameEngine {
     boolean shufflePlayers(DieRollParser parser) {
         List<Integer> dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
         List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
-        sortedDieRolls.sort(Comparator.naturalOrder());
+        sortedDieRolls.sort(Comparator.reverseOrder());
         List<PlayerColor> newPlayerOrder = new ArrayList<>();
         for (int i : sortedDieRolls) {
             int index = dieRolls.indexOf(i);
