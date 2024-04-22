@@ -500,3 +500,60 @@ Output:
   - Update to say we're on the next player's turn
 
 ### TODO: ATTACK PHASE
+
+# method: `shufflePlayers(): boolean`
+
+## BVA Step 1
+Input: The underlying list of players
+
+Output: A yes or no answer whether the player order was shuffled, along with the updated list of players and the die rolls for the original list
+
+## BVA Step 2
+Input: Collection
+
+Output: Boolean, collection (players and dice)
+
+## BVA Step 3
+Input:
+- Empty collection (should never happen)
+- Collection with 1-2 elements (should never happen)
+- Collection with 3-6 elements
+- Collection with 7+ elements (should never happen)
+- Collection with duplicates (should never happen)
+
+Output:
+- Boolean
+  - 0 (can't set)
+  - 1
+- Players collection
+  - Same size as input collection with different order
+  - There is a possibility that the order does not change
+  - Number of players don't match (error case, should never happen)
+  - Collection size is different (error case, should never happen)
+- Dice collection
+  - Same size as input collection, no duplicates
+  - Order matches the previous player order, and numbers determine the new order
+
+### Note: This is a private method called by the GameEngine constructor. Our error cases are handled by other methods and will not be considered in the test cases below. The user can obtain a list of the die rolls separately.
+
+## BVA Step 4
+### Test value 1
+Input: Collection = [RED, YELLOW, GREEN]
+
+Output: Boolean = 1, Players = [GREEN, YELLOW, RED], Dice = [6, 2, 1]
+### Test value 2
+Input: Collection = [RED, YELLOW, GREEN, BLUE]
+
+Output: Boolean = 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [3, 2, 1, 5]
+### Test value 3
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE]
+
+Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [2, 4, 1, 5, 6]
+### Test value 4
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK]
+
+Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [2, 3, 1, 5, 6, 4]
+### Test value 5
+Input: Collection = [RED, YELLOW, GREEN]
+
+Output: Boolean = 1, Players = [RED, YELLOW, GREEN], Dice = [1, 2, 3]
