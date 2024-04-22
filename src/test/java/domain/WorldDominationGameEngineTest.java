@@ -817,108 +817,51 @@ public class WorldDominationGameEngineTest {
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
     }
 
-    @Test
-    public void test36_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
+    private void testShufflePlayersMethod(List<PlayerColor> players, List<Integer> dieRolls,
+                                          List<PlayerColor> expectedPlayers) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN);
         unitUnderTest.setPlayerOrderList(players);
 
-        List<Integer> dieRolls = List.of(1, 2, 6);
         DieRollParser parser = EasyMock.createMock(DieRollParser.class);
         EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
         EasyMock.replay(parser);
-
-        List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED);
 
         assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
         List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
         assertEquals(expectedPlayers, shuffledPlayers);
         EasyMock.verify(parser);
+    }
+
+    @Test
+    public void test36_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(1, 2, 3),
+                List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED));
     }
 
     @Test
     public void test37_shufflePlayers_withFourUniquePlayers_returnsRollsAndShuffledList() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE);
-        unitUnderTest.setPlayerOrderList(players);
-
-        List<Integer> dieRolls = List.of(2, 3, 5, 1);
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
-        List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED,
-                PlayerColor.BLUE);
-
-        assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
-
-        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
-        assertEquals(expectedPlayers, shuffledPlayers);
-        EasyMock.verify(parser);
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE),
+                List.of(2, 3, 5, 1), List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.BLUE));
     }
 
     @Test
     public void test38_shufflePlayers_withFiveUniquePlayers_returnsRollsAndShuffledList() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
-                PlayerColor.PURPLE);
-        unitUnderTest.setPlayerOrderList(players);
-
-        List<Integer> dieRolls = List.of(5, 4, 6, 2, 1);
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
-        List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW,
-                PlayerColor.BLUE, PlayerColor.PURPLE);
-
-        assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
-
-        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
-        assertEquals(expectedPlayers, shuffledPlayers);
-        EasyMock.verify(parser);
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
+                PlayerColor.PURPLE), List.of(5, 4, 6, 2, 1), List.of(PlayerColor.GREEN, PlayerColor.RED,
+                PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.PURPLE));
     }
 
     @Test
     public void test39_shufflePlayers_withSixUniquePlayers_returnsRollsAndShuffledList() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
-                PlayerColor.PURPLE, PlayerColor.BLACK);
-        unitUnderTest.setPlayerOrderList(players);
-
-        List<Integer> dieRolls = List.of(5, 4, 6, 2, 1, 3);
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
-        List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW,
-                PlayerColor.BLACK, PlayerColor.BLUE, PlayerColor.PURPLE);
-
-        assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
-
-        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
-        assertEquals(expectedPlayers, shuffledPlayers);
-        EasyMock.verify(parser);
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
+                PlayerColor.PURPLE, PlayerColor.BLACK), List.of(5, 4, 6, 2, 1, 3), List.of(PlayerColor.GREEN,
+                PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.BLUE, PlayerColor.PURPLE));
     }
 
     @Test
     public void test40_shufflePlayers_withThreeUniquePlayers_listDoesNotChange() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN);
-        unitUnderTest.setPlayerOrderList(players);
-
-        List<Integer> dieRolls = List.of(3, 2, 1);
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
-        List<PlayerColor> expectedPlayers = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN);
-
-        assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
-
-        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
-        assertEquals(expectedPlayers, shuffledPlayers);
-        EasyMock.verify(parser);
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(3, 2, 1),
+                List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN));
     }
 
 }
