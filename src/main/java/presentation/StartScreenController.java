@@ -2,7 +2,7 @@ package presentation;
 
 import javafx.fxml.FXML;
 
-public class RiskStartPageController {
+public class StartScreenController {
 
     @FXML
     private void onStartButtonClick() {

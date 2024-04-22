@@ -10,13 +10,11 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class RiskApp extends Application {
-
-    private final String cssFileString = Objects.requireNonNull(
-            getClass().getResource("styles.css")).toExternalForm();
-    private final String iconImageString = Objects.requireNonNull(
-            getClass().getResource("images/smile.PNG")).toExternalForm();
-    private final URL fxmlFileUrl = Objects.requireNonNull(
-            getClass().getResource("start_screen.fxml"));
+    private final String cssFileString = Objects.requireNonNull(getClass().getResource("styles.css"))
+            .toExternalForm();
+    private final String iconImageString = Objects.requireNonNull(getClass().getResource("images/smile.PNG"))
+            .toExternalForm();
+    private final URL fxmlFileUrl = Objects.requireNonNull(getClass().getResource("start_screen.fxml"));
 
     @Override
     public void start(Stage stage) throws Exception {

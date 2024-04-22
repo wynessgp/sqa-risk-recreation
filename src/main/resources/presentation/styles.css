@@ -21,3 +21,15 @@
     -fx-border-color: white;
     -fx-border-width: 2px;
 }
+
+.indicator {
+    -fx-font-family: "Open Sans Semibold";
+    -fx-background-color: black;
+    -fx-background-radius: 50%;
+    -fx-border-color: white;
+    -fx-border-radius: 50%;
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+}

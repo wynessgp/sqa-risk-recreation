@@ -2,7 +2,8 @@ package presentation;
 
 public enum SceneType {
     START("start_screen"),
-    PLAYER_SELECT("player_select_screen");
+    PLAYER_SELECT("player_select_screen"),
+    GAME("game_map_screen");
 
     private final String sceneName;
 
