@@ -21,7 +21,6 @@ public class RiskApp extends Application {
         Parent root = FXMLLoader.load(fxmlFileUrl);
         Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
         SceneController.setRoot(cssModifiedScene);
-        prepareScenes();
         stage.setScene(cssModifiedScene);
         performStageSetup(stage);
     }
@@ -29,17 +28,6 @@ public class RiskApp extends Application {
     private Scene addCssFileToScene(String cssFileString, Scene sceneInQuestion) {
         sceneInQuestion.getStylesheets().add(cssFileString);
         return sceneInQuestion;
-    }
-
-    private void prepareScenes() {
-        for (SceneType scene : SceneType.values()) {
-            try {
-                SceneController.getInstance().add(scene, FXMLLoader.load(Objects.requireNonNull(getClass()
-                        .getResource(scene.getSceneName()))));
-            } catch (Exception e) {
-                System.err.println("Error loading scene: " + scene.getSceneName());
-            }
-        }
     }
 
     private void performStageSetup(Stage stage) {

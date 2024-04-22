@@ -1,10 +1,12 @@
 package presentation;
 
+import domain.PlayerColor;
+import domain.WorldDominationGameEngine;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import domain.PlayerColor;
-import domain.WorldDominationGameEngine;
+import java.util.Objects;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
@@ -23,7 +25,13 @@ public class SceneController {
     }
 
     protected void activate(SceneType scene) {
-        main.setRoot(screenMap.get(scene));
+        try {
+            sceneController.add(scene, FXMLLoader.load(Objects.requireNonNull(getClass()
+                    .getResource(scene.getSceneName()))));
+            main.setRoot(screenMap.get(scene));
+        } catch (Exception e) {
+            System.err.println("Error loading scene: " + scene.getSceneName());
+        }
     }
 
     protected void initializePlayers(List<PlayerColor> players) {
@@ -37,4 +45,5 @@ public class SceneController {
     protected static SceneController getInstance() {
         return sceneController;
     }
+
 }
