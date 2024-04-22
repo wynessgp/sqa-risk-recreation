@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -111,6 +112,16 @@ class TerritoryTest {
         Territory unitUnderTest = new Territory(TerritoryType.ALASKA);
 
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getTerritoryType());
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllNonDuplicatePlayerColorPairs")
+    public void test06_isOwnedByPlayer_notOwnedByInputPlayer_expectFalse(
+            PlayerColor playerInControl, PlayerColor playerToCheck) {
+        Territory unitUnderTest = new Territory(TerritoryType.ALASKA);
+        unitUnderTest.setPlayerInControl(playerInControl);
+
+        assertFalse(unitUnderTest.isOwnedByPlayer(playerToCheck));
     }
 
 }
