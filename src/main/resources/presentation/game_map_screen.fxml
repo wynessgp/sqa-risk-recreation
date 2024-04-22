@@ -24,7 +24,7 @@
       <ImageView fitHeight="568.0" fitWidth="864.0" pickOnBounds="true" preserveRatio="true">
          <Image url="@images/risk-map.png" />
       </ImageView>
-      <Button layoutX="34.0" layoutY="96.0" mnemonicParsing="false" text="0">
+      <Button fx:id="alaskaButton" layoutX="34.0" layoutY="96.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -33,7 +33,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="118.0" layoutY="45.0" mnemonicParsing="false" text="0">
+      <Button fx:id="northwestTerritoryButton" layoutX="118.0" layoutY="45.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -42,7 +42,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="106.0" layoutY="139.0" mnemonicParsing="false" text="0">
+      <Button fx:id="albertaButton" layoutX="106.0" layoutY="139.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -51,7 +51,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="169.0" layoutY="152.0" mnemonicParsing="false" text="0">
+      <Button fx:id="ontarioButton" layoutX="169.0" layoutY="152.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -60,7 +60,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="225.0" layoutY="152.0" mnemonicParsing="false" text="0">
+      <Button fx:id="quebecButton" layoutX="225.0" layoutY="152.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -69,7 +69,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="106.0" layoutY="203.0" mnemonicParsing="false" text="0">
+      <Button fx:id="westernUnitedStatesButton" layoutX="106.0" layoutY="203.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -78,7 +78,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="169.0" layoutY="229.0" mnemonicParsing="false" text="0">
+      <Button fx:id="easternUnitedStatesButton" layoutX="169.0" layoutY="229.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -87,7 +87,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="94.0" layoutY="271.0" mnemonicParsing="false" text="0">
+      <Button fx:id="centralAmericaButton" layoutX="94.0" layoutY="271.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -96,7 +96,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="225.0" layoutY="297.0" mnemonicParsing="false" text="0">
+      <Button fx:id="venezuelaButton" layoutX="225.0" layoutY="297.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -105,7 +105,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="241.0" layoutY="388.0" mnemonicParsing="false" text="0">
+      <Button fx:id="brazilButton" layoutX="241.0" layoutY="388.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -114,7 +114,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="168.0" layoutY="389.0" mnemonicParsing="false" text="0">
+      <Button fx:id="peruButton" layoutX="168.0" layoutY="389.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -123,7 +123,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="201.0" layoutY="472.0" mnemonicParsing="false" text="0">
+      <Button fx:id="argentinaButton" layoutX="201.0" layoutY="472.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -132,7 +132,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="546.0" layoutY="509.0" mnemonicParsing="false" text="0">
+      <Button fx:id="madagascarButton" layoutX="546.0" layoutY="509.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -141,7 +141,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="522.0" mnemonicParsing="false" text="0">
+      <Button fx:id="southAfricaButton" layoutX="446.0" layoutY="522.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -150,7 +150,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="490.0" layoutY="423.0" mnemonicParsing="false" text="0">
+      <Button fx:id="eastAfricaButton" layoutX="490.0" layoutY="423.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -159,7 +159,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="441.0" mnemonicParsing="false" text="0">
+      <Button fx:id="congoButton" layoutX="446.0" layoutY="441.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -168,7 +168,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="378.0" layoutY="374.0" mnemonicParsing="false" text="0">
+      <Button fx:id="northAfricaButton" layoutX="378.0" layoutY="374.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -177,7 +177,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="343.0" mnemonicParsing="false" text="0">
+      <Button fx:id="egyptButton" layoutX="446.0" layoutY="343.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -186,7 +186,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="689.0" layoutY="428.0" mnemonicParsing="false" text="0">
+      <Button fx:id="indonesiaButton" layoutX="689.0" layoutY="428.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -195,7 +195,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="794.0" layoutY="366.0" mnemonicParsing="false" text="0">
+      <Button fx:id="newGuineaButton" layoutX="794.0" layoutY="366.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -204,7 +204,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="805.0" layoutY="509.0" mnemonicParsing="false" text="0">
+      <Button fx:id="easternAustraliaButton" layoutX="805.0" layoutY="509.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -213,7 +213,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="712.0" layoutY="523.0" mnemonicParsing="false" text="0">
+      <Button fx:id="westernAustraliaButton" layoutX="712.0" layoutY="523.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -222,7 +222,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="505.0" layoutY="297.0" mnemonicParsing="false" text="0">
+      <Button fx:id="middleEastButton" layoutX="505.0" layoutY="297.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -231,7 +231,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="610.0" layoutY="307.0" mnemonicParsing="false" text="0">
+      <Button fx:id="indiaButton" layoutX="610.0" layoutY="307.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -240,7 +240,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="702.0" layoutY="323.0" mnemonicParsing="false" text="0">
+      <Button fx:id="siamButton" layoutX="702.0" layoutY="323.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -249,7 +249,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="677.0" layoutY="259.0" mnemonicParsing="false" text="0">
+      <Button fx:id="chinaButton" layoutX="677.0" layoutY="259.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -258,7 +258,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="563.0" layoutY="218.0" mnemonicParsing="false" text="0">
+      <Button fx:id="afghanistanButton" layoutX="563.0" layoutY="218.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -267,7 +267,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="685.0" layoutY="202.0" mnemonicParsing="false" text="0">
+      <Button fx:id="mongoliaButton" layoutX="685.0" layoutY="202.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -276,7 +276,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="770.0" layoutY="215.0" mnemonicParsing="false" text="0">
+      <Button fx:id="japanButton" layoutX="770.0" layoutY="215.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -285,7 +285,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="668.0" layoutY="144.0" mnemonicParsing="false" text="0">
+      <Button fx:id="irkutskButton" layoutX="668.0" layoutY="144.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -294,7 +294,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="577.0" layoutY="145.0" mnemonicParsing="false" text="0">
+      <Button fx:id="uralButton" layoutX="577.0" layoutY="145.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -303,7 +303,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="621.0" layoutY="96.0" mnemonicParsing="false" text="0">
+      <Button fx:id="siberiaButton" layoutX="621.0" layoutY="96.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -312,7 +312,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="746.0" layoutY="76.0" mnemonicParsing="false" text="0">
+      <Button fx:id="kamchatkaButton" layoutX="746.0" layoutY="76.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -321,7 +321,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="685.0" layoutY="73.0" mnemonicParsing="false" text="0">
+      <Button fx:id="yakutskButton" layoutX="685.0" layoutY="73.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -330,7 +330,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="490.0" layoutY="152.0" mnemonicParsing="false" text="0">
+      <Button fx:id="ukraineButton" layoutX="490.0" layoutY="152.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -339,7 +339,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="427.0" layoutY="109.0" mnemonicParsing="false" text="0">
+      <Button fx:id="scandinaviaButton" layoutX="427.0" layoutY="109.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -348,7 +348,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="401.0" layoutY="202.0" mnemonicParsing="false" text="0">
+      <Button fx:id="northernEuropeButton" layoutX="401.0" layoutY="202.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -357,7 +357,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="415.0" layoutY="253.0" mnemonicParsing="false" text="0">
+      <Button fx:id="southernEuropeButton" layoutX="415.0" layoutY="253.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -366,7 +366,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="316.0" layoutY="246.0" mnemonicParsing="false" text="0">
+      <Button fx:id="westernEuropeButton" layoutX="316.0" layoutY="246.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -375,7 +375,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="304.0" layoutY="189.0" mnemonicParsing="false" text="0">
+      <Button fx:id="greatBritainButton" layoutX="304.0" layoutY="189.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -384,7 +384,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="346.0" layoutY="74.0" mnemonicParsing="false" text="0">
+      <Button fx:id="icelandButton" layoutX="346.0" layoutY="74.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
@@ -393,7 +393,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="272.0" layoutY="60.0" mnemonicParsing="false" text="0">
+      <Button fx:id="greenlandButton" layoutX="272.0" layoutY="60.0" mnemonicParsing="false" text="0">
          <styleClass>
             <String fx:value="indicator" />
             <String fx:value="button" />
