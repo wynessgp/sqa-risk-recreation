@@ -44,7 +44,8 @@ public class Territory {
         return territoryType;
     }
 
-    public PlayerColor getPlayerInControl() {
-        return playerInControl;
+    public boolean isOwnedByPlayer(PlayerColor playerToCheck) {
+        return playerToCheck == playerInControl;
     }
+
 }
