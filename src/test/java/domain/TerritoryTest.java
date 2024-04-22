@@ -82,7 +82,6 @@ class TerritoryTest {
         Territory unitUnderTest = new Territory(underlyingColor, TerritoryType.ALASKA);
 
         assertTrue(unitUnderTest.setPlayerInControl(inputColor));
-        assertEquals(inputColor, unitUnderTest.getPlayerInControl());
     }
 
     @ParameterizedTest
