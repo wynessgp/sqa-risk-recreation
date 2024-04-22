@@ -272,6 +272,11 @@ public final class WorldDominationGameEngine {
 
     boolean shufflePlayers(DieRollParser parser) {
         List<Integer> dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
+        playersList = sortPlayersListByDieRoll(dieRolls);
+        return true;
+    }
+
+    private List<PlayerColor> sortPlayersListByDieRoll(List<Integer> dieRolls) {
         List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
         sortedDieRolls.sort(Comparator.reverseOrder());
         List<PlayerColor> newPlayerOrder = new ArrayList<>();
@@ -279,7 +284,6 @@ public final class WorldDominationGameEngine {
             int index = dieRolls.indexOf(i);
             newPlayerOrder.add(playersList.get(index));
         }
-        playersList = newPlayerOrder;
-        return true;
+        return newPlayerOrder;
     }
 }
