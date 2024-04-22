@@ -124,4 +124,13 @@ class TerritoryTest {
         assertFalse(unitUnderTest.isOwnedByPlayer(playerToCheck));
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test07_isOwnedByPlayer_ownedByInputPlayer_expectTrue(PlayerColor givenPlayer) {
+        Territory unitUnderTest = new Territory(TerritoryType.ALASKA);
+        unitUnderTest.setPlayerInControl(givenPlayer);
+
+        assertTrue(unitUnderTest.isOwnedByPlayer(givenPlayer));
+    }
+
 }
