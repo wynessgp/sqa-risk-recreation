@@ -818,7 +818,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test36_shufflePlayers_withThreeUniquePlayers_returnsTrueAndShuffledList() {
+    public void test36_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN);
         unitUnderTest.setPlayerOrderList(players);
@@ -837,7 +837,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test37_shufflePlayers_withFourUniquePlayers_returnsTrueAndShuffledList() {
+    public void test37_shufflePlayers_withFourUniquePlayers_returnsRollsAndShuffledList() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE);
         unitUnderTest.setPlayerOrderList(players);
@@ -858,7 +858,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test38_shufflePlayers_withFiveUniquePlayers_returnsTrueAndShuffledList() {
+    public void test38_shufflePlayers_withFiveUniquePlayers_returnsRollsAndShuffledList() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
                 PlayerColor.PURPLE);
@@ -880,7 +880,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test39_shufflePlayers_withSixUniquePlayers_returnsTrueAndShuffledList() {
+    public void test39_shufflePlayers_withSixUniquePlayers_returnsRollsAndShuffledList() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
                 PlayerColor.PURPLE, PlayerColor.BLACK);
