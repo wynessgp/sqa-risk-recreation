@@ -28,6 +28,8 @@ public final class WorldDominationGameEngine {
     private TerritoryGraph territoryGraph;
     private GamePhase currentGamePhase;
 
+    private List<Integer> dieRolls;
+
     public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
         territoryGraph = initializeGraph();
         currentGamePhase = GamePhase.SCRAMBLE;
@@ -266,13 +268,13 @@ public final class WorldDominationGameEngine {
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
 
-    public List<Integer> shufflePlayers(DieRollParser parser) {
-        List<Integer> dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
-        playersList = sortPlayersListByDieRoll(dieRolls);
-        return dieRolls;
+    boolean shufflePlayers(DieRollParser parser) {
+        this.dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
+        sortPlayersListByDieRoll();
+        return true;
     }
 
-    private List<PlayerColor> sortPlayersListByDieRoll(List<Integer> dieRolls) {
+    private void sortPlayersListByDieRoll() {
         List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
         sortedDieRolls.sort(Comparator.reverseOrder());
         List<PlayerColor> newPlayerOrder = new ArrayList<>();
@@ -280,7 +282,11 @@ public final class WorldDominationGameEngine {
             int index = dieRolls.indexOf(i);
             newPlayerOrder.add(playersList.get(index));
         }
-        return newPlayerOrder;
+        this.playersList = newPlayerOrder;
+    }
+
+    public List<Integer> getDieRolls() {
+        return new ArrayList<>(dieRolls);
     }
 
 }

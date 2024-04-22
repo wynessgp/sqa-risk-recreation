@@ -506,12 +506,12 @@ Output:
 ## BVA Step 1
 Input: The underlying list of players and the die roller to use
 
-Output: The die rolls for the original list, along with the updated list of players
+Output: Yes/no whether the operation was successful, the die rolls for the original list (internal), and the updated list of players (internal)
 
 ## BVA Step 2
 Input: Collection, pointer
 
-Output: Collection (players and dice)
+Output: Boolean, Collection (players and dice)
 
 ## BVA Step 3
 Input:
@@ -526,6 +526,10 @@ Input:
   - Valid DieRollParser object
 
 Output:
+- Boolean return value
+  - 0 (can't set)
+  - 1
+  - Some value other than true/false (can't set)
 - Dice collection
   - Same size as input collection, no duplicates
   - Order matches the previous player order, and numbers determine the new order
@@ -535,26 +539,26 @@ Output:
   - Number of players don't match (error case, should never happen)
   - Collection size is different (error case, should never happen)
 
-### Note: We expect the caller to run previous setup methods first to handle error cases. These cases will not be considered in the tests for this method.
+### Note: We do not handle error cases because the method will only be called internally, after the player list is initialized
 
 ## BVA Step 4
 ### Test value 1
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
+Output: 1 (true), Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
 ### Test value 2
 Input: Collection = [RED, YELLOW, GREEN, BLUE], Pointer = valid DieRollParser object
 
-Output: Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
+Output: 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
 ### Test value 3
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE], Pointer = valid DieRollParser object
 
-Output: Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
+Output: 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
 ### Test value 4
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK], Pointer = valid DieRollParser object
 
-Output: Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
+Output: 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
 ### Test value 5
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
+Output: 1, Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]

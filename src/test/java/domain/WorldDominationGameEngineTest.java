@@ -808,9 +808,9 @@ public class WorldDominationGameEngineTest {
         EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
         EasyMock.replay(parser);
 
-        assertEquals(dieRolls, unitUnderTest.shufflePlayers(parser));
-        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
-        assertEquals(expectedPlayers, shuffledPlayers);
+        assertTrue(unitUnderTest.shufflePlayers(parser));
+        assertEquals(dieRolls, unitUnderTest.getDieRolls());
+        assertEquals(expectedPlayers, unitUnderTest.getPlayerOrder());
         EasyMock.verify(parser);
     }
 
