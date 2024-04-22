@@ -38,6 +38,10 @@ public class SceneController {
         this.gameEngine = new WorldDominationGameEngine(players);
     }
 
+    protected WorldDominationGameEngine getGameEngine() {
+        return gameEngine;
+    }
+
     protected static void setRoot(Scene scene) {
         sceneController = new SceneController(scene);
     }

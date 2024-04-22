@@ -73,7 +73,7 @@ public class PlayerSelectScreenController {
             System.out.println(player);
         }
         controller.initializePlayers(playersOrder);
-        controller.activate(SceneType.GAME);
+        controller.activate(SceneType.SHUFFLE);
     }
 
     @FXML
