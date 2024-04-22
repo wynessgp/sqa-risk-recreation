@@ -501,25 +501,29 @@ Output:
 
 ### TODO: ATTACK PHASE
 
-# method: `shufflePlayers(): boolean`
+# method: `shufflePlayers(parser: DieRollParser): boolean`
 
 ## BVA Step 1
-Input: The underlying list of players
+Input: The underlying list of players and the die roller to use
 
 Output: A yes or no answer whether the player order was shuffled, along with the updated list of players and the die rolls for the original list
 
 ## BVA Step 2
-Input: Collection
+Input: Collection, pointer
 
 Output: Boolean, collection (players and dice)
 
 ## BVA Step 3
 Input:
-- Empty collection (should never happen)
-- Collection with 1-2 elements (should never happen)
-- Collection with 3-6 elements
-- Collection with 7+ elements (should never happen)
-- Collection with duplicates (should never happen)
+- Collection:
+  - Empty collection (should never happen)
+  - Collection with 1-2 elements (should never happen)
+  - Collection with 3-6 elements
+  - Collection with 7+ elements (should never happen)
+  - Collection with duplicates (should never happen)
+- Pointer:
+  - Null pointer (should never happen)
+  - Valid DieRollParser object
 
 Output:
 - Boolean
@@ -538,22 +542,22 @@ Output:
 
 ## BVA Step 4
 ### Test value 1
-Input: Collection = [RED, YELLOW, GREEN]
+Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
 Output: Boolean = 1, Players = [GREEN, YELLOW, RED], Dice = [6, 2, 1]
 ### Test value 2
-Input: Collection = [RED, YELLOW, GREEN, BLUE]
+Input: Collection = [RED, YELLOW, GREEN, BLUE], Pointer = valid DieRollParser object
 
 Output: Boolean = 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [3, 2, 1, 5]
 ### Test value 3
-Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE]
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE], Pointer = valid DieRollParser object
 
 Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [2, 4, 1, 5, 6]
 ### Test value 4
-Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK]
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK], Pointer = valid DieRollParser object
 
 Output: Boolean = 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [2, 3, 1, 5, 6, 4]
 ### Test value 5
-Input: Collection = [RED, YELLOW, GREEN]
+Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
 Output: Boolean = 1, Players = [RED, YELLOW, GREEN], Dice = [1, 2, 3]
