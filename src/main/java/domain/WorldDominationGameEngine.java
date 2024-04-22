@@ -1,10 +1,14 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class WorldDominationGameEngine {
 
@@ -267,8 +271,15 @@ public final class WorldDominationGameEngine {
     }
 
     boolean shufflePlayers(DieRollParser parser) {
-        parser.rollDiceToDeterminePlayerOrder(3);
-        this.playersList = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED);
+        List<Integer> dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
+        List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
+        sortedDieRolls.sort(Comparator.naturalOrder());
+        List<PlayerColor> newPlayerOrder = new ArrayList<>();
+        for (int i : sortedDieRolls) {
+            int index = dieRolls.indexOf(i);
+            newPlayerOrder.add(playersList.get(index));
+        }
+        playersList = newPlayerOrder;
         return true;
     }
 }
