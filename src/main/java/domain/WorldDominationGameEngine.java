@@ -265,4 +265,10 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
+
+    boolean shufflePlayers(DieRollParser parser) {
+        parser.rollDiceToDeterminePlayerOrder(3);
+        this.playersList = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED);
+        return true;
+    }
 }

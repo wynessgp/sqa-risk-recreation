@@ -817,4 +817,23 @@ public class WorldDominationGameEngineTest {
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
     }
 
+    @Test
+    public void test36_shufflePlayers_withThreeUniquePlayers_returnsTrueAndShuffledList() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        List<PlayerColor> players = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN);
+        unitUnderTest.setPlayerOrderList(players);
+
+        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(List.of(6, 2, 1));
+        EasyMock.replay(parser);
+
+        List<PlayerColor> expectedPlayers = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED);
+
+        assertTrue(unitUnderTest.shufflePlayers(parser));
+
+        List<PlayerColor> shuffledPlayers = unitUnderTest.getPlayerOrder();
+        assertEquals(expectedPlayers, shuffledPlayers);
+        EasyMock.verify(parser);
+    }
+
 }
