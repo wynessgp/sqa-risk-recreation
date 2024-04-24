@@ -462,13 +462,21 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
     }
 
+    private DieRollParser generateMockedParser(List<PlayerColor> players) {
+        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
+        List<Integer> dieRolls = new ArrayList<>();
+        for (int i = players.size(); i > 0; i--) {
+            dieRolls.add(i);
+        }
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
+        EasyMock.replay(parser);
+        return parser;
+    }
+
     @Test
     public void test24_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(3)).andReturn(List.of(3, 2, 1));
-        EasyMock.replay(parser);
-
         List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
+        DieRollParser parser = generateMockedParser(playerColors);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors, parser);
         TerritoryType targetTerritory = TerritoryType.ALASKA;
         int numArmiesToPlace = 1;
@@ -493,14 +501,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        List<Integer> dieRolls = new ArrayList<>();
-        for (int i = players.size(); i > 0; i--) {
-            dieRolls.add(i);
-        }
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
+        DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
@@ -723,14 +724,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        List<Integer> dieRolls = new ArrayList<>();
-        for (int i = players.size(); i > 0; i--) {
-            dieRolls.add(i);
-        }
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-
+        DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         int numArmiesToPlace = 1;
 
@@ -759,13 +753,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
             List<PlayerColor> players) {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        List<Integer> dieRolls = new ArrayList<>();
-        for (int i = players.size(); i > 0; i--) {
-            dieRolls.add(i);
-        }
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
+        DieRollParser parser = generateMockedParser(players);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         List<TerritoryType> territories = List.of(TerritoryType.values());
@@ -794,13 +782,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
             List<PlayerColor> players) {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        List<Integer> dieRolls = new ArrayList<>();
-        for (int i = players.size(); i > 0; i--) {
-            dieRolls.add(i);
-        }
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
+        DieRollParser parser = generateMockedParser(players);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
 
