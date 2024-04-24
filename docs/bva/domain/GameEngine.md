@@ -501,17 +501,17 @@ Output:
 
 ### TODO: ATTACK PHASE
 
-# method: `shufflePlayers(parser: DieRollParser): boolean`
+# method: `shufflePlayers(parser: DieRollParser): void`
 
 ## BVA Step 1
 Input: The underlying list of players and the die roller to use
 
-Output: Yes/no whether the operation was successful, the die rolls for the original list (internal), and the updated list of players (internal)
+Output: The die rolls for the original list (internal), and the updated list of players (internal)
 
 ## BVA Step 2
 Input: Collection, pointer
 
-Output: Boolean, Collection (players and dice)
+Output: Collection (players and dice)
 
 ## BVA Step 3
 Input:
@@ -526,10 +526,6 @@ Input:
   - Valid DieRollParser object
 
 Output:
-- Boolean return value
-  - 0 (can't set)
-  - 1
-  - Some value other than true/false (can't set)
 - Dice collection
   - Same size as input collection, no duplicates
   - Order matches the previous player order, and numbers determine the new order
@@ -545,20 +541,20 @@ Output:
 ### Test value 1
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: 1 (true), Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
+Output: Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
 ### Test value 2
 Input: Collection = [RED, YELLOW, GREEN, BLUE], Pointer = valid DieRollParser object
 
-Output: 1, Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
+Output: Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
 ### Test value 3
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE], Pointer = valid DieRollParser object
 
-Output: 1, Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
+Output: Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
 ### Test value 4
 Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK], Pointer = valid DieRollParser object
 
-Output: 1, Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
+Output: Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
 ### Test value 5
 Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
 
-Output: 1, Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
+Output: Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
