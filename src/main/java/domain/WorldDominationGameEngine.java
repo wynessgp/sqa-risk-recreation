@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +28,22 @@ public final class WorldDominationGameEngine {
     private TerritoryGraph territoryGraph;
     private GamePhase currentGamePhase;
 
-    public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
+    private DieRollParser parser;
+    private List<Integer> dieRolls;
+
+    WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         territoryGraph = initializeGraph();
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
+        this.parser = parser;
         initializePlayersList(playerOrder);
+        shufflePlayers();
+        currentPlayer = playerOrder.get(0);
         assignSetupArmiesToPlayers();
+    }
+
+    public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
+        this(playerOrder, new DieRollParser());
     }
 
     private TerritoryGraph initializeGraph() {
@@ -49,7 +60,6 @@ public final class WorldDominationGameEngine {
 
         this.playersList = new ArrayList<>(playerOrder);
         initializePlayerColorToPlayerMap(playerOrder);
-        currentPlayer = playerOrder.get(0);
         return true;
     }
 
@@ -264,4 +274,29 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
+
+    void shufflePlayers() {
+        this.dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
+        sortPlayersListByDieRoll();
+    }
+
+    private void sortPlayersListByDieRoll() {
+        List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
+        sortedDieRolls.sort(Comparator.reverseOrder());
+        List<PlayerColor> newPlayerOrder = new ArrayList<>();
+        for (int i : sortedDieRolls) {
+            int index = dieRolls.indexOf(i);
+            newPlayerOrder.add(playersList.get(index));
+        }
+        this.playersList = newPlayerOrder;
+    }
+
+    public List<Integer> getDieRolls() {
+        return new ArrayList<>(dieRolls);
+    }
+
+    void setParser(DieRollParser parser) {
+        this.parser = parser;
+    }
+
 }
