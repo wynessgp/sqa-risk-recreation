@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -16,6 +15,7 @@ import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -242,7 +242,7 @@ public class WorldDominationGameEngineTest {
     private Territory createMockedTerritoryWithExpectations(PlayerColor playerColorToReturn) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerColorToReturn)).andReturn(true);
 
         EasyMock.replay(mockedTerritory);
         return mockedTerritory;
@@ -260,39 +260,20 @@ public class WorldDominationGameEngineTest {
         return mockedGraph;
     }
 
-    private static Stream<Arguments> generateAllTerritoryTypesAndDistinctPlayerPairs() {
-        Set<Set<PlayerColor>> playerPairsNoDupes = new HashSet<>();
-        List<PlayerColor> playerColorsNoSetup = new ArrayList<>(List.of(PlayerColor.values()));
-        playerColorsNoSetup.remove(PlayerColor.SETUP);
+    private Territory createMockedTerritoryReturnsFalseForIsOwnedBy(PlayerColor toReturnFalseWith) {
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        for (PlayerColor playerOne : playerColorsNoSetup) {
-            for (PlayerColor playerTwo : playerColorsNoSetup) {
-                if (playerOne != playerTwo) {
-                    Set<PlayerColor> playerPair = new HashSet<>();
-                    playerPair.add(playerOne);
-                    playerPair.add(playerTwo);
-                    playerPairsNoDupes.add(playerPair);
-                }
-            }
-        }
-        Set<Arguments> allTerritoriesAndPlayerPairs = new HashSet<>();
-        for (Set<PlayerColor> playerPair : playerPairsNoDupes) {
-            Iterator<PlayerColor> iter = playerPair.iterator();
-            PlayerColor playerOne = iter.next();
-            PlayerColor playerTwo = iter.next();
-            for (TerritoryType territory : TerritoryType.values()) {
-                allTerritoriesAndPlayerPairs.add(Arguments.of(territory, playerOne, playerTwo));
-            }
-        }
-        return allTerritoriesAndPlayerPairs.stream();
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(toReturnFalseWith)).andReturn(false);
+
+        EasyMock.replay(mockedTerritory);
+        return mockedTerritory;
     }
 
-
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
+    @MethodSource("generateAllTerritoryTypesAndPlayerColors")
     public void test07_checkIfPlayerOwnsTerritory_playerDoesNotOwnTerritory_expectFalse(
-            TerritoryType relevantTerritory, PlayerColor playerInControlOfTerritory, PlayerColor notInControl) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControlOfTerritory);
+            TerritoryType relevantTerritory, PlayerColor notInControl) {
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(notInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
                 relevantTerritory, mockedTerritory, GET_TERRITORY_ONCE);
 
@@ -356,10 +337,10 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
+    @EnumSource(TerritoryType.class)
     public void test20_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
-            TerritoryType relevantTerritory, PlayerColor playerInControl) {
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+            TerritoryType relevantTerritory) {
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -444,7 +425,7 @@ public class WorldDominationGameEngineTest {
             int numArmiesToExpect, PlayerColor playerToExpect, PlayerColor playerColorToReturn) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerColorToReturn);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerColorToReturn)).andReturn(true);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesToExpect)).andReturn(true);
         EasyMock.expect(mockedTerritory.setPlayerInControl(playerToExpect)).andReturn(true);
 
@@ -480,10 +461,22 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
     }
 
+    private DieRollParser generateMockedParser(List<PlayerColor> players) {
+        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
+        List<Integer> dieRolls = new ArrayList<>();
+        for (int i = players.size(); i > 0; i--) {
+            dieRolls.add(i);
+        }
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
+        EasyMock.replay(parser);
+        return parser;
+    }
+
     @Test
     public void test24_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
         List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors);
+        DieRollParser parser = generateMockedParser(playerColors);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors, parser);
         TerritoryType targetTerritory = TerritoryType.ALASKA;
         int numArmiesToPlace = 1;
 
@@ -500,13 +493,15 @@ public class WorldDominationGameEngineTest {
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+        EasyMock.verify(parser);
     }
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
@@ -517,6 +512,7 @@ public class WorldDominationGameEngineTest {
         }
 
         assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
+        EasyMock.verify(parser);
     }
 
     @ParameterizedTest
@@ -551,12 +547,12 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateAllTerritoryTypesAndDistinctPlayerPairs")
+    @MethodSource("generateAllTerritoryTypesAndPlayerColors")
     public void test28_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
-            TerritoryType relevantTerritory, PlayerColor playerInControl, PlayerColor playerAttemptingToPlace) {
+            TerritoryType relevantTerritory, PlayerColor playerAttemptingToPlace) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
-        Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(playerAttemptingToPlace);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
 
         unitUnderTest.setGamePhase(GamePhase.SETUP);
@@ -597,7 +593,7 @@ public class WorldDominationGameEngineTest {
         int numValidArmies = 1;
 
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerInControl)).andReturn(true);
         EasyMock.expect(mockedTerritory.getNumArmiesPresent()).andReturn(numArmiesPreviouslyPresent);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
                 .andReturn(true);
@@ -631,7 +627,7 @@ public class WorldDominationGameEngineTest {
         int numValidArmies = 1;
 
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedTerritory.getPlayerInControl()).andReturn(playerInControl);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerInControl)).andReturn(true);
         EasyMock.expect(mockedTerritory.getNumArmiesPresent()).andReturn(numArmiesPreviouslyPresent);
         EasyMock.expect(mockedTerritory.setNumArmiesPresent(numArmiesPreviouslyPresent + numValidArmies))
                 .andReturn(true);
@@ -727,7 +723,8 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         int numArmiesToPlace = 1;
 
         for (TerritoryType territory : TerritoryType.values()) {
@@ -748,13 +745,16 @@ public class WorldDominationGameEngineTest {
         }
 
         assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
+        EasyMock.verify(parser);
     }
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
+        DieRollParser parser = generateMockedParser(players);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
         List<TerritoryType> territories = List.of(TerritoryType.values());
         int numArmiesToPlace = 1;
 
@@ -774,13 +774,16 @@ public class WorldDominationGameEngineTest {
             assertEquals(Set.of(territories.get(playerIndex), territories.get(previousIterationIndex)),
                     unitUnderTest.getClaimedTerritoriesForPlayer(players.get(previousIterationIndex)));
         }
+        EasyMock.verify(parser);
     }
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
             List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
+        DieRollParser parser = generateMockedParser(players);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
 
         // claim all the territories, ensure we enter the setup phase.
         int numArmiesToPlace = 1;
@@ -815,6 +818,55 @@ public class WorldDominationGameEngineTest {
         }
 
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        EasyMock.verify(parser);
+    }
+
+    private void testShufflePlayersMethod(List<PlayerColor> players, List<Integer> dieRolls,
+                                          List<PlayerColor> expectedPlayers) {
+        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
+        EasyMock.replay(parser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setPlayerOrderList(players);
+        unitUnderTest.setParser(parser);
+
+        unitUnderTest.shufflePlayers();
+        assertEquals(dieRolls, unitUnderTest.getDieRolls());
+        assertEquals(expectedPlayers, unitUnderTest.getPlayerOrder());
+        EasyMock.verify(parser);
+    }
+
+    @Test
+    public void test36_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(1, 2, 3),
+                List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED));
+    }
+
+    @Test
+    public void test37_shufflePlayers_withFourUniquePlayers_returnsRollsAndShuffledList() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE),
+                List.of(2, 3, 5, 1), List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.BLUE));
+    }
+
+    @Test
+    public void test38_shufflePlayers_withFiveUniquePlayers_returnsRollsAndShuffledList() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
+                PlayerColor.PURPLE), List.of(5, 4, 6, 2, 1), List.of(PlayerColor.GREEN, PlayerColor.RED,
+                PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.PURPLE));
+    }
+
+    @Test
+    public void test39_shufflePlayers_withSixUniquePlayers_returnsRollsAndShuffledList() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
+                PlayerColor.PURPLE, PlayerColor.BLACK), List.of(5, 4, 6, 2, 1, 3), List.of(PlayerColor.GREEN,
+                PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.BLUE, PlayerColor.PURPLE));
+    }
+
+    @Test
+    public void test40_shufflePlayers_withThreeUniquePlayers_listDoesNotChange() {
+        testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(3, 2, 1),
+                List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN));
     }
 
 }

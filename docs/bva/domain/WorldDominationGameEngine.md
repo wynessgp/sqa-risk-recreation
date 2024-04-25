@@ -501,6 +501,64 @@ Output:
 
 ### TODO: ATTACK PHASE
 
+# method: `shufflePlayers(parser: DieRollParser): void`
+
+## BVA Step 1
+Input: The underlying list of players and the die roller to use
+
+Output: The die rolls for the original list (internal), and the updated list of players (internal)
+
+## BVA Step 2
+Input: Collection, pointer
+
+Output: Collection (players and dice)
+
+## BVA Step 3
+Input:
+- Collection:
+  - Empty collection (should never happen)
+  - Collection with 1-2 elements (should never happen)
+  - Collection with 3-6 elements
+  - Collection with 7+ elements (should never happen)
+  - Collection with duplicates (should never happen)
+- Pointer:
+  - Null pointer (should never happen)
+  - Valid DieRollParser object
+
+Output:
+- Dice collection
+  - Same size as input collection, no duplicates
+  - Order matches the previous player order, and numbers determine the new order
+- Players collection
+  - Same size as input collection with different order
+  - There is a possibility that the order does not change
+  - Number of players don't match (error case, should never happen)
+  - Collection size is different (error case, should never happen)
+
+### Note: We do not handle error cases because the method will only be called internally, after the player list is initialized
+
+## BVA Step 4
+### Test value 1
+Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
+
+Output: Players = [GREEN, YELLOW, RED], Dice = [1, 2, 6]
+### Test value 2
+Input: Collection = [RED, YELLOW, GREEN, BLUE], Pointer = valid DieRollParser object
+
+Output: Players = [GREEN, YELLOW, RED, BLUE], Dice = [2, 3, 5, 1]
+### Test value 3
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE], Pointer = valid DieRollParser object
+
+Output: Players = [GREEN, RED, YELLOW, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1]
+### Test value 4
+Input: Collection = [RED, YELLOW, GREEN, BLUE, PURPLE, BLACK], Pointer = valid DieRollParser object
+
+Output: Players = [GREEN, RED, YELLOW, BLACK, BLUE, PURPLE], Dice = [5, 4, 6, 2, 1, 3]
+### Test value 5
+Input: Collection = [RED, YELLOW, GREEN], Pointer = valid DieRollParser object
+
+Output: Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
+
 # method: `calculatePlacementPhaseArmiesForCurrentPlayer(): int`
 
 ## BVA Step 1
