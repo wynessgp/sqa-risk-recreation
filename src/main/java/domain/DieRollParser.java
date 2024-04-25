@@ -2,10 +2,8 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class DieRollParser {
 
@@ -25,13 +23,9 @@ public class DieRollParser {
     private static final int MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE = 3;
 
     public DieRollParser() {
-        this.attackerDice = List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL),
-                new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL));
-        this.defenderDice = List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL),
-                new Die(MAXIMUM_DIE_ROLL, MAXIMUM_DIE_ROLL));
-        // Changed when we go to roll it.
-        this.setupDie = new Die(0, 0);
-        this.randomizer = new Random();
+        this(new Random(), List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL,
+                MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)), List.of(new Die(MAXIMUM_DIE_ROLL,
+                MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MAXIMUM_DIE_ROLL)));
     }
 
     // this constructor is to only be utilized for unit testing!
@@ -40,19 +34,24 @@ public class DieRollParser {
         this.randomizer = randomizer;
         this.attackerDice = attackerDice;
         this.defenderDice = defenderDice;
-        // Changed when we go to roll it.
-        this.setupDie = new Die(0, 0);
+        this.setupDie = new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL);
     }
 
     public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(
                 amountOfDiceToRoll, MINIMUM_VALID_AMOUNT_OF_SETUP_DICE, MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE);
-        setupDie = new Die(amountOfDiceToRoll, MINIMUM_DIE_ROLL);
-        Set<Integer> rollResults = new HashSet<>();
+        List<Integer> rollResults = new ArrayList<>();
         while (rollResults.size() != amountOfDiceToRoll) { // continually re-roll the die until we have no duped rolls.
-            rollResults.add(setupDie.rollSingleDie(randomizer));
+            int rollResult = setupDie.rollSingleDie(randomizer);
+            addResultIfNoDuplicate(rollResults, rollResult);
         }
         return List.copyOf(rollResults);
+    }
+
+    private void addResultIfNoDuplicate(List<Integer> rollResults, int rollResult) {
+        if (!rollResults.contains(rollResult)) {
+            rollResults.add(rollResult);
+        }
     }
 
     public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
@@ -124,5 +123,9 @@ public class DieRollParser {
             }
         }
         return true;
+    }
+
+    void setSetupDie(Die setupDie) {
+        this.setupDie = setupDie;
     }
 }
