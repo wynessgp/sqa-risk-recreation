@@ -68,42 +68,40 @@ Output: Collection
   - amountOfDiceToRoll: 0
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [2, 6]"
+  - message: "Valid amount of dice is in the range [3, 6]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll: 7
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [2, 6]"
+  - message: "Valid amount of dice is in the range [3, 6]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll: 2
-  - Set up die = valid 2-sided die (you can see where this is going)
-- Output: No restrictions on the ordering of the contents, but:
-  - Must contain numbers from (0, 6]
-  - Must not have any duplicates
-  - Output = [4, 3]
+  - Set up die = [] (doesn't matter)
+- Output: IllegalArgumentException
+  - message: "Valid amount of dice is in the range [3, 6]"
 ### Test 5:
 - Input:
   - amountOfDiceToRoll: 3
-  - Set up die = valid 3-sided die
-- Output: No restrictions on the ordering of the contents, but:
+  - Set up die = valid 6-sided die
+- Output:
   - Must contain numbers from (0, 6]
   - Must not have any duplicates
   - Output = [1, 2, 6]
 ### Test 6:
 - Input:
   - amountOfDiceToRoll: 4
-  - Set up die = valid 4-sided die
-- Output: No restrictions on the ordering of the contents, but:
+  - Set up die = valid 6-sided die
+- Output:
   - Must contain numbers from (0, 6]
   - Must not have any duplicates
   - Output = [2, 6, 4, 1]
 ### Test 7:
 - Input:
   - amountOfDiceToRoll: 5
-  - Set up die = valid 5-sided die
-- Output: No restrictions on the ordering of the contents, but:
+  - Set up die = valid 6-sided die
+- Output:
   - Must contain numbers from (0, 6]
   - Must not have any duplicates
   - Output = [5, 4, 3, 2, 6]
@@ -111,10 +109,18 @@ Output: Collection
 - Input:
   - amountOfDiceToRoll: 6
   - Set up die = valid 6-sided die
-- Output: No restrictions on the ordering of the contents, but:
+- Output:
   - Must contain numbers from (0, 6]
   - Must not have any duplicates
   - Output = [6, 1, 2, 5, 4, 3]
+### Test 9
+- Input:
+  - amountOfDiceToRoll: 4
+  - Set up die = valid 6-sided die (with mocked roll order [1, 2, 3, 3, 4])
+- Output:
+  - Must contain numbers from (0, 6]
+  - Must not have any duplicates
+  - Output = [1, 2, 3, 4]
 
 # method: `rollAttackerDice(amountOfDiceToRoll: int): List<Integer>`
 
