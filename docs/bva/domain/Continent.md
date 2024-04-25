@@ -20,8 +20,8 @@ Input:
   - A collection with \> 1 element 
   - The maximum possible size (size 42, since there are 42 possible territory types; should always return true)
 - Underlying continent's territories: Collection
-  - An empty collection (can't set, Continents will be given a static Set)
-  - A collection with 1 element (can't set, static set with relevant territories)
+  - An empty collection (can't set, each Continent will be given a fixed Set)
+  - A collection with 1 element (can't set, each continent has \>1 relevant territories)
   - A collection with \> 1 element
   - A collection of max size (depends on continent; Asia is size 12, etc.)
 
