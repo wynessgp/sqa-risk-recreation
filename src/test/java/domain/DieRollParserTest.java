@@ -392,12 +392,12 @@ public class DieRollParserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0, 1, 7})
+    @ValueSource(ints = {-1, 0, 1, 7, 2})
     public void test25_rollDiceToDeterminePlayerOrder_invalidInput_expectException(
             int illegalInput) {
         DieRollParser unitUnderTest = new DieRollParser();
 
-        String expectedMessage = "Valid amount of dice is in the range [2, 6]";
+        String expectedMessage = "Valid amount of dice is in the range [3, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.rollDiceToDeterminePlayerOrder(illegalInput));
 
@@ -407,7 +407,6 @@ public class DieRollParserTest {
 
     private static Stream<Arguments> playerOrderGenerator() {
         return Stream.of(
-                Arguments.of(List.of(4, 3)),
                 Arguments.of(List.of(1, 2, 6)),
                 Arguments.of(List.of(2, 6, 4, 1)),
                 Arguments.of(List.of(5, 4, 3, 2, 6)),

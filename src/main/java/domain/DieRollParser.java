@@ -15,7 +15,7 @@ public class DieRollParser {
     private static final int MINIMUM_DIE_ROLL = 1;
     private static final int MAXIMUM_DIE_ROLL = 6;
 
-    private static final int MINIMUM_VALID_AMOUNT_OF_SETUP_DICE = 2;
+    private static final int MINIMUM_VALID_AMOUNT_OF_SETUP_DICE = 3;
     private static final int MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE = 6;
 
     private static final int MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE = 1;
