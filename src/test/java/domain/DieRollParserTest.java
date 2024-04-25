@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -416,7 +417,7 @@ public class DieRollParserTest {
 
     @ParameterizedTest
     @MethodSource("playerOrderGenerator")
-    public void test26_rollDiceToDeterminePlayerOrder_unstructuredOutput_expectNoDuplicates(
+    public void test26_rollDiceToDeterminePlayerOrder_expectNoDuplicates(
             List<Integer> expectedRolls) {
         Die setupDie = EasyMock.mock(Die.class);
         for (int i : expectedRolls) {
@@ -433,6 +434,29 @@ public class DieRollParserTest {
 
         assertEquals(expectedRolls.size(), actual.size());
         assertEquals(expectedRolls.size(), Set.copyOf(actual).size());
+        assertEquals(expectedRolls, actual);
+        EasyMock.verify(setupDie);
+    }
+
+    @Test
+    public void test27_rollDiceToDeterminePlayerOrder_withDuplicateRoll_expectNoDuplicates() {
+        List<Integer> expectedRolls = new ArrayList<>(List.of(1, 2, 3, 3, 4));
+        Die setupDie = EasyMock.mock(Die.class);
+        for (int i : expectedRolls) {
+            EasyMock.expect(setupDie.rollSingleDie(EasyMock.anyObject(Random.class))).andReturn(i);
+        }
+        EasyMock.replay(setupDie);
+
+        DieRollParser unitUnderTest = new DieRollParser();
+        unitUnderTest.setSetupDie(setupDie);
+
+        // the main point of this one is to see, if given no "set" dice values, we can
+        // get the method to return a list with no duplicates.
+        int numberOfPlayers = 4;
+        List<Integer> actual = unitUnderTest.rollDiceToDeterminePlayerOrder(numberOfPlayers);
+
+        expectedRolls.remove(3);
+        assertEquals(numberOfPlayers, actual.size());
         assertEquals(expectedRolls, actual);
         EasyMock.verify(setupDie);
     }
