@@ -17,22 +17,18 @@ Output:
 ## BVA Step 3
 Input:
 - PlayerColor objects (Collection):
-    - An empty collection (error case)
     - A collection with [3, 6] elements -> ensure we give players the correct number of armies.
 
 Note the lack of other error cases above - we expect whoever is calling us to have made the player collection, otherwise
 the other methods haven't done their job.
 
 Output:
-- function output: (Boolean)
-    - 0 (can't set)
+- function output: 
     - 1
-    - Something other than true/false (Exceptions)
-        - An exception will only be thrown if the PlayerColor storage is empty (meaning initializer didn't get called)
-    - Some true value other than 1 (can't set)
+    - Not considering other outputs as these integration tests will assume correct calling of functions
+      - You would have to go through input validation in the WorldDominationGameEngine constructor first.
 - Players collection:
     - Each element in the list should have their armies increased by the SETUP amount for the number of players
-    - Not really interested in any other cases, as we are not modifying the Collection itself, merely the items inside.
 
 ## BVA Step 4
 I will be modeling the input by the associated player color.
