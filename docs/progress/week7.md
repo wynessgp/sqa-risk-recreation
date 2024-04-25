@@ -12,7 +12,7 @@
 **Item Progress**:
 1. [started] focusing on connections to facade class (GameEngine)
 2. [started] player setup complete, working on territory claiming
-3. [started] continuing work through next week
+3. [not started] planned for next week
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
