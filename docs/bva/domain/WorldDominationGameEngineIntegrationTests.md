@@ -117,7 +117,7 @@ Input:
 - playerColor: SETUP
 
 Output: 1 (true)
-- This needs to be checked for each and every territory to ensure correct initialization
+- This needs to be checked for each and every territory to ensure correct initialization, in the same test.
 ### Test 2:
 Input:
 - relevantTerritory: ALASKA 

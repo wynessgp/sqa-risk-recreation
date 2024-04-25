@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,6 +43,16 @@ public class WorldDominationGameEngineIntegrationTest {
         int expectedNumArmies = 35 - ((playerListVariant.size() - 3) * 5);
         for (PlayerColor player : playerListVariant) {
             assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(player));
+        }
+    }
+
+    @Test
+    public void test01_checkIfPlayerOwnsTerritory_doesSetupOwnAllTerritoriesAtInitialization_expectTrue() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        // don't need to initialize anything else, just make sure the Graph is ready for us to play on.
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(territory, PlayerColor.SETUP));
         }
     }
 }
