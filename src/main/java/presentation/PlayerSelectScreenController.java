@@ -69,9 +69,6 @@ public class PlayerSelectScreenController {
 
     @FXML
     private void onStartGameButtonClick() {
-        for (PlayerColor player : playersOrder) {
-            System.out.println(player);
-        }
         controller.initializePlayers(playersOrder);
         controller.activate(SceneType.SHUFFLE);
     }
