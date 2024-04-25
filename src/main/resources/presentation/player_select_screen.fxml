@@ -95,7 +95,7 @@
          <String fx:value="defaultButton" />
          <String fx:value="button" />
       </styleClass></Button>
-   <Button fx:id="startGameButton" disable="true" layoutX="428.0" layoutY="525.0" mnemonicParsing="false" onAction="#onStartGameButtonClick" text="Start game">
+   <Button fx:id="startGameButton" disable="true" layoutX="425.0" layoutY="525.0" mnemonicParsing="false" onAction="#onStartGameButtonClick" text="Continue">
       <styleClass>
          <String fx:value="defaultButton" />
          <String fx:value="button" />

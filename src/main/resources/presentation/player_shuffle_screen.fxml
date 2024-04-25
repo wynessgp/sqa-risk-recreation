@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.PlayerShuffleScreenController">
-   <children>
-      <ImageView fx:id="dieImage" fitHeight="150.0" fitWidth="200.0" layoutX="415.0" layoutY="233.0" onMouseClicked="#rollDie" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@images/die-one.png" />
-         </image>
-      </ImageView>
-      <Label fx:id="instructionLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="168.0" prefHeight="28.0" prefWidth="497.0" styleClass="text" text="COLOR player: Click the die to roll" textAlignment="CENTER">
-         <font>
-            <Font name="Franklin Gothic Medium" size="24.0" />
-         </font>
-      </Label>
-      <Label fx:id="dieRollResult" alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="410.0" prefHeight="28.0" prefWidth="497.0" styleClass="text" text="You rolled a {NUMBER}!" textAlignment="CENTER">
-         <font>
-            <Font name="Franklin Gothic Medium" size="24.0" />
-         </font>
-      </Label>
-   </children>
+<AnchorPane prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.PlayerShuffleScreenController">
+   <ImageView fx:id="dieImage" fitHeight="150.0" fitWidth="200.0" layoutX="415.0" layoutY="240.0"
+              onMouseClicked="#rollDie" pickOnBounds="true" preserveRatio="true">
+      <cursor>
+         <Cursor fx:constant="HAND"/>
+      </cursor>
+      <Image url="@images/die-blank.png"/>
+   </ImageView>
+   <Label fx:id="instructionLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="390.0"
+          prefHeight="28.0" prefWidth="497.0" styleClass="text" text="{COLOR} player: Click the die to roll"
+          textAlignment="CENTER">
+      <font>
+         <Font name="Franklin Gothic Medium" size="24.0"/>
+      </font>
+   </Label>
+   <Label fx:id="dieRollResult" alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="212.0"
+          prefHeight="28.0" prefWidth="497.0" styleClass="text" text="{COLOR}: You rolled a {NUMBER}!"
+          textAlignment="CENTER">
+      <font>
+         <Font name="Franklin Gothic Medium" size="24.0"/>
+      </font>
+   </Label>
+   <Button layoutX="413.0" layoutY="525.0" mnemonicParsing="false" onAction="#startGame" styleClass="defaultButton"
+           text="Start game" textAlignment="CENTER">
+      <font>
+         <Font name="Franklin Gothic Medium" size="25.0"/>
+      </font>
+   </Button>
 </AnchorPane>

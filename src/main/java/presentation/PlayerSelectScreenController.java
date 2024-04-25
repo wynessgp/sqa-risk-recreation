@@ -96,9 +96,9 @@ public class PlayerSelectScreenController {
         if (numPlayers < MIN_PLAYERS) {
             instructionLabel.setText("Select " + (MIN_PLAYERS - numPlayers) + " or more players to continue");
         } else if (numPlayers < MAX_PLAYERS) {
-            instructionLabel.setText("Start the game or continue adding players");
+            instructionLabel.setText("Click continue or keep adding players");
         } else {
-            instructionLabel.setText("Click start game to begin");
+            instructionLabel.setText("Click continue to determine player order");
         }
     }
 

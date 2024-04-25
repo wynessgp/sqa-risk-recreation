@@ -2,14 +2,14 @@ package presentation;
 
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class PlayerShuffleScreenController {
     @FXML
@@ -18,16 +18,14 @@ public class PlayerShuffleScreenController {
     private Label dieRollResult;
     @FXML
     private ImageView dieImage;
-    private SceneController sceneController;
-    private WorldDominationGameEngine gameEngine;
     private List<PlayerColor> originalPlayerOrder;
     private List<Integer> dieRolls;
     private int currentPlayer = -1;
 
     @FXML
     private void initialize() {
-        this.sceneController = SceneController.getInstance();
-        this.gameEngine = sceneController.getGameEngine();
+        SceneController sceneController = SceneController.getInstance();
+        WorldDominationGameEngine gameEngine = sceneController.getGameEngine();
         this.originalPlayerOrder = sceneController.getOriginalPlayerOrder();
         this.dieRolls = gameEngine.getDieRolls();
         dieRollResult.setVisible(false);
@@ -39,7 +37,8 @@ public class PlayerShuffleScreenController {
         if (currentPlayer >= originalPlayerOrder.size()) {
             instructionLabel.setText("Click start game to continue");
         } else {
-            instructionLabel.setText(originalPlayerOrder.get(currentPlayer).toString() + " player: Click the die to roll");
+            instructionLabel.setText(originalPlayerOrder.get(currentPlayer).toString()
+                    + " player: Click the die to roll");
         }
     }
 
@@ -47,10 +46,16 @@ public class PlayerShuffleScreenController {
     private void rollDie() {
         if (currentPlayer < originalPlayerOrder.size()) {
             dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer), getClass()));
-            dieRollResult.setText("You rolled a " + dieRolls.get(currentPlayer) + "!");
+            dieRollResult.setText(originalPlayerOrder.get(currentPlayer).toString() + ": You rolled a "
+                    + dieRolls.get(currentPlayer) + "!");
             dieRollResult.setVisible(true);
             prepareCurrentPlayerRoll();
         }
+    }
+
+    @FXML
+    private void startGame() {
+
     }
 
     private enum DieImage {
