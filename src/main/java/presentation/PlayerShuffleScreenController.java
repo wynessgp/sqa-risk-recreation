@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,29 +19,52 @@ public class PlayerShuffleScreenController {
     @FXML
     private Label dieRollResult;
     @FXML
+    private Label rollOrderLabel;
+    @FXML
     private ImageView dieImage;
+    @FXML
+    private Button startGameButton;
+    private SceneController sceneController = SceneController.getInstance();
     private List<PlayerColor> originalPlayerOrder;
+    private List<PlayerColor> updatedPlayerOrder;
     private List<Integer> dieRolls;
     private int currentPlayer = -1;
 
     @FXML
     private void initialize() {
-        SceneController sceneController = SceneController.getInstance();
         WorldDominationGameEngine gameEngine = sceneController.getGameEngine();
         this.originalPlayerOrder = sceneController.getOriginalPlayerOrder();
         this.dieRolls = gameEngine.getDieRolls();
+        this.updatedPlayerOrder = gameEngine.getPlayerOrder();
         dieRollResult.setVisible(false);
+        startGameButton.setVisible(false);
         prepareCurrentPlayerRoll();
     }
 
     private void prepareCurrentPlayerRoll() {
         currentPlayer++;
         if (currentPlayer >= originalPlayerOrder.size()) {
-            instructionLabel.setText("Click start game to continue");
+            prepareStartGame();
         } else {
             instructionLabel.setText(originalPlayerOrder.get(currentPlayer).toString()
                     + " player: Click the die to roll");
         }
+    }
+
+    private void prepareStartGame() {
+        startGameButton.setVisible(true);
+        instructionLabel.setText("Click start game to continue");
+        rollOrderLabel.setText("Player order: " + stringifyPlayerOrder());
+        dieImage.setCursor(Cursor.DEFAULT);
+    }
+
+    private String stringifyPlayerOrder() {
+        StringBuilder playerOrder = new StringBuilder();
+        for (PlayerColor player : updatedPlayerOrder) {
+            playerOrder.append(player.toString()).append(", ");
+        }
+        playerOrder.delete(playerOrder.length() - 2, playerOrder.length());
+        return playerOrder.toString();
     }
 
     @FXML
@@ -55,7 +80,7 @@ public class PlayerShuffleScreenController {
 
     @FXML
     private void startGame() {
-
+        sceneController.activate(SceneType.GAME);
     }
 
     private enum DieImage {
