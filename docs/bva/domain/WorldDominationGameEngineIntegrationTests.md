@@ -64,3 +64,71 @@ fact that they do not provide mocked player objects to our WorldDominationGameEn
     - 1 (true)
     - Collection = [20, 20, 20, 20, 20, 20]
 
+# method: `checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean`
+
+## BVA Step 1
+Input: A territory that's in question whether the given player owns it
+
+Output: A yes/no answer if the given player owns the territory
+
+## BVA Step 2
+Input:
+- territory: Cases
+- player: Cases
+- Underlying territory object: Pointer
+  - Note that the TerritoryType provided should always align with the Territory object we grab
+  - We communicate through the graph for this, so there shouldn't be mix-ups.
+
+Output: Boolean
+
+## BVA Step 3
+Input:
+- Territory (Cases):
+  - The 1st possibility (ALASKA)
+  - The 2nd possibility (ARGENTINA)
+  - ...
+  - The 42nd possibility (YAKUTSK)
+  - The 0th or 43rd possibility (can't set)
+- Player (Cases):
+  - The 1st possibility (SETUP)
+  - The 2nd possibility (BLUE)
+  - ...
+  - The 7th possibility (PURPLE)
+  - The 0th or 8th possibility (can't set)
+- Underlying territory object:
+  - Null pointer (can't set, Martin's rules)
+  - A pointer to the actual object
+    - If the PlayerColor in the Territory object does not match, return false.
+
+Output:
+- 0
+- 1
+
+## BVA Step 4
+Two main behaviors we want to test as an integration test:
+1. At the start of the game, all the territories should be unclaimed (represented by SETUP owning them)
+   - Any time a Risk game starts, you have to claim all the territories before you can move on to other phases.
+2. If a player places an army in a territory, this method needs to accurately reflect a player claiming it.
+   - We'll need to mix methods here, but it is vital this method returns correct information. 
+
+### Test 1:
+Input:
+- relevantTerritory: Every possible TerritoryType value (iterate over them)
+- playerColor: SETUP
+
+Output: 1 (true)
+- This needs to be checked for each and every territory to ensure correct initialization
+### Test 2:
+Input:
+- relevantTerritory: ALASKA 
+- playerColor: ANY, minus SETUP (choose from typical values excluding SETUP)
+
+Outline:
+Have the given PlayerColor CLAIM the territory first 
+- so call something like placeNewArmiesInTerritory(territory, playerColor))
+
+Then check to see if it's owned by the same playerColor
+
+Output: 1 (true)
+- This should always be the case immediately after claiming the territory
+
