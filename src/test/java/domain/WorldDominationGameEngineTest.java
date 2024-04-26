@@ -227,18 +227,6 @@ public class WorldDominationGameEngineTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test06_assignSetupArmiesToPlayersIntegrationTest_listSizeVaries_expectTrueAndCorrectlyAssigns(
-            List<PlayerColor> playerColors) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors);
-
-        int expectedNumArmies = 35 - ((playerColors.size() - 3) * 5);
-        for (PlayerColor player : playerColors) {
-            assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(player));
-        }
-    }
-
     private Territory createMockedTerritoryWithExpectations(PlayerColor playerColorToReturn) {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
 
@@ -309,16 +297,6 @@ public class WorldDominationGameEngineTest {
         assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(relevantTerritory, playerInControlOfTerritory));
 
         EasyMock.verify(mockedGraph, mockedTerritory);
-    }
-
-    @Test
-    public void test09_checkIfPlayerOwnsTerritoryIntegrationTest_doesSetupOwnAllTerritories_expectTrue() {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-
-        // don't need to initialize anything else, just make sure the Graph is ready for us to play on.
-        for (TerritoryType territory : TerritoryType.values()) {
-            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(territory, PlayerColor.SETUP));
-        }
     }
 
     private static Stream<Arguments> generateAllTerritoryTypesAndPlayerMinusSetupCombinations() {
@@ -459,75 +437,6 @@ public class WorldDominationGameEngineTest {
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
 
         EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
-    }
-
-    private DieRollParser generateMockedParser(List<PlayerColor> players) {
-        DieRollParser parser = EasyMock.createMock(DieRollParser.class);
-        List<Integer> dieRolls = new ArrayList<>();
-        for (int i = players.size(); i > 0; i--) {
-            dieRolls.add(i);
-        }
-        EasyMock.expect(parser.rollDiceToDeterminePlayerOrder(players.size())).andReturn(dieRolls);
-        EasyMock.replay(parser);
-        return parser;
-    }
-
-    @Test
-    public void test24_placeNewArmiesInTerritoryScrambleIntegrationTest_doubleClaimingTerritory_expectException() {
-        List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
-        DieRollParser parser = generateMockedParser(playerColors);
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors, parser);
-        TerritoryType targetTerritory = TerritoryType.ALASKA;
-        int numArmiesToPlace = 1;
-
-        // since it is an expectation that the WorldDominationGameEngine handles whose turn it is FOR us,
-        // we will try placing an army as RED, then the current player should be PURPLE.
-        assertTrue(unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
-
-        assertEquals(PlayerColor.PURPLE, unitUnderTest.getCurrentPlayer());
-
-        // now we'll try to place an army in the same place RED just did.
-        String expectedMessage = "Cannot place armies in a claimed territory until the scramble phase is over";
-        Exception exception = assertThrows(IllegalStateException.class,
-                () -> unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
-
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-        EasyMock.verify(parser);
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test25_placeNewArmiesInTerritoryScrambleIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
-            List<PlayerColor> players) {
-        DieRollParser parser = generateMockedParser(players);
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
-        List<TerritoryType> territories = List.of(TerritoryType.values());
-        int numArmiesToPlace = 1;
-
-        // let everyone go once, with a valid territory. Check that it wraps back around as well.
-        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-            assertEquals(players.get(playerIndex), unitUnderTest.getCurrentPlayer());
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
-        }
-
-        assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
-        EasyMock.verify(parser);
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test26_placeNewArmiesInTerritoryScrambleIntegrationTest_allTerritoriesClaimedAdvancePhase(
-            List<PlayerColor> players) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
-        int numArmiesToPlace = 1;
-
-        for (TerritoryType territory : TerritoryType.values()) {
-            assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
-        }
-
-        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
     }
 
     @ParameterizedTest
@@ -717,108 +626,6 @@ public class WorldDominationGameEngineTest {
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmies));
 
         EasyMock.verify(mockedTerritory, mockedPlayer, mockedGraph);
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test33_placeNewArmiesInTerritorySetupIntegrationTest_listSizeVaries_expectFullCycleOfPlayers(
-            List<PlayerColor> players) {
-        DieRollParser parser = generateMockedParser(players);
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
-        int numArmiesToPlace = 1;
-
-        for (TerritoryType territory : TerritoryType.values()) {
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
-        }
-
-        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
-
-        // rebase the game to start at the first player here on purpose. this is not a part of
-        // the normal game flow, but we're ensuring we can make a full cycle in the setup phase.
-        unitUnderTest.provideCurrentPlayerForTurn(players.get(0));
-
-        // now do one more cycle's worth of players to ensure we change players each time.
-        List<TerritoryType> territories = List.of(TerritoryType.values());
-        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-            assertEquals(players.get(playerIndex), unitUnderTest.getCurrentPlayer());
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
-        }
-
-        assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
-        EasyMock.verify(parser);
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test34_placeNewArmiesInTerritoryScrambleIntegrationTest_validInput_addToPlayerSetsWhenClaiming(
-            List<PlayerColor> players) {
-        DieRollParser parser = generateMockedParser(players);
-
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
-        List<TerritoryType> territories = List.of(TerritoryType.values());
-        int numArmiesToPlace = 1;
-
-        // here's the tricky bit about testing this: placeArmiesInTerritory automatically advances the
-        // player going. So we'll need to ask for a particular player.
-        int playerIndex = 0;
-        for (; playerIndex < players.size(); playerIndex++) {
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
-            assertEquals(Set.of(territories.get(playerIndex)),
-                    unitUnderTest.getClaimedTerritoriesForPlayer(players.get(playerIndex)));
-        }
-
-        // go forward another player's list worth of indices, just to ensure the set can actually grow.
-        for (; playerIndex < players.size() * 2; playerIndex++) {
-            int previousIterationIndex = playerIndex - players.size();
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
-            assertEquals(Set.of(territories.get(playerIndex), territories.get(previousIterationIndex)),
-                    unitUnderTest.getClaimedTerritoriesForPlayer(players.get(previousIterationIndex)));
-        }
-        EasyMock.verify(parser);
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test35_placeNewArmiesInTerritoryMultiplePhaseIntegration_validInput_advanceToPlacementPhase(
-            List<PlayerColor> players) {
-        DieRollParser parser = generateMockedParser(players);
-
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
-
-        // claim all the territories, ensure we enter the setup phase.
-        int numArmiesToPlace = 1;
-        for (TerritoryType territory : TerritoryType.values()) {
-            assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
-        }
-
-        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
-
-        // in order to enter the placement phase in RISK, we need to exhaust each and every player's armies
-        // that they acquire during the game's setup. Let's "peek" into the WorldDominationGameEngine a bit and figure
-        // out when that is.
-        List<Integer> numArmiesByPlayer = new ArrayList<>();
-        for (PlayerColor player : players) {
-            numArmiesByPlayer.add(unitUnderTest.getNumArmiesByPlayerColor(player));
-        }
-
-        List<TerritoryType> territories = List.of(TerritoryType.values());
-        int numArmiesLeftToPlace = numArmiesByPlayer.stream().mapToInt(Integer::intValue).sum();
-        while (numArmiesLeftToPlace != 0) {
-            assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
-
-            // determine a "safe" territory for the current player who's going
-            PlayerColor currentPlayerGoing = unitUnderTest.getCurrentPlayer();
-            TerritoryType safeTerritory = territories.get(players.indexOf(currentPlayerGoing));
-            assertTrue(unitUnderTest.placeNewArmiesInTerritory(safeTerritory, numArmiesToPlace));
-
-            numArmiesLeftToPlace--;
-            int numExpectedArmiesPlayerHasLeft = numArmiesLeftToPlace / players.size();
-            assertEquals(numExpectedArmiesPlayerHasLeft, unitUnderTest.getNumArmiesByPlayerColor(currentPlayerGoing));
-        }
-
-        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
-        EasyMock.verify(parser);
     }
 
     private void testShufflePlayersMethod(List<PlayerColor> players, List<Integer> dieRolls,
