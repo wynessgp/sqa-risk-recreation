@@ -109,7 +109,7 @@ Two main behaviors we want to test as an integration test:
 1. At the start of the game, all the territories should be unclaimed (represented by SETUP owning them)
    - Any time a Risk game starts, you have to claim all the territories before you can move on to other phases.
 2. If a player places an army in a territory, this method needs to accurately reflect a player claiming it.
-   - We'll need to mix methods here, but it is vital this method returns correct information. 
+   - This integration test is better suited for placeNewArmiesInTerritory.
 
 ### Test 1:
 Input:
@@ -118,17 +118,5 @@ Input:
 
 Output: 1 (true)
 - This needs to be checked for each and every territory to ensure correct initialization, in the same test.
-### Test 2:
-Input:
-- relevantTerritory: ALASKA 
-- playerColor: ANY, minus SETUP (choose from typical values excluding SETUP)
 
-Outline:
-Have the given PlayerColor CLAIM the territory first 
-- so call something like placeNewArmiesInTerritory(territory, playerColor))
-
-Then check to see if it's owned by the same playerColor
-
-Output: 1 (true)
-- This should always be the case immediately after claiming the territory
 
