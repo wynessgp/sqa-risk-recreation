@@ -3,5 +3,10 @@ package domain;
 public enum GamePhase {
     SETUP,
     PLACEMENT,
-    SCRAMBLE
+    SCRAMBLE;
+
+    public String toString() {
+        return "Setup";
+    }
+
 }
