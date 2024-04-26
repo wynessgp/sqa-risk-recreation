@@ -3,5 +3,10 @@ package domain;
 public enum PieceType {
     INFANTRY, 
     CAVALRY, 
-    ARTILLERY
+    ARTILLERY;
+
+    public String toString() {
+        return "Infantry";
+    }
+
 }
