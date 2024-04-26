@@ -119,4 +119,125 @@ Input:
 Output: 1 (true)
 - This needs to be checked for each and every territory to ensure correct initialization, in the same test.
 
+# method: `placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean`
+This method holds the bulk of the integration tests. Here's part of the reason why:
+- If you place an army in the "scramble" phase, you expect it to immediately move on to the next player.
+- You also expect the territory to then be claimed by said player
+- The territory should then have an army placed in it
+- Player objects need to have the number of armies available to place decreased after they place them
+- In some game phases, placing an army can warrant a game phase change.
 
+## BVA Step 1
+Input: The respective territory the current user wants to place their armies in, as well as the
+number of new armies to place there.
+
+Additionally, we need to know:
+- if the current Player can place this many armies
+- if the amount of armies to place is valid in our current game phase
+- if the user owns the territory. (Check done via the graph)
+
+Output: A yes/no answer whether the armies were placed successfully. The "no"
+case will not occur - instead, an exception will be thrown if the armies were
+not able to be placed successfully (i.e. another player owns the territory).
+
+Additionally, we care about:
+- if the territory was updated correctly
+  - this means claiming in the scramble phase, or just ensuring the army count was updated.
+- decrementing the number of armies left to place for our player
+- updating who's turn it is, if necessary.
+  - This action should occur automatically for the phases:
+    - SCRAMBLE, SETUP
+
+## BVA Step 2
+Input:
+- territory: Cases
+- numNewArmies: Counts [1, armies earned on player's turn]
+- State of who owns the territory: Cases
+- Game Phase: Cases
+- Current player object: Pointer
+
+Output:
+- function return value: Boolean
+- Territory: Pointer
+- Current player object: Pointer
+
+## TODO: Elaborate more once attack/placement phase is being developed!
+
+## BVA Step 3
+Input:
+- territory (Cases):
+  - The 1st possibility (ALASKA)
+  - The 2nd possibility (ARGENTINA)
+  - ...
+  - The 42nd possibility (YAKUTSK)
+  - The 0th, 43rd possibility (can't set)
+- numArmies (Counts):
+  - -1 (error case)
+  - 0 (error case)
+  - 1
+  - \> 1
+  - Maximum possible value (number of armies the player earns on that turn)
+  - One larger than the maximum possible value (error case)
+- Player who owns the territory (Cases):
+  - The 1st possibility (SETUP - should ONLY happen in SCRAMBLE)
+  - ...
+  - The 7th possibility (PURPLE)
+  - The 0th, 8th possibilities (can't set)
+- Game Phase (Cases):
+  - The 1st possibility (SCRAMBLE -> restrict army placement to 1)
+  - The 2nd possibility (SETUP -> restrict army placement to 1)
+  - The 3rd possibility (PLACEMENT)
+  - ...
+  - The 6th possibility (GAME_OVER)
+  - The 0th, 7th possibility (can't set)
+- Player object (Pointer):
+  - Null pointer (can't set, per Martin's suggestions)
+  - A valid pointer
+    - We're mostly concerned about checking the number of armies they currently have
+    - If they try to place too many and drop below 0, we should throw an error.
+
+Output:
+- function return value: Boolean
+  - 0 (can't set)
+  - 1 (when the amount to place is valid, and the operation succeeds)
+  - Some value other than 0 or 1 (exceptions)
+    - If the game phase is SCRAMBLE or SETUP, our players can't place more than 1 army at a time.
+  - Some true value other than 0 or 1 (can't set)
+- Territory object: Pointer
+  - Null pointer (can't set, per Martin's suggestions)
+  - A pointer to the true object
+    - Mostly concerned about checking two things in our Territory object:
+      - The PlayerColor should be updated if we're in the SCRAMBLE phase
+      - The army count should be updated in appropriate phases:
+        - SCRAMBLE
+        - SETUP
+        - PLACEMENT
+- Player object: Pointer
+  - The number of armies they have to place should be updated
+  - Territories held should be updated if in SCRAMBLE (maybe attack too).
+
+## BVA Step 4
+Here are some things to consider for integration tests (since we will be using very few mocked objects):
+- Placing armies on already claimed territories should throw errors in some phases
+  - This is exclusive to the SCRAMBLE phase; if it's not your territory in SETUP we should also error. 
+- After I successfully place an army in SCRAMBLE, the game should register I claimed the territory.
+  - So the territory should hold onto *my* PlayerColor. 
+  - And my Player object should receive this new territory as an "owned" territory.
+- Any time I successfully place an army in SCRAMBLE/SETUP, it should become the next player's turn.
+  - Ensure that we can make a "full cycle", so everyone goes once, and it wraps back around.
+- After all the territories are claimed in the initial scramble, I should be able to place armies in my owned territories.
+  - Ensure that we make a transition into the SETUP phase once all territories are claimed.
+- After all players' armies have been placed from SETUP, single turns of PLACEMENT/ATTACK/FORTIFY should start.
+  - Ensure that the game phase doesn't change too soon or too late.
+
+To properly model these behaviors, we'll be using a test "outline" (not unlike that of using Cucumber).
+
+### Test 1:
+Given that the players in the current game are [RED, PURPLE, YELLOW]
+And that the RED player has already claimed ALASKA by placing an army there
+The Game should make it the PURPLE player's turn to respect ordering (assertion)
+
+And when the PURPLE player tries to claim ALASKA by placing an army there
+We should throw an error, as the territory is already claimed.
+- In particular, we want to see an IllegalStateException error with the message: (assertion)
+  - "Cannot place armies in a claimed territory until the scramble phase is over" (assertion)
