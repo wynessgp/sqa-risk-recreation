@@ -1,7 +1,7 @@
 # method: `toString(): String`
 
 ## BVA Step 1
-Input: Underlying PlayerColor enum
+Input: Underlying BattleResult enum
 
 Output: The string representation of the enum with only the first letter capitalized
 
