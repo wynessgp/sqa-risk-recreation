@@ -401,9 +401,6 @@ Output:
   - IllegalArgumentException
     - message: "Player does not have enough armies to place!"
     - They would end up with -1 armies if we allowed the operation to proceed.
-
-### Scramble phase integration tests
-
 ### Test 6:
 - Input:
   - territory = BRAZIL
