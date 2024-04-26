@@ -152,4 +152,19 @@ public class WorldDominationGameEngineIntegrationTest {
         }
         EasyMock.verify(parser);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test05_placeNewArmiesInTerritoryScramblePhase_allTerritoriesClaimedAdvancePhaseToSetup(
+            List<PlayerColor> players) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players);
+        int numArmiesToPlace = 1;
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
+        }
+
+        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+    }
 }
