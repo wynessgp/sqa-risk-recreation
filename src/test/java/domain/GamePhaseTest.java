@@ -23,4 +23,5 @@ public class GamePhaseTest {
         String result = phase.toString();
         assertEquals(expected, result);
     }
+
 }

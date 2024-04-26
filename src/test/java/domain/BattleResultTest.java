@@ -22,4 +22,5 @@ public class BattleResultTest {
         String result = battleResult.toString();
         assertEquals(expected, result);
     }
+
 }

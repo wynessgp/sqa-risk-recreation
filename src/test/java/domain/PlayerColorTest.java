@@ -27,4 +27,5 @@ public class PlayerColorTest {
         String result = color.toString();
         assertEquals(expected, result);
     }
+
 }
