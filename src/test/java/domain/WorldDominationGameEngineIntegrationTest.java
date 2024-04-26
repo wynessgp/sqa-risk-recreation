@@ -220,4 +220,48 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.verify(parser);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test08_placeNewArmiesInTerritoryMultiPhaseAdvancement_validInput_goesThroughScrambleAndSetupPhases(
+            List<PlayerColor> players) {
+        DieRollParser parser = generateMockedParser(players);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        // claim all the territories, ensure we enter the setup phase.
+        int numArmiesToPlace = 1;
+        for (TerritoryType territory : TerritoryType.values()) {
+            assertEquals(GamePhase.SCRAMBLE, unitUnderTest.getCurrentGamePhase());
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, numArmiesToPlace));
+        }
+
+        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+
+        // in order to enter the placement phase in RISK, we need to exhaust each and every player's armies
+        // that they acquire during the game's setup. Let's "peek" into the WorldDominationGameEngine a bit and figure
+        // out when that is.
+        List<Integer> numArmiesByPlayer = new ArrayList<>();
+        for (PlayerColor player : players) {
+            numArmiesByPlayer.add(unitUnderTest.getNumArmiesByPlayerColor(player));
+        }
+
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        int numArmiesLeftToPlace = numArmiesByPlayer.stream().mapToInt(Integer::intValue).sum();
+        while (numArmiesLeftToPlace != 0) {
+            assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+
+            // determine a "safe" territory for the current player who's going
+            PlayerColor currentPlayerGoing = unitUnderTest.getCurrentPlayer();
+            TerritoryType safeTerritory = territories.get(players.indexOf(currentPlayerGoing));
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(safeTerritory, numArmiesToPlace));
+
+            numArmiesLeftToPlace--;
+            int numExpectedArmiesPlayerHasLeft = numArmiesLeftToPlace / players.size();
+            assertEquals(numExpectedArmiesPlayerHasLeft, unitUnderTest.getNumArmiesByPlayerColor(currentPlayerGoing));
+        }
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        EasyMock.verify(parser);
+    }
+
 }
