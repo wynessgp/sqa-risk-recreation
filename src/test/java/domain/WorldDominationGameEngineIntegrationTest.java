@@ -167,4 +167,31 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
     }
+
+    @Test
+    public void test06_placeNewArmiesInTerritorySetupPhase_placingArmiesInTerritoryPlayerDoesNotOwn_expectException() {
+        List<PlayerColor> playerColors = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
+        // we want to ensure our player colors list ordering stays the same after shuffling, so we need a mock.
+        DieRollParser parser = generateMockedParser(playerColors);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playerColors, parser);
+        TerritoryType targetTerritory = TerritoryType.ALASKA;
+        int numArmiesToPlace = 1;
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
+
+        assertEquals(PlayerColor.PURPLE, unitUnderTest.getCurrentPlayer());
+
+        // flip what phase we're in really quickly, to speed up testing. We've already claimed the territory
+        // through legitimate playing order, so this should be OK.
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+
+        // now we'll try to place an army in the same place RED just did.
+        String expectedMessage = "Cannot place armies on a territory you do not own";
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(targetTerritory, numArmiesToPlace));
+
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+        EasyMock.verify(parser);
+    }
 }
