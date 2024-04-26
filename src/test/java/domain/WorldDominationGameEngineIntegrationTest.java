@@ -93,4 +93,23 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
         EasyMock.verify(parser);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test03_placeNewArmiesInTerritoryScramblePhase_listSizeVaries_expectFullCycleOfPlayersIsRepresented(
+            List<PlayerColor> players) {
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        int numArmiesToPlace = 1;
+
+        // let everyone go once, with a valid territory. Check that it wraps back around as well.
+        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+            assertEquals(players.get(playerIndex), unitUnderTest.getCurrentPlayer());
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(territories.get(playerIndex), numArmiesToPlace));
+        }
+
+        assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
+        EasyMock.verify(parser);
+    }
 }
