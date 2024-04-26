@@ -5,6 +5,7 @@ public enum BattleResult {
     ATTACKER_VICTORY;
 
     public String toString() {
-        return "Defender victory";
+        String name = this.name().replace("_", " ");
+        return name.charAt(0) + name.substring(1).toLowerCase();
     }
 }
