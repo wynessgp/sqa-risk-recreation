@@ -279,6 +279,14 @@ Then an IllegalArgumentException should be thrown
 
 ### Test 6:
 Given a valid list of players for the current game
+And the game is in the SETUP phase
+After each player places an army on an already owned territory
+The game should now say that it is the next player's turn (assertion)
+- We want to make sure that this can wrap around; so make each player claim a territory once.
+- We should go from the end of the collection of player colors back to index 0 (assertion)
+
+### Test 7:
+Given a valid list of players for the current game
 And the game is currently in the SETUP phase (note - we'll manually transition it into SETUP for a fair test)
 When each player expends their remaining placeable armies (assertion - make sure we don't transition early!)
 Then the game should transition into the Placement phase (assertion)
