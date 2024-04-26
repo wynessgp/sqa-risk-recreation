@@ -57,5 +57,10 @@ public enum TerritoryType {
     EASTERN_AUSTRALIA,
     INDONESIA,
     NEW_GUINEA,
-    WESTERN_AUSTRALIA
+    WESTERN_AUSTRALIA;
+
+    public String toString() {
+        return "Alaska";
+    }
+
 }
