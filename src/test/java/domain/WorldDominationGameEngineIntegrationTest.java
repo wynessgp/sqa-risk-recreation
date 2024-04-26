@@ -129,21 +129,26 @@ public class WorldDominationGameEngineIntegrationTest {
         for (; playerIndex < players.size(); playerIndex++) {
             TerritoryType currentTerritory = territories.get(playerIndex);
             PlayerColor currentPlayer = players.get(playerIndex);
+
             assertTrue(unitUnderTest.placeNewArmiesInTerritory(currentTerritory, numArmiesToPlace));
-            assertEquals(Set.of(currentTerritory), unitUnderTest.getClaimedTerritoriesForPlayer(currentPlayer));
             assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(currentTerritory, currentPlayer));
+
+            assertEquals(Set.of(currentTerritory), unitUnderTest.getClaimedTerritoriesForPlayer(currentPlayer));
         }
 
         // go forward another player's list worth of indices, just to ensure the set can actually grow.
         for (; playerIndex < players.size() * 2; playerIndex++) {
             int previousIterationIndex = playerIndex - players.size();
+
             TerritoryType previousIterationTerritory = territories.get(previousIterationIndex);
-            TerritoryType currentTerritory = territories.get(playerIndex);
             PlayerColor currentPlayer = players.get(previousIterationIndex);
+            TerritoryType currentTerritory = territories.get(playerIndex);
+
             assertTrue(unitUnderTest.placeNewArmiesInTerritory(currentTerritory, numArmiesToPlace));
+            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(currentTerritory, currentPlayer));
+
             assertEquals(Set.of(currentTerritory, previousIterationTerritory),
                     unitUnderTest.getClaimedTerritoriesForPlayer(players.get(previousIterationIndex)));
-            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(currentTerritory, currentPlayer));
         }
         EasyMock.verify(parser);
     }
