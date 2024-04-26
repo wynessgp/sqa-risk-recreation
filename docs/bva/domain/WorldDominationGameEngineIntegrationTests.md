@@ -236,57 +236,81 @@ To properly model these behaviors, we'll be using a test "outline" (not unlike t
 
 ### Test 1:
 Given that the players in the current game are [RED, PURPLE, YELLOW]
+
 And the game is in the SCRAMBLE phase
+
 And that the RED player has already claimed ALASKA by placing an army there
+
 The Game should make it the PURPLE player's turn to respect ordering (assertion)
 
 And when the PURPLE player tries to claim ALASKA by placing an army there
+
 We should throw an error, as the territory is already claimed.
 - In particular, we want to see an IllegalStateException error with the message: (assertion)
   - "Cannot place armies in a claimed territory until the scramble phase is over" (assertion)
 
 ### Test 2:
 Given a valid list of players for the current game
+
 And the game is in the SCRAMBLE phase
+
 After each player claims a valid territory
+
 The game should now say that it is the next player's turn (assertion)
 - We want to make sure that this can wrap around; so make each player claim a territory once.
 - We should go from the end of the collection of player colors back to index 0 (assertion)
 
 ### Test 3:
 Given a valid list of players for the current game
+
 And the game is in the SCRAMBLE phase
+
 When each player claims a valid territory 
+
 Then the game should add that territory to the player's collection of controlled territories (assertion)
+
 And the game should update the territory's controlling PlayerColor (assertion)
 
 ### Test 4:
 Given a valid list of players for the current game
+
 And the game is currently in the SCRAMBLE phase
+
 When each player claims a territory until no unclaimed territories remain
 - Make sure we're still in SCRAMBLE until the last territory is claimed to ensure we transition at the right time (assertion)
+
 Then the game should advance into the SETUP phase (assertion)
 
 ### SETUP Phase Integration Tests
 
 ### Test 5:
 Given that the players in the current game are [RED, PURPLE, YELLOW]
+
 And that the RED player owns ALASKA
+
 And that the game is in the SETUP phase
+
 When the PURPLE player tries to place an army on ALASKA
+
 Then an IllegalArgumentException should be thrown
 - Should have message: "Cannot place armies on a territory you do not own"
 
 ### Test 6:
 Given a valid list of players for the current game
+
 And the game is in the SETUP phase
+
 After each player places an army on an already owned territory
+
 The game should now say that it is the next player's turn (assertion)
 - We want to make sure that this can wrap around; so make each player claim a territory once.
 - We should go from the end of the collection of player colors back to index 0 (assertion)
 
 ### Test 7:
 Given a valid list of players for the current game
+
 And the game is currently in the SETUP phase (note - we'll manually transition it into SETUP for a fair test)
+
 When each player expends their remaining placeable armies (assertion - make sure we don't transition early!)
+
 Then the game should transition into the Placement phase (assertion)
