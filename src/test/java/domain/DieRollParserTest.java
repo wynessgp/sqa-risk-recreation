@@ -4,13 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class DieRollParserTest {
@@ -389,12 +393,12 @@ public class DieRollParserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0, 1, 7})
+    @ValueSource(ints = {-1, 0, 1, 7, 2})
     public void test25_rollDiceToDeterminePlayerOrder_invalidInput_expectException(
             int illegalInput) {
         DieRollParser unitUnderTest = new DieRollParser();
 
-        String expectedMessage = "Valid amount of dice is in the range [2, 6]";
+        String expectedMessage = "Valid amount of dice is in the range [3, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.rollDiceToDeterminePlayerOrder(illegalInput));
 
@@ -402,18 +406,59 @@ public class DieRollParserTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> playerOrderGenerator() {
+        return Stream.of(
+                Arguments.of(List.of(1, 2, 6)),
+                Arguments.of(List.of(2, 6, 4, 1)),
+                Arguments.of(List.of(5, 4, 3, 2, 6)),
+                Arguments.of(List.of(6, 1, 2, 5, 4, 3))
+        );
+    }
+
     @ParameterizedTest
-    @ValueSource(ints = {2, 3, 4, 5, 6})
-    public void test26_rollDiceToDeterminePlayerOrder_unstructuredOutput_expectNoDuplicates(
-            int numDiceToRoll) {
+    @MethodSource("playerOrderGenerator")
+    public void test26_rollDiceToDeterminePlayerOrder_expectNoDuplicates(
+            List<Integer> expectedRolls) {
+        Die setupDie = EasyMock.mock(Die.class);
+        for (int i : expectedRolls) {
+            EasyMock.expect(setupDie.rollSingleDie(EasyMock.anyObject(Random.class))).andReturn(i);
+        }
+        EasyMock.replay(setupDie);
+
         DieRollParser unitUnderTest = new DieRollParser();
+        unitUnderTest.setSetupDie(setupDie);
 
         // the main point of this one is to see, if given no "set" dice values, we can
         // get the method to return a list with no duplicates.
-        List<Integer> actual = unitUnderTest.rollDiceToDeterminePlayerOrder(numDiceToRoll);
+        List<Integer> actual = unitUnderTest.rollDiceToDeterminePlayerOrder(expectedRolls.size());
 
-        assertEquals(numDiceToRoll, actual.size());
-        assertEquals(numDiceToRoll, Set.copyOf(actual).size());
+        assertEquals(expectedRolls.size(), actual.size());
+        assertEquals(expectedRolls.size(), Set.copyOf(actual).size());
+        assertEquals(expectedRolls, actual);
+        EasyMock.verify(setupDie);
+    }
+
+    @Test
+    public void test27_rollDiceToDeterminePlayerOrder_withDuplicateRoll_expectNoDuplicates() {
+        List<Integer> expectedRolls = new ArrayList<>(List.of(1, 2, 3, 3, 4));
+        Die setupDie = EasyMock.mock(Die.class);
+        for (int i : expectedRolls) {
+            EasyMock.expect(setupDie.rollSingleDie(EasyMock.anyObject(Random.class))).andReturn(i);
+        }
+        EasyMock.replay(setupDie);
+
+        DieRollParser unitUnderTest = new DieRollParser();
+        unitUnderTest.setSetupDie(setupDie);
+
+        // the main point of this one is to see, if given no "set" dice values, we can
+        // get the method to return a list with no duplicates.
+        int numberOfPlayers = 4;
+        List<Integer> actual = unitUnderTest.rollDiceToDeterminePlayerOrder(numberOfPlayers);
+
+        expectedRolls.remove(3);
+        assertEquals(numberOfPlayers, actual.size());
+        assertEquals(expectedRolls, actual);
+        EasyMock.verify(setupDie);
     }
 
 }
