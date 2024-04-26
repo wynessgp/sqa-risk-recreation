@@ -259,7 +259,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerColors")
-    public void test07_checkIfPlayerOwnsTerritory_playerDoesNotOwnTerritory_expectFalse(
+    public void test06_checkIfPlayerOwnsTerritory_playerDoesNotOwnTerritory_expectFalse(
             TerritoryType relevantTerritory, PlayerColor notInControl) {
         Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(notInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
@@ -285,7 +285,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerColors")
-    public void test08_checkIfPlayerOwnsTerritory_playerOwnsTerritory_expectTrue(
+    public void test07_checkIfPlayerOwnsTerritory_playerOwnsTerritory_expectTrue(
             TerritoryType relevantTerritory, PlayerColor playerInControlOfTerritory) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControlOfTerritory);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(
@@ -316,7 +316,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @EnumSource(TerritoryType.class)
-    public void test20_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
+    public void test08_placeNewArmiesInTerritory_territoryAlreadyClaimedByCurrentPlayerInScramble_expectException(
             TerritoryType relevantTerritory) {
         Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
@@ -337,7 +337,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test21_placeNewArmiesInTerritory_invalidAmountOfPlayerArmies_expectException(
+    public void test09_placeNewArmiesInTerritory_invalidAmountOfPlayerArmies_expectException(
             TerritoryType relevantTerritory, PlayerColor playerToTakeControl) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
@@ -381,7 +381,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndIllegalArmyInputs")
-    public void test22_placeNewArmiesInTerritory_moreThanOneArmyInScramblePhase_expectException(
+    public void test10_placeNewArmiesInTerritory_moreThanOneArmyInScramblePhase_expectException(
             TerritoryType relevantTerritory, int illegalArmyAmount) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(PlayerColor.SETUP);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
@@ -413,7 +413,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test23_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
+    public void test11_placeNewArmiesInTerritory_scramblePhaseValidInput_expectTrueAndTerritoryGetsPlayerColorAndArmies(
             TerritoryType relevantTerritory, PlayerColor currentlyGoingPlayer) {
         Territory mockedTerritory = createMockedTerritoryWithArmyPlacementAndPlayerColorSettingExpectations(
                 1, currentlyGoingPlayer, PlayerColor.SETUP);
@@ -441,7 +441,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 14})
-    public void test27_placeNewArmiesInTerritory_setupPhase_invalidArmyInput_expectException(int illegalInput) {
+    public void test12_placeNewArmiesInTerritory_setupPhase_invalidArmyInput_expectException(int illegalInput) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         TerritoryType targetTerritory = TerritoryType.ALASKA;
 
@@ -457,7 +457,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerColors")
-    public void test28_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
+    public void test13_placeNewArmiesInTerritory_setupPhase_playerDoesNotOwnTerritory_expectException(
             TerritoryType relevantTerritory, PlayerColor playerAttemptingToPlace) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -497,7 +497,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts")
-    public void test29_placeNewArmiesInTerritory_setupPhase_playerOwnsTerritory_expectTrueAndIncreaseArmiesInTerritory(
+    public void test14_placeNewArmiesInTerritory_setupPhase_playerOwnsTerritory_expectTrueAndIncreaseArmiesInTerritory(
             TerritoryType relevantTerritory, PlayerColor playerInControl, int numArmiesPreviouslyPresent) {
         int numValidArmies = 1;
 
@@ -531,7 +531,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts")
-    public void test30_placeNewArmiesInTerritory_setupPhase_validInput_decrementPlayerArmiesToPlace(
+    public void test15_placeNewArmiesInTerritory_setupPhase_validInput_decrementPlayerArmiesToPlace(
             TerritoryType relevantTerritory, PlayerColor playerInControl, int numArmiesPreviouslyPresent) {
         int numValidArmies = 1;
 
@@ -567,7 +567,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test31_placeNewArmiesInTerritory_setupPhase_playerHasTooFewArmiesToPlace_expectException(
+    public void test16_placeNewArmiesInTerritory_setupPhase_playerHasTooFewArmiesToPlace_expectException(
             TerritoryType relevantTerritory, PlayerColor playerInControl) {
         Territory mockedTerritory = createMockedTerritoryWithExpectations(playerInControl);
         TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory, mockedTerritory, 1);
@@ -599,7 +599,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test32_placeNewArmiesInTerritory_scramblePhase_validInput_ensurePlayerObjectHasTerritoryAdded(
+    public void test17_placeNewArmiesInTerritory_scramblePhase_validInput_ensurePlayerObjectHasTerritoryAdded(
             TerritoryType relevantTerritory, PlayerColor currentPlayer) {
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
@@ -645,33 +645,33 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test36_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
+    public void test18_shufflePlayers_withThreeUniquePlayers_returnsRollsAndShuffledList() {
         testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(1, 2, 3),
                 List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED));
     }
 
     @Test
-    public void test37_shufflePlayers_withFourUniquePlayers_returnsRollsAndShuffledList() {
+    public void test19_shufflePlayers_withFourUniquePlayers_returnsRollsAndShuffledList() {
         testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE),
                 List.of(2, 3, 5, 1), List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.BLUE));
     }
 
     @Test
-    public void test38_shufflePlayers_withFiveUniquePlayers_returnsRollsAndShuffledList() {
+    public void test20_shufflePlayers_withFiveUniquePlayers_returnsRollsAndShuffledList() {
         testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
                 PlayerColor.PURPLE), List.of(5, 4, 6, 2, 1), List.of(PlayerColor.GREEN, PlayerColor.RED,
                 PlayerColor.YELLOW, PlayerColor.BLUE, PlayerColor.PURPLE));
     }
 
     @Test
-    public void test39_shufflePlayers_withSixUniquePlayers_returnsRollsAndShuffledList() {
+    public void test21_shufflePlayers_withSixUniquePlayers_returnsRollsAndShuffledList() {
         testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE,
                 PlayerColor.PURPLE, PlayerColor.BLACK), List.of(5, 4, 6, 2, 1, 3), List.of(PlayerColor.GREEN,
                 PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.BLUE, PlayerColor.PURPLE));
     }
 
     @Test
-    public void test40_shufflePlayers_withThreeUniquePlayers_listDoesNotChange() {
+    public void test22_shufflePlayers_withThreeUniquePlayers_listDoesNotChange() {
         testShufflePlayersMethod(List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN), List.of(3, 2, 1),
                 List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN));
     }
