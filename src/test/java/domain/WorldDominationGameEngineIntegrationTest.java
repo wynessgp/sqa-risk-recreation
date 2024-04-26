@@ -112,4 +112,39 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(players.get(0), unitUnderTest.getCurrentPlayer());
         EasyMock.verify(parser);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test04_placeNewArmiesInTerritoryScramblePhase_validInput_addToPlayerSetsWhenClaimingAndTerritoryUpdates(
+            List<PlayerColor> players) {
+        DieRollParser parser = generateMockedParser(players);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+        List<TerritoryType> territories = List.of(TerritoryType.values());
+        int numArmiesToPlace = 1;
+
+        // here's the tricky bit about testing this: placeArmiesInTerritory automatically advances the
+        // player going. So we'll need to ask for a particular player.
+        int playerIndex = 0;
+        for (; playerIndex < players.size(); playerIndex++) {
+            TerritoryType currentTerritory = territories.get(playerIndex);
+            PlayerColor currentPlayer = players.get(playerIndex);
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(currentTerritory, numArmiesToPlace));
+            assertEquals(Set.of(currentTerritory), unitUnderTest.getClaimedTerritoriesForPlayer(currentPlayer));
+            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(currentTerritory, currentPlayer));
+        }
+
+        // go forward another player's list worth of indices, just to ensure the set can actually grow.
+        for (; playerIndex < players.size() * 2; playerIndex++) {
+            int previousIterationIndex = playerIndex - players.size();
+            TerritoryType previousIterationTerritory = territories.get(previousIterationIndex);
+            TerritoryType currentTerritory = territories.get(playerIndex);
+            PlayerColor currentPlayer = players.get(previousIterationIndex);
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(currentTerritory, numArmiesToPlace));
+            assertEquals(Set.of(currentTerritory, previousIterationTerritory),
+                    unitUnderTest.getClaimedTerritoriesForPlayer(players.get(previousIterationIndex)));
+            assertTrue(unitUnderTest.checkIfPlayerOwnsTerritory(currentTerritory, currentPlayer));
+        }
+        EasyMock.verify(parser);
+    }
 }
