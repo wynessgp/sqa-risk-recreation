@@ -1,7 +1,7 @@
 # method: `toString(): String`
 
 ## BVA Step 1
-Input: Underlying PlayerColor enum
+Input: Underlying GamePhase enum
 
 Output: The string representation of the enum with only the first letter capitalized
 
@@ -12,21 +12,27 @@ Output: Strings
 
 ## BVA Step 3
 Input:
-- DEFENDER_VICTORY
-- ATTACKER_VICTORY
+- SETUP
+- PLACEMENT
+- SCRAMBLE
 - No other inputs possible
 
 Output:
-- "Defender victory"
-- "Attacker victory"
+- "Setup"
+- "Placement"
+- "Scramble"
 - No other outputs possible
 
 ## BVA Step 4
 ### Test value 1
-Input: DEFENDER_VICTORY
+Input: SETUP
 
-Output: "Defender victory"
+Output: "Setup"
 ### Test value 2
-Input: ATTACKER_VICTORY
+Input: PLACEMENT
 
-Output: "Attacker victory"
+Output: "Placement"
+### Test value 3
+Input: SCRAMBLE
+
+Output: "Scramble"
