@@ -60,7 +60,12 @@ public enum TerritoryType {
     WESTERN_AUSTRALIA;
 
     public String toString() {
-        return "Alaska";
+        String[] nameArray = this.name().split("_");
+        StringBuilder name = new StringBuilder();
+        for (String s : nameArray) {
+            name.append(s.charAt(0)).append(s.substring(1).toLowerCase()).append(" ");
+        }
+        return name.deleteCharAt(name.length() - 1).toString();
     }
 
 }
