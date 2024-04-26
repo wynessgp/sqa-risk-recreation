@@ -33,6 +33,6 @@ public enum Continent {
     }
 
     boolean matchesContinentTerritories(Set<TerritoryType> playerTerritoriesInQuestion) {
-        return false;
+        return playerTerritoriesInQuestion.containsAll(associatedTerritories);
     }
 }

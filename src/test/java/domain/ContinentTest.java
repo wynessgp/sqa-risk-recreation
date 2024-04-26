@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,5 +79,12 @@ public class ContinentTest {
         invalidContinentTerritorySet.remove(toRemove);
 
         assertFalse(continentToCheck.matchesContinentTerritories(invalidContinentTerritorySet));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllContinentTerritorySetsAndAssociatedContinent")
+    public void test02_matchesContinentTerritories_inputIsContinentSet_returnsTrue(
+            Set<TerritoryType> validContinentTerritorySet, Continent continentToCheck) {
+        assertTrue(continentToCheck.matchesContinentTerritories(validContinentTerritorySet));
     }
 }
