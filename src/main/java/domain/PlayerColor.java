@@ -10,6 +10,7 @@ public enum PlayerColor {
     PURPLE;
 
     public String toString() {
-        return "Setup";
+        String name = this.name();
+        return name.charAt(0) + name.substring(1).toLowerCase();
     }
 }
