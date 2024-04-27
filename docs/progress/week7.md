@@ -22,6 +22,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/101
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/103
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/107
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/110
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/88
