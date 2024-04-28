@@ -40,29 +40,11 @@ This method in particular will differ from the original tests (even if these inp
 fact that they do not provide mocked player objects to our WorldDominationGameEngine.
 
 ### Test 1:
-- Input:
-    - Player objects = [Red, Yellow, Purple]
-- Output:
-    - 1 (true)
-    - Collection = [35, 35, 35]
-### Test 2:
-- Input:
-    - Player objects = [Red, Yellow, Purple, Green]
-- Output:
-    - 1 (true)
-    - Collection = [30, 30, 30, 30]
-### Test 3:
-- Input:
-    - Player objects = [Red, Yellow, Purple, Green, Black]
-- Output:
-    - 1 (true)
-    - Collection = [25, 25, 25, 25, 25]
-### Test 4:
-- Input:
-    - Player objects = [Red, Yellow, Purple, Green, Black, Blue]
-- Output:
-    - 1 (true)
-    - Collection = [20, 20, 20, 20, 20, 20]
+Given a valid list of players for the current game
+
+When the game is started
+
+Then each player in our player list should be given `35 - (( |player list| - 3 ) * 5)` armies to place
 
 # method: `checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean`
 
@@ -112,12 +94,11 @@ Two main behaviors we want to test as an integration test:
    - This integration test is better suited for placeNewArmiesInTerritory.
 
 ### Test 1:
-Input:
-- relevantTerritory: Every possible TerritoryType value (iterate over them)
-- playerColor: SETUP
+Given a valid list of players for the current game
 
-Output: 1 (true)
-- This needs to be checked for each and every territory to ensure correct initialization, in the same test.
+When the game has just been started
+
+Then every territory should be unclaimed (owned by SETUP)
 
 # method: `placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean`
 This method holds the bulk of the integration tests. Here's part of the reason why:
