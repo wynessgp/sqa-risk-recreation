@@ -149,5 +149,27 @@ public class ContinentTest {
         assertEquals(0, africa.getContinentBonusIfPlayerHasTerritories(setToPassIn));
     }
 
+    private static Stream<Arguments> generateAllContinentTerritorySetsAndAssociatedContinentAndExpectedReturnValue() {
+        // this method will generate tuples of:
+        // (<necessary territories for continent>, ContinentType matching said continent, bonus with continent)
+        Set<Arguments> allContinentTerritories = new HashSet<>();
+
+        allContinentTerritories.add(Arguments.of(AFRICA, Continent.AFRICA, 3));
+        allContinentTerritories.add(Arguments.of(EUROPE, Continent.EUROPE, 5));
+        allContinentTerritories.add(Arguments.of(NORTH_AMERICA, Continent.NORTH_AMERICA, 5));
+        allContinentTerritories.add(Arguments.of(SOUTH_AMERICA, Continent.SOUTH_AMERICA, 2));
+        allContinentTerritories.add(Arguments.of(OCEANIA, Continent.OCEANIA, 2));
+        allContinentTerritories.add(Arguments.of(ASIA, Continent.ASIA, 7));
+
+        return allContinentTerritories.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllContinentTerritorySetsAndAssociatedContinentAndExpectedReturnValue")
+    public void test06_getContinentBonusIfPlayerHasTerritories_validInput_expectContinentGivenValue(
+            Set<TerritoryType> validContinentTerritorySet, Continent continent, int expectedValue) {
+        assertEquals(expectedValue, continent.getContinentBonusIfPlayerHasTerritories(validContinentTerritorySet));
+    }
+
 
 }
