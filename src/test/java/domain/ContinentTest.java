@@ -39,6 +39,13 @@ public class ContinentTest {
             TerritoryType.MIDDLE_EAST, TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA,
             TerritoryType.URAL, TerritoryType.YAKUTSK);
 
+    private static final int AFRICA_BONUS = 3;
+    private static final int ASIA_BONUS = 7;
+    private static final int EUROPE_BONUS = 5;
+    private static final int NORTH_AMERICA_BONUS = 5;
+    private static final int SOUTH_AMERICA_BONUS = 2;
+    private static final int OCEANIA_BONUS = 2;
+
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3})
     public void test00_matchesContinentTerritories_inputTooSmall_returnsFalse(int setSize) {
@@ -154,12 +161,12 @@ public class ContinentTest {
         // (<necessary territories for continent>, ContinentType matching said continent, bonus with continent)
         Set<Arguments> allContinentTerritories = new HashSet<>();
 
-        allContinentTerritories.add(Arguments.of(AFRICA, Continent.AFRICA, 3));
-        allContinentTerritories.add(Arguments.of(EUROPE, Continent.EUROPE, 5));
-        allContinentTerritories.add(Arguments.of(NORTH_AMERICA, Continent.NORTH_AMERICA, 5));
-        allContinentTerritories.add(Arguments.of(SOUTH_AMERICA, Continent.SOUTH_AMERICA, 2));
-        allContinentTerritories.add(Arguments.of(OCEANIA, Continent.OCEANIA, 2));
-        allContinentTerritories.add(Arguments.of(ASIA, Continent.ASIA, 7));
+        allContinentTerritories.add(Arguments.of(AFRICA, Continent.AFRICA, AFRICA_BONUS));
+        allContinentTerritories.add(Arguments.of(EUROPE, Continent.EUROPE, EUROPE_BONUS));
+        allContinentTerritories.add(Arguments.of(NORTH_AMERICA, Continent.NORTH_AMERICA, NORTH_AMERICA_BONUS));
+        allContinentTerritories.add(Arguments.of(SOUTH_AMERICA, Continent.SOUTH_AMERICA, SOUTH_AMERICA_BONUS));
+        allContinentTerritories.add(Arguments.of(OCEANIA, Continent.OCEANIA, OCEANIA_BONUS));
+        allContinentTerritories.add(Arguments.of(ASIA, Continent.ASIA, ASIA_BONUS));
 
         return allContinentTerritories.stream();
     }
@@ -169,6 +176,38 @@ public class ContinentTest {
     public void test06_getContinentBonusIfPlayerHasTerritories_validInput_expectContinentGivenValue(
             Set<TerritoryType> validContinentTerritorySet, Continent continent, int expectedValue) {
         assertEquals(expectedValue, continent.getContinentBonusIfPlayerHasTerritories(validContinentTerritorySet));
+    }
+
+    private static Stream<Arguments> generateAllTwoContinentTerritorySetsAndAssociatedContinentsAndBonuses() {
+        Set<Arguments> toReturn = new HashSet<>();
+
+        List<Set<TerritoryType>> territorySets = List.of(AFRICA, ASIA, EUROPE, NORTH_AMERICA, SOUTH_AMERICA, OCEANIA);
+        List<Continent> associatedContinents = List.of(Continent.AFRICA, Continent.ASIA, Continent.EUROPE,
+                Continent.NORTH_AMERICA, Continent.SOUTH_AMERICA, Continent.OCEANIA);
+        List<Integer> associatedContinentBonuses = List.of(AFRICA_BONUS, ASIA_BONUS, EUROPE_BONUS,
+                NORTH_AMERICA_BONUS, SOUTH_AMERICA_BONUS, OCEANIA_BONUS);
+
+        for (int i = 0; i < associatedContinents.size(); i++) {
+            for (int j = 0; j < associatedContinents.size(); j++) {
+                if (i != j) {
+                    Set<TerritoryType> combinedContinentTerritories = new HashSet<>(territorySets.get(i));
+                    combinedContinentTerritories.addAll(territorySets.get(j));
+                    toReturn.add(Arguments.of(combinedContinentTerritories,
+                            associatedContinents.get(i), associatedContinents.get(j),
+                            associatedContinentBonuses.get(i), associatedContinentBonuses.get(j)));
+                }
+            }
+        }
+        return toReturn.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTwoContinentTerritorySetsAndAssociatedContinentsAndBonuses")
+    public void test07_getContinentBonusIfPlayerHasTerritories_twoContinentInput_expectCorrectBonusFromBoth(
+            Set<TerritoryType> territorySet, Continent firstContinent, Continent secondContinent,
+            int firstContinentBonus, int secondContinentBonus) {
+        assertEquals(firstContinentBonus, firstContinent.getContinentBonusIfPlayerHasTerritories(territorySet));
+        assertEquals(secondContinentBonus, secondContinent.getContinentBonusIfPlayerHasTerritories(territorySet));
     }
 
 
