@@ -2,6 +2,7 @@ package presentation;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 
 public class GameMapScreenController {
     @FXML
@@ -88,10 +89,12 @@ public class GameMapScreenController {
     private Button newGuineaButton;
     @FXML
     private Button westernAustraliaButton;
+    @FXML
+    private DialogPane claimTerritoryDialog;
 
     @FXML
     private void initialize() {
-        System.out.println("GameMapScreenController initialized");
+        claimTerritoryDialog.setVisible(false);
     }
 
 }
