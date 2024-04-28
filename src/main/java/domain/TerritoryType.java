@@ -23,13 +23,13 @@ public enum TerritoryType {
     VENEZUELA,
 
     // Europe
-    EASTERN_EUROPE,
     GREAT_BRITAIN,
     ICELAND,
     NORTHERN_EUROPE,
     SCANDINAVIA,
     SOUTHERN_EUROPE,
     WESTERN_EUROPE,
+    UKRAINE,
 
     // Africa
     CONGO,
