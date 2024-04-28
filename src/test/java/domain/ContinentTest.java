@@ -15,6 +15,29 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class ContinentTest {
 
+    private static final Set<TerritoryType> AFRICA = Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA,
+            TerritoryType.EGYPT, TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA);
+
+    private static final Set<TerritoryType> EUROPE = Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+            TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
+            TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
+
+    private static final Set<TerritoryType> NORTH_AMERICA = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
+            TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+            TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
+            TerritoryType.WESTERN_UNITED_STATES);
+
+    private static final Set<TerritoryType> SOUTH_AMERICA = Set.of(TerritoryType.ARGENTINA, TerritoryType.BRAZIL,
+            TerritoryType.PERU, TerritoryType.VENEZUELA);
+
+    private static final Set<TerritoryType> OCEANIA = Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA,
+            TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA);
+
+    private static final Set<TerritoryType> ASIA = Set.of(TerritoryType.AFGHANISTAN, TerritoryType.CHINA,
+            TerritoryType.INDIA, TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA,
+            TerritoryType.MIDDLE_EAST, TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA,
+            TerritoryType.URAL, TerritoryType.YAKUTSK);
+
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3})
     public void test00_matchesContinentTerritories_inputTooSmall_returnsFalse(int setSize) {
@@ -34,35 +57,12 @@ public class ContinentTest {
         // (<necessary territories for continent>, ContinentType matching said continent)
         Set<Arguments> allContinentTerritories = new HashSet<>();
 
-        Set<TerritoryType> africa = Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA, TerritoryType.EGYPT,
-                TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA);
-
-        Set<TerritoryType> europe = Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
-                TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
-                TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
-
-        Set<TerritoryType> northAmerica = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
-                TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
-                TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
-                TerritoryType.WESTERN_UNITED_STATES);
-
-        Set<TerritoryType> southAmerica = Set.of(TerritoryType.ARGENTINA, TerritoryType.BRAZIL, TerritoryType.PERU,
-                TerritoryType.VENEZUELA);
-
-        Set<TerritoryType> oceania = Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA,
-                TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA);
-
-        Set<TerritoryType> asia = Set.of(TerritoryType.AFGHANISTAN, TerritoryType.CHINA, TerritoryType.INDIA,
-                TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MIDDLE_EAST,
-                TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.URAL,
-                TerritoryType.YAKUTSK);
-
-        allContinentTerritories.add(Arguments.of(africa, Continent.AFRICA));
-        allContinentTerritories.add(Arguments.of(europe, Continent.EUROPE));
-        allContinentTerritories.add(Arguments.of(northAmerica, Continent.NORTH_AMERICA));
-        allContinentTerritories.add(Arguments.of(southAmerica, Continent.SOUTH_AMERICA));
-        allContinentTerritories.add(Arguments.of(oceania, Continent.OCEANIA));
-        allContinentTerritories.add(Arguments.of(asia, Continent.ASIA));
+        allContinentTerritories.add(Arguments.of(AFRICA, Continent.AFRICA));
+        allContinentTerritories.add(Arguments.of(EUROPE, Continent.EUROPE));
+        allContinentTerritories.add(Arguments.of(NORTH_AMERICA, Continent.NORTH_AMERICA));
+        allContinentTerritories.add(Arguments.of(SOUTH_AMERICA, Continent.SOUTH_AMERICA));
+        allContinentTerritories.add(Arguments.of(OCEANIA, Continent.OCEANIA));
+        allContinentTerritories.add(Arguments.of(ASIA, Continent.ASIA));
 
         return allContinentTerritories.stream();
     }
@@ -86,5 +86,33 @@ public class ContinentTest {
     public void test02_matchesContinentTerritories_inputIsContinentSet_returnsTrue(
             Set<TerritoryType> validContinentTerritorySet, Continent continentToCheck) {
         assertTrue(continentToCheck.matchesContinentTerritories(validContinentTerritorySet));
+    }
+
+    private static Stream<Arguments> generateAllTwoContinentTerritorySetsAndAssociatedContinents() {
+        Set<Arguments> toReturn = new HashSet<>();
+
+        List<Set<TerritoryType>> territorySets = List.of(AFRICA, ASIA, EUROPE, NORTH_AMERICA, SOUTH_AMERICA, OCEANIA);
+        List<Continent> associatedContinents = List.of(Continent.AFRICA, Continent.ASIA, Continent.EUROPE,
+                Continent.NORTH_AMERICA, Continent.SOUTH_AMERICA, Continent.OCEANIA);
+
+        for (int i = 0; i < associatedContinents.size(); i++) {
+            for (int j = 0; j < associatedContinents.size(); j++) {
+                if (i != j) {
+                    Set<TerritoryType> combinedContinentTerritories = new HashSet<>(territorySets.get(i));
+                    combinedContinentTerritories.addAll(territorySets.get(j));
+                    toReturn.add(Arguments.of(combinedContinentTerritories, associatedContinents.get(i),
+                            associatedContinents.get(j)));
+                }
+            }
+        }
+        return toReturn.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTwoContinentTerritorySetsAndAssociatedContinents")
+    public void test03_matchesContinentTerritories_inputContainsMultipleContinents_returnsTrueMultipleTimes(
+            Set<TerritoryType> validContinentTerritorySet, Continent firstContinent, Continent secondContinent) {
+        assertTrue(firstContinent.matchesContinentTerritories(validContinentTerritorySet));
+        assertTrue(secondContinent.matchesContinentTerritories(validContinentTerritorySet));
     }
 }
