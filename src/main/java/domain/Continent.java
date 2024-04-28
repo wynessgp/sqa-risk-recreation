@@ -44,4 +44,8 @@ public enum Continent {
         }
         return name.deleteCharAt(name.length() - 1).toString();
     }
+
+    public int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
+        return 0;
+    }
 }

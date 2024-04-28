@@ -135,4 +135,19 @@ public class ContinentTest {
         assertEquals(expectedName, continentName);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    public void test05_getContinentBonusIfPlayerHasTerritories_inputMatchesNothing_returnsZero(int setSize) {
+        Continent africa = Continent.AFRICA;
+        Set<TerritoryType> setToPassIn = new HashSet<>();
+        List<TerritoryType> allTerritories = List.of(TerritoryType.values());
+
+        for (int i = 0; i < setSize; i++) {
+            setToPassIn.add(allTerritories.get(i));
+        }
+
+        assertEquals(0, africa.getContinentBonusIfPlayerHasTerritories(setToPassIn));
+    }
+
+
 }
