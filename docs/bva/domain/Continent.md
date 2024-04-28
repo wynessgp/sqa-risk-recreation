@@ -60,3 +60,58 @@ Output: 1 (true)
 Output: 1 (true)
 
 ### Tests will be considered for each continent
+
+# method `toString(): String`
+
+## BVA Step 1
+Input: The underlying Continent enum
+
+Output: The string representation of the enum with the first letter capitalized
+
+## BVA Step 2
+Input: Cases
+
+Output: Strings
+
+## BVA Step 3
+Input:
+- AFRICA
+- ASIA
+- EUROPE
+- NORTH_AMERICA
+- SOUTH_AMERICA
+- OCEANIA
+
+Output:
+- "Africa"
+- "Asia"
+- "Europe"
+- "North America"
+- "South America"
+- "Oceania"
+
+## BVA Step 4
+### Test 1:
+Input: AFRICA
+
+Output: "Africa"
+### Test 2:
+Input: ASIA
+
+Output: "Asia"
+### Test 3:
+Input: EUROPE
+
+Output: "Europe"
+### Test 4:
+Input: NORTH_AMERICA
+
+Output: "North America"
+### Test 5:
+Input: SOUTH_AMERICA
+
+Output: "South America"
+### Test 6:
+Input: OCEANIA
+
+Output: "Oceania"
