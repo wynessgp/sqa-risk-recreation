@@ -10,39 +10,27 @@
 **Evaluation Date**: x/x/2024
 
 **Item Progress**:
-1. [almost done] abc
-2. [started] abc
-3. [not started] abc
+1. [almost done] done with scramble
+2. [started] changes to GameEngine in progress
+3. [not started] second half of the week
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- N/A
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- N/A
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- N/A
 
 ### Team member: Grant Wyness
 #### PR created:
-- abc, could be links to PR
-- abc
-- abc
+- N/A
 
 #### PR done and approved
-- abc
-- abc
-- abc
+- N/A
 
 #### Other people's PR reviewed by you
-- abc
-- abc
-- abc
+- N/A
