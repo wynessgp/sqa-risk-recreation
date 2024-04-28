@@ -17,6 +17,10 @@
     -fx-text-fill: white;
 }
 
+.text-primary {
+    -fx-font-family: "Franklin Gothic Medium";
+}
+
 .colorButton {
     -fx-border-color: white;
     -fx-border-width: 2px;

@@ -13,12 +13,42 @@
         <opaqueInsets>
             <Insets />
         </opaqueInsets>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="639.0" strokeWidth="0.0" width="128.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="639.0" strokeWidth="0.0" width="128.0" />
         <Label layoutX="30.0" layoutY="34.0" text="RISK" textFill="RED">
            <font>
                <Font name="Cooper Black" size="25.0" />
            </font>
         </Label>
+      <Label layoutX="24.0" layoutY="94.0" text="Current player:" textFill="WHITE">
+         <styleClass>
+            <String fx:value="text" />
+            <String fx:value="text-primary" />
+         </styleClass>
+      </Label>
+      <Label layoutX="25.0" layoutY="178.0" text="Current phase:" textFill="WHITE">
+         <styleClass>
+            <String fx:value="text" />
+            <String fx:value="text-primary" />
+         </styleClass>
+      </Label>
+      <Label fx:id="currentPlayerColor" alignment="CENTER" layoutX="24.0" layoutY="112.0" prefHeight="18.0" prefWidth="78.0" text="COLOR" textFill="WHITE">
+         <styleClass>
+            <String fx:value="text" />
+            <String fx:value="text-primary" />
+         </styleClass>
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="currentPhase" alignment="CENTER" layoutX="25.0" layoutY="196.0" prefHeight="18.0" prefWidth="78.0" text="PHASE" textFill="WHITE">
+         <styleClass>
+            <String fx:value="text" />
+            <String fx:value="text-primary" />
+         </styleClass>
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
     </AnchorPane>
    <AnchorPane layoutX="128.0" layoutY="65.0" prefHeight="568.0" prefWidth="854.0">
       <ImageView fitHeight="568.0" fitWidth="864.0" pickOnBounds="true" preserveRatio="true">
@@ -533,4 +563,12 @@
       <ButtonType fx:constant="YES" />
       <ButtonType fx:constant="NO" />
    </DialogPane>
+   <Label layoutX="339.0" layoutY="14.0" text="Select a territory with 0 armies to claim it">
+      <font>
+         <Font size="24.0" />
+      </font>
+      <styleClass>
+         <String fx:value="text" />
+         <String fx:value="text-primary" />
+      </styleClass></Label>
 </AnchorPane>
