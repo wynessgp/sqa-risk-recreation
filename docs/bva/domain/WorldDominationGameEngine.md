@@ -694,6 +694,3 @@ Output: 8 (3 from owned territories, 5 from owning N. America)
 Output: 18 (6 from owned territories, 5 from owning EUROPE, 7 from owning ASIA)
 
 ### More tests for owned continent combinations, from 2 owned continents up to 5.
-
-
-
