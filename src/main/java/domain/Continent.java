@@ -35,4 +35,13 @@ public enum Continent {
     boolean matchesContinentTerritories(Set<TerritoryType> playerTerritoriesInQuestion) {
         return playerTerritoriesInQuestion.containsAll(associatedTerritories);
     }
+
+    public String toString() {
+        String[] nameArray = this.name().split("_");
+        StringBuilder name = new StringBuilder();
+        for (String s : nameArray) {
+            name.append(s.charAt(0)).append(s.substring(1).toLowerCase()).append(" ");
+        }
+        return name.deleteCharAt(name.length() - 1).toString();
+    }
 }

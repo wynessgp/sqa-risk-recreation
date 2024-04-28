@@ -1,5 +1,6 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -115,4 +116,23 @@ public class ContinentTest {
         assertTrue(firstContinent.matchesContinentTerritories(validContinentTerritorySet));
         assertTrue(secondContinent.matchesContinentTerritories(validContinentTerritorySet));
     }
+
+    private static Stream<Arguments> continentGenerator() {
+        return Stream.of(
+                Arguments.of(Continent.ASIA, "Asia"),
+                Arguments.of(Continent.AFRICA, "Africa"),
+                Arguments.of(Continent.EUROPE, "Europe"),
+                Arguments.of(Continent.NORTH_AMERICA, "North America"),
+                Arguments.of(Continent.SOUTH_AMERICA, "South America"),
+                Arguments.of(Continent.OCEANIA, "Oceania")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("continentGenerator")
+    public void test04_toString_matchesGivenString_expectTrue(Continent continent, String expectedName) {
+        String continentName = continent.toString();
+        assertEquals(expectedName, continentName);
+    }
+
 }
