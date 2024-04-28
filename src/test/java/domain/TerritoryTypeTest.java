@@ -24,7 +24,7 @@ public class TerritoryTypeTest {
                 Arguments.of(TerritoryType.BRAZIL, "Brazil"),
                 Arguments.of(TerritoryType.PERU, "Peru"),
                 Arguments.of(TerritoryType.VENEZUELA, "Venezuela"),
-                Arguments.of(TerritoryType.EASTERN_EUROPE, "Eastern Europe"),
+                Arguments.of(TerritoryType.UKRAINE, "Ukraine"),
                 Arguments.of(TerritoryType.GREAT_BRITAIN, "Great Britain"),
                 Arguments.of(TerritoryType.ICELAND, "Iceland"),
                 Arguments.of(TerritoryType.NORTHERN_EUROPE, "Northern Europe"),

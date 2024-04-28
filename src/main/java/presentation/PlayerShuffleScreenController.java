@@ -24,7 +24,7 @@ public class PlayerShuffleScreenController {
     private ImageView dieImage;
     @FXML
     private Button startGameButton;
-    private SceneController sceneController = SceneController.getInstance();
+    private final SceneController sceneController = SceneController.getInstance();
     private List<PlayerColor> originalPlayerOrder;
     private List<PlayerColor> updatedPlayerOrder;
     private List<Integer> dieRolls;

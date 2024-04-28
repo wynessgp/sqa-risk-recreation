@@ -1,5 +1,6 @@
 package presentation;
 
+import domain.GamePhase;
 import domain.PlayerColor;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
@@ -22,6 +23,8 @@ public class GameMapScreenController {
     private Label currentPlayerColor;
     @FXML
     private Label currentPhase;
+    @FXML
+    private Label instructionLabel;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
     private Button selectedButton;
@@ -30,18 +33,26 @@ public class GameMapScreenController {
     @FXML
     private void initialize() {
         this.gameEngine = SceneController.getInstance().getGameEngine();
-        updatePlayerAndPhase();
+        updateStateLabels();
         claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
                 handleClaimTerritory());
         claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
                 toggleDialog(claimTerritoryDialog));
     }
 
-    private void updatePlayerAndPhase() {
+    private void updateStateLabels() {
         this.currentPlayerColor.setText(this.gameEngine.getCurrentPlayer().toString());
-        String nextPhase = this.gameEngine.getCurrentGamePhase().toString();
-        if (!this.currentPhase.getText().equals(nextPhase)) {
-            this.currentPhase.setText(nextPhase);
+        this.currentPhase.setText(this.gameEngine.getCurrentGamePhase().toString());
+        gamePhaseActions();
+    }
+
+    private void gamePhaseActions() {
+        if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
+            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
+                    + " player: Select an unclaimed territory");
+        } else {
+            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
+                    + " player: Place an army on a claimed territory");
             enableButtons();
         }
     }
@@ -61,7 +72,7 @@ public class GameMapScreenController {
         this.gameEngine.placeNewArmiesInTerritory(this.selectedTerritory, 1);
         toggleDialog(this.claimTerritoryDialog);
         this.territoryButtonMap.put(this.selectedButton, this.selectedTerritory);
-        updatePlayerAndPhase();
+        updateStateLabels();
     }
 
     private void setButtonBackgroundColor() {

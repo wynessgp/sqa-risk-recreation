@@ -38,7 +38,7 @@ public final class WorldDominationGameEngine {
         this.parser = parser;
         initializePlayersList(playerOrder);
         shufflePlayers();
-        currentPlayer = playerOrder.get(0);
+        currentPlayer = playersList.get(0);
         assignSetupArmiesToPlayers();
     }
 
