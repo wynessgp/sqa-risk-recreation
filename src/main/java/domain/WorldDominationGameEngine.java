@@ -265,8 +265,8 @@ public final class WorldDominationGameEngine {
         return playersMap.get(playerInQuestion).getTerritories();
     }
 
-    List<PlayerColor> getPlayerOrder() {
-        return playersList;
+    public List<PlayerColor> getPlayerOrder() {
+        return new ArrayList<>(playersList);
     }
 
     WorldDominationGameEngine() {
