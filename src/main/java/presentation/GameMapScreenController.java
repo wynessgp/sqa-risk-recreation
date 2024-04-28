@@ -3,6 +3,8 @@ package presentation;
 import domain.PlayerColor;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,8 +12,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GameMapScreenController {
     @FXML
