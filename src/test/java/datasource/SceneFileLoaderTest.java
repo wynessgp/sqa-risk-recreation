@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
 
 public class SceneFileLoaderTest {
@@ -14,7 +15,11 @@ public class SceneFileLoaderTest {
         FileLoader fileLoader = new SceneFileLoader();
         String fileName = "start_screen.fxml";
         assertTrue(fileLoader.open(fileName));
-        assertNotNull(fileLoader.getFile());
+
+        File file = fileLoader.getFile();
+        assertNotNull(file);
+        assertTrue(file.getPath().endsWith(fileName));
+        assertTrue(file.isFile());
     }
 
     @Test
