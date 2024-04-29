@@ -26,6 +26,8 @@ public class GameMapScreenController {
     private Label currentPhase;
     @FXML
     private Label instructionLabel;
+    @FXML
+    private Label armiesToPlace;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
     private Button selectedButton;
@@ -44,6 +46,7 @@ public class GameMapScreenController {
     private void updateStateLabels() {
         this.currentPlayerColor.setText(this.gameEngine.getCurrentPlayer().toString());
         this.currentPhase.setText(this.gameEngine.getCurrentGamePhase().toString());
+        this.armiesToPlace.setText(this.gameEngine.getCurrentPlayerArmiesToPlace() + "");
         gamePhaseActions();
     }
 
