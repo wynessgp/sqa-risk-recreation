@@ -24,7 +24,7 @@ public class ContinentTest {
             TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
 
     private static final Set<TerritoryType> NORTH_AMERICA = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
-            TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+            TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_UNITED_STATES, TerritoryType.GREENLAND,
             TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
             TerritoryType.WESTERN_UNITED_STATES);
 
