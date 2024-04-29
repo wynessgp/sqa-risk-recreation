@@ -43,4 +43,4 @@ Output: IllegalArgumentException "The requested file is not an FXML file"
 ### Test value 4
 Input: `presentation`
 
-Output: IllegalArgumentException "The requested file is not an FXML file"
+Output: NullPointerException "The requested file does not exist"

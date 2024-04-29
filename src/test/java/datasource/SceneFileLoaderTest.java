@@ -42,4 +42,14 @@ public class SceneFileLoaderTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
+    @Test
+    public void test04_open_withDirectory_throwsException() {
+        FileLoader fileLoader = new SceneFileLoader();
+        String fileName = "src/main/java";
+        Exception exception = assertThrows(NullPointerException.class, () -> fileLoader.open(fileName));
+
+        String expectedMessage = "The requested file does not exist";
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 }
