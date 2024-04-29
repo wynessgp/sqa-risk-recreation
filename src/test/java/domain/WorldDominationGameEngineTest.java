@@ -676,4 +676,21 @@ public class WorldDominationGameEngineTest {
                 List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN));
     }
 
+    @Test
+    public void test23_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsNoTerritories_expectException() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player redPlayer = new Player(PlayerColor.RED);
+
+        // ensure that this test will still throw an exception (but not for this reason)
+        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                unitUnderTest::calculatePlacementPhaseArmiesForCurrentPlayer);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "The current player should no longer exist!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

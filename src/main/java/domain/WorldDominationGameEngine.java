@@ -227,6 +227,10 @@ public final class WorldDominationGameEngine {
         }
     }
 
+    void calculatePlacementPhaseArmiesForCurrentPlayer() {
+        throw new IllegalStateException("The current player should no longer exist!");
+    }
+
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
         // also, add this to the players list, otherwise we'll error out on trying to swap turns.
@@ -298,5 +302,4 @@ public final class WorldDominationGameEngine {
     void setParser(DieRollParser parser) {
         this.parser = parser;
     }
-
 }
