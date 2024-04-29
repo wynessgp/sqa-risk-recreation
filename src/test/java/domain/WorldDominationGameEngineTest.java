@@ -791,15 +791,21 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateSetsOfTerritoriesSpecificSizesNoFullContinents")
     public void test25_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsManyTerritories_expectFormulaNumber(
             Set<TerritoryType> ownedTerritories) {
+        testCalculatePlacementPhaseNumArmiesMethod(ownedTerritories, 0);
+    }
+
+    private void testCalculatePlacementPhaseNumArmiesMethod(
+            Set<TerritoryType> playerOwnedTerritories, int expectedContinentBonus) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player redPlayer = new Player(PlayerColor.RED);
 
         unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
-        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer(playerOwnedTerritories);
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
-        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
+        int expectedNumArmies = (playerOwnedTerritories.size() < 12) ? 3 : playerOwnedTerritories.size() / 3;
+        expectedNumArmies += expectedContinentBonus;
         assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
     }
 
@@ -821,17 +827,7 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateSetsOfTerritoriesFullContinentsAndExpectedBonuses")
     public void test26_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsContinent_expectBonusAndTerritories(
             Set<TerritoryType> ownedTerritories, int continentBonus) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        Player redPlayer = new Player(PlayerColor.RED);
-
-        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
-        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
-        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
-        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
-
-        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
-        expectedNumArmies += continentBonus;
-        assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
+        testCalculatePlacementPhaseNumArmiesMethod(ownedTerritories, continentBonus);
     }
 
     private static Stream<Arguments> generateMultiContinentSetsAndAssociatedBonus() {
@@ -887,16 +883,6 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateMultiContinentSetsAndAssociatedBonus")
     public void test27_calculatePlacementPhaseArmiesForCurrentPlayer_inputIsMultipleContinents_expectBonusAndNormal(
             Set<TerritoryType> ownedTerritories, int multiContinentBonus) {
-        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        Player redPlayer = new Player(PlayerColor.RED);
-
-        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
-        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
-        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
-        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
-
-        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
-        expectedNumArmies += multiContinentBonus;
-        assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
+        testCalculatePlacementPhaseNumArmiesMethod(ownedTerritories, multiContinentBonus);
     }
 }
