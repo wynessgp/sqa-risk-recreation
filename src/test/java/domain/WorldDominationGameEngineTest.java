@@ -724,7 +724,7 @@ public class WorldDominationGameEngineTest {
                 TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
                 TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
         Set<TerritoryType> northAmerica = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
-                TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+                TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_UNITED_STATES, TerritoryType.GREENLAND,
                 TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
                 TerritoryType.WESTERN_UNITED_STATES);
         Set<TerritoryType> oceania = Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA,
