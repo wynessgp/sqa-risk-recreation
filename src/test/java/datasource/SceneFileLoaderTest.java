@@ -32,4 +32,14 @@ public class SceneFileLoaderTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
+    @Test
+    public void test02_open_withValidNonFxmlFile_throwsException() {
+        FileLoader fileLoader = new SceneFileLoader();
+        String fileName = "styles.css";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileLoader.open(fileName));
+
+        String expectedMessage = "The requested file is not an FXML file";
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 }

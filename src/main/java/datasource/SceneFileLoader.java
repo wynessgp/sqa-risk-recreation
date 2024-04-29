@@ -10,13 +10,17 @@ public class SceneFileLoader implements FileLoader {
 
     @Override
     public boolean open(String fileName) {
+        Path path;
         try {
             URL filePath = getClass().getResource(fileName);
-            Path path = Paths.get(filePath.toURI());
-            this.sceneFile = path.toFile();
+            path = Paths.get(filePath.toURI());
         } catch (Exception e) {
             throw new NullPointerException("The requested file does not exist");
         }
+        if (!path.toString().endsWith(".fxml")) {
+            throw new IllegalArgumentException("The requested file is not an FXML file");
+        }
+        this.sceneFile = path.toFile();
         return true;
     }
 
