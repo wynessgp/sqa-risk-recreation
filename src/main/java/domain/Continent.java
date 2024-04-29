@@ -12,12 +12,12 @@ public enum Continent {
             TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.URAL,
             TerritoryType.YAKUTSK), 7),
 
-    EUROPE(Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+    EUROPE(Set.of(TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN,
             TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
             TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE), 5),
 
     NORTH_AMERICA(Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
-            TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+            TerritoryType.CENTRAL_AMERICA, TerritoryType.UKRAINE, TerritoryType.GREENLAND,
             TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
             TerritoryType.WESTERN_UNITED_STATES), 5),
 

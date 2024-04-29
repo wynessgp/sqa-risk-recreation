@@ -95,8 +95,21 @@ public class GameMapScreenController {
     private void handleTerritoryButtonClick(ActionEvent event) {
         this.selectedButton = (Button) event.getSource();
         this.selectedTerritory = TerritoryType.valueOf(this.selectedButton.getAccessibleText());
-        this.claimTerritoryDialog.setContentText("Would you like to claim " + this.selectedTerritory + "?");
-        toggleDialog(this.claimTerritoryDialog);
+        if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
+            this.claimTerritoryDialog.setContentText("Would you like to claim " + this.selectedTerritory + "?");
+            toggleDialog(this.claimTerritoryDialog);
+        } else {
+            handlePlaceArmies();
+        }
+    }
+
+    private void handlePlaceArmies() {
+        try {
+            this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), 1);
+        } catch (Exception e) {
+            this.instructionLabel.setText(e.getMessage());
+        }
+        updateStateLabels();
     }
 
 }
