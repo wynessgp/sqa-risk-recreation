@@ -303,4 +303,8 @@ public final class WorldDominationGameEngine {
         return playersMap.get(currentPlayer).getNumArmiesToPlace();
     }
 
+    public int getNumberOfArmies(TerritoryType territoryType) {
+        return territoryGraph.getTerritory(territoryType).getNumArmiesPresent();
+    }
+
 }
