@@ -795,4 +795,42 @@ public class WorldDominationGameEngineTest {
         int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
         assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
     }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesFullContinentsAndExpectedBonuses() {
+        Map<Continent, Set<TerritoryType>> allContinentInfo = getContinentTerritorySets();
+
+        int oceaniaBonus = 2;
+        int southAmericaBonus = 2;
+        int africaBonus = 3;
+        int northAmericaBonus = 5;
+        int europeBonus = 5;
+        int asiaBonus = 7;
+
+        Set<Arguments> toStream = new HashSet<>();
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.OCEANIA), oceaniaBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.SOUTH_AMERICA), southAmericaBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.AFRICA), africaBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.NORTH_AMERICA), northAmericaBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.EUROPE), europeBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.ASIA), asiaBonus));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesFullContinentsAndExpectedBonuses")
+    public void test26_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsContinent_expectBonusAndTerritories(
+            Set<TerritoryType> ownedTerritories, int continentBonus) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player redPlayer = new Player(PlayerColor.RED);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
+        expectedNumArmies += continentBonus;
+        assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
+    }
 }

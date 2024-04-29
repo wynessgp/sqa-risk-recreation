@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -229,13 +230,39 @@ public final class WorldDominationGameEngine {
 
     int calculatePlacementPhaseArmiesForCurrentPlayer() {
         int numOwnedTerritories = calculateNumTerritoriesPlayerOwns();
+        throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(numOwnedTerritories);
+
+        int numOwnedTerritoriesAmount = (numOwnedTerritories < 12) ? 3 : numOwnedTerritories / 3;
+        return calculateBonusForOwnedContinents() + numOwnedTerritoriesAmount;
+    }
+
+
+    private void throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(int numOwnedTerritories) {
         if (numOwnedTerritories == TerritoryType.values().length) {
             throw new IllegalStateException("Given player owns every territory, the game should be over!");
         }
         if (numOwnedTerritories == 0) {
             throw new IllegalStateException("The current player should no longer exist!");
         }
-        return numOwnedTerritories < 12 ? 3 : numOwnedTerritories / 3;
+    }
+
+    private int calculateBonusForOwnedContinents() {
+        Set<TerritoryType> ownedTerritories = getTerritoriesCurrentPlayerOwns();
+        int totalBonus = 0;
+        for (Continent continent : Continent.values()) {
+            totalBonus += continent.getContinentBonusIfPlayerHasTerritories(ownedTerritories);
+        }
+        return totalBonus;
+    }
+
+    private Set<TerritoryType> getTerritoriesCurrentPlayerOwns() {
+        Set<TerritoryType> ownedTerritories = new HashSet<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
+                ownedTerritories.add(territory);
+            }
+        }
+        return ownedTerritories;
     }
 
     private int calculateNumTerritoriesPlayerOwns() {
