@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class TradeInManagerTest {
+public class TradeInParserTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 4})
@@ -25,7 +25,7 @@ public class TradeInManagerTest {
             EasyMock.replay(card);
         }
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         String expected = "Must trade in exactly three cards";
         Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
         assertEquals(expected, exception.getMessage());
@@ -43,7 +43,7 @@ public class TradeInManagerTest {
     }
 
     private void testSuccessfulTradeIn(int previousTrades, Set<Card> cards, int expected) {
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         tradeIn.setSetsTradedIn(previousTrades);
         int actual = tradeIn.startTrade(cards);
         assertEquals(expected, actual);
@@ -117,7 +117,7 @@ public class TradeInManagerTest {
             cards.add(createMockedCard(type));
         }
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         tradeIn.setSetsTradedIn(10);
         int expected = 40;
         for (int i = 0; i < 4; i++) {
@@ -138,7 +138,7 @@ public class TradeInManagerTest {
             cards.add(createMockedCard(type));
         }
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         tradeIn.setSetsTradedIn(14);
         String expected = "No more cards to trade in";
         Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
@@ -168,7 +168,7 @@ public class TradeInManagerTest {
         cards.add(createMockedCard(second));
         cards.add(createMockedCard(third));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         String expected = "Invalid trade in set";
         Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
         assertEquals(expected, exception.getMessage());
@@ -185,7 +185,7 @@ public class TradeInManagerTest {
         cards.add(createMockedWildCard());
         cards.add(createMockedCard(PieceType.INFANTRY));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         String expected = "Invalid trade in set";
         Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
         assertEquals(expected, exception.getMessage());
@@ -208,7 +208,7 @@ public class TradeInManagerTest {
         Player player = EasyMock.createMock(Player.class);
         EasyMock.replay(player);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         String expected = "Invalid number of cards";
         Exception exception = assertThrows(IllegalStateException.class, () ->
                 tradeIn.getMatchedTerritories(player, cards));
@@ -235,10 +235,11 @@ public class TradeInManagerTest {
         cards.add(createMockedTerritoryCard(TerritoryType.ALBERTA));
 
         Player player = EasyMock.createMock(Player.class);
-        EasyMock.expect(player.getTerritories()).andReturn(new HashSet<>()).anyTimes();
+        EasyMock.expect(player.ownsTerritory(TerritoryType.ALASKA)).andReturn(false).anyTimes();
+        EasyMock.expect(player.ownsTerritory(TerritoryType.ALBERTA)).andReturn(false).anyTimes();
         EasyMock.replay(player);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(0, actual.size());
 
@@ -250,7 +251,14 @@ public class TradeInManagerTest {
 
     private Player createMockedPlayer(Set<TerritoryType> territories) {
         Player player = EasyMock.createMock(Player.class);
-        EasyMock.expect(player.getTerritories()).andReturn(territories).anyTimes();
+        for (TerritoryType territory : territories) {
+            EasyMock.expect(player.ownsTerritory(territory)).andReturn(true).anyTimes();
+        }
+        for (TerritoryType territory : Set.of(TerritoryType.values())) {
+            if (!territories.contains(territory)) {
+                EasyMock.expect(player.ownsTerritory(territory)).andReturn(false).anyTimes();
+            }
+        }
         EasyMock.replay(player);
         return player;
     }
@@ -264,7 +272,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(1, actual.size());
         assertEquals(TerritoryType.ALASKA, actual.iterator().next());
@@ -284,7 +292,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(0, actual.size());
 
@@ -304,7 +312,7 @@ public class TradeInManagerTest {
         Set<TerritoryType> territories = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA);
         Player player = createMockedPlayer(territories);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
@@ -326,7 +334,7 @@ public class TradeInManagerTest {
                 TerritoryType.EASTERN_UNITED_STATES);
         Player player = createMockedPlayer(territories);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
@@ -347,7 +355,7 @@ public class TradeInManagerTest {
         Set<TerritoryType> territories = Set.of(TerritoryType.ALBERTA, TerritoryType.CENTRAL_AMERICA);
         Player player = createMockedPlayer(territories);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
@@ -368,7 +376,7 @@ public class TradeInManagerTest {
         Set<TerritoryType> territories = Set.of(TerritoryType.ALASKA);
         Player player = createMockedPlayer(territories);
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(territories.size(), actual.size());
         assertEquals(territories, actual);
@@ -388,7 +396,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(new HashSet<>());
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(0, actual.size());
 
@@ -407,7 +415,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(Set.of(TerritoryType.ALASKA));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(0, actual.size());
 
@@ -426,7 +434,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(Set.of(TerritoryType.values()));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(2, actual.size());
         assertEquals(Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA), actual);
@@ -446,7 +454,7 @@ public class TradeInManagerTest {
 
         Player player = createMockedPlayer(Set.of(TerritoryType.values()));
 
-        TradeInManager tradeIn = new TradeInManager();
+        TradeInParser tradeIn = new TradeInParser();
         Set<TerritoryType> actual = tradeIn.getMatchedTerritories(player, cards);
         assertEquals(3, actual.size());
         assertEquals(Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA, TerritoryType.CENTRAL_AMERICA), actual);

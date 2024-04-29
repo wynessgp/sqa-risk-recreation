@@ -1,13 +1,9 @@
 package domain;
 
-public enum PlayerColor {
+public enum GamePhase {
     SETUP,
-    BLACK,
-    RED,
-    YELLOW,
-    BLUE,
-    GREEN,
-    PURPLE;
+    PLACEMENT,
+    SCRAMBLE;
 
     public String toString() {
         String name = this.name();
