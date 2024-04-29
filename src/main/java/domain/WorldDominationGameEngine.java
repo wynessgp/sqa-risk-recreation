@@ -298,5 +298,9 @@ public final class WorldDominationGameEngine {
     void setParser(DieRollParser parser) {
         this.parser = parser;
     }
+    
+    public int getCurrentPlayerArmiesToPlace() {
+        return playersMap.get(currentPlayer).getNumArmiesToPlace();
+    }
 
 }
