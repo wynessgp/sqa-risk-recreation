@@ -1,9 +1,9 @@
 package datasource;
 
-import java.io.File;
+import java.net.URL;
 
 public interface FileLoader {
     boolean open(String fileName);
 
-    File getFile();
+    URL getFileUrl();
 }

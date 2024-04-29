@@ -1,34 +1,39 @@
 package datasource;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class SceneFileLoader implements FileLoader {
-    private File sceneFile;
+    private URL sceneFile;
 
     @Override
     public boolean open(String fileName) {
-        Path path = generatePathObject(fileName);
-        if (!path.toString().endsWith(".fxml")) {
-            throw new IllegalArgumentException("The requested file is not an FXML file");
-        }
-        this.sceneFile = path.toFile();
+        this.sceneFile = createFilePointer(fileName);
         return true;
     }
 
-    private Path generatePathObject(String fileName) {
+    private URL createFilePointer(String fileName) {
+        URL file = getClass().getResource(fileName);
+        checkFileExistence(file);
+        if (!fileName.endsWith(".fxml")) {
+            throw new IllegalArgumentException("The requested file is not an FXML file");
+        }
+        return file;
+    }
+
+    private void checkFileExistence(URL file) {
         try {
-            URL filePath = getClass().getResource(fileName);
-            return Paths.get(filePath.toURI());
+            Paths.get(file.toURI());
         } catch (Exception e) {
             throw new NullPointerException("The requested file does not exist");
         }
     }
 
     @Override
-    public File getFile() {
+    public URL getFileUrl() {
         return this.sceneFile;
     }
 

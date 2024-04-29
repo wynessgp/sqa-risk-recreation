@@ -25,7 +25,7 @@ Output:
   - IllegalArgumentException
 - Pointer:
   - Null pointer (will not test according to Martin's rules)
-  - Valid file pointer
+  - Valid file pointer URL
 
 ## BVA Step 4
 ### Test value 1
