@@ -693,4 +693,22 @@ public class WorldDominationGameEngineTest {
         String expectedMessage = "The current player should no longer exist!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    public void test24_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsAllTerritories_expectException() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player redPlayer = new Player(PlayerColor.RED);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                unitUnderTest::calculatePlacementPhaseArmiesForCurrentPlayer);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Given player owns every territory, the game should be over!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

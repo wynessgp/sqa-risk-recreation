@@ -228,7 +228,21 @@ public final class WorldDominationGameEngine {
     }
 
     void calculatePlacementPhaseArmiesForCurrentPlayer() {
+        int numOwnedTerritories = calculateNumTerritoriesPlayerOwns();
+        if (numOwnedTerritories == TerritoryType.values().length) {
+            throw new IllegalStateException("Given player owns every territory, the game should be over!");
+        }
         throw new IllegalStateException("The current player should no longer exist!");
+    }
+
+    private int calculateNumTerritoriesPlayerOwns() {
+        int numOwnedTerritories = 0;
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
+                numOwnedTerritories++;
+            }
+        }
+        return numOwnedTerritories;
     }
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
@@ -301,5 +315,11 @@ public final class WorldDominationGameEngine {
 
     void setParser(DieRollParser parser) {
         this.parser = parser;
+    }
+
+    void claimAllTerritoriesForCurrentPlayer() {
+        for (TerritoryType territory : TerritoryType.values()) {
+            territoryGraph.getTerritory(territory).setPlayerInControl(currentPlayer);
+        }
     }
 }
