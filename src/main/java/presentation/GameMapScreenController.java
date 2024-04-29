@@ -6,6 +6,7 @@ import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -58,10 +59,11 @@ public class GameMapScreenController {
     }
 
     private void enableButtons() {
-        for (Button territoryButton : this.territoryButtonMap.keySet()) {
+        for (Entry<Button, TerritoryType> entry : this.territoryButtonMap.entrySet()) {
+            Button territoryButton = entry.getKey();
+            TerritoryType territory = entry.getValue();
             territoryButton.setDisable(false);
-            // TODO: Set number of armies when method added to GameEngine
-            territoryButton.setText("1");
+            territoryButton.setText(this.gameEngine.getNumberOfArmies(territory) + "");
         }
     }
 
