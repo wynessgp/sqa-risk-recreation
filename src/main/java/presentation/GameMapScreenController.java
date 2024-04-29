@@ -23,6 +23,8 @@ public class GameMapScreenController {
     @FXML
     private AnchorPane dialogBackground;
     @FXML
+    private AnchorPane armiesToPlacePane;
+    @FXML
     private Label currentPlayerColor;
     @FXML
     private Label currentPhase;
@@ -61,11 +63,12 @@ public class GameMapScreenController {
         } else {
             this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
                     + " player: Place an army on a claimed territory");
-            enableButtons();
+            enablePlacement();
         }
     }
 
-    private void enableButtons() {
+    private void enablePlacement() {
+        this.armiesToPlacePane.setVisible(true);
         for (Entry<Button, TerritoryType> entry : this.territoryButtonMap.entrySet()) {
             Button territoryButton = entry.getKey();
             TerritoryType territory = entry.getValue();
