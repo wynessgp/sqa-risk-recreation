@@ -19,6 +19,8 @@ public class GameMapScreenController {
     @FXML
     private DialogPane claimTerritoryDialog;
     @FXML
+    private DialogPane placeArmiesErrorDialog;
+    @FXML
     private AnchorPane dialogBackground;
     @FXML
     private Label currentPlayerColor;
@@ -37,10 +39,12 @@ public class GameMapScreenController {
     private void initialize() {
         this.gameEngine = SceneController.getInstance().getGameEngine();
         updateStateLabels();
-        claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
+        this.claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
                 handleClaimTerritory());
-        claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
+        this.claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
                 toggleDialog(claimTerritoryDialog));
+        this.placeArmiesErrorDialog.lookupButton(ButtonType.CLOSE).addEventHandler(ActionEvent.ACTION, event ->
+                toggleDialog(placeArmiesErrorDialog));
     }
 
     private void updateStateLabels() {
@@ -112,7 +116,7 @@ public class GameMapScreenController {
         try {
             this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), 1);
         } catch (Exception e) {
-            this.instructionLabel.setText(e.getMessage());
+            toggleDialog(this.placeArmiesErrorDialog);
         }
         updateStateLabels();
     }
