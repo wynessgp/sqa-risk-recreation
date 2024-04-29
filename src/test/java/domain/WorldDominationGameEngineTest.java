@@ -24,6 +24,13 @@ public class WorldDominationGameEngineTest {
 
     private static final int GET_TERRITORY_ONCE = 1;
 
+    private static final int OCEANIA_BONUS = 2;
+    private static final int SOUTH_AMERICA_BONUS = 2;
+    private static final int AFRICA_BONUS = 3;
+    private static final int NORTH_AMERICA_BONUS = 5;
+    private static final int EUROPE_BONUS = 5;
+    private static final int ASIA_BONUS = 7;
+
     private static Stream<Arguments> generateVariousIllegalPlayerOrderLists() {
         Set<Arguments> illegalPlayerOrderArguments = new HashSet<>();
         illegalPlayerOrderArguments.add(Arguments.of(List.of()));
@@ -799,20 +806,13 @@ public class WorldDominationGameEngineTest {
     private static Stream<Arguments> generateSetsOfTerritoriesFullContinentsAndExpectedBonuses() {
         Map<Continent, Set<TerritoryType>> allContinentInfo = getContinentTerritorySets();
 
-        int oceaniaBonus = 2;
-        int southAmericaBonus = 2;
-        int africaBonus = 3;
-        int northAmericaBonus = 5;
-        int europeBonus = 5;
-        int asiaBonus = 7;
-
         Set<Arguments> toStream = new HashSet<>();
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.OCEANIA), oceaniaBonus));
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.SOUTH_AMERICA), southAmericaBonus));
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.AFRICA), africaBonus));
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.NORTH_AMERICA), northAmericaBonus));
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.EUROPE), europeBonus));
-        toStream.add(Arguments.of(allContinentInfo.get(Continent.ASIA), asiaBonus));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.OCEANIA), OCEANIA_BONUS));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.SOUTH_AMERICA), SOUTH_AMERICA_BONUS));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.AFRICA), AFRICA_BONUS));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.NORTH_AMERICA), NORTH_AMERICA_BONUS));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.EUROPE), EUROPE_BONUS));
+        toStream.add(Arguments.of(allContinentInfo.get(Continent.ASIA), ASIA_BONUS));
 
         return toStream.stream();
     }
@@ -831,6 +831,72 @@ public class WorldDominationGameEngineTest {
 
         int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
         expectedNumArmies += continentBonus;
+        assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
+    }
+
+    private static Stream<Arguments> generateMultiContinentSetsAndAssociatedBonus() {
+        Map<Continent, Set<TerritoryType>> allContinentInfo = getContinentTerritorySets();
+        Map<Continent, Integer> continentToBonusMap = Map.ofEntries(
+                Map.entry(Continent.ASIA, ASIA_BONUS),
+                Map.entry(Continent.AFRICA, AFRICA_BONUS),
+                Map.entry(Continent.SOUTH_AMERICA, SOUTH_AMERICA_BONUS),
+                Map.entry(Continent.EUROPE, EUROPE_BONUS),
+                Map.entry(Continent.NORTH_AMERICA, NORTH_AMERICA_BONUS),
+                Map.entry(Continent.OCEANIA, OCEANIA_BONUS)
+        );
+
+        Set<Arguments> toStream = new HashSet<>();
+
+        // 2-continent sets
+        Set<TerritoryType> twoContinentTerritories = new HashSet<>(allContinentInfo.get(Continent.EUROPE));
+        twoContinentTerritories.addAll(allContinentInfo.get(Continent.ASIA));
+        int twoContinentExpectedBonus = continentToBonusMap.get(Continent.EUROPE)
+                + continentToBonusMap.get(Continent.ASIA);
+        toStream.add(Arguments.of(twoContinentTerritories, twoContinentExpectedBonus));
+
+        twoContinentTerritories = new HashSet<>(allContinentInfo.get(Continent.AFRICA));
+        twoContinentTerritories.addAll(allContinentInfo.get(Continent.NORTH_AMERICA));
+        twoContinentExpectedBonus = continentToBonusMap.get(Continent.AFRICA)
+                + continentToBonusMap.get(Continent.NORTH_AMERICA);
+        toStream.add(Arguments.of(twoContinentTerritories, twoContinentExpectedBonus));
+
+        // 3-continent set
+        Set<TerritoryType> threeContinentTerritories = new HashSet<>(allContinentInfo.get(Continent.NORTH_AMERICA));
+        threeContinentTerritories.addAll(allContinentInfo.get(Continent.SOUTH_AMERICA));
+        threeContinentTerritories.addAll(allContinentInfo.get(Continent.AFRICA));
+        int threeContinentExpectedBonus = continentToBonusMap.get(Continent.NORTH_AMERICA)
+                + continentToBonusMap.get(Continent.SOUTH_AMERICA) + continentToBonusMap.get(Continent.AFRICA);
+        toStream.add(Arguments.of(threeContinentTerritories, threeContinentExpectedBonus));
+
+        // 4-continent set
+        Set<TerritoryType> fourContinentTerritories = new HashSet<>(threeContinentTerritories);
+        fourContinentTerritories.addAll(allContinentInfo.get(Continent.ASIA));
+        int fourContinentExpectedBonus = threeContinentExpectedBonus + continentToBonusMap.get(Continent.ASIA);
+        toStream.add(Arguments.of(fourContinentTerritories, fourContinentExpectedBonus));
+
+        // 5-continent set
+        Set<TerritoryType> fiveContinentTerritories = new HashSet<>(fourContinentTerritories);
+        fiveContinentTerritories.addAll(allContinentInfo.get(Continent.OCEANIA));
+        int fiveContinentExpectedBonus = fourContinentExpectedBonus + continentToBonusMap.get(Continent.OCEANIA);
+        toStream.add(Arguments.of(fiveContinentTerritories, fiveContinentExpectedBonus));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateMultiContinentSetsAndAssociatedBonus")
+    public void test27_calculatePlacementPhaseArmiesForCurrentPlayer_inputIsMultipleContinents_expectBonusAndNormal(
+            Set<TerritoryType> ownedTerritories, int multiContinentBonus) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player redPlayer = new Player(PlayerColor.RED);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
+        expectedNumArmies += multiContinentBonus;
         assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
     }
 }
