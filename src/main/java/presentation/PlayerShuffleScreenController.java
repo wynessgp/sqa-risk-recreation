@@ -1,5 +1,6 @@
 package presentation;
 
+import datasource.FileLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class PlayerShuffleScreenController {
     @FXML
     private void rollDie() {
         if (currentPlayer < originalPlayerOrder.size()) {
-            dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer), getClass()));
+            dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer)));
             dieRollResult.setText(originalPlayerOrder.get(currentPlayer).toString() + ": You rolled a "
                     + dieRolls.get(currentPlayer) + "!");
             dieRollResult.setVisible(true);
@@ -90,10 +91,10 @@ public class PlayerShuffleScreenController {
                 Map.of(1, ONE, 2, TWO, 3, THREE, 4, FOUR, 5, FIVE, 6, SIX)
         );
 
-        private static Image get(int roll, Class<?> className) {
+        private static Image get(int roll) {
             DieImage dieImage = dieMap.get(roll);
             try {
-                return new Image(Objects.requireNonNull(className.getResource(String.format("images\\die-%s.png",
+                return new Image(Objects.requireNonNull(FileLoader.class.getResource(String.format("images\\die-%s.png",
                         dieImage.toString().toLowerCase()))).openStream());
             } catch (Exception e) {
                 System.err.println("Error loading die image: " + dieImage.toString());
