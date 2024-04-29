@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.easymock.EasyMock;
@@ -701,7 +702,7 @@ public class WorldDominationGameEngineTest {
 
         unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
-        unitUnderTest.claimAllTerritoriesForCurrentPlayer();
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer(Set.of(TerritoryType.values()));
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
         Exception exception = assertThrows(IllegalStateException.class,
@@ -710,5 +711,88 @@ public class WorldDominationGameEngineTest {
 
         String expectedMessage = "Given player owns every territory, the game should be over!";
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Map<Continent, Set<TerritoryType>> getContinentTerritorySets() {
+        Set<TerritoryType> africa = Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA, TerritoryType.EGYPT,
+                TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA);
+        Set<TerritoryType> asia = Set.of(TerritoryType.AFGHANISTAN, TerritoryType.CHINA, TerritoryType.INDIA,
+                TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MIDDLE_EAST,
+                TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.URAL,
+                TerritoryType.YAKUTSK);
+        Set<TerritoryType> europe = Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+                TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
+                TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
+        Set<TerritoryType> northAmerica = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
+                TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+                TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
+                TerritoryType.WESTERN_UNITED_STATES);
+        Set<TerritoryType> oceania = Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA,
+                TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA);
+        Set<TerritoryType> southAmerica = Set.of(TerritoryType.ARGENTINA, TerritoryType.BRAZIL, TerritoryType.PERU,
+                TerritoryType.VENEZUELA);
+
+        return Map.ofEntries(
+                Map.entry(Continent.AFRICA, africa),
+                Map.entry(Continent.ASIA, asia),
+                Map.entry(Continent.EUROPE, europe),
+                Map.entry(Continent.NORTH_AMERICA, northAmerica),
+                Map.entry(Continent.OCEANIA, oceania),
+                Map.entry(Continent.SOUTH_AMERICA, southAmerica)
+        );
+    }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesSpecificSizesNoFullContinents() {
+        Map<Continent, Set<TerritoryType>> allContinentInfo = getContinentTerritorySets();
+
+        Set<Arguments> toStream = new HashSet<>();
+        toStream.add(Arguments.of(Set.of(TerritoryType.ALASKA)));
+
+        Set<TerritoryType> sizeElevenSet = new HashSet<>(allContinentInfo.get(Continent.NORTH_AMERICA));
+        sizeElevenSet.addAll(allContinentInfo.get(Continent.OCEANIA));
+        sizeElevenSet.remove(TerritoryType.EASTERN_UNITED_STATES); // remove 1 from each continent
+        sizeElevenSet.remove(TerritoryType.INDONESIA); // meaning 9 + 4 - 2 = 11 territories
+
+        Set<TerritoryType> sizeTwelveSet = new HashSet<>(sizeElevenSet);
+        sizeTwelveSet.add(TerritoryType.JAPAN); // add from a new continent
+
+        Set<TerritoryType> sizeFourteenSet = new HashSet<>(sizeTwelveSet);
+        sizeTwelveSet.add(TerritoryType.MONGOLIA);
+        sizeTwelveSet.add(TerritoryType.SIAM);
+
+        Set<TerritoryType> sizeFifteenSet = new HashSet<>(sizeFourteenSet);
+        sizeFifteenSet.add(TerritoryType.ARGENTINA);
+
+        Set<TerritoryType> sizeThirtySixSet = new HashSet<>();
+        for (Set<TerritoryType> currentContinentTerritories : allContinentInfo.values()) {
+            sizeThirtySixSet.addAll(currentContinentTerritories);
+        }
+        Set<TerritoryType> toRemove = Set.of(TerritoryType.ALASKA, TerritoryType.BRAZIL, TerritoryType.CONGO,
+                TerritoryType.INDIA, TerritoryType.INDONESIA, TerritoryType.GREAT_BRITAIN);
+        sizeThirtySixSet.removeAll(toRemove);
+
+        toStream.add(Arguments.of(sizeElevenSet));
+        toStream.add(Arguments.of(sizeTwelveSet));
+        toStream.add(Arguments.of(sizeFourteenSet));
+        toStream.add(Arguments.of(sizeFifteenSet));
+        toStream.add(Arguments.of(sizeThirtySixSet));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesSpecificSizesNoFullContinents")
+    public void test25_calculatePlacementPhaseArmiesForCurrentPlayer_playerOwnsManyTerritories_expectFormulaNumber(
+            Set<TerritoryType> ownedTerritories) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player redPlayer = new Player(PlayerColor.RED);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(redPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.claimAllTerritoriesForCurrentPlayer(ownedTerritories);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        int expectedNumArmies = (ownedTerritories.size() < 12) ? 3 : ownedTerritories.size() / 3;
+        assertEquals(expectedNumArmies, unitUnderTest.calculatePlacementPhaseArmiesForCurrentPlayer());
     }
 }
