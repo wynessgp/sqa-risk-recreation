@@ -19,12 +19,12 @@ public class ContinentTest {
     private static final Set<TerritoryType> AFRICA = Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA,
             TerritoryType.EGYPT, TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA);
 
-    private static final Set<TerritoryType> EUROPE = Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+    private static final Set<TerritoryType> EUROPE = Set.of(TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN,
             TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
             TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
 
     private static final Set<TerritoryType> NORTH_AMERICA = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
-            TerritoryType.CENTRAL_AMERICA, TerritoryType.EASTERN_EUROPE, TerritoryType.GREENLAND,
+            TerritoryType.CENTRAL_AMERICA, TerritoryType.UKRAINE, TerritoryType.GREENLAND,
             TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ONTARIO, TerritoryType.QUEBEC,
             TerritoryType.WESTERN_UNITED_STATES);
 

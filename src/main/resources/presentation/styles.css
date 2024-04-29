@@ -2,19 +2,23 @@
     -fx-background-color: #121212;
 }
 
-.button {
+.button, .dialog .button {
     -fx-border-radius: 0.5em;
     -fx-background-radius: 0.5em;
     -fx-cursor: "hand";
 }
 
-.defaultButton {
+.defaultButton, .dialog .button {
     -fx-background-color: #dd9181;
     -fx-text-fill: black;
 }
 
-.text {
+.text, .dialog .label {
     -fx-text-fill: white;
+}
+
+.text-primary {
+    -fx-font-family: "Franklin Gothic Medium";
 }
 
 .colorButton {
@@ -32,4 +36,13 @@
     -fx-pref-height: 30px;
     -fx-text-fill: white;
     -fx-font-size: 10px;
+}
+
+.dialog {
+    -fx-border-radius: 0.5em;
+    -fx-background-radius: 0.6em;
+    -fx-background-color: #121212;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-padding: 5px;
 }
