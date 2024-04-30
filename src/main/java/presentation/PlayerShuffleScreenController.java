@@ -1,11 +1,12 @@
 package presentation;
 
+import datasource.FileLoader;
+import datasource.ImageFileLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -70,7 +71,7 @@ public class PlayerShuffleScreenController {
     @FXML
     private void rollDie() {
         if (currentPlayer < originalPlayerOrder.size()) {
-            dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer), getClass()));
+            dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer)));
             dieRollResult.setText(originalPlayerOrder.get(currentPlayer).toString() + ": You rolled a "
                     + dieRolls.get(currentPlayer) + "!");
             dieRollResult.setVisible(true);
@@ -90,15 +91,16 @@ public class PlayerShuffleScreenController {
                 Map.of(1, ONE, 2, TWO, 3, THREE, 4, FOUR, 5, FIVE, 6, SIX)
         );
 
-        private static Image get(int roll, Class<?> className) {
-            DieImage dieImage = dieMap.get(roll);
+        private static Image get(int roll) {
+            FileLoader imageLoader = new ImageFileLoader();
             try {
-                return new Image(Objects.requireNonNull(className.getResource(String.format("images\\die-%s.png",
-                        dieImage.toString().toLowerCase()))).openStream());
+                imageLoader.open(String.format("die-%s.png", dieMap.get(roll).toString().toLowerCase()));
+                return new Image(imageLoader.getFileUrl().openStream());
             } catch (Exception e) {
-                System.err.println("Error loading die image: " + dieImage.toString());
+                System.err.println("Error loading image for die roll " + roll);
                 return null;
             }
         }
     }
+
 }
