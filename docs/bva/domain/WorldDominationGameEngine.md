@@ -274,7 +274,12 @@ Additionally, we care about:
 - decrementing the number of armies left to place for our player
 - updating who's turn it is, if necessary.
   - This action should occur automatically for the phases:
-    - SCRAMBLE, SETUP, PLACEMENT (if numArmiesToPlace for the player IS 0)
+    - SCRAMBLE, SETUP
+- updating the game phase, if necessary.
+  - from SCRAMBLE -> SETUP if all territories are claimed (integration test)
+  - from SETUP -> PLACEMENT if all armies have been placed (integration test)
+  - from PLACEMENT -> ATTACK if the player places all of their earned armies
+    - Note that they may also change it manually, if they so desire.
 
 ## BVA Step 2
 Input:
@@ -288,6 +293,7 @@ Output:
 - function return value: Boolean
 - Territory: Pointer
 - Current player object: Pointer
+- Game Phase: Cases
 
 ## TODO: Elaborate more once attack/placement phase is being developed!
 
@@ -345,6 +351,13 @@ Output:
 - Player object: Pointer
   - The number of armies they have to place should be updated
   - Territories held should be updated if in SCRAMBLE (maybe attack too).
+- Game Phase: Cases
+  - SCRAMBLE (advancing out requires all territories to be claimed)
+  - SETUP (advancing out requires all setup armies to be placed)
+  - PLACEMENT (advancing requires all earned armies to be placed, or a manual phase end)
+  - ATTACK
+  - FORTIFY
+  - GAME_OVER
 
 ## BVA Step 4
 
@@ -413,6 +426,7 @@ Output:
   - Territory pointer: [numArmies = 1, PlayerColor = BLUE]
   - Current player = [Color = BLUE, numArmiesToPlace = 9, territories owned = {BRAZIL}]
   - Update to say we're on the next player's turn
+  - Game Phase = SCRAMBLE
 ### Test 7:
 - Input:
   - territory = EASTERN_AMERICA
@@ -426,6 +440,7 @@ Output:
   - Current player = [Color = GREEN, numArmiesToPlace = 0, territories owned = {EASTERN_AMERICA}]
     - Players should have more territories than this in a scramble phase; we'll let it slip for a test.
   - Update to say we're on the next player's turn
+  - Game Phase = SCRAMBLE
 
 ### SETUP PHASE
 
@@ -482,6 +497,7 @@ Output:
   - Territory pointer: [numArmies = 2, PlayerColor = current player]
   - Current player = [Color = BLUE, numArmiesToPlace = 2]
   - Update to say we're on the next player's turn
+  - Game Phase = SETUP
 ### Test 13:
 - Input:
   - territory = BRAZIL
@@ -495,6 +511,86 @@ Output:
   - Territory pointer: [numArmies = 6, PlayerColor = current player]
   - Current player = [Color = BLACK, numArmiesToPlace = 6]
   - Update to say we're on the next player's turn
+  - Game Phase = SETUP
+
+### PLACEMENT PHASE
+
+### Test 14:
+- Input:
+  - territory = ALASKA
+  - numArmies = 2
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = GREEN, numArmiesToPlace = 3, |heldCards| = 5]
+- Output:
+  - IllegalStateException
+    - message: "Player cannot place armies until they are holding \< 5 cards!"
+### Test 15:
+- Input:
+  - territory = ALASKA
+  - numArmies = 4
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 5, |heldCards| > 5]
+- Output:
+  - IllegalStateException
+    - message: "Player cannot place armies until they are holding \< 5 cards!"
+### Test 16:
+- Input:
+  - territory = ALASKA
+  - numArmies = 0 (or anything negative)
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 4, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place \< 1 army on a territory during the Placement phase"
+### Test 17:
+- Input:
+  - territory = BRAZIL
+  - numArmies = 4
+  - Territory owner = not current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = BLUE, numArmiesToPlace = 6, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place armies on a territory you do not own"
+### Test 18:
+- Input:
+  - territory = URAL
+  - numArmies = 5
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = PURPLE, numArmiesToPlace = 3, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Player does not have enough armies to place!"
+### Test 19:
+- Input:
+  - territory = ALASKA
+  - numArmies = 6
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 7, |heldCards| = 1]
+- Output:
+  - Function output: 1 (true)
+  - Territory pointer = [numArmies = 7, playerColor = RED]
+  - Current player = [Color = RED, numArmiesToPlace = 1]
+    - Still on the current player's turn until they have no armies to place
+  - Game Phase = PLACEMENT
+### Test 20:
+- Input:
+  - territory = BRAZIL
+  - numArmies = 5
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = BLUE, numArmiesToPlace = 5, |heldCards| = 2]
+- Output:
+  - Function output: 1 (true)
+  - Territory pointer = [numArmies = 8, playerColor = BLUE]
+  - Current player = [Color = BLUE, numArmiesToPlace = 0]
+  - Game Phase = ATTACK
+    - Need to be on the same player's turn, but on the attack phase.
 
 ### TODO: ATTACK PHASE
 
