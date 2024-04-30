@@ -234,6 +234,9 @@ public final class WorldDominationGameEngine {
         if (playersMap.get(currentPlayer).getNumCardsHeld() >= 5) {
             throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
         }
+        if (numArmiesToPlace < 1) {
+            throw new IllegalArgumentException("Cannot place < 1 army on a territory during the Placement phase");
+        }
     }
 
     int calculatePlacementPhaseArmiesForCurrentPlayer() {

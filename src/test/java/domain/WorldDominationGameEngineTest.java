@@ -929,5 +929,33 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -2, -1, 0})
+    public void test29_placeNewArmiesInTerritory_placementPhase_invalidNumberOfArmies_expectException(
+            int illegalNumArmiesToPlace) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(1);
+
+        EasyMock.replay(mockedPlayer);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, illegalNumArmiesToPlace));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot place < 1 army on a territory during the Placement phase";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
+    }
 
 }
