@@ -53,10 +53,10 @@ public class SceneFileLoaderTest {
     @Test
     public void test04_open_withDirectory_throwsException() {
         FileLoader fileLoader = new SceneFileLoader();
-        String fileName = "src/main/java";
-        Exception exception = assertThrows(NullPointerException.class, () -> fileLoader.open(fileName));
+        String fileName = "images";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileLoader.open(fileName));
 
-        String expectedMessage = "The requested file does not exist";
+        String expectedMessage = "The requested file is not an FXML file";
         assertEquals(expectedMessage, exception.getMessage());
     }
 

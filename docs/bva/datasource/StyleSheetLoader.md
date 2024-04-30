@@ -43,4 +43,4 @@ Output: IllegalArgumentException "The requested file is not a CSS file"
 ### Test value 4
 Input: `images`
 
-Output: NullPointerException "The requested file does not exist"
+Output: IllegalArgumentException "The requested file is not a CSS file"

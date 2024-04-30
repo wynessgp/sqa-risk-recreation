@@ -41,6 +41,6 @@ Input: `styles.css`
 
 Output: IllegalArgumentException "The requested file is not an FXML file"
 ### Test value 4
-Input: `presentation`
+Input: `images`
 
-Output: NullPointerException "The requested file does not exist"
+Output: IllegalArgumentException "The requested file is not an FXML file"
