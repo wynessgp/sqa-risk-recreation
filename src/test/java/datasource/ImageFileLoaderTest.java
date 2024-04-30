@@ -1,6 +1,8 @@
 package datasource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -26,6 +28,16 @@ public class ImageFileLoaderTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    @Test
+    public void test01_open_withInvalidImageFile_throwsException() {
+        FileLoader fileLoader = new ImageFileLoader();
+        String fileName = "missing_file.png";
+        Exception exception = assertThrows(NullPointerException.class, () -> fileLoader.open(fileName));
+
+        String expectedMessage = "The requested file does not exist";
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
 }
