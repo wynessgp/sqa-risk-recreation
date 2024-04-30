@@ -41,6 +41,6 @@ Input: `start_screen.fxml`
 
 Output: IllegalArgumentException "The requested file is not a CSS file"
 ### Test value 4
-Input: `presentation`
+Input: `images`
 
 Output: NullPointerException "The requested file does not exist"
