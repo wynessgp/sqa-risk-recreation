@@ -231,7 +231,7 @@ public final class WorldDominationGameEngine {
     }
 
     private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() == 5) {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() >= 5) {
             throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
         }
     }

@@ -886,10 +886,22 @@ public class WorldDominationGameEngineTest {
         testCalculatePlacementPhaseNumArmiesMethod(ownedTerritories, multiContinentBonus);
     }
 
+    private static Stream<Arguments> generateAllTerritoriesAndSomeNumCardsToHave() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Integer> cardAmountsGreaterThanOrEqualToFive = List.of(5, 6, 7, 42, 44);
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            for (Integer cardAmount : cardAmountsGreaterThanOrEqualToFive) {
+                toStream.add(Arguments.of(territory, cardAmount));
+            }
+        }
+        return toStream.stream();
+    }
+
     @ParameterizedTest
-    @EnumSource(TerritoryType.class)
+    @MethodSource("generateAllTerritoriesAndSomeNumCardsToHave")
     public void test28_placeNewArmiesInTerritory_placementPhase_playerHasTooManyCards_expectException(
-            TerritoryType territoryToAttemptPlacingIn) {
+            TerritoryType territoryToAttemptPlacingIn, Integer invalidCardAmount) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
@@ -899,7 +911,7 @@ public class WorldDominationGameEngineTest {
                 .withArgs(PlayerColor.RED)
                 .addMockedMethod("getNumCardsHeld")
                 .createMock();
-        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(invalidCardAmount);
 
         EasyMock.replay(mockedPlayer);
 
