@@ -885,4 +885,37 @@ public class WorldDominationGameEngineTest {
             Set<TerritoryType> ownedTerritories, int multiContinentBonus) {
         testCalculatePlacementPhaseNumArmiesMethod(ownedTerritories, multiContinentBonus);
     }
+
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test28_placeNewArmiesInTerritory_placementPhase_playerHasTooManyCards_expectException(
+            TerritoryType territoryToAttemptPlacingIn) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+
+        EasyMock.replay(mockedPlayer);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        int numArmiesToTryPlacing = 2;
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(territoryToAttemptPlacingIn, numArmiesToTryPlacing));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player cannot place armies while they are holding more than 5 cards!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+
 }

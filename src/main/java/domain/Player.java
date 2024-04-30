@@ -43,4 +43,8 @@ public class Player {
     Player() {
         playerColor = PlayerColor.SETUP;
     }
+
+    public int getNumCardsHeld() {
+        return 0;
+    }
 }

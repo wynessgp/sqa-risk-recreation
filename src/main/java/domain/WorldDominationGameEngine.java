@@ -117,8 +117,10 @@ public final class WorldDominationGameEngine {
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
             handleSetupPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
-        } else {
+        } else if (currentGamePhase == GamePhase.SCRAMBLE) {
             handleScramblePhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
+        } else {
+            handlePlacementPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         }
         return true;
     }
@@ -228,6 +230,12 @@ public final class WorldDominationGameEngine {
         }
     }
 
+    private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() == 5) {
+            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
+        }
+    }
+
     int calculatePlacementPhaseArmiesForCurrentPlayer() {
         int numOwnedTerritories = calculateNumTerritoriesPlayerOwns();
         throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(numOwnedTerritories);
@@ -235,7 +243,6 @@ public final class WorldDominationGameEngine {
         int numOwnedTerritoriesAmount = (numOwnedTerritories < 12) ? 3 : numOwnedTerritories / 3;
         return calculateBonusForOwnedContinents() + numOwnedTerritoriesAmount;
     }
-
 
     private void throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(int numOwnedTerritories) {
         if (numOwnedTerritories == TerritoryType.values().length) {
