@@ -40,4 +40,14 @@ public class StyleSheetLoaderTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
+    @Test
+    public void test02_open_withValidNonCssFile_throwsException() {
+        FileLoader fileLoader = new StyleSheetLoader();
+        String fileName = "start_screen.fxml";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileLoader.open(fileName));
+
+        String expectedMessage = "The requested file is not a CSS file";
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 }
