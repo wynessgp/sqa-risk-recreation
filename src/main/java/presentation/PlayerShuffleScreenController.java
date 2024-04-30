@@ -1,12 +1,12 @@
 package presentation;
 
 import datasource.FileLoader;
+import datasource.ImageFileLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -92,14 +92,15 @@ public class PlayerShuffleScreenController {
         );
 
         private static Image get(int roll) {
-            DieImage dieImage = dieMap.get(roll);
+            FileLoader imageLoader = new ImageFileLoader();
             try {
-                return new Image(Objects.requireNonNull(FileLoader.class.getResource(String.format("images\\die-%s.png",
-                        dieImage.toString().toLowerCase()))).openStream());
+                imageLoader.open(String.format("die-%s.png", dieMap.get(roll).toString().toLowerCase()));
+                return new Image(imageLoader.getFileUrl().openStream());
             } catch (Exception e) {
-                System.err.println("Error loading die image: " + dieImage.toString());
+                System.err.println("Error loading image for die roll " + roll);
                 return null;
             }
         }
     }
+
 }

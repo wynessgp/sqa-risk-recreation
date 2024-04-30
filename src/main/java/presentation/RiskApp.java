@@ -1,9 +1,9 @@
 package presentation;
 
 import datasource.FileLoader;
+import datasource.ImageFileLoader;
 import datasource.SceneFileLoader;
 import datasource.StyleSheetLoader;
-import java.util.Objects;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,8 +13,7 @@ import javafx.stage.Stage;
 
 public class RiskApp extends Application {
     private String cssFileString;
-    private final String iconImageString = Objects.requireNonNull(FileLoader.class
-            .getResource("images/smile.PNG")).toExternalForm();
+    private String iconImageString;
 
     @Override
     public void start(Stage stage) {
@@ -40,9 +39,12 @@ public class RiskApp extends Application {
     }
 
     private void loadUniversalFiles() {
-        FileLoader cssLoader = new StyleSheetLoader();
-        cssLoader.open("styles.css");
-        cssFileString = cssLoader.getFileUrl().toExternalForm();
+        FileLoader loader = new StyleSheetLoader();
+        loader.open("styles.css");
+        cssFileString = loader.getFileUrl().toExternalForm();
+        loader = new ImageFileLoader();
+        loader.open("smile.png");
+        iconImageString = loader.getFileUrl().toExternalForm();
     }
 
     private Scene addCssFileToScene(String cssFileString, Scene sceneInQuestion) {
