@@ -12,17 +12,19 @@
 **Item Progress**:
 1. [done] scramble and setup phases complete
 2. [started] changes to GameEngine in progress
-3. [started] working on file abstraction
+3. [50% done] working on i18n
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/113
@@ -37,3 +39,4 @@
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
