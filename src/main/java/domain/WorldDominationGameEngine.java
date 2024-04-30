@@ -19,6 +19,12 @@ public final class WorldDominationGameEngine {
 
     private static final int INITIAL_NUM_UNCLAIMED_TERRITORIES = 42;
 
+    private static final int REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES = 12;
+    private static final int THREE_ARMIES = 3;
+    private static final int NUM_EXTRA_TERRITORIES_PER_EXTRA_ARMY = 3;
+
+    private static final int FORCED_CARD_TURN_IN_THRESHOLD = 5;
+
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
@@ -231,7 +237,7 @@ public final class WorldDominationGameEngine {
     }
 
     private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() >= 5) {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
             throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
         }
         if (numArmiesToPlace < 1) {
@@ -243,7 +249,8 @@ public final class WorldDominationGameEngine {
         int numOwnedTerritories = calculateNumTerritoriesPlayerOwns();
         throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(numOwnedTerritories);
 
-        int numOwnedTerritoriesAmount = (numOwnedTerritories < 12) ? 3 : numOwnedTerritories / 3;
+        int numOwnedTerritoriesAmount = (numOwnedTerritories < REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES)
+                ? THREE_ARMIES : numOwnedTerritories / NUM_EXTRA_TERRITORIES_PER_EXTRA_ARMY;
         return calculateBonusForOwnedContinents() + numOwnedTerritoriesAmount;
     }
 
