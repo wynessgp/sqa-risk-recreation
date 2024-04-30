@@ -1,6 +1,8 @@
 package datasource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -26,6 +28,16 @@ public class StyleSheetLoaderTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    @Test
+    public void test01_open_withInvalidCssFile_throwsException() {
+        FileLoader fileLoader = new StyleSheetLoader();
+        String fileName = "missing_file.css";
+        Exception exception = assertThrows(NullPointerException.class, () -> fileLoader.open(fileName));
+
+        String expectedMessage = "The requested file does not exist";
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
 }
