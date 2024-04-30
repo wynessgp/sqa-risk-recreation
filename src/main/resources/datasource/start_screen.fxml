@@ -42,7 +42,7 @@
     </Pane>
     <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
         <ImageView fitHeight="369.0" fitWidth="694.0" layoutX="-183.0" layoutY="-68.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@images/risk.PNG" />
+            <Image url="@images/risk.png" />
         </ImageView>
     </Pane>
 </GridPane>
