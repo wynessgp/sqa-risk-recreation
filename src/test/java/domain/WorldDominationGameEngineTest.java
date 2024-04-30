@@ -958,4 +958,42 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer);
     }
 
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test30_placeNewArmiesInTerritory_placementPhase_playerDoesNotOwnTerritory_expectException(
+            TerritoryType relevantTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(1);
+
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+
+        EasyMock.replay(mockedPlayer, mockedTerritory);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory,
+                mockedTerritory, GET_TERRITORY_ONCE);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        int validNumArmiesToPlace = 4;
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, validNumArmiesToPlace));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot place armies on a territory you do not own";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedTerritory, mockedGraph);
+    }
+
 }
