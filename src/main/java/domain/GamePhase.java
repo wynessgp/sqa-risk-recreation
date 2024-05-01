@@ -3,7 +3,8 @@ package domain;
 public enum GamePhase {
     SETUP,
     PLACEMENT,
-    SCRAMBLE;
+    SCRAMBLE,
+    ATTACK;
 
     public String toString() {
         String name = this.name();
