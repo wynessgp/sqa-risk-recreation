@@ -210,6 +210,14 @@ Here are some things to consider for integration tests (since we will be using v
   - Ensure that we make a transition into the SETUP phase once all territories are claimed.
 - After all players' armies have been placed from SETUP, single turns of PLACEMENT/ATTACK/FORTIFY should start.
   - Ensure that the game phase doesn't change too soon or too late.
+- When the SETUP phase ends, as the first player going, I should expect to have the new armies I will need to place already be calculated, and can take my turn right away.
+  - Ensure that when SETUP does end, the calculation for new armies in PLACEMENT is already done.
+  - Note that we can't do this during their first placement in the PLACEMENT phase, otherwise we'll do it every time they try to place something.
+- When a player goes to place troops in the PLACEMENT phase, and they are holding on to too many cards, then the game should not let them proceed
+  - Ensure that some kind of error is thrown and the player is informed they have too many cards.
+- After I have placed all of my armies in the PLACEMENT phase, I should be able to start attacking other players.
+  - Ensure that we don't transition phases too early.
+  - Also ensure that we don't change who the currently going player is.
 
 To properly model these behaviors, we'll be using a test "outline" (not unlike that of using Cucumber).
 
@@ -295,3 +303,29 @@ And the game is currently in the SETUP phase (note - we'll manually transition i
 When each player expends their remaining placeable armies (assertion - make sure we don't transition early!)
 
 Then the game should transition into the Placement phase (assertion)
+
+### PLACEMENT Phase Integration Tests
+
+### Test 8:
+Given a valid list of players for the current game
+
+And that the SETUP phase is about to end
+
+When the last player goes to place their final army as part of the SETUP phase
+
+Then the game should transition into the placement phase
+
+And the next player to go should have their appropriate amount of armies calculated
+
+And they should be able to place these newly earned armies.
+
+### Test 9:
+Given a valid list of players for the current game
+
+And the current player has 1 army left to place
+
+And the game is in the PLACEMENT phase
+
+When the player places their last army in the PLACEMENT phase
+
+Then the game should advance into the attack phase
