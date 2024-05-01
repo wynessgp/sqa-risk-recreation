@@ -906,14 +906,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
 
-        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
-                .withConstructor(PlayerColor.class)
-                .withArgs(PlayerColor.RED)
-                .addMockedMethod("getNumCardsHeld")
-                .createMock();
-        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(invalidCardAmount);
-
-        EasyMock.replay(mockedPlayer);
+        Player mockedPlayer = createMockedPlayerWithGetNumCardsHeldExpectation(invalidCardAmount);
 
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
 
@@ -929,6 +922,18 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer);
     }
 
+    private Player createMockedPlayerWithGetNumCardsHeldExpectation(int returnValueForExpectedCall) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(returnValueForExpectedCall);
+        EasyMock.replay(mockedPlayer);
+
+        return mockedPlayer;
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -2, -1, 0})
     public void test29_placeNewArmiesInTerritory_placementPhase_invalidNumberOfArmies_expectException(
@@ -936,14 +941,7 @@ public class WorldDominationGameEngineTest {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
-        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
-                .withConstructor(PlayerColor.class)
-                .withArgs(PlayerColor.RED)
-                .addMockedMethod("getNumCardsHeld")
-                .createMock();
-        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(1);
-
-        EasyMock.replay(mockedPlayer);
+        Player mockedPlayer = createMockedPlayerWithGetNumCardsHeldExpectation(1);
 
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
@@ -965,12 +963,7 @@ public class WorldDominationGameEngineTest {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
-        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
-                .withConstructor(PlayerColor.class)
-                .withArgs(PlayerColor.RED)
-                .addMockedMethod("getNumCardsHeld")
-                .createMock();
-        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(1);
+        Player mockedPlayer = createMockedPlayerWithGetNumCardsHeldExpectation(1);
 
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
