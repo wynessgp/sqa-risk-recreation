@@ -315,7 +315,7 @@ When the last player goes to place their final army as part of the SETUP phase
 
 Then the game should transition into the placement phase
 
-And the next player to go should have their appropriate amount of armies calculated
+And the FIRST player to go should have their appropriate amount of armies calculated
 
 And they should be able to place these newly earned armies.
 
