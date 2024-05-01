@@ -18,6 +18,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class WorldDominationGameEngineIntegrationTest {
 
+    private static final int DEFAULT_NUM_ARMIES_WITH_NO_CONTINENTS = 3;
+
     private static Stream<Arguments> generateValidPlayerListsSizesThreeThroughSix() {
         Set<Arguments> arguments = new HashSet<>();
         Set<PlayerColor> validPlayers = new HashSet<>(Arrays.asList(PlayerColor.values()));
@@ -287,6 +289,45 @@ public class WorldDominationGameEngineIntegrationTest {
 
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+        EasyMock.verify(parser);
+    }
+
+    @Test
+    public void test10_placeNewArmiesInTerritoryPlacementPhase_validInput_checkForBonusArmiesAtStartOfPlacement() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.BLUE, PlayerColor.RED);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+        // 42 territories split among 4 players means ~10 territories each. Nobody will own the entirety of a
+        // continent as a result of looping through them for this test, so... 3 armies each.
+
+        for (TerritoryType territory : TerritoryType.values()) { // claim every territory.
+            unitUnderTest.placeNewArmiesInTerritory(territory, 1);
+        }
+
+        // get the number of armies left to place, so we can check that the bonus is calculated PRECISELY
+        // when the game phase changes.
+        List<Integer> numArmiesByPlayer = new ArrayList<>();
+        for (PlayerColor player : players) {
+            numArmiesByPlayer.add(unitUnderTest.getNumArmiesByPlayerColor(player));
+        }
+        int numArmiesLeftToPlace = numArmiesByPlayer.stream().mapToInt(Integer::intValue).sum();
+
+        int safeTerritoryIndex = TerritoryType.values().length % 4;
+        while (numArmiesLeftToPlace != 1) {
+            unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[safeTerritoryIndex], 1);
+            safeTerritoryIndex = (safeTerritoryIndex + 1) % players.size();
+            numArmiesLeftToPlace--;
+        }
+        assertEquals(GamePhase.SETUP, unitUnderTest.getCurrentGamePhase());
+
+        // place the last army.
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[safeTerritoryIndex], 1);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(PlayerColor.YELLOW, unitUnderTest.getCurrentPlayer()); // need to be back on the first player.
+        assertEquals(DEFAULT_NUM_ARMIES_WITH_NO_CONTINENTS, unitUnderTest.getNumArmiesByPlayerColor(players.get(0)));
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[0], 1));
+
         EasyMock.verify(parser);
     }
 

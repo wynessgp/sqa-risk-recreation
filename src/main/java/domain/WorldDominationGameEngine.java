@@ -233,6 +233,8 @@ public final class WorldDominationGameEngine {
     private void checkSetupPhaseEndCondition() {
         if (totalUnplacedArmiesLeft == 0) {
             currentGamePhase = GamePhase.PLACEMENT;
+            currentPlayer = playersList.get(0);
+            playersMap.get(currentPlayer).setNumArmiesToPlace(calculatePlacementPhaseArmiesForCurrentPlayer());
         }
     }
 
