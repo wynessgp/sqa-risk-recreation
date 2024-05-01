@@ -331,4 +331,42 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.verify(parser);
     }
 
+    @Test
+    public void test11_placeNewArmiesInTerritoryPlacementPhase_validInput_placingLastArmyMovesGameToAttackPhase() {
+        List<PlayerColor> validPlayersList = List.of(PlayerColor.RED, PlayerColor.PURPLE, PlayerColor.BLUE);
+        DieRollParser parser = generateMockedParser(validPlayersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(validPlayersList, parser);
+
+        for (TerritoryType territory : TerritoryType.values()) { // claim every territory.
+            unitUnderTest.placeNewArmiesInTerritory(territory, 1);
+        }
+
+        List<Integer> numArmiesByPlayer = new ArrayList<>();
+        for (PlayerColor player : validPlayersList) {
+            numArmiesByPlayer.add(unitUnderTest.getNumArmiesByPlayerColor(player));
+        }
+        int numArmiesLeftToPlace = numArmiesByPlayer.stream().mapToInt(Integer::intValue).sum();
+
+        int safeTerritoryIndex = TerritoryType.values().length % validPlayersList.size();
+        while (numArmiesLeftToPlace != 1) {
+            unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[safeTerritoryIndex], 1);
+            safeTerritoryIndex = (safeTerritoryIndex + 1) % validPlayersList.size();
+            numArmiesLeftToPlace--;
+        }
+
+        // place the last army.
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[safeTerritoryIndex], 1);
+
+        // each player will get 4 armies as their bonus here (42 / 3) = 14, integer division by 3 => 4
+        // so have them place 3 armies, THEN place the last one and check that we are in the attack phase.
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[0],
+                DEFAULT_NUM_ARMIES_WITH_NO_CONTINENTS));
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.values()[0], 1));
+        assertEquals(GamePhase.ATTACK, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(parser);
+    }
+
 }
