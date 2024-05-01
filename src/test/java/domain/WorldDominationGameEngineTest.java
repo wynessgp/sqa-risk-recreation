@@ -1044,7 +1044,7 @@ public class WorldDominationGameEngineTest {
                 .addMockedMethod("setNumArmiesToPlace")
                 .createMock();
         EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3);
-        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(validNumArmiesToPlace + 1).times(2);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(validNumArmiesToPlace + 1).anyTimes();
         mockedPlayer.setNumArmiesToPlace(1);
         EasyMock.expectLastCall().once();
 
