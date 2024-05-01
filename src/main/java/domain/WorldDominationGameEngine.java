@@ -237,14 +237,20 @@ public final class WorldDominationGameEngine {
     }
 
     private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
-            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
-        }
+        checkIfPlayerIsHoldingTooManyCards();
         if (numArmiesToPlace < 1) {
             throw new IllegalArgumentException("Cannot place < 1 army on a territory during the Placement phase");
         }
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
+        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
+        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+    }
+
+    private void checkIfPlayerIsHoldingTooManyCards() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
+            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
+        }
     }
 
     int calculatePlacementPhaseArmiesForCurrentPlayer() {
