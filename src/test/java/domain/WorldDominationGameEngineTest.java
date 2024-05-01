@@ -968,7 +968,7 @@ public class WorldDominationGameEngineTest {
         Territory mockedTerritory = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
 
-        EasyMock.replay(mockedPlayer, mockedTerritory);
+        EasyMock.replay(mockedTerritory);
 
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
@@ -984,6 +984,45 @@ public class WorldDominationGameEngineTest {
         String actualMessage = exception.getMessage();
 
         String expectedMessage = "Cannot place armies on a territory you do not own";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedTerritory, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoriesAndPlayerColorsAndSomeArmyCounts")
+    public void test31_placeNewArmiesInTerritory_placementPhase_playerDoesNotHaveEnoughArmies_expectException(
+            TerritoryType relevantTerritory, PlayerColor playerColor, int numArmiesPlayerCurrentlyHas) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerColor)
+                .addMockedMethod("getNumCardsHeld")
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(numArmiesPlayerCurrentlyHas);
+
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerColor)).andReturn(true);
+
+        EasyMock.replay(mockedPlayer, mockedTerritory);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(playerColor);
+
+        TerritoryGraph mockedGraph = createMockedGraphWithExpectations(relevantTerritory,
+                mockedTerritory, GET_TERRITORY_ONCE);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(relevantTerritory, numArmiesPlayerCurrentlyHas + 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player does not have enough armies to place!";
         assertEquals(expectedMessage, actualMessage);
 
         EasyMock.verify(mockedPlayer, mockedTerritory, mockedGraph);

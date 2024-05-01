@@ -244,6 +244,7 @@ public final class WorldDominationGameEngine {
             throw new IllegalArgumentException("Cannot place < 1 army on a territory during the Placement phase");
         }
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
     }
 
     int calculatePlacementPhaseArmiesForCurrentPlayer() {
