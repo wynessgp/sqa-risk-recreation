@@ -17,6 +17,7 @@ public class RiskApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        SceneController.initializeLanguageBundle();
         Parent root = loadStartScreen();
         loadUniversalFiles();
         if (root != null) {

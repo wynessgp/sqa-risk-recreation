@@ -1,13 +1,14 @@
 package presentation;
 
+import datasource.BundleLoader;
 import datasource.FileLoader;
 import datasource.SceneFileLoader;
+import datasource.StringsBundleLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +17,7 @@ import javafx.scene.layout.Pane;
 
 public class SceneController {
     private static SceneController sceneController;
-    private static ResourceBundle languageBundle = ResourceBundle.getBundle("strings", new Locale("English"));
+    private static BundleLoader bundleLoader;
     private static String languageName = "English";
     private final Map<SceneType, Pane> screenMap = new HashMap<>();
     private final Scene main;
@@ -35,7 +36,7 @@ public class SceneController {
         try {
             FileLoader fileLoader = new SceneFileLoader();
             fileLoader.open(scene.getSceneName());
-            sceneController.add(scene, FXMLLoader.load(fileLoader.getFileUrl(), languageBundle));
+            sceneController.add(scene, FXMLLoader.load(fileLoader.getFileUrl(), bundleLoader.getBundle()));
             main.setRoot(screenMap.get(scene));
         } catch (Exception e) {
             System.err.println("Error loading scene: " + scene.getSceneName());
@@ -64,17 +65,22 @@ public class SceneController {
     }
 
     protected static void setLanguage(String language) {
-        languageBundle = ResourceBundle.getBundle("strings", new Locale(language));
         languageName = language;
+        bundleLoader.open(languageName);
         getInstance().activate(SceneType.START);
     }
 
     protected static ResourceBundle getLanguageBundle() {
-        return languageBundle;
+        return bundleLoader.getBundle();
     }
 
     protected static String getLanguage() {
         return languageName;
+    }
+
+    protected static void initializeLanguageBundle() {
+        bundleLoader = new StringsBundleLoader();
+        bundleLoader.open(languageName);
     }
 
 }

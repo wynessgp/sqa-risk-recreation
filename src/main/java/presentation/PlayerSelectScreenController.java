@@ -31,7 +31,7 @@ public class PlayerSelectScreenController {
     @FXML
     private Button purpleButton;
     List<PlayerColor> playersOrder = new ArrayList<>();
-    SceneController controller;
+    SceneController controller = SceneController.getInstance();
 
     @FXML
     private void onBackButtonClick() {
