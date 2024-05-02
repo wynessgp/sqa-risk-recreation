@@ -23,4 +23,18 @@ public class StringsBundleLoaderTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void test01_open_withBruhBundleLocale_returnsTrue() {
+        BundleLoader bundleLoader = new StringsBundleLoader();
+        String localeName = "Bruh";
+        assertTrue(bundleLoader.open(localeName));
+
+        ResourceBundle bundle = bundleLoader.getBundle();
+        assertNotNull(bundle);
+
+        String expected = "Risk VI: Not the Architecture";
+        String actual = bundle.getString("startScreen.title");
+        assertEquals(expected, actual);
+    }
+
 }
