@@ -36,6 +36,7 @@ public final class WorldDominationGameEngine {
     private GamePhase currentGamePhase;
 
     private DieRollParser parser;
+    private TradeInParser tradeInParser;
     private List<Integer> dieRolls;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
@@ -388,6 +389,18 @@ public final class WorldDominationGameEngine {
     void claimAllTerritoriesForCurrentPlayer(Set<TerritoryType> territoriesToClaim) {
         for (TerritoryType territory : territoriesToClaim) {
             territoryGraph.getTerritory(territory).setPlayerInControl(currentPlayer);
+        }
+    }
+
+    void provideMockedTradeInParser(TradeInParser mockedParser) {
+        this.tradeInParser = mockedParser;
+    }
+
+    public void tradeInCards(Set<Card> selectedCardsToTradeIn) {
+        try {
+            tradeInParser.startTrade(selectedCardsToTradeIn);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format("Could not trade in cards: %s", e.getMessage()));
         }
     }
 }

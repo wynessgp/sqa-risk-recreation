@@ -1110,4 +1110,45 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer, mockedTerritory, mockedGraph);
     }
 
+    private static Stream<Arguments> generateInvalidTradeInSets() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        // make sure that all error types make it through.
+        toStream.add(Arguments.of(Set.of(), "must trade in exactly 3 cards"));
+        toStream.add(Arguments.of(Set.of(new WildCard()), "must trade in exactly 3 cards"));
+        toStream.add(Arguments.of(Set.of(
+                        new TerritoryCard(TerritoryType.CONGO, PieceType.CAVALRY),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.CAVALRY)),
+                "invalid trade in set"));
+        toStream.add(Arguments.of(Set.of(
+                        new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.CAVALRY)),
+                "invalid trade in set"));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidTradeInSets")
+    public void test34_tradeInCards_invalidTradeInSet_expectException(
+            Set<Card> illegalTradeInSet, String associatedErrorMessage) {
+        TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
+        EasyMock.expect(mockedParser.startTrade(illegalTradeInSet))
+                .andThrow(new IllegalStateException(associatedErrorMessage));
+        EasyMock.replay(mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTradeInParser(mockedParser);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.tradeInCards(illegalTradeInSet));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = String.format("Could not trade in cards: %s", associatedErrorMessage);
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedParser);
+    }
 }

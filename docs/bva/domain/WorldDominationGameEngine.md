@@ -865,8 +865,8 @@ Input:
 
 Output:
 - IllegalStateException
-  - message: "Invalid trade in set"
-### There are other invalid trade in sets, but I will not enumerate all of them here; see TradeInParser...
+  - message: "Could not trade in cards: \< trade in parser error message \>"
+### I'm using a more generic error message here so that the details given in TradeInParser can shine through.
 
 ### Test 2:
 Input:
