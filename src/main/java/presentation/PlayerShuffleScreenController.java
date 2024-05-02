@@ -43,12 +43,13 @@ public class PlayerShuffleScreenController {
     }
 
     private void prepareCurrentPlayerRoll() {
-        currentPlayer++;
-        if (currentPlayer >= originalPlayerOrder.size()) {
+        if (++currentPlayer >= originalPlayerOrder.size()) {
             prepareStartGame();
         } else {
-            instructionLabel.setText(originalPlayerOrder.get(currentPlayer).toString()
-                    + " player: Click the die to roll");
+            String playerName = SceneController.getString("global." + originalPlayerOrder.get(currentPlayer)
+                    .toString().toLowerCase(), null);
+            instructionLabel.setText(SceneController.getString("playerShuffleScreen.current",
+                    new Object[]{playerName}));
         }
     }
 
