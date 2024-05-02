@@ -2,7 +2,7 @@
     -fx-background-color: #121212;
 }
 
-.button, .dialog .button {
+.button, .dialog .button, .languageSelect {
     -fx-border-radius: 0.5em;
     -fx-background-radius: 0.5em;
     -fx-cursor: "hand";

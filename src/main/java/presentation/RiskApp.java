@@ -31,7 +31,7 @@ public class RiskApp extends Application {
         try {
             FileLoader fileLoader = new SceneFileLoader();
             fileLoader.open(SceneType.START.getSceneName());
-            return FXMLLoader.load(fileLoader.getFileUrl());
+            return FXMLLoader.load(fileLoader.getFileUrl(), SceneController.getLanguageBundle());
         } catch (Exception e) {
             System.err.println("Error loading scene: " + SceneType.START.getSceneName());
             return null;

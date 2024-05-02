@@ -34,11 +34,6 @@ public class PlayerSelectScreenController {
     SceneController controller;
 
     @FXML
-    private void initialize() {
-        controller = SceneController.getInstance();
-    }
-
-    @FXML
     private void onBackButtonClick() {
         SceneController.getInstance().activate(SceneType.START);
     }

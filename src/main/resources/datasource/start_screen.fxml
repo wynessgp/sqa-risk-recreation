@@ -20,14 +20,19 @@
         <RowConstraints maxHeight="1.7976931348623157E308" minHeight="100.0" prefHeight="100.0" vgrow="ALWAYS" />
     </rowConstraints>
     <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-        <Label layoutX="-123.0" layoutY="32.0" styleClass="text" text="Risk: World Domination">
+        <Label alignment="CENTER" layoutX="-236.0" layoutY="31.0" prefWidth="800.0" styleClass="text" text="%startScreen.title">
             <font>
                 <Font name="Impact" size="60.0" />
             </font>
         </Label>
     </Pane>
+    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <ImageView fitHeight="369.0" fitWidth="694.0" layoutX="-183.0" layoutY="-68.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@images/risk.png" />
+        </ImageView>
+    </Pane>
     <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-        <Button alignment="CENTER" layoutX="109.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#onStartButtonClick" prefHeight="46.0" prefWidth="110.0" text="Start">
+        <Button alignment="CENTER" layoutX="109.0" layoutY="97.0" mnemonicParsing="false" onMouseClicked="#onStartButtonClick" prefHeight="46.0" prefWidth="110.0" text="%startScreen.start">
             <font>
                 <Font name="Franklin Gothic Medium" size="25.0" />
             </font>
@@ -39,10 +44,6 @@
             <String fx:value="button" />
          </styleClass>
         </Button>
-    </Pane>
-    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <ImageView fitHeight="369.0" fitWidth="694.0" layoutX="-183.0" layoutY="-68.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@images/risk.png" />
-        </ImageView>
+      <ComboBox fx:id="languageSelect" layoutX="89.0" layoutY="171.0" prefWidth="150.0" promptText="Language" styleClass="languageSelect" />
     </Pane>
 </GridPane>
