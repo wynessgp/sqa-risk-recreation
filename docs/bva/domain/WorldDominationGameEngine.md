@@ -679,11 +679,17 @@ Input:
   - The 0th, 8th possibilities (can't set)
     - Should directly align with the Player object we pull
     - If it doesn't this is an error. 
+- owned territories (Collection):
+  - Size 0 or 42 (error cases)
+  - Any amount (0, 42) is valid
+  - If the player owns any continents, we need to add a bonus for owning those. 
+    - Just check if they own any continent each time this method is called.
 
 Output: (Counts)
 - Depends largely on what continents are owned...
 - If the player owns \< 12 territories, give them 3 additional armies.
 - If the player owns \>= 12 territories, give them the number of territories / 3 additional armies. 
+- Add the results together for continent bonuses and number of armies based on how many territories are owned
 
 ## BVA Step 4
 
