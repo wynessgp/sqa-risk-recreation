@@ -794,7 +794,7 @@ Output: 18 (6 from size of owned territories, 5 from owning EUROPE, 7 from ownin
 
 ### More tests for owned continent combinations, from 2 owned continents up to 5.
 
-# method: `tradeInCards(selectedCardsToTradeIn: List<Card>): Set<TerritoryType>`
+# method: `tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>`
 
 ## BVA Step 1
 Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
