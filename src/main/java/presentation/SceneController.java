@@ -1,6 +1,5 @@
 package presentation;
 
-import datasource.BundleLoader;
 import datasource.FileLoader;
 import datasource.SceneFileLoader;
 import datasource.StringsBundleLoader;
@@ -18,7 +17,6 @@ import javafx.scene.layout.Pane;
 
 public class SceneController {
     private static SceneController sceneController;
-    private static BundleLoader bundleLoader;
     private static String languageName = "English";
     private final Map<SceneType, Pane> screenMap = new HashMap<>();
     private final Scene main;
@@ -37,7 +35,7 @@ public class SceneController {
         try {
             FileLoader fileLoader = new SceneFileLoader();
             fileLoader.open(scene.getSceneName());
-            sceneController.add(scene, FXMLLoader.load(fileLoader.getFileUrl(), bundleLoader.getBundle()));
+            sceneController.add(scene, FXMLLoader.load(fileLoader.getFileUrl(), StringsBundleLoader.getBundle()));
             main.setRoot(screenMap.get(scene));
         } catch (Exception e) {
             System.err.println("Error loading scene: " + scene.getSceneName());
@@ -67,12 +65,12 @@ public class SceneController {
 
     protected static void setLanguage(String language) {
         languageName = language;
-        bundleLoader.open(languageName);
+        StringsBundleLoader.open(languageName);
         getInstance().activate(SceneType.START);
     }
 
     protected static ResourceBundle getLanguageBundle() {
-        return bundleLoader.getBundle();
+        return StringsBundleLoader.getBundle();
     }
 
     protected static String getLanguage() {
@@ -80,8 +78,7 @@ public class SceneController {
     }
 
     protected static void initializeLanguageBundle() {
-        bundleLoader = new StringsBundleLoader();
-        bundleLoader.open(languageName);
+        StringsBundleLoader.open(languageName);
     }
 
     protected static String getString(String key, Object[] format) {

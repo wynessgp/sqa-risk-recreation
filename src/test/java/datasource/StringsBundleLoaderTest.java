@@ -13,11 +13,10 @@ public class StringsBundleLoaderTest {
 
     @Test
     public void test00_open_withEnglishBundleLocale_returnsTrue() {
-        BundleLoader bundleLoader = new StringsBundleLoader();
         String localeName = "English";
-        assertTrue(bundleLoader.open(localeName));
+        assertTrue(StringsBundleLoader.open(localeName));
 
-        ResourceBundle bundle = bundleLoader.getBundle();
+        ResourceBundle bundle = StringsBundleLoader.getBundle();
         assertNotNull(bundle);
 
         String expected = "Risk: World Domination";
@@ -27,11 +26,10 @@ public class StringsBundleLoaderTest {
 
     @Test
     public void test01_open_withBruhBundleLocale_returnsTrue() {
-        BundleLoader bundleLoader = new StringsBundleLoader();
         String localeName = "Bruh";
-        assertTrue(bundleLoader.open(localeName));
+        assertTrue(StringsBundleLoader.open(localeName));
 
-        ResourceBundle bundle = bundleLoader.getBundle();
+        ResourceBundle bundle = StringsBundleLoader.getBundle();
         assertNotNull(bundle);
 
         String expected = "Risk VI: Not the Architecture";
@@ -41,13 +39,12 @@ public class StringsBundleLoaderTest {
 
     @Test
     public void test02_open_withInvalidLocale_throwsException() {
-        BundleLoader bundleLoader = new StringsBundleLoader();
         String fileName = "Nonexistent";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> bundleLoader.open(fileName));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> StringsBundleLoader.open(fileName));
 
         String expectedMessage = "The requested bundle does not exist";
         assertEquals(expectedMessage, exception.getMessage());
-        assertNull(bundleLoader.getBundle());
+        assertNull(StringsBundleLoader.getBundle());
     }
 
 }
