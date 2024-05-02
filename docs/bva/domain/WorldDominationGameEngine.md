@@ -790,3 +790,137 @@ Output: 8 (3 from owned territories, 5 from owning N. America)
 Output: 18 (6 from owned territories, 5 from owning EUROPE, 7 from owning ASIA)
 
 ### More tests for owned continent combinations, from 2 owned continents up to 5.
+
+# method: `tradeInCards(selectedCardsToTradeIn: List<Card>): Set<TerritoryType>`
+
+## BVA Step 1
+Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
+
+Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
+or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
+
+Additionally, we care about:
+- The GamePhase being forced back to the placement phase
+  - We want to emphasize that these armies MUST be placed before the player can continue
+- The player receiving the bonus armies equivalent to the set's trade in value
+  - So if I trade in the first set, I should get 4 more armies. 
+
+## BVA Step 2
+Input:
+- selectedCardsToTradeIn: Collection
+- currentPlayer: Cases
+- Player object: Pointer
+- Underlying GamePhase: Cases
+  - Should either be PLACEMENT/ATTACK. 
+
+Output:
+- Method output: Collection
+- Underlying player object: Pointer
+- GamePhase: Cases
+  - Only care about setting it back to PLACEMENT
+
+## BVA Step 3
+Input:
+- selectedCardsToTradeIn (Collection):
+  - Any set to be deemed invalid by the TradeInParser (error case)
+  - A set of cards that is valid, but is not owned by the current player (error case)
+  - A valid set of trade in cards (see TradeInParser's rules about this)
+- currentPlayer (Cases):
+  - Should always line up directly with the GameEngine's tracking
+  - If it doesn't, this is an error.
+  - Valid colors are anything BESIDES `SETUP`
+- Player object (Pointer):
+  - Care about what cards they own at the time this method is called
+    - If they don't own the cards, throw an error.
+  - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
+- Underlying GamePhase (Cases):
+  - PLACEMENT
+  - ATTACK
+  - Any other phase (error case)
+
+Output:
+- Method output (Collection):
+  - An empty collection (given no territories are matched)
+  - A collection containing 1 element 
+  - A collection containing 2 elements
+  - A collection containing 3 elements
+  - Any size outside [0, 3] (can't be set, per calling TradeInParser's methods)
+- Underlying player object (Pointer):
+  - numArmiesToPlace should be updated according to the current set's trade in bonus
+  - Remove the relevant cards from their underlying collection
+- GamePhase:
+  - Set it back to PLACEMENT
+  - Should never set it to anything else
+  
+## BVA Step 4
+### Test 1:
+Input:
+- selectedCardsToBeTradedIn = {}
+- currentPlayer = RED
+- Player object = [Color = RED, ownedCards = [ Wild card, Wild card, [ALASKA, INFANTRY] ] ]
+- GamePhase = PLACEMENT
+
+Output:
+- IllegalStateException
+  - message: "Invalid trade in set"
+### There are other invalid trade in sets, but I will not enumerate all of them here; see TradeInParser...
+
+### Test 2:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = BLUE
+- Player object = [Color = BLUE, ownedCards = [] ]
+- GamePhase = PLACEMENT (test with all phases besides ATTACK/PLACEMENT here)
+
+Output:
+- IllegalArgumentException
+  - message: "Player doesn't own all the selected cards!"
+### Test 3:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = GREEN
+- Player object = [Color = GREEN, ownedCards = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]  ]  ]
+- GamePhase = SETUP
+
+Output:
+- IllegalStateException
+  - message: "Can only trade in cards during the PLACEMENT or ATTACK phases"
+### Test 4:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = YELLOW
+- Player object = [Color = BLUE, numArmiesToPlace = 5, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {ALASKA, BRAZIL}
+  - Let this be the first set traded in
+- GamePhase = PLACEMENT
+
+Output:
+- Method output = {ALASKA, BRAZIL}
+- Player object = [Color = BLUE, numArmiesToPlace = 9, ownedCards = [] ]
+- GamePhase = PLACEMENT
+### Test 5:
+Input:
+- selectedCardsToBeTradedIn = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]]
+- currentPlayer = PURPLE
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {YAKUTSK, BRAZIL, JAPAN}
+  - Let this be the second set traded in
+- GamePhase = ATTACK
+
+Output:
+- Method output: {BRAZIL}
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [] ]
+- GamePhase = PLACEMENT
+### Test 6:
+Input:
+- selectedCardsToBeTradedIn = {Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]}
+- currentPlayer = PURPLE
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {EASTERN_AUSTRALIA}
+  - Let this be the second set traded in
+- GamePhase = ATTACK
+
+Output:
+- Method output: {}
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
+- GamePhase = PLACEMENT
