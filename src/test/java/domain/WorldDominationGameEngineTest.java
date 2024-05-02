@@ -728,7 +728,7 @@ public class WorldDominationGameEngineTest {
                 TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MIDDLE_EAST,
                 TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.URAL,
                 TerritoryType.YAKUTSK);
-        Set<TerritoryType> europe = Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+        Set<TerritoryType> europe = Set.of(TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN,
                 TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
                 TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE);
         Set<TerritoryType> northAmerica = Set.of(TerritoryType.ALASKA, TerritoryType.ALBERTA,
