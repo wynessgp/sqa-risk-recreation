@@ -655,14 +655,13 @@ Output: Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
 # method: `calculatePlacementPhaseArmiesForCurrentPlayer(): int`
 
 ## BVA Step 1
-Input: Our current player, as well as the territories that they own at the start of Placement phase.
+Input: The territories that our current player owns at the start of Placement phase, per the TerritoryGraph
 
 Output: The amount of armies our current player will receive this phase dependent on the number
 of territories, as well as any continent troop bonuses they should receive.
 
 ## BVA Step 2
 Input:
-- Player object (pointer)
 - PlayerColor of the current person who's going (cases)
   - Our player object should have the same internal color as our PlayerColor from our currentPlayer tracking
 
@@ -672,14 +671,6 @@ Output:
 
 ## BVA Step 3
 Input:
-- Player object (Pointer):
-  - The null pointer (can't set, per Martin's rules)
-  - A pointer to the true object
-    - Things we want to consider with a Player pointer:
-      - Size of their owned territory set 
-        - An empty set (error case, player should no longer exist)
-        - If they own all 42 territories, the game should be over (error case)
-      - Contents of their owned territory set
 - current PlayerColor (Cases):
   - The 1st possibility: SETUP (can't set, should never happen)
   - The 2nd possibility: RED
@@ -689,19 +680,25 @@ Input:
     - Should directly align with the Player object we pull
     - If it doesn't this is an error. 
 
+Output: (Counts)
+- Depends largely on what continents are owned...
+- If the player owns \< 12 territories, give them 3 additional armies.
+- If the player owns \>= 12 territories, give them the number of territories / 3 additional armies. 
+
 ## BVA Step 4
 
 ### Test 1:
 Input:
-- Player object = [Color = RED, owned territories = {}]
 - current player = RED
+- |owned territories| = 0
 
 Output: 
 - IllegalStateException
   - message: "The current player should no longer exist!"
 ### Test 2:
 Input:
-- Player object = [Color = RED, owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 42]
+- current player = PURPLE
+- |owned territories| = 42
 
 Output:
 - IllegalStateException
@@ -711,38 +708,38 @@ Output:
 
 ### Test 3:
 Input:
-- Player object = [Color = BLUE, owned territories = {ALASKA}]
 - current player = BLUE
+- |ownedTerritories| = 1, ownedTerritories = {ALASKA}
 
 Output: 3
 ### Test 4:
 Input:
-- Player object = [Color = PURPLE, owned territories = {ALASKA, ..., CONGO}, |owned territories| = 11]
 - current player = PURPLE
+- owned territories = {ALASKA, ..., CONGO}, |owned territories| = 11
 
 Output: 3
 ### Test 5:
 Input:
-- Player object = [Color = YELLOW, owned territories = {ALASKA, ..., EASTERN_AMERICA}, |owned territories| = 12]
 - current player = YELLOW
+- owned territories = {ALASKA, ..., EASTERN_AMERICA}, |owned territories| = 12
 
 Output: 4
 ### Test 6:
 Input:
-- Player object = [Color = GREEN, owned territories = {ALASKA, ..., JAPAN}, |owned territories| = 14]
 - current player = GREEN
+- owned territories = {ALASKA, ..., JAPAN}, |owned territories| = 14
 
 Output: 4
 ### Test 7:
 Input:
-- Player object = [Color = BLACK, owned territories = {ALASKA, ..., CHINA}, |owned territories| = 15]
 - current player = BLACK
+- owned territories = {ALASKA, ..., CHINA}, |owned territories| = 15
 
 Output: 5
 ### Test 8:
 Input:
-- Player object = [Color = BLUE, owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 36]
 - current player = BLUE
+- owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 36
 
 Output: 12
 
@@ -752,42 +749,42 @@ Output: 12
 
 ### Test 9:
 Input: 
-- Player object = [Color = RED, owned territories = { all for OCEANIA }, |owned territories| = 4]
 - current player = RED
+- owned territories = { all for OCEANIA }, |owned territories| = 4
 
-Output: 5 (3 from owned territories, 2 from owning OCEANIA)
+Output: 5 (3 from size of owned territories, 2 from owning OCEANIA)
 ### Test 10:
 Input:
-- Player object = [Color = RED, owned territories = { all for ASIA }, |owned territories| = 12]
 - current player = RED
+- owned territories = { all for ASIA }, |owned territories| = 12
 
-Output: 11 (4 from owned territories, 7 from owning ASIA)
+Output: 11 (4 from size of owned territories, 7 from owning ASIA)
 ### Test 11:
-- Player object = [Color = RED, owned territories = { all for EUROPE }, |owned territories| = 7]
 - current player = RED
+- owned territories = { all for EUROPE }, |owned territories| = 7]
 
-Output: 8 (3 from owned territories, 5 from owning EUROPE)
+Output: 8 (3 from size of owned territories, 5 from owning EUROPE)
 
 ### Test 12:
-- Player object = [Color = RED, owned territories = { all for AFRICA }, |owned territories| = 6]
 - current player = RED
+- owned territories = { all for AFRICA }, |owned territories|
 
-Output: 6 (3 from owned territories, 3 from owning AFRICA)
+Output: 6 (3 from size of owned territories, 3 from owning AFRICA)
 ### Test 13:
-- Player object = [Color = RED, owned territories = { all for S. America }, |owned territories| = 4]
 - current player = RED
+- owned territories = { all for S. America }, |owned territories| = 4
 
-Output: 5 (3 from owned territories, 2 from owning S. America)
+Output: 5 (3 from size of owned territories, 2 from owning S. America)
 ### Test 14:
-- Player object = [Color = RED, owned territories = { all for N. America }, |owned territories| = 9]
 - current player = RED
+- owned territories = { all for N. America }, |owned territories| = 9
 
-Output: 8 (3 from owned territories, 5 from owning N. America)
+Output: 8 (3 from size of owned territories, 5 from owning N. America)
 ### Test 15:
-- Player object = [Color = RED, owned territories = { all for ASIA, EUROPE }, |owned territories| = 19]
 - current player = RED
+- Player object = owned territories = { all for ASIA, EUROPE }, |owned territories| = 19
 
-Output: 18 (6 from owned territories, 5 from owning EUROPE, 7 from owning ASIA)
+Output: 18 (6 from size of owned territories, 5 from owning EUROPE, 7 from owning ASIA)
 
 ### More tests for owned continent combinations, from 2 owned continents up to 5.
 
