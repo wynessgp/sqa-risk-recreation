@@ -34,6 +34,11 @@ public class PlayerSelectScreenController {
     SceneController controller = SceneController.getInstance();
 
     @FXML
+    private void initialize() {
+        updateInstructionLabel();
+    }
+
+    @FXML
     private void onBackButtonClick() {
         SceneController.getInstance().activate(SceneType.START);
     }
@@ -58,8 +63,8 @@ public class PlayerSelectScreenController {
 
     private void resetPlayerButton(Button button) {
         button.setDisable(false);
-        button.setStyle("-fx-background-color: " + button.getText() + "; -fx-text-fill: "
-                + (button.getText().equals("Yellow") ? "black" : "white") + ";");
+        button.setStyle("-fx-background-color: " + button.getText() + "; -fx-text-fill: " + (button.getText()
+                .equals(SceneController.getString("global.yellow", null)) ? "black" : "white") + ";");
     }
 
     @FXML
@@ -71,7 +76,7 @@ public class PlayerSelectScreenController {
     @FXML
     private void onPlayerSelect(ActionEvent e) {
         Button button = (Button) e.getSource();
-        PlayerColor player = PlayerColor.valueOf(button.getText().toUpperCase());
+        PlayerColor player = PlayerColor.valueOf(button.getAccessibleText());
         playersOrder.add(player);
         handlePlayerSelectUpdate(button);
         if (playersOrder.size() >= 3) {
@@ -87,13 +92,13 @@ public class PlayerSelectScreenController {
     }
 
     private void updateInstructionLabel() {
-        int numPlayers = playersOrder.size();
-        if (numPlayers < MIN_PLAYERS) {
-            instructionLabel.setText("Select " + (MIN_PLAYERS - numPlayers) + " or more players to continue");
-        } else if (numPlayers < MAX_PLAYERS) {
-            instructionLabel.setText("Click continue or keep adding players");
+        if (playersOrder.size() < MIN_PLAYERS) {
+            instructionLabel.setText(SceneController.getString("playerSelectScreen.selectPrompt",
+                    new Object[]{MIN_PLAYERS - playersOrder.size()}));
+        } else if (playersOrder.size() < MAX_PLAYERS) {
+            instructionLabel.setText(SceneController.getString("playerSelectScreen.ready", null));
         } else {
-            instructionLabel.setText("Click continue to determine player order");
+            instructionLabel.setText(SceneController.getString("playerSelectScreen.maxPlayers", null));
         }
     }
 

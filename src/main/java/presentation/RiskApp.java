@@ -21,10 +21,7 @@ public class RiskApp extends Application {
         Parent root = loadStartScreen();
         loadUniversalFiles();
         if (root != null) {
-            Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
-            SceneController.setRoot(cssModifiedScene);
-            stage.setScene(cssModifiedScene);
-            performStageSetup(stage);
+            initializeScreen(root, stage);
         }
     }
 
@@ -46,6 +43,13 @@ public class RiskApp extends Application {
         loader = new ImageFileLoader();
         loader.open("smile.png");
         iconImageString = loader.getFileUrl().toExternalForm();
+    }
+
+    private void initializeScreen(Parent root, Stage stage) {
+        Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
+        SceneController.setRoot(cssModifiedScene);
+        stage.setScene(cssModifiedScene);
+        performStageSetup(stage);
     }
 
     private Scene addCssFileToScene(String cssFileString, Scene sceneInQuestion) {

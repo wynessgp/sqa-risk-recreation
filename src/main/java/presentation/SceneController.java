@@ -6,6 +6,7 @@ import datasource.SceneFileLoader;
 import datasource.StringsBundleLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +82,11 @@ public class SceneController {
     protected static void initializeLanguageBundle() {
         bundleLoader = new StringsBundleLoader();
         bundleLoader.open(languageName);
+    }
+
+    protected static String getString(String key, Object[] format) {
+        MessageFormat formatter = new MessageFormat(SceneController.getLanguageBundle().getString(key));
+        return formatter.format(format);
     }
 
 }
