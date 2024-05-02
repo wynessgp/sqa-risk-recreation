@@ -1,5 +1,7 @@
 package presentation;
 
+import datasource.FileLoader;
+import datasource.SceneFileLoader;
 import domain.PlayerColor;
 import domain.WorldDominationGameEngine;
 import java.util.ArrayList;
@@ -28,8 +30,9 @@ public class SceneController {
 
     protected void activate(SceneType scene) {
         try {
-            sceneController.add(scene, FXMLLoader.load(Objects.requireNonNull(getClass()
-                    .getResource(scene.getSceneName()))));
+            FileLoader fileLoader = new SceneFileLoader();
+            fileLoader.open(scene.getSceneName());
+            sceneController.add(scene, FXMLLoader.load(fileLoader.getFileUrl()));
             main.setRoot(screenMap.get(scene));
         } catch (Exception e) {
             System.err.println("Error loading scene: " + scene.getSceneName());

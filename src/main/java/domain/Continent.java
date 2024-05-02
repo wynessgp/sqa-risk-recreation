@@ -12,7 +12,7 @@ public enum Continent {
             TerritoryType.MONGOLIA, TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.URAL,
             TerritoryType.YAKUTSK), 7),
 
-    EUROPE(Set.of(TerritoryType.EASTERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+    EUROPE(Set.of(TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN,
             TerritoryType.ICELAND, TerritoryType.NORTHERN_EUROPE, TerritoryType.SCANDINAVIA,
             TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE), 5),
 

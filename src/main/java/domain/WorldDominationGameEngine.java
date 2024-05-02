@@ -46,7 +46,7 @@ public final class WorldDominationGameEngine {
         this.parser = parser;
         initializePlayersList(playerOrder);
         shufflePlayers();
-        currentPlayer = playerOrder.get(0);
+        currentPlayer = playersList.get(0);
         assignSetupArmiesToPlayers();
     }
 
@@ -384,6 +384,14 @@ public final class WorldDominationGameEngine {
 
     void setParser(DieRollParser parser) {
         this.parser = parser;
+    }
+    
+    public int getCurrentPlayerArmiesToPlace() {
+        return playersMap.get(currentPlayer).getNumArmiesToPlace();
+    }
+
+    public int getNumberOfArmies(TerritoryType territoryType) {
+        return territoryGraph.getTerritory(territoryType).getNumArmiesPresent();
     }
 
     void claimAllTerritoriesForCurrentPlayer(Set<TerritoryType> territoriesToClaim) {
