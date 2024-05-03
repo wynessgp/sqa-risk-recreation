@@ -42,14 +42,6 @@ test {
     useJUnitPlatform()
 }
 
-compileJava.doLast {
-    copy {
-        from "src/main/java"
-        include "**/*.properties"
-        into "$buildDir/classes/java/main"
-    }
-}
-
 spotbugsMain {
     reports {
         html {
