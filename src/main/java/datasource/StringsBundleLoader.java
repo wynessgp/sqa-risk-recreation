@@ -10,7 +10,7 @@ public class StringsBundleLoader {
 
     private boolean openBundle(String locale) {
         ResourceBundle resourceBundle = locateResource(locale);
-        if (!resourceBundle.getLocale().toString().contains(locale.toLowerCase())) {
+        if (resourceBundle == null || !resourceBundle.getLocale().toString().contains(locale.toLowerCase())) {
             localeName = "";
             return false;
         }
