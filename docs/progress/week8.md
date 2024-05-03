@@ -7,12 +7,12 @@
 3. i18n and file abstraction
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 5/3/2024
 
 **Item Progress**:
 1. [done] scramble and setup phases complete
-2. [started] changes to GameEngine in progress
-3. [50% done] working on i18n
+2. [50% done] placement phase in progress
+3. [80% done] i18n set up, need to finish migrating strings
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -20,11 +20,14 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/121
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/123
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/121
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/113
@@ -32,6 +35,7 @@
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/113
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/120
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/113
@@ -40,3 +44,4 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/115
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/116
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/121
