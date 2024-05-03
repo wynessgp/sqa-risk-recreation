@@ -42,9 +42,11 @@ test {
     useJUnitPlatform()
 }
 
-processResources {
-    from(sourceSets.main.java.srcDirs) {
-        include '**/*.properties'
+compileJava.doLast {
+    copy {
+        from "src/main/java"
+        include "**/*.properties"
+        into "$buildDir/classes/java/main"
     }
 }
 
