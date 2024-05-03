@@ -159,9 +159,9 @@ Input: 2 previous trades, collection with one artillery and two cavalry cards
 Output: IllegalStateException "invalid trade in set"
 
 ### Test value 26
-Input: 2 previous trades, collection with two wild and one infantry cards
+Input: 2 previous trades, collection with two wild and one infantry card
 
-Output: IllegalStateException "invalid trade in set"
+Output: 8
 
 
 # method: `getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>`
