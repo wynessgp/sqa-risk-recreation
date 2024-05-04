@@ -1134,13 +1134,22 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateInvalidTradeInSets")
     public void test34_tradeInCards_invalidTradeInSet_expectException(
             Set<Card> illegalTradeInSet, String associatedErrorMessage) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("ownsAllGivenCards")
+                .createMock();
+        EasyMock.expect(mockedPlayer.ownsAllGivenCards(illegalTradeInSet)).andReturn(true);
+
         TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
         EasyMock.expect(mockedParser.startTrade(illegalTradeInSet))
                 .andThrow(new IllegalStateException(associatedErrorMessage));
-        EasyMock.replay(mockedParser);
+        EasyMock.replay(mockedParser, mockedPlayer);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTradeInParser(mockedParser);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.tradeInCards(illegalTradeInSet));
@@ -1200,5 +1209,7 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedPlayer);
     }
+
+
 
 }
