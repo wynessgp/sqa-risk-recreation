@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 public class StringsBundleLoader {
     private static final String BUNDLE_NAME = "strings";
     private static final StringsBundleLoader INSTANCE = new StringsBundleLoader();
-    private String localeName = "";
+    private String localeName = "English";
 
     private boolean openBundle(String locale) {
         ResourceBundle resourceBundle = locateResource(locale);

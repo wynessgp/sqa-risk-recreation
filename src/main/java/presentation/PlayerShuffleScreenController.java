@@ -46,8 +46,7 @@ public class PlayerShuffleScreenController {
         if (++currentPlayer >= originalPlayerOrder.size()) {
             prepareStartGame();
         } else {
-            String playerName = SceneController.getString("global." + originalPlayerOrder.get(currentPlayer)
-                    .toString().toLowerCase(), null);
+            String playerName = originalPlayerOrder.get(currentPlayer).toString();
             instructionLabel.setText(SceneController.getString("playerShuffleScreen.current",
                     new Object[]{playerName}));
         }
