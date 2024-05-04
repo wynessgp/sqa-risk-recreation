@@ -70,7 +70,7 @@ public class TradeInParser {
     }
 
     private boolean hasWild(Set<Card> cards) {
-        return cards.stream().filter(Card::isWild).count() == 1;
+        return cards.stream().anyMatch(Card::isWild);
     }
 
     void setSetsTradedIn(int setsTradedIn) {
