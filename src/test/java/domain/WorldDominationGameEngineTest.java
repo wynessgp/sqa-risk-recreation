@@ -1212,6 +1212,31 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer);
     }
 
+    private static Stream<Arguments> generateGamePhasesMinusValidTradeInOnes() {
+        Set<Arguments> toStream = new HashSet<>();
 
+        List<GamePhase> gamePhases = new ArrayList<>(List.of(GamePhase.values()));
+        gamePhases.remove(GamePhase.ATTACK);
+        gamePhases.remove(GamePhase.PLACEMENT);
+
+        for (GamePhase gamePhase : gamePhases) {
+            toStream.add(Arguments.of(gamePhase));
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateGamePhasesMinusValidTradeInOnes")
+    public void test36_tradeInCards_invalidGamePhase_expectException(GamePhase currentPhase) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        unitUnderTest.setGamePhase(currentPhase);
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> unitUnderTest.tradeInCards(Set.of()));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Can only trade in cards during the PLACEMENT or ATTACK phase";
+        assertEquals(expectedMessage, actualMessage);
+    }
 
 }
