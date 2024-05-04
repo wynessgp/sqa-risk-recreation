@@ -63,8 +63,9 @@ public class PlayerSelectScreenController {
 
     private void resetPlayerButton(Button button) {
         button.setDisable(false);
-        button.setStyle("-fx-background-color: " + button.getText() + "; -fx-text-fill: " + (button.getText()
-                .equals(SceneController.getString("global.yellow", null)) ? "black" : "white") + ";");
+        button.setStyle("-fx-background-color: " + button.getAccessibleText() + "; -fx-text-fill: "
+                + (button.getText().equals(SceneController.getString("global.yellow", null)) ? "black"
+                : "white"));
     }
 
     @FXML
