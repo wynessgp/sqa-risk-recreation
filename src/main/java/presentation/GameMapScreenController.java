@@ -58,11 +58,11 @@ public class GameMapScreenController {
 
     private void gamePhaseActions() {
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
-                    + " player: Select an unclaimed territory");
+            this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+                    new Object[]{this.gameEngine.getCurrentPlayer()}));
         } else {
-            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
-                    + " player: Place an army on a claimed territory");
+            this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
+                    new Object[]{this.gameEngine.getCurrentPlayer()}));
             enablePlacement();
         }
     }
@@ -108,7 +108,8 @@ public class GameMapScreenController {
         this.selectedButton = (Button) event.getSource();
         this.selectedTerritory = TerritoryType.valueOf(this.selectedButton.getAccessibleText());
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.claimTerritoryDialog.setContentText("Would you like to claim " + this.selectedTerritory + "?");
+            this.claimTerritoryDialog.setContentText(SceneController.getString("gameMapScreen.claimAsk",
+                    new Object[]{this.selectedTerritory}));
             toggleDialog(this.claimTerritoryDialog);
         } else {
             handlePlaceArmies();
