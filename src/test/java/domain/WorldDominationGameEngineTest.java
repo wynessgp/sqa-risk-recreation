@@ -1150,6 +1150,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideMockedTradeInParser(mockedParser);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.tradeInCards(illegalTradeInSet));
