@@ -404,14 +404,22 @@ public final class WorldDominationGameEngine {
         this.tradeInParser = mockedParser;
     }
 
-    public void tradeInCards(Set<Card> selectedCardsToTradeIn) {
+    public Set<TerritoryType> tradeInCards(Set<Card> selectedCardsToTradeIn) {
         checkIfInValidGamePhase(Set.of(GamePhase.ATTACK, GamePhase.PLACEMENT));
+
         Player currentPlayerObject = playersMap.get(currentPlayer);
         checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
+        return addArmiesToPlayerStockpileIfValidSet(selectedCardsToTradeIn, currentPlayerObject);
+    }
+
+    private Set<TerritoryType> addArmiesToPlayerStockpileIfValidSet(
+            Set<Card> selectedCardsToTradeIn, Player playerObject) {
         try {
-            tradeInParser.startTrade(selectedCardsToTradeIn);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Could not trade in cards: %s", e.getMessage()));
+            int numArmiesToReceive = tradeInParser.startTrade(selectedCardsToTradeIn);
+            modifyNumArmiesCurrentPlayerHasToPlace(-1 * numArmiesToReceive);
+            return tradeInParser.getMatchedTerritories(playerObject, selectedCardsToTradeIn);
+        } catch (Exception tradeError) {
+            throw new IllegalArgumentException(String.format("Could not trade in cards: %s", tradeError.getMessage()));
         }
     }
 

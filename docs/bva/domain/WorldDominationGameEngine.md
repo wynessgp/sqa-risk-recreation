@@ -891,7 +891,7 @@ Output:
 ### Test 4:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
-- currentPlayer = YELLOW
+- currentPlayer = BLUE
 - Player object = [Color = BLUE, numArmiesToPlace = 5, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
   - Player owns: {ALASKA, BRAZIL}
   - Let this be the first set traded in

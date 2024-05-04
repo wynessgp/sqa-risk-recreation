@@ -1239,4 +1239,41 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test37_tradeInCards_validInput_expectReturnSetOfSizeTwo() {
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        Set<Card> cardsToBeTradedIn = Set.of(new WildCard(), alaskaCard, brazilCard);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.BLUE)
+                .addMockedMethod("ownsAllGivenCards")
+                .addMockedMethod("setNumArmiesToPlace")
+                .addMockedMethod("getNumArmiesToPlace")
+                .createMock();
+        EasyMock.expect(mockedPlayer.ownsAllGivenCards(cardsToBeTradedIn)).andReturn(true);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(5);
+        mockedPlayer.setNumArmiesToPlace(9);
+        EasyMock.expectLastCall().once();
+
+        Set<TerritoryType> expectedReturn = Set.of(TerritoryType.ALASKA, TerritoryType.BRAZIL);
+
+        TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
+        EasyMock.expect(mockedParser.startTrade(cardsToBeTradedIn)).andReturn(4);
+        EasyMock.expect(mockedParser.getMatchedTerritories(mockedPlayer, cardsToBeTradedIn))
+                .andReturn(expectedReturn);
+
+        EasyMock.replay(mockedPlayer, mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTradeInParser(mockedParser);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        assertEquals(expectedReturn, unitUnderTest.tradeInCards(cardsToBeTradedIn));
+
+        EasyMock.verify(mockedPlayer, mockedParser);
+    }
 }
