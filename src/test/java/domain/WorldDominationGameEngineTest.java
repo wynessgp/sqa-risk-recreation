@@ -1239,8 +1239,8 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    @Test
-    public void test37_tradeInCards_validInput_expectReturnSetOfSizeTwo() {
+    private void testTradeInCards(
+            int numArmiesToSetForPlayer, int cardReturnBonus, Set<TerritoryType> territoriesToReturn) {
         TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
         TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
         Set<Card> cardsToBeTradedIn = Set.of(new WildCard(), alaskaCard, brazilCard);
@@ -1253,16 +1253,14 @@ public class WorldDominationGameEngineTest {
                 .addMockedMethod("getNumArmiesToPlace")
                 .createMock();
         EasyMock.expect(mockedPlayer.ownsAllGivenCards(cardsToBeTradedIn)).andReturn(true);
-        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(5);
-        mockedPlayer.setNumArmiesToPlace(9);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(numArmiesToSetForPlayer - cardReturnBonus);
+        mockedPlayer.setNumArmiesToPlace(numArmiesToSetForPlayer);
         EasyMock.expectLastCall().once();
 
-        Set<TerritoryType> expectedReturn = Set.of(TerritoryType.ALASKA, TerritoryType.BRAZIL);
-
         TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
-        EasyMock.expect(mockedParser.startTrade(cardsToBeTradedIn)).andReturn(4);
+        EasyMock.expect(mockedParser.startTrade(cardsToBeTradedIn)).andReturn(cardReturnBonus);
         EasyMock.expect(mockedParser.getMatchedTerritories(mockedPlayer, cardsToBeTradedIn))
-                .andReturn(expectedReturn);
+                .andReturn(territoriesToReturn);
 
         EasyMock.replay(mockedPlayer, mockedParser);
 
@@ -1272,8 +1270,18 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
 
-        assertEquals(expectedReturn, unitUnderTest.tradeInCards(cardsToBeTradedIn));
+        assertEquals(territoriesToReturn, unitUnderTest.tradeInCards(cardsToBeTradedIn));
 
         EasyMock.verify(mockedPlayer, mockedParser);
+    }
+
+    @Test
+    public void test37_tradeInCards_validInput_expectReturnSetOfSizeTwo() {
+        testTradeInCards(5, 4, Set.of(TerritoryType.ALASKA, TerritoryType.BRAZIL));
+    }
+
+    @Test
+    public void test38_tradeInCards_validInput_expectReturnSetOfSizeOne() {
+        testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
     }
 }
