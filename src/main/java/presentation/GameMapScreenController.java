@@ -58,11 +58,11 @@ public class GameMapScreenController {
 
     private void gamePhaseActions() {
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
-                    + " player: Select an unclaimed territory");
+            this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+                    new Object[]{this.gameEngine.getCurrentPlayer()}));
         } else {
-            this.instructionLabel.setText(this.gameEngine.getCurrentPlayer()
-                    + " player: Place an army on a claimed territory");
+            this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
+                    new Object[]{this.gameEngine.getCurrentPlayer()}));
             enablePlacement();
         }
     }
@@ -89,10 +89,10 @@ public class GameMapScreenController {
 
     private void setButtonBackgroundColor() {
         StringBuilder style = new StringBuilder("-fx-background-color:");
-        style.append(this.gameEngine.getCurrentPlayer());
+        style.append(this.gameEngine.getCurrentPlayer().getColorString());
         if (gameEngine.getCurrentPlayer() == PlayerColor.YELLOW) {
             style.append(
-                    "; -fx-border-color: black; -fx-text-fill: black; -fx-background-color: yellow");
+                    "; -fx-border-color: black; -fx-text-fill: black");
         }
         this.selectedButton.styleProperty().setValue(style.toString());
     }
@@ -107,8 +107,13 @@ public class GameMapScreenController {
     private void handleTerritoryButtonClick(ActionEvent event) {
         this.selectedButton = (Button) event.getSource();
         this.selectedTerritory = TerritoryType.valueOf(this.selectedButton.getAccessibleText());
+        handleGamePhaseAction();
+    }
+
+    private void handleGamePhaseAction() {
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.claimTerritoryDialog.setContentText("Would you like to claim " + this.selectedTerritory + "?");
+            this.claimTerritoryDialog.setContentText(SceneController.getString("gameMapScreen.claimAsk",
+                    new Object[]{this.selectedTerritory}));
             toggleDialog(this.claimTerritoryDialog);
         } else {
             handlePlaceArmies();

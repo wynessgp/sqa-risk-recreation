@@ -43,19 +43,20 @@ public class PlayerShuffleScreenController {
     }
 
     private void prepareCurrentPlayerRoll() {
-        currentPlayer++;
-        if (currentPlayer >= originalPlayerOrder.size()) {
+        if (++currentPlayer >= originalPlayerOrder.size()) {
             prepareStartGame();
         } else {
-            instructionLabel.setText(originalPlayerOrder.get(currentPlayer).toString()
-                    + " player: Click the die to roll");
+            String playerName = originalPlayerOrder.get(currentPlayer).toString();
+            instructionLabel.setText(SceneController.getString("playerShuffleScreen.current",
+                    new Object[]{playerName}));
         }
     }
 
     private void prepareStartGame() {
         startGameButton.setVisible(true);
-        instructionLabel.setText("Click start game to continue");
-        rollOrderLabel.setText("Player order: " + stringifyPlayerOrder());
+        instructionLabel.setText(SceneController.getString("playerShuffleScreen.startInstruction", null));
+        rollOrderLabel.setText(SceneController.getString("playerShuffleScreen.playerOrder",
+                new Object[]{stringifyPlayerOrder()}));
         dieImage.setCursor(Cursor.DEFAULT);
     }
 
@@ -72,8 +73,8 @@ public class PlayerShuffleScreenController {
     private void rollDie() {
         if (currentPlayer < originalPlayerOrder.size()) {
             dieImage.setImage(DieImage.get(dieRolls.get(currentPlayer)));
-            dieRollResult.setText(originalPlayerOrder.get(currentPlayer).toString() + ": You rolled a "
-                    + dieRolls.get(currentPlayer) + "!");
+            dieRollResult.setText(SceneController.getString("playerShuffleScreen.dieRoll",
+                    new Object[]{originalPlayerOrder.get(currentPlayer), dieRolls.get(currentPlayer)}));
             dieRollResult.setVisible(true);
             prepareCurrentPlayerRoll();
         }
