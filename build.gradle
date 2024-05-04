@@ -53,7 +53,7 @@ spotbugsMain {
 }
 
 javafx {
-    version = "17.0.10"
+    version = "21.0.2"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
@@ -117,6 +117,12 @@ pitest {
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
     junit5PluginVersion = '1.0.0'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 group 'edu.rose-hulman.csse'
