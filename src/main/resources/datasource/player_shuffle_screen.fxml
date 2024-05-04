@@ -23,12 +23,12 @@
          <Font name="Franklin Gothic Medium" size="24.0" />
       </font>
    </Label>
-   <Button fx:id="startGameButton" layoutX="413.0" layoutY="525.0" mnemonicParsing="false" onAction="#startGame" styleClass="defaultButton" text="Start game" textAlignment="CENTER">
+   <Button fx:id="startGameButton" alignment="CENTER" layoutX="413.0" layoutY="525.0" mnemonicParsing="false" onAction="#startGame" prefWidth="153.6" styleClass="defaultButton" text="%playerShuffleScreen.startGame" textAlignment="CENTER">
       <font>
          <Font name="Franklin Gothic Medium" size="25.0" />
       </font>
    </Button>
-   <Label fx:id="rollOrderLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="67.0" prefHeight="28.0" prefWidth="542.0" styleClass="text" text="The higest roller starts first, and the game continues by decreasing roll order" textAlignment="CENTER">
+   <Label fx:id="rollOrderLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="67.0" prefHeight="28.0" prefWidth="542.0" styleClass="text" text="%playerShuffleScreen.instructions" textAlignment="CENTER">
       <font>
          <Font name="Franklin Gothic Medium" size="16.0" />
       </font>

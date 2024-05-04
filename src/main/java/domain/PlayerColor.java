@@ -1,5 +1,7 @@
 package domain;
 
+import datasource.StringsBundleLoader;
+
 public enum PlayerColor {
     SETUP,
     BLACK,
@@ -10,8 +12,11 @@ public enum PlayerColor {
     PURPLE;
 
     public String toString() {
-        String name = this.name();
-        return name.charAt(0) + name.substring(1).toLowerCase();
+        return StringsBundleLoader.getBundle().getString("global." + getColorString());
+    }
+
+    public String getColorString() {
+        return this.name().toLowerCase();
     }
 
 }
