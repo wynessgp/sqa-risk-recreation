@@ -1251,10 +1251,14 @@ public class WorldDominationGameEngineTest {
                 .addMockedMethod("ownsAllGivenCards")
                 .addMockedMethod("setNumArmiesToPlace")
                 .addMockedMethod("getNumArmiesToPlace")
+                .addMockedMethod("removeAllGivenCards")
                 .createMock();
         EasyMock.expect(mockedPlayer.ownsAllGivenCards(cardsToBeTradedIn)).andReturn(true);
         EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(numArmiesToSetForPlayer - cardReturnBonus);
         mockedPlayer.setNumArmiesToPlace(numArmiesToSetForPlayer);
+        EasyMock.expectLastCall().once();
+
+        mockedPlayer.removeAllGivenCards(cardsToBeTradedIn);
         EasyMock.expectLastCall().once();
 
         TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);

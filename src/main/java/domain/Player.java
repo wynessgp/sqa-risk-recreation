@@ -51,4 +51,8 @@ public class Player {
     public boolean ownsAllGivenCards(Set<Card> cardsForPlayerToOwn) {
         return false;
     }
+
+    public void removeAllGivenCards(Set<Card> cardsToBeTradedIn) {
+        
+    }
 }

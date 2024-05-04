@@ -412,15 +412,21 @@ public final class WorldDominationGameEngine {
         return addArmiesToPlayerStockpileIfValidSet(selectedCardsToTradeIn, currentPlayerObject);
     }
 
-    private Set<TerritoryType> addArmiesToPlayerStockpileIfValidSet(
-            Set<Card> selectedCardsToTradeIn, Player playerObject) {
+    private Set<TerritoryType> addArmiesToPlayerStockpileIfValidSet(Set<Card> selectedCards, Player playerObject) {
         try {
-            int numArmiesToReceive = tradeInParser.startTrade(selectedCardsToTradeIn);
-            modifyNumArmiesCurrentPlayerHasToPlace(-1 * numArmiesToReceive);
-            return tradeInParser.getMatchedTerritories(playerObject, selectedCardsToTradeIn);
+            int numArmiesToReceive = tradeInParser.startTrade(selectedCards);
+            Set<TerritoryType> methodResult = tradeInParser.getMatchedTerritories(playerObject, selectedCards);
+            modifyPlayerObjectToAccountForTradeIn(playerObject, numArmiesToReceive, selectedCards);
+            return methodResult;
         } catch (Exception tradeError) {
             throw new IllegalArgumentException(String.format("Could not trade in cards: %s", tradeError.getMessage()));
         }
+    }
+
+    private void modifyPlayerObjectToAccountForTradeIn(
+            Player playerObject, int numArmiesToReceive, Set<Card> selectedCards) {
+        modifyNumArmiesCurrentPlayerHasToPlace(-1 * numArmiesToReceive);
+        playerObject.removeAllGivenCards(selectedCards);
     }
 
     private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {
