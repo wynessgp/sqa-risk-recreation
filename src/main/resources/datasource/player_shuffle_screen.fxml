@@ -23,7 +23,7 @@
          <Font name="Franklin Gothic Medium" size="24.0" />
       </font>
    </Label>
-   <Button fx:id="startGameButton" layoutX="413.0" layoutY="525.0" mnemonicParsing="false" onAction="#startGame" prefWidth="153.6" styleClass="defaultButton" text="%playerShuffleScreen.startGame" textAlignment="CENTER">
+   <Button fx:id="startGameButton" alignment="CENTER" layoutX="413.0" layoutY="525.0" mnemonicParsing="false" onAction="#startGame" prefWidth="153.6" styleClass="defaultButton" text="%playerShuffleScreen.startGame" textAlignment="CENTER">
       <font>
          <Font name="Franklin Gothic Medium" size="25.0" />
       </font>

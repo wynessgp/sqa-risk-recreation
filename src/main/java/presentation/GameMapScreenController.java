@@ -89,10 +89,10 @@ public class GameMapScreenController {
 
     private void setButtonBackgroundColor() {
         StringBuilder style = new StringBuilder("-fx-background-color:");
-        style.append(this.gameEngine.getCurrentPlayer());
+        style.append(this.gameEngine.getCurrentPlayer().getColorString());
         if (gameEngine.getCurrentPlayer() == PlayerColor.YELLOW) {
             style.append(
-                    "; -fx-border-color: black; -fx-text-fill: black; -fx-background-color: yellow");
+                    "; -fx-border-color: black; -fx-text-fill: black");
         }
         this.selectedButton.styleProperty().setValue(style.toString());
     }

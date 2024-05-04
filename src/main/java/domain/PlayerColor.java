@@ -12,7 +12,11 @@ public enum PlayerColor {
     PURPLE;
 
     public String toString() {
-        return StringsBundleLoader.getBundle().getString("global." + this.name().toLowerCase());
+        return StringsBundleLoader.getBundle().getString("global." + getColorString());
+    }
+
+    public String getColorString() {
+        return this.name().toLowerCase();
     }
 
 }
