@@ -107,6 +107,10 @@ public class GameMapScreenController {
     private void handleTerritoryButtonClick(ActionEvent event) {
         this.selectedButton = (Button) event.getSource();
         this.selectedTerritory = TerritoryType.valueOf(this.selectedButton.getAccessibleText());
+        handleGamePhaseAction();
+    }
+
+    private void handleGamePhaseAction() {
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
             this.claimTerritoryDialog.setContentText(SceneController.getString("gameMapScreen.claimAsk",
                     new Object[]{this.selectedTerritory}));
