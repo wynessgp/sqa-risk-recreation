@@ -47,4 +47,8 @@ public class Player {
     public int getNumCardsHeld() {
         return 0;
     }
+
+    public boolean ownsAllGivenCards(Set<Card> cardsForPlayerToOwn) {
+        return false;
+    }
 }

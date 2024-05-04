@@ -405,10 +405,18 @@ public final class WorldDominationGameEngine {
     }
 
     public void tradeInCards(Set<Card> selectedCardsToTradeIn) {
+        Player currentPlayerObject = playersMap.get(currentPlayer);
+        checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
         try {
             tradeInParser.startTrade(selectedCardsToTradeIn);
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Could not trade in cards: %s", e.getMessage()));
+        }
+    }
+
+    private void checkIfPlayerOwnsCards(Set<Card> givenCardSet, Player currentPlayerObject) {
+        if (!currentPlayerObject.ownsAllGivenCards(givenCardSet)) {
+            throw new IllegalArgumentException("Player doesn't own all the selected cards!");
         }
     }
 }

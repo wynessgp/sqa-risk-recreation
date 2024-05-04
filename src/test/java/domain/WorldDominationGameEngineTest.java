@@ -1151,4 +1151,54 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedParser);
     }
+
+    private static Stream<Arguments> generateValidTradeInSets() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        // generate the trade in sets, let them all be valid too
+        Set<Set<Card>> tradeInSets = Set.of(
+                Set.of(new WildCard(), new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.CAVALRY),
+                        new TerritoryCard(TerritoryType.ARGENTINA, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.NORTHWEST_TERRITORY, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.INDONESIA, PieceType.ARTILLERY),
+                        new WildCard(),
+                        new TerritoryCard(TerritoryType.CONGO, PieceType.CAVALRY)),
+                Set.of(new TerritoryCard(TerritoryType.GREAT_BRITAIN, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.CAVALRY),
+                        new TerritoryCard(TerritoryType.ALBERTA, PieceType.INFANTRY))
+        );
+
+        for (Set<Card> tradeInSet : tradeInSets) {
+            toStream.add(Arguments.of(tradeInSet));
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidTradeInSets")
+    public void test35_tradeInCards_playerDoesNotOwnAllCards_expectException(Set<Card> attemptedTradeInCards) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("ownsAllGivenCards")
+                .createMock();
+        EasyMock.expect(mockedPlayer.ownsAllGivenCards(attemptedTradeInCards)).andReturn(false);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.tradeInCards(attemptedTradeInCards));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player doesn't own all the selected cards!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
+    }
+
 }
