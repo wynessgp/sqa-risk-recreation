@@ -410,4 +410,25 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test14_tradeInCardsPlacementPhase_playerOwnsCards_invalidTradeInSet_expectException() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        Set<Card> attemptToTradeIn = Set.of(new TerritoryCard(TerritoryType.PERU, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.MADAGASCAR, PieceType.ARTILLERY));
+
+        unitUnderTest.setCardsForPlayer(players.get(0), attemptToTradeIn);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.tradeInCards(attemptToTradeIn));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Could not trade in cards: Invalid trade in set";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
