@@ -140,19 +140,26 @@ public class PlayerTest {
         WildCard wildCardOne = new WildCard();
         WildCard wildCardTwo = new WildCard();
 
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.CAVALRY);
+
         Set<Card> allCards = new HashSet<>();
         allCards.add(wildCardOne);
         int pieceTypeCount = 0;
         for (TerritoryType territoryType : TerritoryType.values()) {
-            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
-            allCards.add(new TerritoryCard(territoryType, currentPiece));
-            pieceTypeCount++;
+            if (territoryType == TerritoryType.CONGO) {
+                allCards.add(congoCard);
+            } else if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
         }
         allCards.add(wildCardTwo);
 
         Set<Arguments> toStream = new HashSet<>();
-        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
-        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.CAVALRY);
 
         Set<Card> playerSet1 = Set.of();
         Set<Card> playerSet2 = Set.of(wildCardOne);
