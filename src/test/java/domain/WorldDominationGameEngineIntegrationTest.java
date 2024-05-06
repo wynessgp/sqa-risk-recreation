@@ -431,4 +431,51 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generatePlayerHeldCardsAndSetsToTradeIn() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCard = new WildCard();
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+        TerritoryCard japanCard = new TerritoryCard(TerritoryType.JAPAN, PieceType.ARTILLERY);
+        TerritoryCard ukraineCard = new TerritoryCard(TerritoryType.UKRAINE, PieceType.CAVALRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        TerritoryCard greenlandCard = new TerritoryCard(TerritoryType.GREENLAND, PieceType.INFANTRY);
+        TerritoryCard newGuineaCard = new TerritoryCard(TerritoryType.NEW_GUINEA, PieceType.CAVALRY);
+
+        // make some sets with differing sizes to ensure we correctly remove 3 cards
+        toStream.add(Arguments.of(Set.of(wildCard, brazilCard, greenlandCard),
+                Set.of(wildCard, brazilCard, greenlandCard)));
+        toStream.add(Arguments.of(Set.of(brazilCard, greenlandCard, newGuineaCard, ukraineCard, congoCard),
+                Set.of(greenlandCard, newGuineaCard, brazilCard)));
+        toStream.add(Arguments.of(Set.of(wildCard, brazilCard, ukraineCard, newGuineaCard),
+                Set.of(brazilCard, newGuineaCard, wildCard)));
+        toStream.add(Arguments.of(
+                Set.of(newGuineaCard, greenlandCard, brazilCard, ukraineCard, japanCard, congoCard, wildCard),
+                Set.of(greenlandCard, ukraineCard, japanCard)));
+        toStream.add(Arguments.of(Set.of(greenlandCard, brazilCard, ukraineCard, japanCard, congoCard),
+                Set.of(brazilCard, ukraineCard, greenlandCard)));
+        toStream.add(Arguments.of(Set.of(wildCard, ukraineCard, brazilCard, japanCard, congoCard, newGuineaCard),
+                Set.of(newGuineaCard, wildCard, brazilCard)));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerHeldCardsAndSetsToTradeIn")
+    public void test15_tradeInCardsPlacementPhase_playerOwnsCards_validTradeIn_ensureCardsGetRemoved(
+            Set<Card> playerCards, Set<Card> toTradeIn) {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        unitUnderTest.tradeInCards(toTradeIn);
+
+        // check that the player has 3 fewer cards.
+        int expectedNumCards = playerCards.size() - 3;
+        assertEquals(expectedNumCards, unitUnderTest.getNumCardsForPlayer(players.get(0)));
+    }
+
 }

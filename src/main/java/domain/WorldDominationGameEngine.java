@@ -449,4 +449,8 @@ public final class WorldDominationGameEngine {
     void setCardsForPlayer(PlayerColor playerColor, Set<Card> cardsPlayerOwns) {
         playersMap.get(playerColor).setOwnedCards(cardsPlayerOwns);
     }
+
+    int getNumCardsForPlayer(PlayerColor playerColor) {
+        return playersMap.get(playerColor).getNumCardsHeld();
+    }
 }

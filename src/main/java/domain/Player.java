@@ -53,9 +53,8 @@ public class Player {
         playerColor = PlayerColor.SETUP;
     }
 
-
     public int getNumCardsHeld() {
-        return 0;
+        return this.ownedCards.size();
     }
 
     void setOwnedCards(Set<Card> cardsPlayerOwns) {
