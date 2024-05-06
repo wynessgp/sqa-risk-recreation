@@ -296,16 +296,50 @@ package domain {
 }
 
 package datasource {
-    +interface StandardInput {
-        +read(): Object
+    +interface FileLoader {
+        +open(fileName: String): boolean
+        +getFileUrl(): URL
     }
 
-    +class PictureLoader {
-        +PictureLoader(filePath: String)
-        +read(): Object
+    +class ImageFileLoader {
+        -{static} {final} IMAGE_DIRECTORY: String
+
+        +open(fileName: String): boolean
+        -checkFileExistence(fileName: String, file: URL): void
+        +getFileUrl(): URL
     }
 
-    PictureLoader .u.|> StandardInput
+    +class SceneFileLoader {
+        -sceneFile: URL
+
+        +open(fileName: String): boolean
+        -checkFileExistence(file: URL): void
+        +getFileUrl(): URL
+    }
+
+    +class StyleSheetLoader {
+        -cssFile: URL
+
+        +open(fileName: String): boolean
+        -createFilePointer(fileName: String): URL
+        -checkFileExistence(file: URL): void
+        +getFileUrl(): URL
+    }
+
+    ImageFileLoader ..|> FileLoader
+    SceneFileLoader ..|> FileLoader
+    StyleSheetLoader ..|> FileLoader
+
+    +class StringsBundleLoader {
+        -{static} {final} BUNDLE_NAME: String
+        -{static} {final} INSTANCE: StringsBundleLoader
+        -localeName: String
+
+        -openBundle(locale: String): boolean
+        -getResourceBundle(): ResourceBundle
+        +{static} open(locale: String): boolean
+        +{static} getBundle(): ResourceBundle
+    }
 }
 
 @enduml
