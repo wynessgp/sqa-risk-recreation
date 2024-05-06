@@ -3,12 +3,12 @@
 ## BVA Step 1
 Input: TerritoryType to check against the ones claimed by the player and the underlying set of territories
 
-Output: yes or no answer if the TerritoryType exists in the set
+Output: yes or no answer if the TerritoryType exists in the set (of territories the player owns)
 
 ## BVA Step 2
 Input:
 - territory: Cases
-- underlying set: Collection
+- Player's owned territories: Collection
 
 Output: Boolean
 
@@ -20,7 +20,7 @@ Input:
     - ...
     - WESTERN_AUSTRALIA
     - Any other option is not possible
-- underlying set: Collection
+- Player's owned territories: Collection
     - Empty collection
     - Collection with one TerritoryType
     - Collection with two TerritoryTypes
@@ -74,7 +74,7 @@ Output: A yes/no answer whether the player does own all the cards in question
 ## BVA Step 2
 Input:
 - givenCards: Collection
-- Underlying set: Collection
+- Cards the player owns: Collection
 
 Output: Boolean
 
@@ -86,7 +86,7 @@ Input:
   - Collection with \> 1 element
   - Collection with 44 elements (number of cards in the deck)
   - Duplicates are not possible
-- Underlying set:
+- Cards the player owns (Collection):
   - An empty collection (returns false)
   - Collection with 1 element
   - Collection with \> 1 element
@@ -100,73 +100,73 @@ Output: Boolean
 ### Test 1:
 Input: 
 - givenCards = []
-- Underlying set = []
+- Cards the player owns = []
 
 Output: 1 (true)
 ### Test 2:
 Input:
 - givenCards = [ Wild Card ]
-- Underlying set = []
+- Cards the player owns = []
 
 Output: 0 (false)
 ### Test 3:
 Input:
 - givenCards = [ TerritoryCard = {ALASKA, INFANTRY} ]
-- Underlying set = []
+- Cards the player owns = []
 
 Output: 0 (false)
 ### Test 4:
 Input:
 - givenCards = [ Wild Card ]
-- Underlying set = [ Wild Card ]
+- Cards the player owns = [ Wild Card ]
 
 Output: 1 (true)
 ### Test 5:
 Input:
 - givenCards = [Wild Card, TerritoryCard = {ALASKA, INFANTRY}, TerritoryCard = {BRAZIL, ARTILLERY}]
-- Underlying set = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
+- Cards the player owns = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
 
 Output: 0 (false)
 ### Test 6:
 Input:
 - givenCards = [TerritoryCard = {ALASKA, CAVALRY}, TerritoryCard = {CONGO, INFANTRY}]
-- Underlying set = [Wild Card, TerritoryCard = {CONGO, INFANTRY}, TerritoryCard = {ALASKA, CAVALRY}]
+- Cards the player owns = [Wild Card, TerritoryCard = {CONGO, INFANTRY}, TerritoryCard = {ALASKA, CAVALRY}]
 
 Output: 1 (true)
 ### Test 7:
 Input:
 - givenCards = [ all cards ]
-- Underlying set = []
+- Cards the player owns = []
 
 Output: 0 (false)
 ### Test 8:
 - givenCards = [ all cards ]
-- Underlying set = [ Wild Card ]
+- Cards the player owns = [ Wild Card ]
 
 Output: 0 (false)
 ### Test 9:
 - given cards = [ all cards ]
-- Underlying set = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
+- Cards the player owns = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
 
 Output: 0 (false)
 ### Test 10:
 - givenCards = [ all cards ]
-- Underlying set = [ all cards ]
+- Cards the player owns = [ all cards ]
 
 Output: 1 (true)
 ### Test 11:
 - given cards = []
-- Underlying set = [ all cards ]
+- Cards the player owns = [ all cards ]
 
 Output: 1 (true)
 ### Test 12:
 - given cards = [Wild Card]
-- Underlying set = [ all cards ]
+- Cards the player owns = [ all cards ]
 
 Output: 1 (true)
 ### Test 13:
 - given cards = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
-- Underlying set = [ all cards ]
+- Cards the player owns = [ all cards ]
 
 Output: 1 (true)
 
@@ -182,7 +182,7 @@ Output: The underlying state of the Player's card collection (modifies a field)
 ## BVA Step 2
 Input:
 - cardsToBeRemoved: Collection
-- Underlying card collection: Collection
+- Cards the player owns: Collection
 
 Output: Collection (but not from function output)
 
@@ -193,7 +193,7 @@ Input:
   - Collection with \> 1 element
   - Collection of max size (44 possible cards)
   - Cannot have duplicates with a set
-- Underlying card collection (Collection)
+- Cards the player owns (Collection)
   - An empty collection (cannot remove anything, so it'll stay empty)
   - Collection with \> 1 element (remove matching cards)
   - Collection of max size (all 44 cards)
@@ -206,64 +206,64 @@ Output: (Collection)
 ### Test 1
 Input:
 - cardsToBeRemoved = {}
-- Underlying card collection = {}
+- Cards the player owns = {}
 
 Output:
-Underlying card collection = {}
+Cards the player owns = {}
 ### Test 2
 Input:
 - cardsToBeRemoved = {}
-- Underlying card collection = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+- Cards the player owns = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
 
 Output:
-Underlying card collection = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+Cards the player owns = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
 ### Test 3
 Input:
 - cardsToBeRemoved = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
-- Underlying card collection = {}
+- Cards the player owns = {}
 
 Output:
-Underlying card collection = {}
+Cards the player owns = {}
 ### Test 4
 Input:
 - cardsToBeRemoved = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY]}
-- Underlying card collection = {TerritoryCard = [BRAZIL, ARTILLERY]}
+- Cards the player owns = {TerritoryCard = [BRAZIL, ARTILLERY]}
 
-Output: 
-Underlying card collection = {}
+Output:
+Cards the player owns = {}
 ### Test 5
 - cardsToBeRemoved = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY]}
-- Underlying card collection = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY]}
+- Cards the player owns = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY]}
 
 Output:
 Underlying card collection = {[CONGO, INFANTRY]}
 ### Test 6
 - cardsToBeRemoved = { all cards }
-- Underlying card collection = {}
+- Cards the player owns = {}
 
 Output:
-Underlying card collection = {}
+Cards the player owns = {}
 ### Test 7
 - cardsToBeRemoved = { all cards }
-- Underlying card collection = { wild card }
+- Cards the player owns = { wild card }
 
 Output:
 Underlying card collection = {}
 ### Test 8
 - cardsToBeRemoved = { all cards }
-- Underlying card collection = { Wild Card, [BRAZIL, ARTILLERY] }
+- Cards the player owns = { Wild Card, [BRAZIL, ARTILLERY] }
 
 Output:
-Underlying card collection = {}
+Cards the player owns = {}
 ### Test 9
 - cardsToBeRemoved = { all cards }
-- Underlying card collection = { all cards }
+- Cards the player owns = { all cards }
 
 Output:
-Underlying card collection = {}
+Cards the player owns = {}
 ### Test 10:
 - cardsToBeRemoved = { all cards minus a wild card }
-- Underlying card collection = { all cards }
+- Cards the player owns = { all cards }
 
 Output:
-Underlying card collection = { wild card }
+Cards the player owns = { wild card }
