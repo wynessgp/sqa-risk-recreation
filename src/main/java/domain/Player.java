@@ -33,6 +33,10 @@ public class Player {
         this.territories.add(relevantTerritory);
     }
 
+    public boolean ownsAllGivenCards(Set<Card> givenCards) {
+        return ownedCards.containsAll(givenCards);
+    }
+
     void setTerritories(Set<TerritoryType> territories) {
         this.territories = territories;
     }
@@ -45,11 +49,7 @@ public class Player {
         playerColor = PlayerColor.SETUP;
     }
 
-    public void setOwnedCards(Set<Card> cardsPlayerOwns) {
+    void setOwnedCards(Set<Card> cardsPlayerOwns) {
         this.ownedCards = new HashSet<>(cardsPlayerOwns);
-    }
-
-    public boolean ownsAllGivenCards(Set<Card> givenCards) {
-        return ownedCards.containsAll(givenCards);
     }
 }
