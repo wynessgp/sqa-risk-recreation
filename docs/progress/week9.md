@@ -1,5 +1,3 @@
-# Instruction: please feel free to use this as a template for your weekly progress report. You may change the formatting or the content for it to be more helpful. But please make sure to include all the bare minimum content.
-
 # Part 1. Team Planning of the Week
 **Planning Date**: 5/6/2024
 
