@@ -237,3 +237,33 @@ Underlying card collection = {}
 
 Output:
 Underlying card collection = {[CONGO, INFANTRY]}
+### Test 6
+- cardsToBeRemoved = { all cards }
+- Underlying card collection = {}
+
+Output:
+Underlying card collection = {}
+### Test 7
+- cardsToBeRemoved = { all cards }
+- Underlying card collection = { wild card }
+
+Output:
+Underlying card collection = {}
+### Test 8
+- cardsToBeRemoved = { all cards }
+- Underlying card collection = { Wild Card, [BRAZIL, ARTILLERY] }
+
+Output:
+Underlying card collection = {}
+### Test 9
+- cardsToBeRemoved = { all cards }
+- Underlying card collection = { all cards }
+
+Output:
+Underlying card collection = {}
+### Test 10:
+- cardsToBeRemoved = { all cards minus a wild card }
+- Underlying card collection = { all cards }
+
+Output:
+Underlying card collection = { wild card }
