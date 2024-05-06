@@ -40,14 +40,19 @@ public final class WorldDominationGameEngine {
     private List<Integer> dieRolls;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
-        territoryGraph = initializeGraph();
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
-        this.parser = parser;
+        handleOtherDependentObjectCreation(parser);
         initializePlayersList(playerOrder);
         shufflePlayers();
         currentPlayer = playersList.get(0);
         assignSetupArmiesToPlayers();
+    }
+
+    private void handleOtherDependentObjectCreation(DieRollParser parser) {
+        this.territoryGraph = initializeGraph();
+        this.parser = parser;
+        this.tradeInParser = new TradeInParser();
     }
 
     public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
@@ -439,5 +444,9 @@ public final class WorldDominationGameEngine {
         if (!currentPlayerObject.ownsAllGivenCards(givenCardSet)) {
             throw new IllegalArgumentException("Player doesn't own all the selected cards!");
         }
+    }
+
+    void setCardsForPlayer(PlayerColor playerColor, Set<Card> cardsPlayerOwns) {
+        playersMap.get(playerColor).setOwnedCards(cardsPlayerOwns);
     }
 }

@@ -369,4 +369,24 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.verify(parser);
     }
 
+    @Test
+    public void test12_tradeInCardsPlacementPhase_invalidTradeInSize_expectException() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        Set<Card> attemptToTradeIn = Set.of(new WildCard(),
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY));
+
+        unitUnderTest.setCardsForPlayer(players.get(0), attemptToTradeIn);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.tradeInCards(attemptToTradeIn));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Could not trade in cards: Must trade in exactly three cards";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
