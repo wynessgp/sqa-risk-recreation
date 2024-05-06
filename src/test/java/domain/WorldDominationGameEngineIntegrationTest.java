@@ -577,7 +577,4 @@ public class WorldDominationGameEngineIntegrationTest {
         int expectedNumArmies = 33;
         assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.BLUE));
     }
-
-
-
 }
