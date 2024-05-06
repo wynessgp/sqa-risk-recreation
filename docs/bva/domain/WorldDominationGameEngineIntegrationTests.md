@@ -218,6 +218,8 @@ Here are some things to consider for integration tests (since we will be using v
 - After I have placed all of my armies in the PLACEMENT phase, I should be able to start attacking other players.
   - Ensure that we don't transition phases too early.
   - Also ensure that we don't change who the currently going player is.
+- After placing an army in the SCRAMBLE/SETUP phases, players should lose the ability to place that army again.
+  - Namely, decrement the number of armies they have left to place.
 
 To properly model these behaviors, we'll be using a test "outline" (not unlike that of using Cucumber).
 
@@ -270,9 +272,18 @@ When each player claims a territory until no unclaimed territories remain
 
 Then the game should advance into the SETUP phase (assertion)
 
+### Test 5:
+Given a valid list of players for the current game
+
+And the game is currently in the SCRAMBLE phase
+
+When the current player claims a valid territory
+
+Then the current player should have one less army left to place
+
 ### SETUP Phase Integration Tests
 
-### Test 5:
+### Test 6:
 Given that the players in the current game are [RED, PURPLE, YELLOW]
 
 And that the RED player owns ALASKA
@@ -284,7 +295,7 @@ When the PURPLE player tries to place an army on ALASKA
 Then an IllegalArgumentException should be thrown
 - Should have message: "Cannot place armies on a territory you do not own"
 
-### Test 6:
+### Test 7:
 Given a valid list of players for the current game
 
 And the game is in the SETUP phase
@@ -295,7 +306,7 @@ The game should now say that it is the next player's turn (assertion)
 - We want to make sure that this can wrap around; so make each player claim a territory once.
 - We should go from the end of the collection of player colors back to index 0 (assertion)
 
-### Test 7:
+### Test 8:
 Given a valid list of players for the current game
 
 And the game is currently in the SETUP phase (note - we'll manually transition it into SETUP for a fair test)
@@ -304,9 +315,18 @@ When each player expends their remaining placeable armies (assertion - make sure
 
 Then the game should transition into the Placement phase (assertion)
 
+### Test 9:
+Given a valid list of players for the current game
+
+And the game is currently in the SETUP phase
+
+When the current player places another army on a valid territory (i.e. their owned territory)
+
+Then the current player should have one less army left to place
+
 ### PLACEMENT Phase Integration Tests
 
-### Test 8:
+### Test 10:
 Given a valid list of players for the current game
 
 And that the SETUP phase is about to end
@@ -319,7 +339,7 @@ And the FIRST player to go should have their appropriate amount of armies calcul
 
 And they should be able to place these newly earned armies.
 
-### Test 9:
+### Test 11:
 Given a valid list of players for the current game
 
 And the current player has 1 army left to place
