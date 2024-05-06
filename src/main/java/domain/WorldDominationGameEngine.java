@@ -142,7 +142,7 @@ public final class WorldDominationGameEngine {
         checkNumArmiesToPlaceIsValid(numArmiesToPlace);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         updateTerritoryObjectWithValidSetupArguments(relevantTerritory, numArmiesToPlace);
-        numUnclaimedTerritories--;
+        modifyNumArmiesCurrentPlayerHasToPlace(1);
         addTerritoryToCurrentPlayerCollection(relevantTerritory);
         updateCurrentPlayer();
         checkScramblePhaseEndCondition();
@@ -173,6 +173,7 @@ public final class WorldDominationGameEngine {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         territoryObject.setNumArmiesPresent(numArmiesToPlace);
         territoryObject.setPlayerInControl(currentPlayer);
+        numUnclaimedTerritories--;
     }
 
     private void addTerritoryToCurrentPlayerCollection(TerritoryType relevantTerritory) {
@@ -421,17 +422,18 @@ public final class WorldDominationGameEngine {
         try {
             int numArmiesToReceive = tradeInParser.startTrade(selectedCards);
             Set<TerritoryType> methodResult = tradeInParser.getMatchedTerritories(playerObject, selectedCards);
-            modifyPlayerObjectToAccountForTradeIn(playerObject, numArmiesToReceive, selectedCards);
+            modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject, numArmiesToReceive, selectedCards);
             return methodResult;
         } catch (Exception tradeError) {
             throw new IllegalArgumentException(String.format("Could not trade in cards: %s", tradeError.getMessage()));
         }
     }
 
-    private void modifyPlayerObjectToAccountForTradeIn(
+    private void modifyPlayerObjectAndGamePhaseToAccountForTradeIn(
             Player playerObject, int numArmiesToReceive, Set<Card> selectedCards) {
         modifyNumArmiesCurrentPlayerHasToPlace(-1 * numArmiesToReceive);
         playerObject.removeAllGivenCards(selectedCards);
+        currentGamePhase = GamePhase.PLACEMENT;
     }
 
     private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {

@@ -433,7 +433,7 @@ public class WorldDominationGameEngineTest {
                 .withArgs(currentlyGoingPlayer)
                 .addMockedMethod("getNumArmiesToPlace")
                 .createMock();
-        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(10);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(10).anyTimes();
 
         EasyMock.replay(mockedPlayer);
 
