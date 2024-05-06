@@ -329,3 +329,73 @@ And the game is in the PLACEMENT phase
 When the player places their last army in the PLACEMENT phase
 
 Then the game should advance into the attack phase
+
+# method: `tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>`
+
+## BVA Step 1
+Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
+
+Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
+or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
+
+Additionally, we care about:
+- The GamePhase being forced back to the placement phase
+  - We want to emphasize that these armies MUST be placed before the player can continue
+- The player receiving the bonus armies equivalent to the set's trade in value
+  - So if I trade in the first set, I should get 4 more armies.
+
+## BVA Step 2
+Input:
+- selectedCardsToTradeIn: Collection
+- currentPlayer: Cases
+- Player object: Pointer
+- Underlying GamePhase: Cases
+  - Should either be PLACEMENT/ATTACK.
+
+Output:
+- Method output: Collection
+- Underlying player object: Pointer
+- GamePhase: Cases
+  - Only care about setting it back to PLACEMENT
+
+## BVA Step 3
+Input:
+- selectedCardsToTradeIn (Collection):
+  - Any set to be deemed invalid by the TradeInParser (error case)
+  - A set of cards that is valid, but is not owned by the current player (error case)
+  - A valid set of trade in cards (see TradeInParser's rules about this)
+- currentPlayer (Cases):
+  - Should always line up directly with the GameEngine's tracking
+  - If it doesn't, this is an error.
+  - Valid colors are anything BESIDES `SETUP`
+- Player object (Pointer):
+  - Care about what cards they own at the time this method is called
+    - If they don't own the cards, throw an error.
+  - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
+- Underlying GamePhase (Cases):
+  - PLACEMENT
+  - ATTACK
+  - Any other phase (error case)
+
+Output:
+- Method output (Collection):
+  - An empty collection (given no territories are matched)
+  - A collection containing 1 element
+  - A collection containing 2 elements
+  - A collection containing 3 elements
+  - Any size outside [0, 3] (can't be set, per calling TradeInParser's methods)
+- Underlying player object (Pointer):
+  - numArmiesToPlace should be updated according to the current set's trade in bonus
+  - Remove the relevant cards from their underlying collection
+- GamePhase:
+  - Set it back to PLACEMENT
+  - Should never set it to anything else
+
+## BVA Step 4
+Some things to consider for integration tests:
+- When a player goes to trade in cards, they should not be able to trade in the same set again
+  - Namely, we do want to ensure we actually take away their cards.
+- When a player trades in cards, they should be stopped from doing whatever they were doing previously and be forced to put down armies
+  - So if they were in the attack phase, move them back into the PLACEMENT phase.
+- If I am told that I have too many cards to place my armies, this should fix it for me and give me my bonus armies.
+  - Check that we give players their associated armies and that they can call placement again after trading in
