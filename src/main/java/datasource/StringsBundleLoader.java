@@ -20,7 +20,7 @@ public class StringsBundleLoader {
     }
 
     private ResourceBundle getResourceBundle() {
-        return localeName.isEmpty() ? null : ResourceBundle.getBundle(BUNDLE_NAME, new Locale(localeName));
+        return ResourceBundle.getBundle(BUNDLE_NAME, new Locale(localeName));
     }
 
     public static boolean open(String locale) {
