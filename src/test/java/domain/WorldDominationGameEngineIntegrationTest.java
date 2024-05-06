@@ -478,4 +478,70 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedNumCards, unitUnderTest.getNumCardsForPlayer(players.get(0)));
     }
 
+    @Test
+    public void test16_tradeInCardsAttackPhase_validTradeIn_ensureGameIsPutInPlacementPhase() {
+        List<PlayerColor> players = List.of(PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.BLUE);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        // claim a territory just to ensure we can still place after being booted back to placement phase.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
+
+        Set<Card> playerCards = Set.of(new WildCard(), new WildCard(),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
+
+        unitUnderTest.tradeInCards(playerCards);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        // should gain 4 armies for the first trade-in, and with 3 users, you start with 35 armies.
+        // since we placed one, they should have 38 armies.
+        int expectedNumArmies = 38;
+        assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.GREEN));
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 2));
+    }
+
+    @Test
+    public void test17_tradeInCardsPlacementPhase_playerHasTooManyCards_forceTradeIn_ensurePlayerCanPlaceAfterTrade() {
+        List<PlayerColor> players = List.of(PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.BLUE);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        // claim a territory just to ensure we can still place after being booted back to placement phase.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
+
+        WildCard wildCardOne = new WildCard();
+        TerritoryCard argentinaCard = new TerritoryCard(TerritoryType.ARGENTINA, PieceType.CAVALRY);
+        TerritoryCard uralCard = new TerritoryCard(TerritoryType.URAL, PieceType.ARTILLERY);
+        Set<Card> playerCards = Set.of(wildCardOne, new WildCard(),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY), argentinaCard, uralCard);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player cannot place armies while they are holding more than 5 cards!";
+        assertEquals(expectedMessage, actualMessage);
+
+        // now go to trade in cards
+        Set<Card> toTradeIn = Set.of(wildCardOne, argentinaCard, uralCard);
+        unitUnderTest.tradeInCards(toTradeIn);
+
+        // they had 34 armies, trade in should bring them to 38.
+        int expectedNumArmies = 38;
+        assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.GREEN));
+
+        // make sure they can place armies in the territory now.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 2));
+        assertEquals(expectedNumArmies - 2, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.GREEN));
+        // should be three armies in the territory now.
+        assertEquals(3, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
+    }
+
 }
