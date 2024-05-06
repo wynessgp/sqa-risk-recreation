@@ -389,4 +389,25 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test13_tradeInCardsPlacementPhase_playerDoesNotOwnCards_expectException() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        Set<Card> attemptToTradeIn = Set.of(new WildCard(),
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.MADAGASCAR, PieceType.ARTILLERY));
+
+        unitUnderTest.setCardsForPlayer(players.get(0), Set.of());
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.tradeInCards(attemptToTradeIn));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player doesn't own all the selected cards!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
