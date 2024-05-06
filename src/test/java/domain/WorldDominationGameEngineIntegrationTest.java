@@ -539,7 +539,9 @@ public class WorldDominationGameEngineIntegrationTest {
 
         // make sure they can place armies in the territory now.
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 2));
-        assertEquals(expectedNumArmies - 2, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.GREEN));
+        // roll back a player color
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
+        assertEquals(expectedNumArmies - 2, unitUnderTest.getCurrentPlayerArmiesToPlace());
         // should be three armies in the territory now.
         assertEquals(3, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
     }
