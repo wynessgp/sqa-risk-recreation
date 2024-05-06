@@ -179,16 +179,17 @@ public class TradeInParserTest {
     }
 
     @Test
-    public void test07_startTrade_withTwoWild_throwsException() {
+    public void test07_startTrade_withTwoWild_withTwoPrevious_returnsEight() {
         Set<Card> cards = new HashSet<>();
         cards.add(createMockedWildCard());
         cards.add(createMockedWildCard());
         cards.add(createMockedCard(PieceType.INFANTRY));
 
         TradeInParser tradeIn = new TradeInParser();
-        String expected = "Invalid trade in set";
-        Exception exception = assertThrows(IllegalStateException.class, () -> tradeIn.startTrade(cards));
-        assertEquals(expected, exception.getMessage());
+        tradeIn.setSetsTradedIn(2);
+        int expected = 8;
+        int actual = tradeIn.startTrade(cards);
+        assertEquals(expected, actual);
 
         for (Card card : cards) {
             EasyMock.verify(card);

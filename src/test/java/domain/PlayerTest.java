@@ -1,5 +1,6 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -81,4 +82,207 @@ public class PlayerTest {
         assertTrue(player.ownsTerritory(first));
     }
 
+    private static Stream<Arguments> generateCardsForPlayerAndFalseInput() {
+        WildCard wildCardOne = new WildCard();
+        WildCard wildCardTwo = new WildCard();
+
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        allCards.add(wildCardTwo);
+
+        Set<Arguments> toStream = new HashSet<>();
+
+        Set<Card> playerSet1 = Set.of();
+        Set<Card> playerSet2 = Set.of(wildCardOne);
+        Set<Card> playerSet3 = Set.of(wildCardOne, brazilCard);
+
+        Set<Card> inputSet1 = Set.of(wildCardOne);
+        Set<Card> inputSet2 = Set.of(alaskaCard);
+        Set<Card> inputSet3 = Set.of(wildCardOne, alaskaCard, brazilCard);
+
+        toStream.add(Arguments.of(playerSet1, inputSet1));
+        toStream.add(Arguments.of(playerSet1, inputSet2));
+        toStream.add(Arguments.of(playerSet2, inputSet2));
+        toStream.add(Arguments.of(playerSet3, inputSet3));
+
+        toStream.add(Arguments.of(playerSet1, allCards));
+        toStream.add(Arguments.of(playerSet2, allCards));
+        toStream.add(Arguments.of(playerSet3, allCards));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateCardsForPlayerAndFalseInput")
+    public void test05_ownsAllGivenCards_playerDoesNotOwnAllGivenCards_returnsFalse(
+            Set<Card> cardsPlayerOwns, Set<Card> cardsToSeeIfPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+        assertFalse(player.ownsAllGivenCards(cardsToSeeIfPlayerOwns));
+    }
+
+    private static Stream<Arguments> generateCardsForPlayerAndTrueInput() {
+        WildCard wildCardOne = new WildCard();
+        WildCard wildCardTwo = new WildCard();
+
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.CAVALRY);
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.CONGO) {
+                allCards.add(congoCard);
+            } else if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        allCards.add(wildCardTwo);
+
+        Set<Arguments> toStream = new HashSet<>();
+
+        Set<Card> playerSet1 = Set.of();
+        Set<Card> playerSet2 = Set.of(wildCardOne);
+        Set<Card> playerSet3 = Set.of(wildCardOne, congoCard, alaskaCard);
+
+        Set<Card> inputSet1 = Set.of();
+        Set<Card> inputSet2 = Set.of(wildCardOne);
+        Set<Card> inputSet3 = Set.of(congoCard, alaskaCard);
+
+        toStream.add(Arguments.of(playerSet1, inputSet1));
+        toStream.add(Arguments.of(playerSet2, inputSet2));
+        toStream.add(Arguments.of(playerSet3, inputSet3));
+
+        toStream.add(Arguments.of(allCards, inputSet1));
+        toStream.add(Arguments.of(allCards, inputSet2));
+        toStream.add(Arguments.of(allCards, allCards));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateCardsForPlayerAndTrueInput")
+    public void test06_ownsAllGivenCards_playerOwnsSpecifiedCards_returnsTrue(
+            Set<Card> cardsPlayerOwns, Set<Card> cardsToSeeIfPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+        assertTrue(player.ownsAllGivenCards(cardsToSeeIfPlayerOwns));
+    }
+
+    private static Stream<Arguments> generateRemoveCardCombosThatResultInEmptySet() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCardOne = new WildCard();
+
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+
+        toStream.add(Arguments.of(Set.of(), Set.of()));
+        toStream.add(Arguments.of(Set.of(wildCardOne, alaskaCard), Set.of()));
+        toStream.add(Arguments.of(Set.of(wildCardOne, brazilCard), Set.of(brazilCard)));
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        WildCard wildCardTwo = new WildCard();
+        allCards.add(wildCardTwo);
+
+        toStream.add(Arguments.of(allCards, Set.of()));
+        toStream.add(Arguments.of(allCards, Set.of(wildCardOne)));
+        toStream.add(Arguments.of(allCards, Set.of(wildCardOne, brazilCard)));
+        toStream.add(Arguments.of(allCards, allCards));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateRemoveCardCombosThatResultInEmptySet")
+    public void test07_removeAllGivenCards_removingCardsResultsInEmptySet(
+            Set<Card> cardsToRemove, Set<Card> cardsPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+
+        player.removeAllGivenCards(cardsToRemove);
+
+        assertEquals(Set.of(), player.getGetOwnedCards());
+    }
+
+    private static Stream<Arguments> generateRemoveCardCombosAndNonEmptyResult() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCardOne = new WildCard();
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+
+        toStream.add(Arguments.of(Set.of(wildCardOne, brazilCard), Set.of(wildCardOne, brazilCard, congoCard),
+                Set.of(congoCard)));
+        toStream.add(Arguments.of(Set.of(congoCard), Set.of(congoCard, brazilCard), Set.of(brazilCard)));
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.CONGO) {
+                allCards.add(congoCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        WildCard wildCardTwo = new WildCard();
+        allCards.add(wildCardTwo);
+
+        Set<Card> allCardsMinusSecondWildCard = new HashSet<>(allCards);
+        allCardsMinusSecondWildCard.remove(wildCardTwo);
+
+        toStream.add(Arguments.of(allCardsMinusSecondWildCard, allCards, Set.of(wildCardTwo)));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateRemoveCardCombosAndNonEmptyResult")
+    public void test08_removeAllGivenCards_removingCardsStillLeavesPlayerWithSome(
+            Set<Card> cardsToRemove, Set<Card> cardsPlayerOwns, Set<Card> expectedOutput) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+
+        player.removeAllGivenCards(cardsToRemove);
+
+        assertEquals(expectedOutput, player.getGetOwnedCards());
+    }
 }

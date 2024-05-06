@@ -1,7 +1,9 @@
 package presentation;
 
-import java.net.URL;
-import java.util.Objects;
+import datasource.FileLoader;
+import datasource.ImageFileLoader;
+import datasource.SceneFileLoader;
+import datasource.StyleSheetLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,15 +12,40 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class RiskApp extends Application {
-    private final String cssFileString = Objects.requireNonNull(getClass().getResource("styles.css"))
-            .toExternalForm();
-    private final String iconImageString = Objects.requireNonNull(getClass().getResource("images/smile.PNG"))
-            .toExternalForm();
-    private final URL fxmlFileUrl = Objects.requireNonNull(getClass().getResource("start_screen.fxml"));
+    private String cssFileString;
+    private String iconImageString;
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(fxmlFileUrl);
+    public void start(Stage stage) {
+        SceneController.initializeLanguageBundle();
+        Parent root = loadStartScreen();
+        loadUniversalFiles();
+        if (root != null) {
+            initializeScreen(root, stage);
+        }
+    }
+
+    private Parent loadStartScreen() {
+        try {
+            FileLoader fileLoader = new SceneFileLoader();
+            fileLoader.open(SceneType.START.getSceneName());
+            return FXMLLoader.load(fileLoader.getFileUrl(), SceneController.getLanguageBundle());
+        } catch (Exception e) {
+            System.err.println("Error loading scene: " + SceneType.START.getSceneName());
+            return null;
+        }
+    }
+
+    private void loadUniversalFiles() {
+        FileLoader loader = new StyleSheetLoader();
+        loader.open("styles.css");
+        cssFileString = loader.getFileUrl().toExternalForm();
+        loader = new ImageFileLoader();
+        loader.open("smile.png");
+        iconImageString = loader.getFileUrl().toExternalForm();
+    }
+
+    private void initializeScreen(Parent root, Stage stage) {
         Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
         SceneController.setRoot(cssModifiedScene);
         stage.setScene(cssModifiedScene);
