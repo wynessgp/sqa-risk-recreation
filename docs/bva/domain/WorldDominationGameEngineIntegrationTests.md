@@ -393,9 +393,82 @@ Output:
 
 ## BVA Step 4
 Some things to consider for integration tests:
+- Preventing players from trading in an invalid set
+  - Error handling comes from the trade-in parser; but also based on card ownership
 - When a player goes to trade in cards, they should not be able to trade in the same set again
   - Namely, we do want to ensure we actually take away their cards.
 - When a player trades in cards, they should be stopped from doing whatever they were doing previously and be forced to put down armies
   - So if they were in the attack phase, move them back into the PLACEMENT phase.
-- If I am told that I have too many cards to place my armies, this should fix it for me and give me my bonus armies.
+- If I am told that I have too many cards to place my armies, calling this should fix it for me and give me my bonus armies.
   - Check that we give players their associated armies and that they can call placement again after trading in
+
+### Test 1
+Given a valid list of players for the current game
+
+And the current player does not have enough cards to trade in
+
+When that player tries to trade in their cards
+
+Then the player should be told they cannot trade in the given cards
+
+### Test 2
+Given a valid list of players for the current game
+
+And the current player does not own the cards they are trying to trade in
+
+When the player tries to trade in their cards
+
+Then the player should be told that they do not own the given cards
+
+### Test 3
+Given a valid list of players for the current game
+
+And the current player is trying to trade in a malformed set of cards
+- Too many / too few cards
+
+When the player tries to trade in their cards
+
+Then the player should be told that the set to trade in is invalid
+
+### Test 4
+Given a valid list of players for the current game
+
+And the player has a valid set of cards to trade in
+
+When the player tries to trade in their cards
+
+Then the player should get bonus armies
+
+And the player's cards they traded in should be removed
+
+### Test 5
+Given a valid list of players for the current game
+
+And the game is in the attack phase
+
+And the current player has a valid set of cards to trade in
+
+When the player tries to trade in their cards
+
+Then the player should get bonus armies
+
+And the game phase should be moved to PLACEMENT
+
+### Test 6
+Given a valid list of players for the current game
+
+And the current player is holding too many cards to be able to place armies
+
+When the player tries to place armies
+
+Then the game should tell the player they have too many cards
+
+Now the player chooses to trade in cards
+
+When the player tries to trade in cards
+
+Then the player should get bonus armies
+
+And when the player attempts to place their armies
+
+Then the new armies should be placed in the respective territory
