@@ -62,7 +62,9 @@ Output: 1
 
 ### Repeat above test for each combination
 
-# method: `ownsAllGivenCards(cardsForPlayerToOwn: Set<Card>): boolean`
+# method: `ownsAllGivenCards(givenCards: Set<Card>): boolean`
+Note: we will be utilizing a naive pointer equals for Cards here, since the cards should ONLY come from one
+source in our code; namely, the RiskCardDeck
 
 ## BVA Step 1
 Input: A collection of cards to check and see if the player actually owns all of them
@@ -71,14 +73,14 @@ Output: A yes/no answer whether the player does own all the cards in question
 
 ## BVA Step 2
 Input:
-- cardsForPlayerToOwn: Collection
+- givenCards: Collection
 - Underlying set: Collection
 
 Output: Boolean
 
 ## BVA Step 3
 Input:
-- cardsForPlayerToOwn (Collection):
+- givenCards (Collection):
   - An empty collection
   - Collection with 1 element
   - Collection with \> 1 element
@@ -97,38 +99,74 @@ Output: Boolean
 ## BVA Step 4
 ### Test 1:
 Input: 
-- cardsForPlayerToOwn = []
+- givenCards = []
 - Underlying set = []
 
 Output: 1 (true)
 ### Test 2:
 Input:
-- cardsForPlayerToOwn = [ Wild Card ]
+- givenCards = [ Wild Card ]
 - Underlying set = []
 
 Output: 0 (false)
 ### Test 3:
 Input:
-- cardsForPlayerToOwn = [ TerritoryCard = {ALASKA, INFANTRY} ]
+- givenCards = [ TerritoryCard = {ALASKA, INFANTRY} ]
 - Underlying set = []
 
 Output: 0 (false)
 ### Test 4:
 Input:
-- cardsForPlayerToOwn = [ Wild Card ]
+- givenCards = [ Wild Card ]
 - Underlying set = [ Wild Card ]
 
 Output: 1 (true)
 ### Test 5:
 Input:
-- cardsForPlayerToOwn = [Wild Card, TerritoryCard = {ALASKA, INFANTRY}, TerritoryCard = {BRAZIL, ARTILLERY}]
+- givenCards = [Wild Card, TerritoryCard = {ALASKA, INFANTRY}, TerritoryCard = {BRAZIL, ARTILLERY}]
 - Underlying set = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
 
 Output: 0 (false)
 ### Test 6:
 Input:
-- cardsForPlayerToOwn = [TerritoryCard = {ALASKA, CAVALRY}, TerritoryCard = {CONGO, INFANTRY}]
+- givenCards = [TerritoryCard = {ALASKA, CAVALRY}, TerritoryCard = {CONGO, INFANTRY}]
 - Underlying set = [Wild Card, TerritoryCard = {CONGO, INFANTRY}, TerritoryCard = {ALASKA, CAVALRY}]
+
+Output: 1 (true)
+### Test 7:
+Input:
+- givenCards = [ all cards ]
+- Underlying set = []
+
+Output: 0 (false)
+### Test 8:
+- givenCards = [ all cards ]
+- Underlying set = [ Wild Card ]
+
+Output: 0 (false)
+### Test 9:
+- given cards = [ all cards ]
+- Underlying set = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
+
+Output: 0 (false)
+### Test 10:
+- givenCards = [ all cards ]
+- Underlying set = [ all cards ]
+
+Output: 1 (true)
+### Test 11:
+- given cards = []
+- Underlying set = [ all cards ]
+
+Output: 1 (true)
+### Test 12:
+- given cards = [Wild Card]
+- Underlying set = [ all cards ]
+
+Output: 1 (true)
+### Test 13:
+- given cards = [ Wild Card, Territory Card = {BRAZIL, ARTILLERY} ]
+- Underlying set = [ all cards ]
 
 Output: 1 (true)
 
