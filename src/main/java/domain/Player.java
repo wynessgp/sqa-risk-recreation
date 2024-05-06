@@ -37,6 +37,10 @@ public class Player {
         return ownedCards.containsAll(givenCards);
     }
 
+    public void removeAllGivenCards(Set<Card> cardsToRemove) {
+        ownedCards.removeAll(cardsToRemove);
+    }
+
     void setTerritories(Set<TerritoryType> territories) {
         this.territories = territories;
     }
@@ -52,4 +56,10 @@ public class Player {
     void setOwnedCards(Set<Card> cardsPlayerOwns) {
         this.ownedCards = new HashSet<>(cardsPlayerOwns);
     }
+
+    Set<Card> getGetOwnedCards() {
+        return new HashSet<>(ownedCards);
+    }
+
+
 }

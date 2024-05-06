@@ -1,5 +1,6 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -178,6 +179,55 @@ public class PlayerTest {
         Player player = new Player();
         player.setOwnedCards(cardsPlayerOwns);
         assertTrue(player.ownsAllGivenCards(cardsToSeeIfPlayerOwns));
+    }
+
+    private static Stream<Arguments> generateRemoveCardCombosThatResultInEmptySet() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCardOne = new WildCard();
+
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+
+        toStream.add(Arguments.of(Set.of(), Set.of()));
+        toStream.add(Arguments.of(Set.of(wildCardOne, alaskaCard), Set.of()));
+        toStream.add(Arguments.of(Set.of(wildCardOne, brazilCard), Set.of(brazilCard)));
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        WildCard wildCardTwo = new WildCard();
+        allCards.add(wildCardTwo);
+
+        toStream.add(Arguments.of(allCards, Set.of()));
+        toStream.add(Arguments.of(allCards, Set.of(wildCardOne)));
+        toStream.add(Arguments.of(allCards, Set.of(wildCardOne, brazilCard)));
+        toStream.add(Arguments.of(allCards, allCards));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateRemoveCardCombosThatResultInEmptySet")
+    public void test07_removeAllGivenCards_removingCardsResultsInEmptySet(
+            Set<Card> cardsToRemove, Set<Card> cardsPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+
+        player.removeAllGivenCards(cardsToRemove);
+
+        assertEquals(Set.of(), player.getGetOwnedCards());
     }
 
 }
