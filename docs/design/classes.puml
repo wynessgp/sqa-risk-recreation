@@ -1,35 +1,153 @@
 @startuml RiskDesign
 
 package presentation {
-    +class Main {
+    +class RiskApp {
+        -cssFileString: String
+        -iconImageString: String
+
+        +start(stage: Stage): void
+        -loadStartScreen(): Parent
+        -loadUniversalFiles(): void
+        -initializeScreen(root: Parent, stage: Stage): void
+        -addCssFileToScene(cssFileString: String, sceneInQuestion: Scene): Scene
+        -performStageSetup(stage: Stage): void
         +{static} main(args: String[]): void
-        +start(): void
     }
 
-    +interface GenericUI {
-        +draw(): void
+    +enum SceneType {
+        START
+        PLAYER_SELECT
+        SHUFFLE
+        GAME_OVER
+
+        -{final} sceneName: String
+        ~SceneType(sceneName: String)
+        ~getSceneName(): String
     }
 
-    +class ConcreteUI {
+    +class GameMapScreenController {
+        -claimTerritoryDialog: DialogPane
+        -placeArmiesErrorDialog: DialogPane
+        -dialogBackground: AnchorPane
+        -armiesToPlacePane: AnchorPane
+        -currentPlayerColor: Label
+        -currentPhase: Label
+        -instructionLabel: Label
+        -armiesToPlace: Label
+        -gameEngine: WorldDominationGameEngine
+        -selectedTerritory: TerritoryType
+        -selectedButton: Button
+        -territoryButtonMap: Map<Button, TerritoryType>
 
+        -initialize(): void
+        -updateStateLabels(): void
+        -gamePhaseActions(): void
+        -enablePlacement(): void
+        -handleClaimTerritory(): void
+        -setButtonBackgroundColor(): void
+        -toggleDialog(dialog: DialogPane): void
+        -handleTerritoryButtonClick(event: ActionEvent): void
+        -handleGamePhaseAction(): void
+        -handlePlaceArmies(): void
     }
 
-    ConcreteUI .u.|> GenericUI
+    +class PlayerSelectScreenController {
+        -{static}{final} MIN_PLAYERS: int
+        -{static}{final} MAX_PLAYERS: int
+        -instructionLabel: Label
+        -startGameButton: Button
+        -resetButton: Button
+        -blackButton: Button
+        -redButton: Button
+        -yellowButton: Button
+        -blueButton: Button
+        -greenButton: Button
+        -purpleButton: Button
+        ~playersOrder: List<PlayerColor>
+        ~controller: SceneController
 
-    +interface GenericController {
-        +receiveInput(): void
+        -initialize(): void
+        -onBackButtonClick(): void
+        -onResetButtonClick(): void
+        -resetButtonStates(): void
+        -resetPlayerButton(button: Button): void
+        -onStartGameButtonClick(): void
+        -onPlayerSelect(e: ActionEvent): void
+        -handlePlayerSelectUpdate(button: Button): void
+        -updateInstructionLabel(): void
     }
 
-    +class ConcreteController {
+    +class PlayerShuffleScreenController {
+        -instructionLabel: Label
+        -dieRollResult: Label
+        -rollOrderLabel: Label
+        -dieImage: ImageView
+        -startGameButton: Button
+        -{final} sceneController: SceneController
+        -originalPlayerOrder: List<PlayerColor>
+        -updatedPlayerOrder: List<PlayerColor>
+        -dieRolls: List<Integer>
+        -currentPlayer: int
 
+        -initialize(): void
+        -prepareCurrentPlayerRoll(): void
+        -prepareStartGame(): void
+        -stringifyPlayerOrder(): void
+        -rollDie(): void
+        -startGame(): void
     }
 
-    ConcreteController .u.|> GenericController
+    -enum DieImage {
+        ONE
+        TWO
+        THREE
+        FOUR
+        FIVE
+        SIX
 
-    +class PlayerDisplay {
-
+        -{static}{final} dieMap: Map<Integer, DieImage>
+        -{static}get(roll: int): Image
     }
 
+    PlayerShuffleScreenController --+ DieImage
+
+    +class SceneController {
+        -{static} sceneController: SceneController
+        -{static} languageName: String
+        -{final} screenMap: Map<SceneType, Pane>
+        -{final} main: Scene
+        -gameEngine: WorldDominationGameEngine
+        -originalPlayerOrder: List<PlayerColor>
+
+        -SceneController(main: Scene)
+        #add(scene: SceneType, pane: Pane): void
+        #activate(scene: SceneType): void
+        #initializePlayers(players: List<PlayerColor>): void
+        #getGameEngine(): WorldDominationGameEngine
+        #getOriginalPlayerOrder(): List<PlayerColor>
+        #{static} setRoot(scene: Scene): void
+        #{static} getInstance(): SceneController
+        #{static} getLanguageBundle(): ResourceBundle
+        #{static} getLanguage(): String
+        #{static} initializeLanguageBundle(): void
+        #{static} getString(key: String, format: Object[]): String
+    }
+
+    SceneController --> "*" SceneType
+
+    +class StartScreenController {
+        -languageSelect: ComboBox<String>
+
+        -initialize(): void
+        -onStartButtonClick(): void
+    }
+
+    SceneController ..> GameMapScreenController
+    SceneController ..> PlayerSelectScreenController
+    SceneController ..> PlayerShuffleScreenController
+    SceneController ..> StartScreenController
+
+    RiskApp ..> SceneController
 }
 
 package domain {
@@ -292,8 +410,17 @@ package domain {
         GREEN
         PURPLE
     }
-
 }
+
+presentation.GameMapScreenController --> domain.WorldDominationGameEngine
+presentation.GameMapScreenController --> "*" domain.TerritoryType
+
+presentation.PlayerSelectScreenController --> "*" domain.PlayerColor
+
+presentation.PlayerShuffleScreenController --> "*" domain.PlayerColor
+
+presentation.SceneController --> "*" domain.PlayerColor
+presentation.SceneController --> domain.WorldDominationGameEngine
 
 package datasource {
     +interface FileLoader {
@@ -341,5 +468,80 @@ package datasource {
         +{static} getBundle(): ResourceBundle
     }
 }
+
+presentation.RiskApp ..> datasource.SceneFileLoader
+presentation.RiskApp ..> datasource.StyleSheetLoader
+presentation.RiskApp ..> datasource.ImageFileLoader
+
+presentation.SceneController --> datasource.FileLoader
+presentation.SceneController ..> datasource.StringsBundleLoader
+
+
+package JavaFX {
+    +class Scene {
+    }
+
+    +class Parent {
+    }
+
+    +abstract class Application {
+        +{static} launch(): void
+    }
+
+    +class Stage {
+    }
+
+    +class FXMLLoader {
+    }
+
+    +class Image {
+    }
+
+    +class Button {
+    }
+
+    +class AnchorPane {
+    }
+
+    +class DialogPane {
+    }
+
+    +class Label {
+    }
+
+    +class ImageView {
+    }
+
+    +class Pane {
+    }
+
+    +class ComboBox {
+    }
+}
+
+presentation.RiskApp --|> JavaFX.Application
+presentation.RiskApp ..> JavaFX.FXMLLoader
+presentation.RiskApp ..> JavaFX.Stage
+presentation.RiskApp ..> JavaFX.Parent
+presentation.RiskApp ..> JavaFX.Scene
+presentation.RiskApp ..> JavaFX.Image
+
+presentation.GameMapScreenController --> "*" JavaFX.Button
+presentation.GameMapScreenController --> "2" JavaFX.DialogPane
+presentation.GameMapScreenController --> "2" JavaFX.AnchorPane
+presentation.GameMapScreenController --> "3" JavaFX.Label
+
+presentation.PlayerSelectScreenController --> JavaFX.Label
+presentation.PlayerSelectScreenController --> "*" JavaFX.Button
+
+presentation.PlayerShuffleScreenController --> "3" JavaFX.Label
+presentation.PlayerShuffleScreenController --> JavaFX.ImageView
+presentation.PlayerShuffleScreenController --> JavaFX.Button
+
+presentation.SceneController --> JavaFX.FXMLLoader
+presentation.SceneController --> JavaFX.Scene
+presentation.SceneController --> "*" JavaFX.Pane
+
+presentation.StartScreenController --> JavaFX.ComboBox
 
 @enduml
