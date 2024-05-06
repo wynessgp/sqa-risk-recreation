@@ -21,7 +21,7 @@ public final class WorldDominationGameEngine {
 
     private static final int REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES = 12;
     private static final int THREE_ARMIES = 3;
-    private static final int NUM_EXTRA_TERRITORIES_PER_EXTRA_ARMY = 3;
+    private static final int REQUIRED_TERRITORIES_PER_EXTRA_ARMY = 3;
 
     private static final int FORCED_CARD_TURN_IN_THRESHOLD = 5;
 
@@ -35,7 +35,7 @@ public final class WorldDominationGameEngine {
     private TerritoryGraph territoryGraph;
     private GamePhase currentGamePhase;
 
-    private DieRollParser parser;
+    private DieRollParser dieRollParser;
     private TradeInParser tradeInParser;
     private List<Integer> dieRolls;
 
@@ -51,8 +51,24 @@ public final class WorldDominationGameEngine {
 
     private void handleOtherDependentObjectCreation(DieRollParser parser) {
         this.territoryGraph = initializeGraph();
-        this.parser = parser;
+        this.dieRollParser = parser;
         this.tradeInParser = new TradeInParser();
+    }
+
+    void shufflePlayers() {
+        this.dieRolls = dieRollParser.rollDiceToDeterminePlayerOrder(playersList.size());
+        sortPlayersListByDieRoll();
+    }
+
+    private void sortPlayersListByDieRoll() {
+        List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
+        sortedDieRolls.sort(Comparator.reverseOrder());
+        List<PlayerColor> newPlayerOrder = new ArrayList<>();
+        for (int i : sortedDieRolls) {
+            int index = dieRolls.indexOf(i);
+            newPlayerOrder.add(playersList.get(index));
+        }
+        this.playersList = newPlayerOrder;
     }
 
     public WorldDominationGameEngine(List<PlayerColor> playerOrder) {
@@ -139,10 +155,10 @@ public final class WorldDominationGameEngine {
 
     private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
         checkIfTerritoryIsUnclaimed(relevantTerritory);
-        checkNumArmiesToPlaceIsValid(numArmiesToPlace);
+        checkIfNumArmiesToPlaceIsValidForScramblePhase(numArmiesToPlace);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         updateTerritoryObjectWithValidSetupArguments(relevantTerritory, numArmiesToPlace);
-        modifyNumArmiesCurrentPlayerHasToPlace(1);
+        decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
         addTerritoryToCurrentPlayerCollection(relevantTerritory);
         updateCurrentPlayer();
         checkScramblePhaseEndCondition();
@@ -155,7 +171,7 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private void checkNumArmiesToPlaceIsValid(int numArmiesToPlace) {
+    private void checkIfNumArmiesToPlaceIsValidForScramblePhase(int numArmiesToPlace) {
         if (numArmiesToPlace != 1) {
             throw new IllegalArgumentException(
                     "You can only place 1 army on an unclaimed territory until the scramble phase is over");
@@ -206,7 +222,7 @@ public final class WorldDominationGameEngine {
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
-        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
+        decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
         totalUnplacedArmiesLeft--;
         updateCurrentPlayer();
         checkSetupPhaseEndCondition();
@@ -231,9 +247,9 @@ public final class WorldDominationGameEngine {
         territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
     }
 
-    private void modifyNumArmiesCurrentPlayerHasToPlace(int numArmiesToPlace) {
+    private void decreaseNumArmiesCurrentPlayerHasToPlace(int numToDecreaseBy) {
         int currentNumArmies = playersMap.get(currentPlayer).getNumArmiesToPlace();
-        int newNumArmies = currentNumArmies - numArmiesToPlace;
+        int newNumArmies = currentNumArmies - numToDecreaseBy;
         playersMap.get(currentPlayer).setNumArmiesToPlace(newNumArmies);
     }
 
@@ -241,48 +257,36 @@ public final class WorldDominationGameEngine {
         if (totalUnplacedArmiesLeft == 0) {
             currentGamePhase = GamePhase.PLACEMENT;
             currentPlayer = playersList.get(0);
-            playersMap.get(currentPlayer).setNumArmiesToPlace(calculatePlacementPhaseArmiesForCurrentPlayer());
+            int numArmiesToAssign = calculatePlacementPhaseArmiesForCurrentPlayer();
+            increaseNumArmiesCurrentPlayerHasToPlace(numArmiesToAssign);
         }
     }
 
-    private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        checkIfPlayerIsHoldingTooManyCards();
-        checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace);
-        checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
-        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
-        modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
-        advanceToAttackPhaseIfPossible();
-    }
-
-    private void checkIfPlayerIsHoldingTooManyCards() {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
-            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
-        }
-    }
-
-    private void checkIfNumArmiesToPlaceIsValidForPlacement(int numArmiesToPlace) {
-        if (numArmiesToPlace < 1) {
-            throw new IllegalArgumentException("Cannot place < 1 army on a territory during the Placement phase");
-        }
-    }
-
-    private void advanceToAttackPhaseIfPossible() {
-        if (playersMap.get(currentPlayer).getNumArmiesToPlace() == 0) {
-            currentGamePhase = GamePhase.ATTACK;
-        }
+    private void increaseNumArmiesCurrentPlayerHasToPlace(int numToIncreaseBy) {
+        // little shortcut: we can multiply numToIncreaseBy by -1 and call the decrease method.
+        decreaseNumArmiesCurrentPlayerHasToPlace(-1 * numToIncreaseBy);
     }
 
     int calculatePlacementPhaseArmiesForCurrentPlayer() {
-        int numOwnedTerritories = calculateNumTerritoriesPlayerOwns();
-        throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(numOwnedTerritories);
+        int numOwnedTerritories = getTerritoriesCurrentPlayerOwns().size();
+        checkIfPlayerShouldExistOrGameIsOverWithTerritoryCount(numOwnedTerritories);
 
         int numOwnedTerritoriesAmount = (numOwnedTerritories < REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES)
-                ? THREE_ARMIES : numOwnedTerritories / NUM_EXTRA_TERRITORIES_PER_EXTRA_ARMY;
+                ? THREE_ARMIES : numOwnedTerritories / REQUIRED_TERRITORIES_PER_EXTRA_ARMY;
         return calculateBonusForOwnedContinents() + numOwnedTerritoriesAmount;
     }
 
-    private void throwErrorIfPlayerHasNoTerritoriesOrHasAllTerritories(int numOwnedTerritories) {
+    private Set<TerritoryType> getTerritoriesCurrentPlayerOwns() {
+        Set<TerritoryType> ownedTerritories = new HashSet<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
+                ownedTerritories.add(territory);
+            }
+        }
+        return ownedTerritories;
+    }
+
+    private void checkIfPlayerShouldExistOrGameIsOverWithTerritoryCount(int numOwnedTerritories) {
         if (numOwnedTerritories == TerritoryType.values().length) {
             throw new IllegalStateException("Given player owns every territory, the game should be over!");
         }
@@ -300,34 +304,100 @@ public final class WorldDominationGameEngine {
         return totalBonus;
     }
 
-    private Set<TerritoryType> getTerritoriesCurrentPlayerOwns() {
-        Set<TerritoryType> ownedTerritories = new HashSet<>();
-        for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
-                ownedTerritories.add(territory);
-            }
-        }
-        return ownedTerritories;
+    private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkIfPlayerIsHoldingTooManyCards();
+        checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace);
+        checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
+        checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
+        decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
+        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        checkAttackPhaseEndCondition();
     }
 
-    private int calculateNumTerritoriesPlayerOwns() {
-        int numOwnedTerritories = 0;
-        for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
-                numOwnedTerritories++;
-            }
+    private void checkIfPlayerIsHoldingTooManyCards() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
+            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
         }
-        return numOwnedTerritories;
+    }
+
+    private void checkIfNumArmiesToPlaceIsValidForPlacement(int numArmiesToPlace) {
+        if (numArmiesToPlace < 1) {
+            throw new IllegalArgumentException("Cannot place < 1 army on a territory during the Placement phase");
+        }
+    }
+
+    private void checkAttackPhaseEndCondition() {
+        if (playersMap.get(currentPlayer).getNumArmiesToPlace() == 0) {
+            currentGamePhase = GamePhase.ATTACK;
+        }
+    }
+
+    public Set<TerritoryType> tradeInCards(Set<Card> selectedCardsToTradeIn) {
+        checkIfInValidGamePhase(Set.of(GamePhase.ATTACK, GamePhase.PLACEMENT));
+
+        Player currentPlayerObject = playersMap.get(currentPlayer);
+        checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
+        return addArmiesToPlayerStockpileIfValidSet(selectedCardsToTradeIn, currentPlayerObject);
+    }
+
+    private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {
+        if (!validGamePhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Can only trade in cards during the PLACEMENT or ATTACK phase");
+        }
+    }
+
+    private void checkIfPlayerOwnsCards(Set<Card> givenCardSet, Player currentPlayerObject) {
+        if (!currentPlayerObject.ownsAllGivenCards(givenCardSet)) {
+            throw new IllegalArgumentException("Player doesn't own all the selected cards!");
+        }
+    }
+
+    private Set<TerritoryType> addArmiesToPlayerStockpileIfValidSet(Set<Card> selectedCards, Player playerObject) {
+        try {
+            int numArmiesToReceive = tradeInParser.startTrade(selectedCards);
+            Set<TerritoryType> matchedTerritories = tradeInParser.getMatchedTerritories(playerObject, selectedCards);
+            modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject, numArmiesToReceive, selectedCards);
+            return matchedTerritories;
+        } catch (Exception tradeError) {
+            throw new IllegalArgumentException(String.format("Could not trade in cards: %s", tradeError.getMessage()));
+        }
+    }
+
+    private void modifyPlayerObjectAndGamePhaseToAccountForTradeIn(
+            Player playerObject, int numArmiesToReceive, Set<Card> selectedCards) {
+        increaseNumArmiesCurrentPlayerHasToPlace(numArmiesToReceive);
+        playerObject.removeAllGivenCards(selectedCards);
+        currentGamePhase = GamePhase.PLACEMENT;
+    }
+
+    public PlayerColor getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public GamePhase getCurrentGamePhase() {
+        return currentGamePhase;
+    }
+
+    public List<PlayerColor> getPlayerOrder() {
+        return new ArrayList<>(playersList);
+    }
+
+    public List<Integer> getDieRolls() {
+        return new ArrayList<>(dieRolls);
+    }
+
+    public int getCurrentPlayerArmiesToPlace() {
+        return playersMap.get(currentPlayer).getNumArmiesToPlace();
+    }
+
+    public int getNumberOfArmies(TerritoryType territoryType) {
+        return territoryGraph.getTerritory(territoryType).getNumArmiesPresent();
     }
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
         // also, add this to the players list, otherwise we'll error out on trying to swap turns.
         playersList.add(currentPlayer);
-    }
-
-    public PlayerColor getCurrentPlayer() {
-        return currentPlayer;
     }
 
     void setGamePhase(GamePhase gamePhase) {
@@ -350,16 +420,8 @@ public final class WorldDominationGameEngine {
         territoryGraph = mockedGraph;
     }
 
-    public GamePhase getCurrentGamePhase() {
-        return currentGamePhase;
-    }
-
     Set<TerritoryType> getClaimedTerritoriesForPlayer(PlayerColor playerInQuestion) {
         return playersMap.get(playerInQuestion).getTerritories();
-    }
-
-    public List<PlayerColor> getPlayerOrder() {
-        return new ArrayList<>(playersList);
     }
 
     WorldDominationGameEngine() {
@@ -368,36 +430,8 @@ public final class WorldDominationGameEngine {
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
     }
 
-    void shufflePlayers() {
-        this.dieRolls = parser.rollDiceToDeterminePlayerOrder(playersList.size());
-        sortPlayersListByDieRoll();
-    }
-
-    private void sortPlayersListByDieRoll() {
-        List<Integer> sortedDieRolls = new ArrayList<>(dieRolls);
-        sortedDieRolls.sort(Comparator.reverseOrder());
-        List<PlayerColor> newPlayerOrder = new ArrayList<>();
-        for (int i : sortedDieRolls) {
-            int index = dieRolls.indexOf(i);
-            newPlayerOrder.add(playersList.get(index));
-        }
-        this.playersList = newPlayerOrder;
-    }
-
-    public List<Integer> getDieRolls() {
-        return new ArrayList<>(dieRolls);
-    }
-
     void setParser(DieRollParser parser) {
-        this.parser = parser;
-    }
-    
-    public int getCurrentPlayerArmiesToPlace() {
-        return playersMap.get(currentPlayer).getNumArmiesToPlace();
-    }
-
-    public int getNumberOfArmies(TerritoryType territoryType) {
-        return territoryGraph.getTerritory(territoryType).getNumArmiesPresent();
+        this.dieRollParser = parser;
     }
 
     void claimAllTerritoriesForCurrentPlayer(Set<TerritoryType> territoriesToClaim) {
@@ -408,44 +442,6 @@ public final class WorldDominationGameEngine {
 
     void provideMockedTradeInParser(TradeInParser mockedParser) {
         this.tradeInParser = mockedParser;
-    }
-
-    public Set<TerritoryType> tradeInCards(Set<Card> selectedCardsToTradeIn) {
-        checkIfInValidGamePhase(Set.of(GamePhase.ATTACK, GamePhase.PLACEMENT));
-
-        Player currentPlayerObject = playersMap.get(currentPlayer);
-        checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
-        return addArmiesToPlayerStockpileIfValidSet(selectedCardsToTradeIn, currentPlayerObject);
-    }
-
-    private Set<TerritoryType> addArmiesToPlayerStockpileIfValidSet(Set<Card> selectedCards, Player playerObject) {
-        try {
-            int numArmiesToReceive = tradeInParser.startTrade(selectedCards);
-            Set<TerritoryType> methodResult = tradeInParser.getMatchedTerritories(playerObject, selectedCards);
-            modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject, numArmiesToReceive, selectedCards);
-            return methodResult;
-        } catch (Exception tradeError) {
-            throw new IllegalArgumentException(String.format("Could not trade in cards: %s", tradeError.getMessage()));
-        }
-    }
-
-    private void modifyPlayerObjectAndGamePhaseToAccountForTradeIn(
-            Player playerObject, int numArmiesToReceive, Set<Card> selectedCards) {
-        modifyNumArmiesCurrentPlayerHasToPlace(-1 * numArmiesToReceive);
-        playerObject.removeAllGivenCards(selectedCards);
-        currentGamePhase = GamePhase.PLACEMENT;
-    }
-
-    private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {
-        if (!validGamePhases.contains(currentGamePhase)) {
-            throw new IllegalStateException("Can only trade in cards during the PLACEMENT or ATTACK phase");
-        }
-    }
-
-    private void checkIfPlayerOwnsCards(Set<Card> givenCardSet, Player currentPlayerObject) {
-        if (!currentPlayerObject.ownsAllGivenCards(givenCardSet)) {
-            throw new IllegalArgumentException("Player doesn't own all the selected cards!");
-        }
     }
 
     void setCardsForPlayer(PlayerColor playerColor, Set<Card> cardsPlayerOwns) {
