@@ -142,11 +142,10 @@ package presentation {
         -onStartButtonClick(): void
     }
 
-    SceneController ..> GameMapScreenController
-    SceneController ..> PlayerSelectScreenController
-    SceneController ..> PlayerShuffleScreenController
-    SceneController ..> StartScreenController
-
+    GameMapScreenController ..> SceneController
+    PlayerSelectScreenController --> SceneController
+    PlayerShuffleScreenController --> SceneController
+    StartScreenController ..> SceneController
     RiskApp ..> SceneController
 }
 
