@@ -546,4 +546,20 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(3, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
     }
 
+    @Test
+    public void test18_placeNewArmiesInTerritory_scramblePhase_validInput_playerLosesAnArmy() {
+        List<PlayerColor> players = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
+
+        // see how many armies blue has left to place. By default, you get 35 in 3-player risk, so we should
+        // have 34 left.
+        int expectedNumArmies = 34;
+        assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.BLUE));
+    }
+
+
+
 }
