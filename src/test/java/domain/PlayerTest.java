@@ -97,10 +97,11 @@ public class PlayerTest {
                 allCards.add(alaskaCard);
             } else if (territoryType == TerritoryType.BRAZIL) {
                 allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
             }
-            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
-            allCards.add(new TerritoryCard(territoryType, currentPiece));
-            pieceTypeCount++;
         }
         allCards.add(wildCardTwo);
 
