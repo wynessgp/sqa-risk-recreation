@@ -238,4 +238,51 @@ public class PlayerTest {
         assertEquals(Set.of(), player.getGetOwnedCards());
     }
 
+    private static Stream<Arguments> generateRemoveCardCombosAndNonEmptyResult() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCardOne = new WildCard();
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+
+        toStream.add(Arguments.of(Set.of(wildCardOne, brazilCard), Set.of(wildCardOne, brazilCard, congoCard),
+                Set.of(congoCard)));
+        toStream.add(Arguments.of(Set.of(congoCard), Set.of(congoCard, brazilCard), Set.of(brazilCard)));
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.CONGO) {
+                allCards.add(congoCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            } else {
+                PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+                allCards.add(new TerritoryCard(territoryType, currentPiece));
+                pieceTypeCount++;
+            }
+        }
+        WildCard wildCardTwo = new WildCard();
+        allCards.add(wildCardTwo);
+
+        Set<Card> allCardsMinusSecondWildCard = new HashSet<>(allCards);
+        allCardsMinusSecondWildCard.remove(wildCardTwo);
+
+        toStream.add(Arguments.of(allCardsMinusSecondWildCard, allCards, Set.of(wildCardTwo)));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateRemoveCardCombosAndNonEmptyResult")
+    public void test08_removeAllGivenCards_removingCardsStillLeavesPlayerWithSome(
+            Set<Card> cardsToRemove, Set<Card> cardsPlayerOwns, Set<Card> expectedOutput) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+
+        player.removeAllGivenCards(cardsToRemove);
+
+        assertEquals(expectedOutput, player.getGetOwnedCards());
+    }
 }
