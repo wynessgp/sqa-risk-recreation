@@ -560,6 +560,24 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.BLUE));
     }
 
+    @Test
+    public void test19_placeNewArmiesInTerritory_setupPhase_validInput_playerLosesAnArmy() {
+        List<PlayerColor> players = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        // claim this territory; so we should have 34 armies at this point
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
+
+        unitUnderTest.setGamePhase(GamePhase.SETUP);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        // now place an army there and check we've lost an army.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
+        int expectedNumArmies = 33;
+        assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.BLUE));
+    }
+
 
 
 }
