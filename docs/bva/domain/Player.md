@@ -216,7 +216,7 @@ Input:
 - Underlying card collection = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
 
 Output:
-Underlying card collection = {}
+Underlying card collection = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
 ### Test 3
 Input:
 - cardsToBeRemoved = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
