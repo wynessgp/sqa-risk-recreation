@@ -9,21 +9,14 @@ public class StringsBundleLoader {
     private String localeName = "English";
 
     private boolean openBundle(String locale) {
-        ResourceBundle resourceBundle = locateResource(locale);
-        if (resourceBundle == null) {
+        try {
+            ResourceBundle.getBundle(BUNDLE_NAME, new Locale(locale));
+        } catch (Exception e) {
             localeName = "";
             return false;
         }
         localeName = locale;
         return true;
-    }
-
-    private ResourceBundle locateResource(String locale) {
-        try {
-            return ResourceBundle.getBundle(BUNDLE_NAME, new Locale(locale));
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private ResourceBundle getResourceBundle() {
