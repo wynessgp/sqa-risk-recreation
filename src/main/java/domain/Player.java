@@ -7,6 +7,7 @@ public class Player {
     private final PlayerColor playerColor;
     private int numArmiesToPlace;
     private Set<TerritoryType> territories = new HashSet<>();
+    private Set<Card> ownedCards = new HashSet<>();
 
     public Player(PlayerColor playerColor) {
         this.playerColor = playerColor;
@@ -42,5 +43,13 @@ public class Player {
 
     Player() {
         playerColor = PlayerColor.SETUP;
+    }
+
+    public void setOwnedCards(Set<Card> cardsPlayerOwns) {
+        this.ownedCards = new HashSet<>(cardsPlayerOwns);
+    }
+
+    public boolean ownsAllGivenCards(Set<Card> givenCards) {
+        return ownedCards.containsAll(givenCards);
     }
 }

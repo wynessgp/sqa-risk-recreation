@@ -133,6 +133,9 @@ Input:
 Output: 1 (true)
 
 # method: `removeAllGivenCards(cardsToBeRemoved: Set<Card>): void`
+Note: we will be utilizing a naive pointer equals for Cards here, since the cards should ONLY come from one
+source in our code; namely, the RiskCardDeck
+
 ## BVA Step 1
 Input: A collection of cards to be removed from the Player's underlying collection
 
@@ -196,4 +199,3 @@ Underlying card collection = {}
 
 Output:
 Underlying card collection = {[CONGO, INFANTRY]}
-

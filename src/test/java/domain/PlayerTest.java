@@ -81,4 +81,67 @@ public class PlayerTest {
         assertTrue(player.ownsTerritory(first));
     }
 
+    private static Stream<Arguments> generateCardsForPlayerAndFalseInput() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCard = new WildCard();
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+
+        Set<Card> playerSet1 = Set.of();
+        Set<Card> playerSet2 = Set.of(wildCard);
+        Set<Card> playerSet3 = Set.of(wildCard, brazilCard);
+
+        Set<Card> inputSet1 = Set.of(wildCard);
+        Set<Card> inputSet2 = Set.of(alaskaCard);
+        Set<Card> inputSet3 = Set.of(wildCard, alaskaCard, brazilCard);
+
+        toStream.add(Arguments.of(playerSet1, inputSet1));
+        toStream.add(Arguments.of(playerSet1, inputSet2));
+        toStream.add(Arguments.of(playerSet2, inputSet2));
+        toStream.add(Arguments.of(playerSet3, inputSet3));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateCardsForPlayerAndFalseInput")
+    public void test05_ownsAllGivenCards_playerDoesNotOwnAllGivenCards_returnsFalse(
+            Set<Card> cardsPlayerOwns, Set<Card> cardsToSeeIfPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+        assertFalse(player.ownsAllGivenCards(cardsToSeeIfPlayerOwns));
+    }
+
+    private static Stream<Arguments> generateCardsForPlayerAndTrueInput() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        WildCard wildCard = new WildCard();
+        TerritoryCard congoCard = new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY);
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.CAVALRY);
+
+        Set<Card> playerSet1 = Set.of();
+        Set<Card> playerSet2 = Set.of(wildCard);
+        Set<Card> playerSet3 = Set.of(wildCard, congoCard, alaskaCard);
+
+        Set<Card> inputSet1 = Set.of();
+        Set<Card> inputSet2 = Set.of(wildCard);
+        Set<Card> inputSet3 = Set.of(congoCard, alaskaCard);
+
+        toStream.add(Arguments.of(playerSet1, inputSet1));
+        toStream.add(Arguments.of(playerSet2, inputSet2));
+        toStream.add(Arguments.of(playerSet3, inputSet3));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateCardsForPlayerAndTrueInput")
+    public void test06_ownsAllGivenCards_playerOwnsSpecifiedCards_returnsTrue(
+            Set<Card> cardsPlayerOwns, Set<Card> cardsToSeeIfPlayerOwns) {
+        Player player = new Player();
+        player.setOwnedCards(cardsPlayerOwns);
+        assertTrue(player.ownsAllGivenCards(cardsToSeeIfPlayerOwns));
+    }
+
 }
