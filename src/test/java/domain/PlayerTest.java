@@ -82,24 +82,45 @@ public class PlayerTest {
     }
 
     private static Stream<Arguments> generateCardsForPlayerAndFalseInput() {
+        WildCard wildCardOne = new WildCard();
+        WildCard wildCardTwo = new WildCard();
+
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(wildCardOne);
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            if (territoryType == TerritoryType.ALASKA) {
+                allCards.add(alaskaCard);
+            } else if (territoryType == TerritoryType.BRAZIL) {
+                allCards.add(brazilCard);
+            }
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            allCards.add(new TerritoryCard(territoryType, currentPiece));
+            pieceTypeCount++;
+        }
+        allCards.add(wildCardTwo);
+
         Set<Arguments> toStream = new HashSet<>();
 
-        WildCard wildCard = new WildCard();
-        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
-        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
-
         Set<Card> playerSet1 = Set.of();
-        Set<Card> playerSet2 = Set.of(wildCard);
-        Set<Card> playerSet3 = Set.of(wildCard, brazilCard);
+        Set<Card> playerSet2 = Set.of(wildCardOne);
+        Set<Card> playerSet3 = Set.of(wildCardOne, brazilCard);
 
-        Set<Card> inputSet1 = Set.of(wildCard);
+        Set<Card> inputSet1 = Set.of(wildCardOne);
         Set<Card> inputSet2 = Set.of(alaskaCard);
-        Set<Card> inputSet3 = Set.of(wildCard, alaskaCard, brazilCard);
+        Set<Card> inputSet3 = Set.of(wildCardOne, alaskaCard, brazilCard);
 
         toStream.add(Arguments.of(playerSet1, inputSet1));
         toStream.add(Arguments.of(playerSet1, inputSet2));
         toStream.add(Arguments.of(playerSet2, inputSet2));
         toStream.add(Arguments.of(playerSet3, inputSet3));
+
+        toStream.add(Arguments.of(playerSet1, allCards));
+        toStream.add(Arguments.of(playerSet2, allCards));
+        toStream.add(Arguments.of(playerSet3, allCards));
 
         return toStream.stream();
     }
