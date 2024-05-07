@@ -703,7 +703,7 @@ Output: (Counts)
   - This means you can get a MAXIMAL amount of armies from territories by owning *41* territories (if a player owns 42 the game is over)
   - This will award you with **13** armies BEFORE any continent bonuses are taken into account.
 - Add the results together for continent bonuses and number of armies based on how many territories are owned
-- The absolutely minimum you could expect to see from this function is **3**
+- The absolute minimum you could expect to see from this function is **3**
 - The absolute maximum you could expect to see from this function is **22 + 13 = 35**
 
 ## BVA Step 4
