@@ -151,46 +151,51 @@ package presentation {
 
 package domain {
     +class WorldDominationGameEngine {
-        -{static}{final} MINIMUM_NUM_PLAYERS
-        -{static}{final} MAXIMUM_NUM_PLAYERS
-
-        -{static}{final} MAXIMUM_ARMIES_POSSIBLE_IN_SETUP
-        -{static}{final} ADDITIONAL_PLAYER_ARMY_OFFSET
-        -{static}{final} PLAYER_LIST_SIZE_OFFSET
-
-        -{static}{final} INITIAL_NUM_UNCLAIMED_TERRITORIES
+        -{static}{final} MINIMUM_NUM_PLAYERS: int
+        -{static}{final} MAXIMUM_NUM_PLAYERS: int
+        -{static}{final} MAXIMUM_ARMIES_POSSIBLE_IN_SETUP: int
+        -{static}{final} ADDITIONAL_PLAYER_ARMY_OFFSET: int
+        -{static}{final} PLAYER_LIST_SIZE_OFFSET: int
+        -{static}{final} INITIAL_NUM_UNCLAIMED_TERRITORIES: int
+        -{static}{final} REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES: int
+        -{static}{final} THREE_ARMIES: int
+        -{static}{final} FORCED_CARD_TURN_IN_THRESHOLD: int
 
         -playersList: List<PlayerColor>
         -playersMap: Map<PlayerColor, Player>
         -currentPlayer: PlayerColor
-
         -numUnclaimedTerritoriesLeft: int
         -totalUnplacedArmiesLeft: int
-
         -territoryGraph: TerritoryGraph
         -currentGamePhase: GamePhase
+        -dieRollParser: DieRollParser
+        -tradeInParser: TradeInParser
+        -dieRolls: List<Integer>
 
-        +WorldDominationGameEngine()
+        ~WorldDominationGameEngine(playerOrder: List<PlayerColor>, parser: DieRollParser)
+        -handleOtherDependentObjectCreation(parser: DieRollParser): void
+        ~shufflePlayers(): void
+        -sortPlayersListByDieRoll(): void
+        +WorldDominationGameEngine(playerOrder: List<PlayerColor>)
         -initializeGraph(): boolean
-
         +initializePlayersList(playerOrder: List<PlayerColor>): boolean
         -handleErrorCheckingForOrderSize(playerOrder: List<PlayerColor>): void
         -handleErrorCheckingForOrderContents(playerOrder: List<PlayerColor>): void
         -initializePlayerColorToPlayerMap(playerColors: List<PlayerColor>): void
-
-        +assignSetupArmiesToPlayers(): boolean
+        ~assignSetupArmiesToPlayers(): boolean
         -checkIfPlayersListIsEmpty(): void
         -handleArmyAssignment(numPlayersInGame: int): void
 
         +checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean
-        -getPlayerInControlOfTerritory(relevantTerritory: TerritoryType): PlayerColor
+        -getTerritoryFromType(relevantTerritory: TerritoryType)
 
         +placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean
-
         -handleScramblePhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
         -checkIfTerritoryIsUnclaimed(relevantTerritory: TerritoryType): void
-        -checkNumArmiesToPlaceIsValid(numArmiesToPlace: int): void
+        -checkIfNumArmiesToPlaceIsValidForScramblePhase(numArmiesToPlace: int): void
         -checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace: int): void
+        -updateTerritoryObjectWithValidSetupArguments(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -decreaseNumArmiesCurrentPlayerHasToPlace(0: void
         -addTerritoryToCurrentPlayerCollection(relevantTerritory: TerritoryType): void
         -updateCurrentPlayer(): void
         -checkScramblePhaseEndCondition(): void
@@ -202,6 +207,30 @@ package domain {
         -modifyNumArmiesInTerritory(relevantTerritory: TerritoryType, additionalArmies: int): void
         -modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace: int): void
         -checkSetupPhaseEndCondition(): void
+        -increaseNumArmiesPlayerHasToPlace(numToIncreaseBy: int): void
+
+        ~calculatePlacementPhaseArmiesForCurrentPlayer(): int
+        -getTerritoriesCurrentPlayerOwns(): Set<TerritoryType>
+        -checkIfPlayerShouldExistOrGameIsOverWithTerritoryCount(numOwnedTerritories: int): void
+        -calculateBonusForOwnedContinents(): int
+
+        -handlePlacementPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkIfPlayerIsHoldingTooManyCards(): void
+        -checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace: int): void
+        -checkAttackPhaseEndCondition(): void
+
+        +tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>
+        -checkIfInValidGamePhase(validGamePhases: Set<GamePhase>): void
+        -checkIfPlayerOwnsCards(givenCardSet: Set<Card>, currentPlayerObject: Player): void
+        -addArmiesToPlayerStockpileIfValidSet(selectedCards: Set<Card>, playerObject: Player): Set<TerritoryType>
+        -modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject: Player, numArmiesToReceive: int, selectedCards: Set<Card>): void
+
+        +getCurrentPlayer(): PlayerColor
+        +getCurrentGamePhase(): GamePhase
+        +getPlayerOrder(): List<PlayerColor>
+        +getDieRolls(): List<Integer>
+        +getCurrentPlayerArmiesToPlace(): int
+        +getNumberOfArmies(territoryType: TerritoryType): int
 
         ~provideCurrentPlayerForTurn(currentlyGoingPlayer: PlayerColor): void
         ~setGamePhase(gamePhase: GamePhase): void
@@ -210,13 +239,20 @@ package domain {
         ~getNumArmiesByPlayerColor(playerColor: PlayerColor): int
         ~provideMockedTerritoryGraph(mockedGraph: TerritoryGraph): void
         ~getClaimedTerritoriesForPlayer(playerInQuestion: PlayerColor): Set<TerritoryType>
-        ~getPlayerOrder(): List<PlayerColor>
-        +getCurrentPlayer(): PlayerColor
-        +getCurrentGamePhase(): GamePhase
+        ~WorldDominationGameEngine()
+        ~setParser(parser: DieRollParser): void
+        ~claimAllTerritoriesForCurrentPlayer(territoriesToClaim: Set<TerritoryType>): void
+        ~provideMockedTradeInParser(mockedParser: TradeInParser): void
+        ~setCardsForPlayer(playerColor: PlayerColor, cardsPlayerOwns: Set<Card>): void
+        ~getNumCardsForPlayer(playerColor: PlayerColor): int
     }
 
     WorldDominationGameEngine --> "*" Player
     WorldDominationGameEngine --> "*" PlayerColor
+    WorldDominationGameEngine --> DieRollParser
+    WorldDominationGameEngine --> TradeInParser
+    WorldDominationGameEngine ..> Continent
+    WorldDominationGameEngine ..> Card
 
     +class Player {
         -{final} playerColor: PlayerColor
