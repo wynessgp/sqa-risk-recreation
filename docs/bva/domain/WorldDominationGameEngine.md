@@ -274,7 +274,12 @@ Additionally, we care about:
 - decrementing the number of armies left to place for our player
 - updating who's turn it is, if necessary.
   - This action should occur automatically for the phases:
-    - SCRAMBLE, SETUP, PLACEMENT (if numArmiesToPlace for the player IS 0)
+    - SCRAMBLE, SETUP
+- updating the game phase, if necessary.
+  - from SCRAMBLE -> SETUP if all territories are claimed (integration test)
+  - from SETUP -> PLACEMENT if all armies have been placed (integration test)
+  - from PLACEMENT -> ATTACK if the player places all of their earned armies
+    - Note that they may also change it manually, if they so desire.
 
 ## BVA Step 2
 Input:
@@ -288,6 +293,7 @@ Output:
 - function return value: Boolean
 - Territory: Pointer
 - Current player object: Pointer
+- Game Phase: Cases
 
 ## TODO: Elaborate more once attack/placement phase is being developed!
 
@@ -345,6 +351,13 @@ Output:
 - Player object: Pointer
   - The number of armies they have to place should be updated
   - Territories held should be updated if in SCRAMBLE (maybe attack too).
+- Game Phase: Cases
+  - SCRAMBLE (advancing out requires all territories to be claimed)
+  - SETUP (advancing out requires all setup armies to be placed)
+  - PLACEMENT (advancing requires all earned armies to be placed, or a manual phase end)
+  - ATTACK
+  - FORTIFY
+  - GAME_OVER
 
 ## BVA Step 4
 
@@ -413,6 +426,7 @@ Output:
   - Territory pointer: [numArmies = 1, PlayerColor = BLUE]
   - Current player = [Color = BLUE, numArmiesToPlace = 9, territories owned = {BRAZIL}]
   - Update to say we're on the next player's turn
+  - Game Phase = SCRAMBLE
 ### Test 7:
 - Input:
   - territory = EASTERN_AMERICA
@@ -426,6 +440,7 @@ Output:
   - Current player = [Color = GREEN, numArmiesToPlace = 0, territories owned = {EASTERN_AMERICA}]
     - Players should have more territories than this in a scramble phase; we'll let it slip for a test.
   - Update to say we're on the next player's turn
+  - Game Phase = SCRAMBLE
 
 ### SETUP PHASE
 
@@ -482,6 +497,7 @@ Output:
   - Territory pointer: [numArmies = 2, PlayerColor = current player]
   - Current player = [Color = BLUE, numArmiesToPlace = 2]
   - Update to say we're on the next player's turn
+  - Game Phase = SETUP
 ### Test 13:
 - Input:
   - territory = BRAZIL
@@ -495,6 +511,86 @@ Output:
   - Territory pointer: [numArmies = 6, PlayerColor = current player]
   - Current player = [Color = BLACK, numArmiesToPlace = 6]
   - Update to say we're on the next player's turn
+  - Game Phase = SETUP
+
+### PLACEMENT PHASE
+
+### Test 14:
+- Input:
+  - territory = ALASKA
+  - numArmies = 2
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = GREEN, numArmiesToPlace = 3, |heldCards| = 5]
+- Output:
+  - IllegalStateException
+    - message: "Player cannot place armies until they are holding \< 5 cards!"
+### Test 15:
+- Input:
+  - territory = ALASKA
+  - numArmies = 4
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 5, |heldCards| > 5]
+- Output:
+  - IllegalStateException
+    - message: "Player cannot place armies until they are holding \< 5 cards!"
+### Test 16:
+- Input:
+  - territory = ALASKA
+  - numArmies = 0 (or anything negative)
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 4, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place \< 1 army on a territory during the Placement phase"
+### Test 17:
+- Input:
+  - territory = BRAZIL
+  - numArmies = 4
+  - Territory owner = not current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = BLUE, numArmiesToPlace = 6, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Cannot place armies on a territory you do not own"
+### Test 18:
+- Input:
+  - territory = URAL
+  - numArmies = 5
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = PURPLE, numArmiesToPlace = 3, |heldCards| = 2]
+- Output:
+  - IllegalArgumentException
+    - message: "Player does not have enough armies to place!"
+### Test 19:
+- Input:
+  - territory = ALASKA
+  - numArmies = 6
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = RED, numArmiesToPlace = 7, |heldCards| = 1]
+- Output:
+  - Function output: 1 (true)
+  - Territory pointer = [numArmies = 7, playerColor = RED]
+  - Current player = [Color = RED, numArmiesToPlace = 1]
+    - Still on the current player's turn until they have no armies to place
+  - Game Phase = PLACEMENT
+### Test 20:
+- Input:
+  - territory = BRAZIL
+  - numArmies = 5
+  - Territory owner = current player
+  - Game Phase = PLACEMENT
+  - Current player = [Color = BLUE, numArmiesToPlace = 5, |heldCards| = 2]
+- Output:
+  - Function output: 1 (true)
+  - Territory pointer = [numArmies = 8, playerColor = BLUE]
+  - Current player = [Color = BLUE, numArmiesToPlace = 0]
+  - Game Phase = ATTACK
+    - Need to be on the same player's turn, but on the attack phase.
 
 ### TODO: ATTACK PHASE
 
@@ -559,14 +655,13 @@ Output: Players = [RED, YELLOW, GREEN], Dice = [3, 2, 1]
 # method: `calculatePlacementPhaseArmiesForCurrentPlayer(): int`
 
 ## BVA Step 1
-Input: Our current player, as well as the territories that they own at the start of Placement phase.
+Input: The territories that our current player owns at the start of Placement phase, per the TerritoryGraph
 
 Output: The amount of armies our current player will receive this phase dependent on the number
 of territories, as well as any continent troop bonuses they should receive.
 
 ## BVA Step 2
 Input:
-- Player object (pointer)
 - PlayerColor of the current person who's going (cases)
   - Our player object should have the same internal color as our PlayerColor from our currentPlayer tracking
 
@@ -576,14 +671,6 @@ Output:
 
 ## BVA Step 3
 Input:
-- Player object (Pointer):
-  - The null pointer (can't set, per Martin's rules)
-  - A pointer to the true object
-    - Things we want to consider with a Player pointer:
-      - Size of their owned territory set 
-        - An empty set (error case, player should no longer exist)
-        - If they own all 42 territories, the game should be over (error case)
-      - Contents of their owned territory set
 - current PlayerColor (Cases):
   - The 1st possibility: SETUP (can't set, should never happen)
   - The 2nd possibility: RED
@@ -592,20 +679,47 @@ Input:
   - The 0th, 8th possibilities (can't set)
     - Should directly align with the Player object we pull
     - If it doesn't this is an error. 
+- owned territories (Collection):
+  - Size 0 or 42 (error cases)
+  - Any amount (0, 42) is valid
+  - If the player owns any continents, we need to add a bonus for owning those. 
+    - Just check if they own any continent each time this method is called.
+
+Output: (Counts)
+- Depends largely on what continents are owned...
+  - Bonuses are as follows:
+    - 2 for South America
+    - 2 for Oceania
+    - 3 for Africa
+    - 5 for Europe
+    - 5 for North America
+    - 7 for Asia
+  - Note that if you own all the continents, the game is over, therefore the maximal bonus you could achieve here is:
+    - 7 + 5 + 5 + 3 + 2 = 22 (Asia, North America, Europe, Africa, either of Oceania/South America)
+- If the player owns \< 12 territories, they will earn 3 armies from *owning territories* 
+  - This figure does NOT include any continent bonuses they may have. 
+  - This also means that the absolute MINIMUM amount of armies a player may earn on a turn is **3**.
+- If the player owns \>= 12 territories, give them: floor(num territories owned / 3)
+  - This means you can get a MAXIMAL amount of armies from territories by owning *41* territories (if a player owns 42 the game is over)
+  - This will award you with **13** armies BEFORE any continent bonuses are taken into account.
+- Add the results together for continent bonuses and number of armies based on how many territories are owned
+- The absolute minimum you could expect to see from this function is **3**
+- The absolute maximum you could expect to see from this function is **22 + 13 = 35**
 
 ## BVA Step 4
 
 ### Test 1:
 Input:
-- Player object = [Color = RED, owned territories = {}]
 - current player = RED
+- |owned territories| = 0
 
 Output: 
 - IllegalStateException
   - message: "The current player should no longer exist!"
 ### Test 2:
 Input:
-- Player object = [Color = RED, owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 42]
+- current player = PURPLE
+- |owned territories| = 42
 
 Output:
 - IllegalStateException
@@ -615,38 +729,38 @@ Output:
 
 ### Test 3:
 Input:
-- Player object = [Color = BLUE, owned territories = {ALASKA}]
 - current player = BLUE
+- |ownedTerritories| = 1, ownedTerritories = {ALASKA}
 
 Output: 3
 ### Test 4:
 Input:
-- Player object = [Color = PURPLE, owned territories = {ALASKA, ..., CONGO}, |owned territories| = 11]
 - current player = PURPLE
+- owned territories = {ALASKA, ..., CONGO}, |owned territories| = 11
 
 Output: 3
 ### Test 5:
 Input:
-- Player object = [Color = YELLOW, owned territories = {ALASKA, ..., EASTERN_AMERICA}, |owned territories| = 12]
 - current player = YELLOW
+- owned territories = {ALASKA, ..., EASTERN_AMERICA}, |owned territories| = 12
 
 Output: 4
 ### Test 6:
 Input:
-- Player object = [Color = GREEN, owned territories = {ALASKA, ..., JAPAN}, |owned territories| = 14]
 - current player = GREEN
+- owned territories = {ALASKA, ..., JAPAN}, |owned territories| = 14
 
 Output: 4
 ### Test 7:
 Input:
-- Player object = [Color = BLACK, owned territories = {ALASKA, ..., CHINA}, |owned territories| = 15]
 - current player = BLACK
+- owned territories = {ALASKA, ..., CHINA}, |owned territories| = 15
 
 Output: 5
 ### Test 8:
 Input:
-- Player object = [Color = BLUE, owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 36]
 - current player = BLUE
+- owned territories = {ALASKA, ..., YAKUTSK}, |owned territories| = 36
 
 Output: 12
 
@@ -656,41 +770,182 @@ Output: 12
 
 ### Test 9:
 Input: 
-- Player object = [Color = RED, owned territories = { all for OCEANIA }, |owned territories| = 4]
 - current player = RED
+- owned territories = { all for OCEANIA }, |owned territories| = 4
 
-Output: 5 (3 from owned territories, 2 from owning OCEANIA)
+Output: 5 (3 from size of owned territories, 2 from owning OCEANIA)
 ### Test 10:
 Input:
-- Player object = [Color = RED, owned territories = { all for ASIA }, |owned territories| = 12]
 - current player = RED
+- owned territories = { all for ASIA }, |owned territories| = 12
 
-Output: 11 (4 from owned territories, 7 from owning ASIA)
+Output: 11 (4 from size of owned territories, 7 from owning ASIA)
 ### Test 11:
-- Player object = [Color = RED, owned territories = { all for EUROPE }, |owned territories| = 7]
 - current player = RED
+- owned territories = { all for EUROPE }, |owned territories| = 7]
 
-Output: 8 (3 from owned territories, 5 from owning EUROPE)
+Output: 8 (3 from size of owned territories, 5 from owning EUROPE)
 
 ### Test 12:
-- Player object = [Color = RED, owned territories = { all for AFRICA }, |owned territories| = 6]
 - current player = RED
+- owned territories = { all for AFRICA }, |owned territories|
 
-Output: 6 (3 from owned territories, 3 from owning AFRICA)
+Output: 6 (3 from size of owned territories, 3 from owning AFRICA)
 ### Test 13:
-- Player object = [Color = RED, owned territories = { all for S. America }, |owned territories| = 4]
 - current player = RED
+- owned territories = { all for S. America }, |owned territories| = 4
 
-Output: 5 (3 from owned territories, 2 from owning S. America)
+Output: 5 (3 from size of owned territories, 2 from owning S. America)
 ### Test 14:
-- Player object = [Color = RED, owned territories = { all for N. America }, |owned territories| = 9]
 - current player = RED
+- owned territories = { all for N. America }, |owned territories| = 9
 
-Output: 8 (3 from owned territories, 5 from owning N. America)
+Output: 8 (3 from size of owned territories, 5 from owning N. America)
 ### Test 15:
-- Player object = [Color = RED, owned territories = { all for ASIA, EUROPE }, |owned territories| = 19]
 - current player = RED
+- Player object = owned territories = { all for ASIA, EUROPE }, |owned territories| = 19
 
-Output: 18 (6 from owned territories, 5 from owning EUROPE, 7 from owning ASIA)
+Output: 18 (6 from size of owned territories, 5 from owning EUROPE, 7 from owning ASIA)
 
 ### More tests for owned continent combinations, from 2 owned continents up to 5.
+
+# method: `tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>`
+
+## BVA Step 1
+Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
+
+For input, we also care about some attributes about our player. Specifically:
+- If the player owns the cards they are attempting to trade in
+- If the player owns any territories MATCHING the territories on the respective cards they trade in
+
+Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
+or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
+
+Additionally, we care about:
+- The GamePhase being forced back to the placement phase
+  - We want to emphasize that these armies MUST be placed before the player can continue
+- The player receiving the bonus armies equivalent to the set's trade in value
+  - So if I trade in the first set, I should get 4 more armies. 
+- The respective cards being removed from the player's owned cards
+  - I shouldn't be able to trade in the same cards over and over
+  - Cards are removed from the game once turned in
+
+## BVA Step 2
+Input:
+- selectedCardsToTradeIn: Collection
+- currentPlayer: Cases
+- Player object: Pointer (we care about what territories and cards they own)
+- Underlying GamePhase: Cases
+  - Should either be PLACEMENT/ATTACK. 
+
+Output:
+- Method output: Collection
+- Underlying player object: Pointer
+- GamePhase: Cases
+  - Only care about setting it back to PLACEMENT
+
+## BVA Step 3
+Input:
+- selectedCardsToTradeIn (Collection):
+  - Any set to be deemed invalid by the TradeInParser (error case)
+  - A set of cards that is valid, but is not owned by the current player (error case)
+  - A valid set of trade in cards (see TradeInParser's rules about this)
+- currentPlayer (Cases):
+  - Should always line up directly with the GameEngine's tracking
+  - If it doesn't, this is an error.
+  - Valid colors are anything BESIDES `SETUP`
+- Player object (Pointer):
+  - Care about what cards they own at the time this method is called
+    - If they don't own the cards, throw an error.
+  - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
+- Underlying GamePhase (Cases):
+  - PLACEMENT
+  - ATTACK
+  - Any other phase (error case)
+
+Output:
+- Method output (Collection):
+  - An empty collection (given no territories are matched)
+  - A collection containing 1 element 
+  - A collection containing 2 elements
+  - A collection containing 3 elements
+  - Any size outside [0, 3] (can't be set, per calling TradeInParser's methods)
+- Underlying player object (Pointer):
+  - numArmiesToPlace should be updated according to the current set's trade in bonus
+  - Remove the relevant cards from their underlying collection
+- GamePhase:
+  - Set it back to PLACEMENT
+  - Should never set it to anything else
+  
+## BVA Step 4
+### Test 1:
+Input:
+- selectedCardsToBeTradedIn = {}
+- currentPlayer = RED
+- Player object = [Color = RED, ownedCards = [ Wild card, Wild card, [ALASKA, INFANTRY] ] ]
+- GamePhase = PLACEMENT
+
+Output:
+- IllegalStateException
+  - message: "Could not trade in cards: \< trade in parser error message \>"
+### I'm using a more generic error message here so that the details given in TradeInParser can shine through.
+
+### Test 2:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = BLUE
+- Player object = [Color = BLUE, ownedCards = [] ]
+- GamePhase = PLACEMENT (test with all phases besides ATTACK/PLACEMENT here)
+
+Output:
+- IllegalArgumentException
+  - message: "Player doesn't own all the selected cards!"
+### Test 3:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = GREEN
+- Player object = [Color = GREEN, ownedCards = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]  ]  ]
+- GamePhase = SETUP
+
+Output:
+- IllegalStateException
+  - message: "Can only trade in cards during the PLACEMENT or ATTACK phases"
+### Test 4:
+Input:
+- selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = BLUE
+- Player object = [Color = BLUE, numArmiesToPlace = 5, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {ALASKA, BRAZIL}
+  - Let this be the first set traded in
+- GamePhase = PLACEMENT
+
+Output:
+- Method output = {ALASKA, BRAZIL}
+- Player object = [Color = BLUE, numArmiesToPlace = 9, ownedCards = [] ]
+- GamePhase = PLACEMENT
+### Test 5:
+Input:
+- selectedCardsToBeTradedIn = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]]
+- currentPlayer = PURPLE
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {YAKUTSK, BRAZIL, JAPAN}
+  - Let this be the second set traded in
+- GamePhase = ATTACK
+
+Output:
+- Method output: {BRAZIL}
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [] ]
+- GamePhase = PLACEMENT
+### Test 6:
+Input:
+- selectedCardsToBeTradedIn = {Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]}
+- currentPlayer = PURPLE
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+  - Player owns: {EASTERN_AUSTRALIA}
+  - Let this be the second set traded in
+- GamePhase = ATTACK
+
+Output:
+- Method output: {}
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
+- GamePhase = PLACEMENT
