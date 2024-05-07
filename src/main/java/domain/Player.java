@@ -53,6 +53,10 @@ public class Player {
         playerColor = PlayerColor.SETUP;
     }
 
+    public int getNumCardsHeld() {
+        return this.ownedCards.size();
+    }
+
     void setOwnedCards(Set<Card> cardsPlayerOwns) {
         this.ownedCards = new HashSet<>(cardsPlayerOwns);
     }
@@ -60,6 +64,4 @@ public class Player {
     Set<Card> getGetOwnedCards() {
         return new HashSet<>(ownedCards);
     }
-
-
 }

@@ -210,6 +210,16 @@ Here are some things to consider for integration tests (since we will be using v
   - Ensure that we make a transition into the SETUP phase once all territories are claimed.
 - After all players' armies have been placed from SETUP, single turns of PLACEMENT/ATTACK/FORTIFY should start.
   - Ensure that the game phase doesn't change too soon or too late.
+- When the SETUP phase ends, as the first player going, I should expect to have the new armies I will need to place already be calculated, and can take my turn right away.
+  - Ensure that when SETUP does end, the calculation for new armies in PLACEMENT is already done.
+  - Note that we can't do this during their first placement in the PLACEMENT phase, otherwise we'll do it every time they try to place something.
+- When a player goes to place troops in the PLACEMENT phase, and they are holding on to too many cards, then the game should not let them proceed
+  - Ensure that some kind of error is thrown and the player is informed they have too many cards.
+- After I have placed all of my armies in the PLACEMENT phase, I should be able to start attacking other players.
+  - Ensure that we don't transition phases too early.
+  - Also ensure that we don't change who the currently going player is.
+- After placing an army in the SCRAMBLE/SETUP phases, players should lose the ability to place that army again.
+  - Namely, decrement the number of armies they have left to place.
 
 To properly model these behaviors, we'll be using a test "outline" (not unlike that of using Cucumber).
 
@@ -262,9 +272,18 @@ When each player claims a territory until no unclaimed territories remain
 
 Then the game should advance into the SETUP phase (assertion)
 
+### Test 5:
+Given a valid list of players for the current game
+
+And the game is currently in the SCRAMBLE phase
+
+When the current player claims a valid territory
+
+Then the current player should have one less army left to place
+
 ### SETUP Phase Integration Tests
 
-### Test 5:
+### Test 6:
 Given that the players in the current game are [RED, PURPLE, YELLOW]
 
 And that the RED player owns ALASKA
@@ -276,7 +295,7 @@ When the PURPLE player tries to place an army on ALASKA
 Then an IllegalArgumentException should be thrown
 - Should have message: "Cannot place armies on a territory you do not own"
 
-### Test 6:
+### Test 7:
 Given a valid list of players for the current game
 
 And the game is in the SETUP phase
@@ -287,7 +306,7 @@ The game should now say that it is the next player's turn (assertion)
 - We want to make sure that this can wrap around; so make each player claim a territory once.
 - We should go from the end of the collection of player colors back to index 0 (assertion)
 
-### Test 7:
+### Test 8:
 Given a valid list of players for the current game
 
 And the game is currently in the SETUP phase (note - we'll manually transition it into SETUP for a fair test)
@@ -295,3 +314,181 @@ And the game is currently in the SETUP phase (note - we'll manually transition i
 When each player expends their remaining placeable armies (assertion - make sure we don't transition early!)
 
 Then the game should transition into the Placement phase (assertion)
+
+### Test 9:
+Given a valid list of players for the current game
+
+And the game is currently in the SETUP phase
+
+When the current player places another army on a valid territory (i.e. their owned territory)
+
+Then the current player should have one less army left to place
+
+### PLACEMENT Phase Integration Tests
+
+### Test 10:
+Given a valid list of players for the current game
+
+And that the SETUP phase is about to end
+
+When the last player goes to place their final army as part of the SETUP phase
+
+Then the game should transition into the placement phase
+
+And the FIRST player to go should have their appropriate amount of armies calculated
+
+And they should be able to place these newly earned armies.
+
+### Test 11:
+Given a valid list of players for the current game
+
+And the current player has 1 army left to place
+
+And the game is in the PLACEMENT phase
+
+When the player places their last army in the PLACEMENT phase
+
+Then the game should advance into the attack phase
+
+# method: `tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>`
+
+## BVA Step 1
+Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
+
+Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
+or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
+
+Additionally, we care about:
+- The GamePhase being forced back to the placement phase
+  - We want to emphasize that these armies MUST be placed before the player can continue
+- The player receiving the bonus armies equivalent to the set's trade in value
+  - So if I trade in the first set, I should get 4 more armies.
+
+## BVA Step 2
+Input:
+- selectedCardsToTradeIn: Collection
+- currentPlayer: Cases
+- Player object: Pointer
+- Underlying GamePhase: Cases
+  - Should either be PLACEMENT/ATTACK.
+
+Output:
+- Method output: Collection
+- Underlying player object: Pointer
+- GamePhase: Cases
+  - Only care about setting it back to PLACEMENT
+
+## BVA Step 3
+Input:
+- selectedCardsToTradeIn (Collection):
+  - Any set to be deemed invalid by the TradeInParser (error case)
+  - A set of cards that is valid, but is not owned by the current player (error case)
+  - A valid set of trade in cards (see TradeInParser's rules about this)
+- currentPlayer (Cases):
+  - Should always line up directly with the GameEngine's tracking
+  - If it doesn't, this is an error.
+  - Valid colors are anything BESIDES `SETUP`
+- Player object (Pointer):
+  - Care about what cards they own at the time this method is called
+    - If they don't own the cards, throw an error.
+  - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
+- Underlying GamePhase (Cases):
+  - PLACEMENT
+  - ATTACK
+  - Any other phase (error case)
+
+Output:
+- Method output (Collection):
+  - An empty collection (given no territories are matched)
+  - A collection containing 1 element
+  - A collection containing 2 elements
+  - A collection containing 3 elements
+  - Any size outside [0, 3] (can't be set, per calling TradeInParser's methods)
+- Underlying player object (Pointer):
+  - numArmiesToPlace should be updated according to the current set's trade in bonus
+  - Remove the relevant cards from their underlying collection
+- GamePhase:
+  - Set it back to PLACEMENT
+  - Should never set it to anything else
+
+## BVA Step 4
+Some things to consider for integration tests:
+- Preventing players from trading in an invalid set
+  - Error handling comes from the trade-in parser; but also based on card ownership
+- When a player goes to trade in cards, they should not be able to trade in the same set again
+  - Namely, we do want to ensure we actually take away their cards.
+- When a player trades in cards, they should be stopped from doing whatever they were doing previously and be forced to put down armies
+  - So if they were in the attack phase, move them back into the PLACEMENT phase.
+- If I am told that I have too many cards to place my armies, calling this should fix it for me and give me my bonus armies.
+  - Check that we give players their associated armies and that they can call placement again after trading in
+
+### Test 1
+Given a valid list of players for the current game
+
+And the current player does not have enough cards to trade in
+
+When that player tries to trade in their cards
+
+Then the player should be told they cannot trade in the given cards
+
+### Test 2
+Given a valid list of players for the current game
+
+And the current player does not own the cards they are trying to trade in
+
+When the player tries to trade in their cards
+
+Then the player should be told that they do not own the given cards
+
+### Test 3
+Given a valid list of players for the current game
+
+And the current player is trying to trade in a malformed set of cards
+- Too many / too few cards
+
+When the player tries to trade in their cards
+
+Then the player should be told that the set to trade in is invalid
+
+### Test 4
+Given a valid list of players for the current game
+
+And the player has a valid set of cards to trade in
+
+When the player tries to trade in their cards
+
+Then the player should get bonus armies
+
+And the player's cards they traded in should be removed
+
+### Test 5
+Given a valid list of players for the current game
+
+And the game is in the attack phase
+
+And the current player has a valid set of cards to trade in
+
+When the player tries to trade in their cards
+
+Then the player should get bonus armies
+
+And the game phase should be moved to PLACEMENT
+
+### Test 6
+Given a valid list of players for the current game
+
+And the current player is holding too many cards to be able to place armies
+
+When the player tries to place armies
+
+Then the game should tell the player they have too many cards
+
+Now the player chooses to trade in cards
+
+When the player tries to trade in cards
+
+Then the player should get bonus armies
+
+And when the player attempts to place their armies
+
+Then the new armies should be placed in the respective territory
