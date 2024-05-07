@@ -687,9 +687,24 @@ Input:
 
 Output: (Counts)
 - Depends largely on what continents are owned...
-- If the player owns \< 12 territories, give them 3 additional armies.
-- If the player owns \>= 12 territories, give them the number of territories / 3 additional armies. 
+  - Bonuses are as follows:
+    - 2 for South America
+    - 2 for Oceania
+    - 3 for Africa
+    - 5 for Europe
+    - 5 for North America
+    - 7 for Asia
+  - Note that if you own all the continents, the game is over, therefore the maximal bonus you could achieve here is:
+    - 7 + 5 + 5 + 3 + 2 = 22 (Asia, North America, Europe, Africa, either of Oceania/South America)
+- If the player owns \< 12 territories, they will earn 3 armies from *owning territories* 
+  - This figure does NOT include any continent bonuses they may have. 
+  - This also means that the absolute MINIMUM amount of armies a player may earn on a turn is **3**.
+- If the player owns \>= 12 territories, give them: floor(num territories owned / 3)
+  - This means you can get a MAXIMAL amount of armies from territories by owning *41* territories (if a player owns 42 the game is over)
+  - This will award you with **13** armies BEFORE any continent bonuses are taken into account.
 - Add the results together for continent bonuses and number of armies based on how many territories are owned
+- The absolutely minimum you could expect to see from this function is **3**
+- The absolute maximum you could expect to see from this function is **22 + 13 = 35**
 
 ## BVA Step 4
 
@@ -799,6 +814,10 @@ Output: 18 (6 from size of owned territories, 5 from owning EUROPE, 7 from ownin
 ## BVA Step 1
 Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
 
+For input, we also care about some attributes about our player. Specifically:
+- If the player owns the cards they are attempting to trade in
+- If the player owns any territories MATCHING the territories on the respective cards they trade in
+
 Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
 or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
 
@@ -807,12 +826,15 @@ Additionally, we care about:
   - We want to emphasize that these armies MUST be placed before the player can continue
 - The player receiving the bonus armies equivalent to the set's trade in value
   - So if I trade in the first set, I should get 4 more armies. 
+- The respective cards being removed from the player's owned cards
+  - I shouldn't be able to trade in the same cards over and over
+  - Cards are removed from the game once turned in
 
 ## BVA Step 2
 Input:
 - selectedCardsToTradeIn: Collection
 - currentPlayer: Cases
-- Player object: Pointer
+- Player object: Pointer (we care about what territories and cards they own)
 - Underlying GamePhase: Cases
   - Should either be PLACEMENT/ATTACK. 
 
