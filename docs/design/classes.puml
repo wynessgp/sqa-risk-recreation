@@ -216,21 +216,32 @@ package domain {
     }
 
     WorldDominationGameEngine --> "*" Player
+    WorldDominationGameEngine --> "*" PlayerColor
 
     +class Player {
         -{final} playerColor: PlayerColor
         -numArmiesToPlace: int
-        -{final} claimedTerritories: Set<TerritoryType>
+        -territories: Set<TerritoryType>
+        -ownedCards: Set<Card>
+
         +Player(playerColor: PlayerColor)
-        +getTerritories(): Set<TerritoryType>
+        +ownsTerritory(territory: TerritoryType): boolean
         +setNumArmiesToPlace(newAmount: int): void
-        +getColor(): PlayerColor
         +getNumArmiesToPlace(): int
+        +getColor(): PlayerColor
         +addTerritoryToCollection(relevantTerritory: TerritoryType): void
+        +ownsAllGivenCards(cardsToRemove: Set<Card>): void
+
+        ~setTerritories(territories: Set<TerritoryType>): void
+        ~getTerritories(): Set<TerritoryType>
+        ~Player()
+        ~setOwnedCards(cardsPlayerOwns: Set<Card>): void
+        ~getOwnedCards(): Set<Card>
     }
 
     Player --> PlayerColor
     Player --> "*" TerritoryType
+    Player --> "*" Card
 
     +enum GamePhase {
         SCRAMBLE
@@ -239,6 +250,8 @@ package domain {
         ATTACK
         FORTIFY
         GAME_OVER
+
+        +toString(): String
     }
 
     WorldDominationGameEngine --> GamePhase
@@ -247,8 +260,11 @@ package domain {
     WorldDominationGameEngine ..> PlayerColor
 
     +class RiskCardDeck {
+        -{static} {final} NUMBER_OF_WILD_CARDS: int
+        -{static} {final} CARDS_PER_PIECE_TYPE: int
         -deckOfCards: List<Card>
         -{final} random: Random
+
         +RiskCardDeck()
         ~RiskCardDeck(random: Random)
         ~initDeck(): boolean
@@ -304,11 +320,37 @@ package domain {
     +enum BattleResult {
         ATTACKER_VICTORY
         DEFENDER_VICTORY
+
+        +toString(): String
+    }
+
+    +enum Continent {
+        AFRICA
+        ASIA
+        EUROPE
+        NORTH_AMERICA
+        OCEANIA
+        SOUTH_AMERICA
+
+        -{final} associatedTerritories: Set<TerritoryType>
+        -{final} continentBonus: int
+        ~Continent(associatedTerritories: Set<TerritoryType>, continentArmyBonus: int)
+        ~matchesContinentTerritories(playerTerritoriesInQuestion: Set<TerritoryType>): boolean
+        +toString(): String
+        +getContinentBonusIfPlayerHasTerritories(setToPassIn: Set<TerritoryType>): int
     }
 
 
     +class TradeInParser {
+        -{static} {final} TRADE_IN_SET_LENGTH: int
+        -{static} {final} MAXIMUM_NUMBER_OF_TRADES: int
+        -{static} {final} ARMY_CALCULATION_OFFSET: int
+        -{static} {final} STARTING_NUMBER_OF_ARMIES: int
+        -{static} {final} ADDITIONAL_NUMBER_OF_ARMIES: int
+        -{static} {final} STARTING_NUMBER_OF_ARMIES_AFTER_THRESHOLD: int
+        -{static} {final} ADDITIONAL_NUMBER_OF_ARMIES_AFTER_THRESHOLD: int
         -setsTradedIn: int
+
         +startTrade(cards: Set<Card>): int
         +getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
         -checkTradeInState(cards: Set<Card>): void
@@ -326,6 +368,8 @@ package domain {
         ARTILLERY
         CAVALRY
         INFANTRY
+
+        +toString(): String
     }
 
     +interface Card {
@@ -360,6 +404,8 @@ package domain {
 
     +enum TerritoryType {
         ...
+
+        +toString(): String
     }
 
     +class TerritoryGraph {
@@ -393,8 +439,9 @@ package domain {
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
         +getPlayerInControl(): Player
-        +getArmies(): int
+        +getNumArmiesPresent(): int
         +getTerritoryType(): TerritoryType
+        +isOwnedByPlayer(playerToCheck: PlayerColor): boolean
     }
 
     Territory --> PlayerColor
@@ -408,6 +455,9 @@ package domain {
         BLUE
         GREEN
         PURPLE
+
+        +toString(): String
+        +getColorString(): String
     }
 }
 
