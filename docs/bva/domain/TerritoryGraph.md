@@ -297,6 +297,7 @@ Input: complete graph with all 42 territories, each possible TerritoryType
 Output: set containing all Territory objects except the one that corresponds with the input TerritoryType
 
 # method: `areTerritoriesAdjacent(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean`
+
 ## BVA Step 1
 Input: The existing undirected graph and two TerritoryType enums
 

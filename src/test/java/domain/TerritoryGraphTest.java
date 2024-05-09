@@ -680,4 +680,21 @@ public class TerritoryGraphTest {
         adjacencies.remove(territoryType);
         assertFalse(territoryGraph.addSetOfAdjacencies(territoryType, adjacencies));
     }
+
+    private static Stream<Arguments> territoryCombinationGeneratorWithDuplicates() {
+        Set<Arguments> territories = new HashSet<>();
+        for (TerritoryType first : TerritoryType.values()) {
+            for (TerritoryType second : TerritoryType.values()) {
+                territories.add(Arguments.of(first, second));
+            }
+        }
+        return territories.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGeneratorWithDuplicates")
+    public void test35_areTerritoriesAdjacent_withEmptyGraph_returnsFalse(TerritoryType first, TerritoryType second) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        assertFalse(territoryGraph.areTerritoriesAdjacent(first, second));
+    }
 }
