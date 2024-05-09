@@ -744,4 +744,20 @@ public class TerritoryGraphTest {
         EasyMock.verify(firstTerritory, secondTerritory);
     }
 
+    @ParameterizedTest
+    @MethodSource("territoryCombinationGenerator")
+    public void test39_areTerritoriesAdjacent_graphWithAllTerritoriesNoEdges_returnsFalse(TerritoryType first,
+                                                                                         TerritoryType second) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        for (TerritoryType territoryType : Set.of(TerritoryType.values())) {
+            Territory territory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+            EasyMock.replay(territory);
+            territoryGraph.addNewTerritory(territory);
+            EasyMock.verify(territory);
+        }
+
+        assertFalse(territoryGraph.areTerritoriesAdjacent(first, second));
+    }
+
 }
