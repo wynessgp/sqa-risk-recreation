@@ -110,6 +110,7 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhase() {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{this.gameEngine.getCurrentPlayer()}));
+        enablePlacement();
     }
 
     private void handleAttackPhase() {
@@ -166,13 +167,13 @@ public class GameMapScreenController implements GameScene {
                     new Object[]{this.selectedTerritory}));
             toggleDialog(this.claimTerritoryDialog);
         } else {
-            handlePlaceArmies();
+            handlePlaceArmies(1);
         }
     }
 
-    private void handlePlaceArmies() {
+    private void handlePlaceArmies(int armies) {
         try {
-            this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), 1);
+            this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), armies);
         } catch (Exception e) {
             toggleDialog(this.placeArmiesErrorDialog);
         }
