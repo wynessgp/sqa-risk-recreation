@@ -1302,4 +1302,39 @@ public class WorldDominationGameEngineTest {
         String expectedMessage = "Source and destination territory must be two adjacent territories!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    private static Stream<Arguments> generateNonAdjacentTerritories() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        toStream.add(Arguments.of(TerritoryType.IRKUTSK, TerritoryType.ALASKA));
+        toStream.add(Arguments.of(TerritoryType.PERU, TerritoryType.YAKUTSK));
+        toStream.add(Arguments.of(TerritoryType.ALBERTA, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.ARGENTINA, TerritoryType.MADAGASCAR));
+        toStream.add(Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.INDONESIA, TerritoryType.EASTERN_AUSTRALIA));
+        toStream.add(Arguments.of(TerritoryType.CHINA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.MONGOLIA, TerritoryType.EASTERN_UNITED_STATES));
+        toStream.add(Arguments.of(TerritoryType.UKRAINE, TerritoryType.BRAZIL));
+        toStream.add(Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.CONGO));
+        toStream.add(Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.CENTRAL_AMERICA));
+        toStream.add(Arguments.of(TerritoryType.SIAM, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.BRAZIL));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritories")
+    public void test40_attackTerritory_inputTerritoriesAreNotAdjacent_expectException(
+            TerritoryType firstTerritory, TerritoryType nonAdjacentTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(firstTerritory, nonAdjacentTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
