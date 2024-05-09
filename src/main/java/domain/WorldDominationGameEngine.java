@@ -372,12 +372,19 @@ public final class WorldDominationGameEngine {
 
     public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                 int numAttackers, int numDefenders) {
+        checkIfNumAttackersIsValid(numAttackers);
         if (currentGamePhase != GamePhase.ATTACK) {
             throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
         }
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
         throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+    }
+
+    private void checkIfNumAttackersIsValid(int numAttackers) {
+        if (numAttackers < 1 || numAttackers > 3) {
+            throw new IllegalArgumentException("Number of armies to attack with must be within [1, 3]!");
+        }
     }
 
     private void checkIfAppropriatePlayersOwnTerritories(TerritoryType source, TerritoryType dest) {

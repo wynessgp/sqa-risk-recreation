@@ -1432,4 +1432,19 @@ public class WorldDominationGameEngineTest {
         String expectedMessage = "Attacking territories is not allowed in any phase besides attack!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 4, 17, Integer.MAX_VALUE})
+    public void test44_attackTerritory_invalidAmountOfAttackers_expectException(int illegalAttackerAmount) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY,
+                        illegalAttackerAmount, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Number of armies to attack with must be within [1, 3]!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
