@@ -34,6 +34,8 @@ public class GameMapScreenController implements GameScene {
     private Label instructionLabel;
     @FXML
     private Label armiesToPlace;
+    @FXML
+    private Button attackSkipButton;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
     private Button selectedButton;
@@ -115,8 +117,13 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttackPhase() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.attackInstruction",
+        boolean sourceSelected = attackLogic.sourceSelected();
+        this.instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
+                        : "gameMapScreen.attackInstructionSource",
                 new Object[]{this.gameEngine.getCurrentPlayer()}));
+        this.attackSkipButton.setVisible(true);
+        this.attackSkipButton.setText(SceneController.getString(sourceSelected
+                ? "gameMapScreen.resetAttackButton" : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
@@ -195,6 +202,7 @@ public class GameMapScreenController implements GameScene {
             if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
             }
+            handleAttackPhase();
         } else {
             handleTargetTerritorySelection();
         }
