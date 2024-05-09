@@ -745,7 +745,7 @@ public class TerritoryGraphTest {
     }
 
     @ParameterizedTest
-    @MethodSource("territoryCombinationGenerator")
+    @MethodSource("territoryCombinationGeneratorWithDuplicates")
     public void test39_areTerritoriesAdjacent_graphWithAllTerritoriesNoEdges_returnsFalse(TerritoryType first,
                                                                                           TerritoryType second) {
         TerritoryGraph territoryGraph = new TerritoryGraph();
@@ -765,6 +765,13 @@ public class TerritoryGraphTest {
     public void test40_areTerritoriesAdjacent_withCompleteGraph_returnsTrue(TerritoryType first, TerritoryType second) {
         TerritoryGraph territoryGraph = generateCompleteGraph();
         assertTrue(territoryGraph.areTerritoriesAdjacent(first, second));
+    }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test41_areTerritoriesAdjacent_withCompleteGraph_withSameTerritory_returnsFalse(TerritoryType first) {
+        TerritoryGraph territoryGraph = generateCompleteGraph();
+        assertFalse(territoryGraph.areTerritoriesAdjacent(first, first));
     }
 
 }
