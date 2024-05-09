@@ -38,6 +38,7 @@ public class GameMapScreenController implements GameScene {
     private TerritoryType selectedTerritory;
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
+    private final AttackLogic attackLogic = new AttackLogic();
 
     @FXML
     private void initialize() {
@@ -190,11 +191,26 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttack() {
-        if (!this.gameEngine.checkIfPlayerOwnsTerritory(this.territoryButtonMap.get(this.selectedButton),
-                    this.gameEngine.getCurrentPlayer())) {
-            this.territoryErrorDialog.setContentText(SceneController.getString("gameMapScreen.attackError", null));
-            toggleDialog(this.territoryErrorDialog);
+        if (!attackLogic.sourceSelected()) {
+            if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
+                updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
+            }
+        } else {
+            handleTargetTerritorySelection();
         }
+    }
+
+    private void handleTargetTerritorySelection() {
+        if (!attackLogic.setTargetTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
+            updateTerritoryErrorDialog("gameMapScreen.attackTargetError");
+        } else if (!attackLogic.territoriesAreAdjacent(this.gameEngine)) {
+            updateTerritoryErrorDialog("gameMapScreen.attackAdjacentError");
+        }
+    }
+
+    private void updateTerritoryErrorDialog(String error) {
+        this.territoryErrorDialog.setContentText(SceneController.getString(error, null));
+        toggleDialog(this.territoryErrorDialog);
     }
 
     @Override
