@@ -28,6 +28,9 @@ public final class WorldDominationGameEngine {
     private static final int MINIMUM_NUMBER_OF_ATTACKING_ARMIES = 1;
     private static final int MAXIMUM_NUMBER_OF_ATTACKING_ARMIES = 3;
 
+    private static final int MINIMUM_NUMBER_OF_DEFENDING_ARMIES = 1;
+    private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
+
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
@@ -376,6 +379,7 @@ public final class WorldDominationGameEngine {
     public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                 int numAttackers, int numDefenders) {
         checkIfNumAttackersIsValid(numAttackers);
+        checkIfNumDefendersIsValid(numDefenders);
         if (currentGamePhase != GamePhase.ATTACK) {
             throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
         }
@@ -388,6 +392,13 @@ public final class WorldDominationGameEngine {
         if (numAttackers < MINIMUM_NUMBER_OF_ATTACKING_ARMIES || numAttackers > MAXIMUM_NUMBER_OF_ATTACKING_ARMIES) {
             throw new IllegalArgumentException(String.format("Number of armies to attack with must be within [%d, %d]!",
                             MINIMUM_NUMBER_OF_ATTACKING_ARMIES, MAXIMUM_NUMBER_OF_ATTACKING_ARMIES));
+        }
+    }
+
+    private void checkIfNumDefendersIsValid(int numDefenders) {
+        if (numDefenders < MINIMUM_NUMBER_OF_DEFENDING_ARMIES || numDefenders > MAXIMUM_NUMBER_OF_DEFENDING_ARMIES) {
+            throw new IllegalArgumentException(String.format("Number of armies to defend with must be within [%d, %d]!",
+                    MINIMUM_NUMBER_OF_DEFENDING_ARMIES, MAXIMUM_NUMBER_OF_DEFENDING_ARMIES));
         }
     }
 

@@ -1447,4 +1447,19 @@ public class WorldDominationGameEngineTest {
         String expectedMessage = "Number of armies to attack with must be within [1, 3]!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 3, 17, Integer.MAX_VALUE})
+    public void test45_attackTerritory_invalidAmountOfDefenders_expectException(int illegalDefenderAmount) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY,
+                        3, illegalDefenderAmount));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Number of armies to defend with must be within [1, 2]!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
