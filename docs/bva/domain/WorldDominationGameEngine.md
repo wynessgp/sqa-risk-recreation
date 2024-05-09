@@ -950,7 +950,7 @@ Output:
 - Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
 - GamePhase = PLACEMENT
 
-# method: `attackTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int): int`
+# method: `attackTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): int`
 
 ## Note:
 An implicit assumption with this method is that the defender will always want to roll the maximum amount of dice
@@ -1012,6 +1012,7 @@ Input:
 - sourceTerritory: Cases
 - destTerritory: Cases
 - numAttackers: Counts
+- numDefenders: Counts
 - current game phase: Cases
 - currently going player: Cases
 - player object: Pointer
@@ -1047,6 +1048,10 @@ Input:
   - Any value \< 1 (error case)
   - Any value in [1, 3] (provided this does not EXCEED the number of armies in the origin territory)
   - \> Num armies in origin territory - 1 (error case, must leave at least 1 army in a territory)
+- numDefenders (Counts):
+  - Any value \< 1 (error case)
+  - Any value in [1, 2] (provided this does not EXCEED the number of armies in the destination territory)
+  - Note that defenders CAN go to down to 0 armies in their territory while "defending" (i.e. in the roll)
 - current game phase (Cases):
   - SCRAMBLE (error case)
   - SETUP (error case)
@@ -1102,8 +1107,8 @@ Output:
   - 1 if the user did take over a territory
 - Attacker, defender dice results & battle results (Collection):
   - All will have a minimum size of 1
-  - Attacker rolls can have a maximum size of 3
-  - Defender, battle results have a maximum size of 2
+  - Attacker rolls can have a maximum size of 3 (should match numAttackers)
+  - Defender, battle results have a maximum size of 2 (should match numDefenders)
   - These lists are sorted in non-increasing order; to make it easier to visualize the results for players.
 
 ## BVA Step 4:
@@ -1111,6 +1116,7 @@ Output:
 Input:
 - sourceTerritory, destTerritory = ALASKA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1129,6 +1135,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = INDIA
 - numAttackers = 2
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1147,6 +1154,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1163,6 +1171,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1179,6 +1188,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = SETUP 
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1195,6 +1205,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = FORTIFY
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1211,6 +1222,7 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = -1
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1226,7 +1238,8 @@ Output:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
-- numAttackers = 0
+- numAttackers = 10
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
@@ -1236,13 +1249,65 @@ Input:
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to attack with must within [1, 3]"
+  - message: "Number of armies to attack with must be within [1, 3]"
 
 ### Test 9:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = -1
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+- RiskCardDeck = [ cards left to draw: 35 ]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must within [1, 2]"
+
+### Test 10:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 10
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+- RiskCardDeck = [ cards left to draw: 35 ]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must within [1, 2]"
+
+### Test 11:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 0
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+- RiskCardDeck = [ cards left to draw: 35 ]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must within [1, 2]"
+
+### Test 12:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
 - numAttackers = 1
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 5, ownedTerritories = {BRAZIL} ]
@@ -1254,11 +1319,12 @@ Output:
 - IllegalStateException
   - message: "Player must trade in cards before they can attack!"
 
-### Test 10:
+### Test 13:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 1
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5), ownedTerritories = {BRAZIL} ] 
@@ -1270,11 +1336,12 @@ Output:
 - IllegalStateException
   - message: "Player must trade in cards before they can attack!"
 
-### Test 11:
+### Test 14:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
@@ -1286,7 +1353,7 @@ Output:
 - IllegalArgumentException
   - message: "Source territory has too few armies to use in this attack!"
 
-### Test 12:
+### Test 15:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
@@ -1302,7 +1369,7 @@ Output:
 - IllegalArgumentException
   - message: "Source territory has too few armies to use in this attack!"
 
-### Test 13:
+### Test 16:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
@@ -1318,11 +1385,29 @@ Output:
 - IllegalArgumentException
   - message: "Source territory has too few armies to use in this attack!"
 
-### Test 14:
+### Test 17:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
+- source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 1, ownedBy = BLUE]
+- RiskCardDeck = [ cards left to draw: 35 ]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory has too few defenders for this attack!"
+
+### Test 18:
 Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
@@ -1341,34 +1426,36 @@ Output:
 - defense dice = [6, 5]
 - battle results = [DEFENDER_VICTORY, DEFENDER_VICTORY]
 
-### Test 15:
+### Test 19:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 2
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
 - source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
+- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
 - RiskCardDeck = [ cards left to draw: 14 ]
 
 Output:
 - method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = BLUE]
+- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = GREEN]
+- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
 - current game phase = ATTACK
 - ability to claim a card = False
-- attack dice = [4, 3, 2]
+- attack dice = [4, 3]
 - defense dice = [6, 5]
 - battle results = [DEFENDER_VICTORY, DEFENDER_VICTORY]
 
-### Test 16:
+### Test 20:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1387,11 +1474,12 @@ Output:
 - defense dice = [5]
 - battle results = [DEFENDER_VICTORY]
 
-### Test 17:
+### Test 21:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1410,7 +1498,7 @@ Output:
 - defense dice = [5]
 - battle results = [DEFENDER_VICTORY]
 
-### Test 18:
+### Test 22:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
@@ -1433,11 +1521,12 @@ Output:
 - defense dice = [5, 5]
 - battle results = [ATTACKER_VICTORY, DEFENDER_VICTORY]
 
-### Test 19:
+### Test 23:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 3
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1456,11 +1545,12 @@ Output:
 - defense dice = [6]
 - battle results = [DEFENDER_VICTORY]
 
-### Test 20:
+### Test 24:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1479,11 +1569,12 @@ Output:
 - defense dice = [4, 3]
 - battle results = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 
-### Test 21:
+### Test 25:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 2
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1502,11 +1593,12 @@ Output:
 - defense dice = [2, 1]
 - battle results = [ATTACKER_VICTORY, ATTACKER_VICTORY]
 
-### Test 22:
+### Test 26:
 Input:
 - sourceTerritory = EASTERN_UNITED_STATES
 - destTerritory = WESTERN_UNITED_STATES
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = GREEN
 - player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
@@ -1525,11 +1617,12 @@ Output:
 - defense dice = [2]
 - battle results = [ATTACKER_VICTORY]
 
-### Test 23:
+### Test 27:
 Input:
 - sourceTerritory = UKRAINE
 - destTerritory = AFGHANISTAN
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = RED
 - player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE} ]
@@ -1548,11 +1641,12 @@ Output:
 - defense dice = [3]
 - battle results = [ATTACKER_VICTORY]
 
-### Test 24:
+### Test 28:
 Input:
 - sourceTerritory = UKRAINE
 - destTerritory = AFGHANISTAN
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = RED
 - player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE, ... (this is the last territory they need) } ]
@@ -1572,11 +1666,12 @@ Output:
 - defense dice = [1]
 - battle results = [ATTACKER_VICTORY]
 
-### Test 25:
+### Test 29:
 Input:
 - sourceTerritory = UKRAINE
 - destTerritory = AFGHANISTAN
 - numAttackers = 1
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = RED
 - player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE, EASTERN_UNITED_STATES} ]
@@ -1596,11 +1691,12 @@ Output:
 - defense dice = [5, 4]
 - battle results = [DEFENDER_VICTORY]
 
-### Test 26:
+### Test 30:
 Input:
 - sourceTerritory = UKRAINE
 - destTerritory = AFGHANISTAN
 - numAttackers = 1
+- numDefenders = 1
 - current game phase = ATTACK
 - currently going player = RED
 - player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE} ]
