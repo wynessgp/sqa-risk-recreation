@@ -1346,4 +1346,31 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedGraph);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
+    public void test41_attackTerritory_sourceTerritoryNotOwnedByPlayer_expectException(
+            TerritoryType sourceTerritory, PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(currentPlayer);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, TerritoryType.ALASKA)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedTerritory).anyTimes();
+
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, TerritoryType.ALASKA, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory is not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
+    }
 }

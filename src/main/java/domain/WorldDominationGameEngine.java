@@ -375,6 +375,9 @@ public final class WorldDominationGameEngine {
         if (!territoryGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)) {
             throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
         }
+        if (!checkIfPlayerOwnsTerritory(sourceTerritory, currentPlayer)) {
+            throw new IllegalArgumentException("Source territory is not owned by the current player!");
+        }
         throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
     }
 
