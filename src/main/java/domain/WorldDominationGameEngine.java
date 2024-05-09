@@ -372,7 +372,7 @@ public final class WorldDominationGameEngine {
 
     public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                 int numAttackers, int numDefenders) {
-        if (!territoryGraph.isValidAdjacency(sourceTerritory, destTerritory)) {
+        if (!territoryGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)) {
             throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
         }
         throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");

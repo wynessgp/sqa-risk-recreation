@@ -295,3 +295,62 @@ Output: empty set
 Input: complete graph with all 42 territories, each possible TerritoryType
 
 Output: set containing all Territory objects except the one that corresponds with the input TerritoryType
+
+# method: `areTerritoriesAdjacent(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean`
+
+## BVA Step 1
+Input: The existing undirected graph and two TerritoryType enums
+
+Output: Yes or no answer if there is an edge between the two TerritoryTypes
+
+## BVA Step 2
+Input: Collection, cases
+
+Output: Boolean
+
+## BVA Step 3
+Input:
+- Collection:
+  - empty graph
+  - graph with 1 vertex
+  - graph with 2 vertices and 1 edge
+  - graph with 42 vertices and 0 edges
+  - complete graph with 42 vertices and 861 edges
+- Cases: each set possibilities from the TerritoryType enum (42 in total, all other options are impossible)
+  - The same TerritoryType
+  - Two different TerritoryTypes with an edge between them
+  - Two different TerritoryTypes without an edge between them
+
+Output:
+- 0 (false)
+- 1 (true)
+
+## BVA Step 4
+### Test value 1
+Input: empty graph, each possible set of TerritoryTypes
+
+Output: 0 (false)
+### Test value 2
+Input: graph with one territory (no edges), the corresponding TerritoryType (for each possible TerritoryType) and a different TerritoryType (for each possible TerritoryType)
+
+Output: 0
+### Test value 3
+Input: graph with one territory (no edges), the same TerritoryType (for each possible TerritoryType)
+
+Output: 0
+### Test value 4
+Input: graph with two unique territories and an edge between them, both of the TerritoryTypes present in the graph
+
+Output: 1 (true)
+### Test value 5
+Input: graph with all 42 territories and no edges, each possible set of TerritoryTypes
+
+Output: 0
+### Test value 6
+Input: complete graph with all 42 territories, each possible set of TerritoryTypes
+
+Output: 1
+### Test value 6
+Input: complete graph with all 42 territories, the same TerritoryType (for each possible TerritoryType)
+
+Output: 0

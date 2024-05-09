@@ -1331,7 +1331,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
 
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
-        EasyMock.expect(mockedGraph.isValidAdjacency(firstTerritory, nonAdjacentTerritory)).andReturn(false);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(firstTerritory, nonAdjacentTerritory)).andReturn(false);
 
         EasyMock.replay(mockedGraph);
 
