@@ -311,7 +311,7 @@ public final class WorldDominationGameEngine {
     }
 
     private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        checkIfPlayerIsHoldingTooManyCards();
+        checkIfPlayerIsHoldingTooManyCards("Player cannot place armies while they are holding more than 5 cards!");
         checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace);
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
@@ -320,9 +320,9 @@ public final class WorldDominationGameEngine {
         checkAttackPhaseEndCondition();
     }
 
-    private void checkIfPlayerIsHoldingTooManyCards() {
+    private void checkIfPlayerIsHoldingTooManyCards(String errorMessage) {
         if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
-            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
+            throw new IllegalStateException(errorMessage);
         }
     }
 
@@ -380,12 +380,10 @@ public final class WorldDominationGameEngine {
                                 int numAttackers, int numDefenders) {
         checkIfNumAttackersIsValid(numAttackers);
         checkIfNumDefendersIsValid(numDefenders);
-        if (currentGamePhase != GamePhase.ATTACK) {
-            throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
-        }
+        checkIfGameIsInAttackPhase();
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
-        throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+        checkIfPlayerIsHoldingTooManyCards("Player must trade in cards before they can attack!");
     }
 
     private void checkIfNumAttackersIsValid(int numAttackers) {
@@ -414,6 +412,12 @@ public final class WorldDominationGameEngine {
     private void checkIfTerritoriesAreAdjacent(TerritoryType source, TerritoryType dest) {
         if (!territoryGraph.areTerritoriesAdjacent(source, dest)) {
             throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+        }
+    }
+
+    private void checkIfGameIsInAttackPhase() {
+        if (currentGamePhase != GamePhase.ATTACK) {
+            throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
         }
     }
 

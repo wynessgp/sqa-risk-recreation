@@ -1462,4 +1462,45 @@ public class WorldDominationGameEngineTest {
         String expectedMessage = "Number of armies to defend with must be within [1, 2]!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6, 7, 15, Integer.MAX_VALUE})
+    public void test46_attackTerritory_playerHasTooManyCards_expectException(int illegalAmountOfCards) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(illegalAmountOfCards);
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        Territory mockedNorthwestTerritories = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedNorthwestTerritories.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(
+                TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.NORTHWEST_TERRITORY))
+                .andReturn(mockedNorthwestTerritories);
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player must trade in cards before they can attack!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+    }
 }
