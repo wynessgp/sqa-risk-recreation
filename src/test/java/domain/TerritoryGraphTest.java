@@ -711,4 +711,18 @@ public class TerritoryGraphTest {
         assertFalse(territoryGraph.areTerritoriesAdjacent(first, second));
         EasyMock.verify(territory);
     }
+
+    @ParameterizedTest
+    @MethodSource("territoryGenerator")
+    public void test37_areTerritoriesAdjacent_graphWithOneTerritory_checkSameTerritory_returnsFalse(
+            TerritoryType territoryType) {
+        TerritoryGraph territoryGraph = new TerritoryGraph();
+        Territory territory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(territory.getTerritoryType()).andReturn(territoryType);
+        EasyMock.replay(territory);
+
+        territoryGraph.addNewTerritory(territory);
+        assertFalse(territoryGraph.areTerritoriesAdjacent(territoryType, territoryType));
+        EasyMock.verify(territory);
+    }
 }
