@@ -725,4 +725,5 @@ public class TerritoryGraphTest {
         assertFalse(territoryGraph.areTerritoriesAdjacent(territoryType, territoryType));
         EasyMock.verify(territory);
     }
+
 }
