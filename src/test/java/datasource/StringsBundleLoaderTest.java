@@ -2,10 +2,10 @@ package datasource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,7 @@ public class StringsBundleLoaderTest {
 
         String expectedMessage = "The requested bundle does not exist";
         assertEquals(expectedMessage, exception.getMessage());
-        assertNull(StringsBundleLoader.getBundle());
+        assertThrows(MissingResourceException.class, StringsBundleLoader::getBundle);
     }
 
 }

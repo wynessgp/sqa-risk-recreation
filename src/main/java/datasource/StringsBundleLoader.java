@@ -9,8 +9,9 @@ public class StringsBundleLoader {
     private String localeName = "English";
 
     private boolean openBundle(String locale) {
-        ResourceBundle resourceBundle = locateResource(locale);
-        if (resourceBundle == null || !resourceBundle.getLocale().toString().contains(locale.toLowerCase())) {
+        try {
+            ResourceBundle.getBundle(BUNDLE_NAME, new Locale(locale));
+        } catch (Exception e) {
             localeName = "";
             return false;
         }
@@ -18,16 +19,8 @@ public class StringsBundleLoader {
         return true;
     }
 
-    private ResourceBundle locateResource(String locale) {
-        try {
-            return ResourceBundle.getBundle(BUNDLE_NAME, new Locale(locale));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     private ResourceBundle getResourceBundle() {
-        return localeName.isEmpty() ? null : ResourceBundle.getBundle(BUNDLE_NAME, new Locale(localeName));
+        return ResourceBundle.getBundle(BUNDLE_NAME, new Locale(localeName));
     }
 
     public static boolean open(String locale) {
