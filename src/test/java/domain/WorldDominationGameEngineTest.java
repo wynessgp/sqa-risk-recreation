@@ -1406,4 +1406,30 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedGraph, mockedTerritory, mockedAlaska);
     }
+
+    private static Stream<Arguments> generateAllPhasesBesidesAttack() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        for (GamePhase gamePhase : GamePhase.values()) {
+            if (gamePhase != GamePhase.ATTACK) {
+                toStream.add(Arguments.of(gamePhase));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesBesidesAttack")
+    public void test43_attackTerritory_gamePhaseIsNotAttack_expectException(
+            GamePhase providedGamePhase) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(providedGamePhase);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Attacking territories is not allowed in any phase besides attack!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
