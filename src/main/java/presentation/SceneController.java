@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 
 public class SceneController {
@@ -53,6 +54,10 @@ public class SceneController {
 
     protected List<PlayerColor> getOriginalPlayerOrder() {
         return originalPlayerOrder;
+    }
+
+    protected void onKeyPress(KeyEvent event) {
+        System.out.println("Key Pressed: " + event.getCode());
     }
 
     protected static void setRoot(Scene scene) {

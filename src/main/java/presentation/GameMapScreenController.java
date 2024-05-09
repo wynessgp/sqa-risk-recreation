@@ -57,13 +57,19 @@ public class GameMapScreenController {
     }
 
     private void gamePhaseActions() {
-        if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
-                    new Object[]{this.gameEngine.getCurrentPlayer()}));
-        } else {
-            this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
-                    new Object[]{this.gameEngine.getCurrentPlayer()}));
-            enablePlacement();
+        switch (this.gameEngine.getCurrentGamePhase()) {
+            case SCRAMBLE:
+                this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+                        new Object[]{this.gameEngine.getCurrentPlayer()}));
+                break;
+            case PLACEMENT:
+                this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
+                        new Object[]{this.gameEngine.getCurrentPlayer()}));
+                enablePlacement();
+                break;
+            case ATTACK:
+                this.instructionLabel.setText(SceneController.getString("gameMapScreen.attackInstruction",
+                        new Object[]{this.gameEngine.getCurrentPlayer()}));
         }
     }
 
