@@ -10,7 +10,7 @@
 
 **Item Progress**:
 1. [in progress] abc
-2. [not started] abc
+2. [in progress] Placement phase done, working on attack
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -22,13 +22,17 @@
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/132
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/132
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/134
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/132
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/128
