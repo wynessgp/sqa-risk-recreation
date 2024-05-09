@@ -1330,11 +1330,20 @@ public class WorldDominationGameEngineTest {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
 
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.isValidAdjacency(firstTerritory, nonAdjacentTerritory)).andReturn(false);
+
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.attackTerritory(firstTerritory, nonAdjacentTerritory, 3, 2));
         String actualMessage = exception.getMessage();
 
         String expectedMessage = "Source and destination territory must be two adjacent territories!";
         assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
     }
 }

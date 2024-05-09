@@ -28,7 +28,8 @@ public class TerritoryGraph {
         return true;
     }
 
-    private boolean isValidAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    // TODO: BVA for this method
+    public boolean isValidAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
         return territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory)
                 && !territories.get(startingTerritory).contains(endingTerritory)
                 && (startingTerritory != endingTerritory);
