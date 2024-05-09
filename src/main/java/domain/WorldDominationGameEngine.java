@@ -25,6 +25,9 @@ public final class WorldDominationGameEngine {
 
     private static final int FORCED_CARD_TURN_IN_THRESHOLD = 5;
 
+    private static final int MINIMUM_NUMBER_OF_ATTACKING_ARMIES = 1;
+    private static final int MAXIMUM_NUMBER_OF_ATTACKING_ARMIES = 3;
+
     private List<PlayerColor> playersList = new ArrayList<>();
     private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
@@ -382,8 +385,9 @@ public final class WorldDominationGameEngine {
     }
 
     private void checkIfNumAttackersIsValid(int numAttackers) {
-        if (numAttackers < 1 || numAttackers > 3) {
-            throw new IllegalArgumentException("Number of armies to attack with must be within [1, 3]!");
+        if (numAttackers < MINIMUM_NUMBER_OF_ATTACKING_ARMIES || numAttackers > MAXIMUM_NUMBER_OF_ATTACKING_ARMIES) {
+            throw new IllegalArgumentException(String.format("Number of armies to attack with must be within [%d, %d]!",
+                            MINIMUM_NUMBER_OF_ATTACKING_ARMIES, MAXIMUM_NUMBER_OF_ATTACKING_ARMIES));
         }
     }
 
