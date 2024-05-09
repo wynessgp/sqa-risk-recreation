@@ -83,6 +83,14 @@ public class GameMapScreenController implements GameScene {
             handleScramblePhase();
         } else if (currentPhase == GamePhase.SETUP) {
             handleSetupPhase();
+        } else {
+            placementAttackPhaseActions(currentPhase);
+        }
+    }
+
+    private void placementAttackPhaseActions(GamePhase currentPhase) {
+        if (currentPhase == GamePhase.PLACEMENT) {
+            handlePlacementPhase();
         } else if (currentPhase == GamePhase.ATTACK) {
             handleAttackPhase();
         }
@@ -97,6 +105,11 @@ public class GameMapScreenController implements GameScene {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
                 new Object[]{this.gameEngine.getCurrentPlayer()}));
         enablePlacement();
+    }
+
+    private void handlePlacementPhase() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
+                new Object[]{this.gameEngine.getCurrentPlayer()}));
     }
 
     private void handleAttackPhase() {
