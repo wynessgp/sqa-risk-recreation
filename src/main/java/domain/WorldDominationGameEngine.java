@@ -370,6 +370,11 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.PLACEMENT;
     }
 
+    public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
+                                int numAttackers, int numDefenders) {
+        throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+    }
+
     public PlayerColor getCurrentPlayer() {
         return currentPlayer;
     }

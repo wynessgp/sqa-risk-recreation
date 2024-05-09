@@ -1288,4 +1288,18 @@ public class WorldDominationGameEngineTest {
     public void test38_tradeInCards_validInput_expectReturnSetOfSizeOne() {
         testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
     }
+
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test39_attackTerritory_inputTerritoriesAreTheSame_expectException(TerritoryType duplicateTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(duplicateTerritory, duplicateTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
