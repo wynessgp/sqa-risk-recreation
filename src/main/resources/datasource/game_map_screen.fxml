@@ -592,7 +592,7 @@
       <ButtonType fx:constant="YES" />
       <ButtonType fx:constant="NO" />
    </DialogPane>
-   <DialogPane fx:id="placeArmiesErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true" headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+   <DialogPane fx:id="territoryErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true" headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
       <ButtonType fx:constant="CLOSE" />
    </DialogPane>
 </AnchorPane>
