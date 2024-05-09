@@ -1,80 +1,315 @@
 @startuml RiskDesign
 
 package presentation {
-    +class Main {
+    +class RiskApp {
+        -cssFileString: String
+        -iconImageString: String
+
+        +start(stage: Stage): void
+        -loadStartScreen(): Parent
+        -loadUniversalFiles(): void
+        -initializeScreen(root: Parent, stage: Stage): void
+        -addCssFileToScene(cssFileString: String, sceneInQuestion: Scene): Scene
+        -performStageSetup(stage: Stage): void
         +{static} main(args: String[]): void
-        +start(): void
     }
 
-    +interface GenericUI {
-        +draw(): void
+    +enum SceneType {
+        START
+        PLAYER_SELECT
+        SHUFFLE
+        GAME_OVER
+
+        -{final} sceneName: String
+        ~SceneType(sceneName: String)
+        ~getSceneName(): String
     }
 
-    +class ConcreteUI {
+    +class GameMapScreenController {
+        -claimTerritoryDialog: DialogPane
+        -placeArmiesErrorDialog: DialogPane
+        -dialogBackground: AnchorPane
+        -armiesToPlacePane: AnchorPane
+        -currentPlayerColor: Label
+        -currentPhase: Label
+        -instructionLabel: Label
+        -armiesToPlace: Label
+        -gameEngine: WorldDominationGameEngine
+        -selectedTerritory: TerritoryType
+        -selectedButton: Button
+        -territoryButtonMap: Map<Button, TerritoryType>
 
+        -initialize(): void
+        -updateStateLabels(): void
+        -gamePhaseActions(): void
+        -enablePlacement(): void
+        -handleClaimTerritory(): void
+        -setButtonBackgroundColor(): void
+        -toggleDialog(dialog: DialogPane): void
+        -handleTerritoryButtonClick(event: ActionEvent): void
+        -handleGamePhaseAction(): void
+        -handlePlaceArmies(): void
     }
 
-    ConcreteUI .u.|> GenericUI
+    +class PlayerSelectScreenController {
+        -{static}{final} MIN_PLAYERS: int
+        -{static}{final} MAX_PLAYERS: int
+        -instructionLabel: Label
+        -startGameButton: Button
+        -resetButton: Button
+        -blackButton: Button
+        -redButton: Button
+        -yellowButton: Button
+        -blueButton: Button
+        -greenButton: Button
+        -purpleButton: Button
+        ~playersOrder: List<PlayerColor>
+        ~controller: SceneController
 
-    +interface GenericController {
-        +receiveInput(): void
+        -initialize(): void
+        -onBackButtonClick(): void
+        -onResetButtonClick(): void
+        -resetButtonStates(): void
+        -resetPlayerButton(button: Button): void
+        -onStartGameButtonClick(): void
+        -onPlayerSelect(e: ActionEvent): void
+        -handlePlayerSelectUpdate(button: Button): void
+        -updateInstructionLabel(): void
     }
 
-    +class ConcreteController {
+    +class PlayerShuffleScreenController {
+        -instructionLabel: Label
+        -dieRollResult: Label
+        -rollOrderLabel: Label
+        -dieImage: ImageView
+        -startGameButton: Button
+        -{final} sceneController: SceneController
+        -originalPlayerOrder: List<PlayerColor>
+        -updatedPlayerOrder: List<PlayerColor>
+        -dieRolls: List<Integer>
+        -currentPlayer: int
 
+        -initialize(): void
+        -prepareCurrentPlayerRoll(): void
+        -prepareStartGame(): void
+        -stringifyPlayerOrder(): void
+        -rollDie(): void
+        -startGame(): void
     }
 
-    ConcreteController .u.|> GenericController
+    -enum DieImage {
+        ONE
+        TWO
+        THREE
+        FOUR
+        FIVE
+        SIX
 
-    +class PlayerDisplay {
-
+        -{static}{final} dieMap: Map<Integer, DieImage>
+        -{static}get(roll: int): Image
     }
 
+    PlayerShuffleScreenController --+ DieImage
 
+    +class SceneController {
+        -{static} sceneController: SceneController
+        -{static} languageName: String
+        -{final} screenMap: Map<SceneType, Pane>
+        -{final} main: Scene
+        -gameEngine: WorldDominationGameEngine
+        -originalPlayerOrder: List<PlayerColor>
+
+        -SceneController(main: Scene)
+        #add(scene: SceneType, pane: Pane): void
+        #activate(scene: SceneType): void
+        #initializePlayers(players: List<PlayerColor>): void
+        #getGameEngine(): WorldDominationGameEngine
+        #getOriginalPlayerOrder(): List<PlayerColor>
+        #{static} setRoot(scene: Scene): void
+        #{static} getInstance(): SceneController
+        #{static} getLanguageBundle(): ResourceBundle
+        #{static} getLanguage(): String
+        #{static} initializeLanguageBundle(): void
+        #{static} getString(key: String, format: Object[]): String
+    }
+
+    SceneController --> "*" SceneType
+
+    +class StartScreenController {
+        -languageSelect: ComboBox<String>
+
+        -initialize(): void
+        -onStartButtonClick(): void
+    }
+
+    GameMapScreenController ..> SceneController
+    PlayerSelectScreenController --> SceneController
+    PlayerShuffleScreenController --> SceneController
+    StartScreenController ..> SceneController
+    RiskApp ..> SceneController
 }
 
 package domain {
-    +abstract class GameEngine {
-        ~gamePhase: GamePhase
-        ~gameGraph: TerritoryGraph
-        ~tradeInChecker: TradeInManager
-        ~riskCardDeck: RiskCardDeck
-        ~dieRollParser: DieRollParser
+    +class WorldDominationGameEngine {
+        -{static}{final} MINIMUM_NUM_PLAYERS: int
+        -{static}{final} MAXIMUM_NUM_PLAYERS: int
+        -{static}{final} MAXIMUM_ARMIES_POSSIBLE_IN_SETUP: int
+        -{static}{final} ADDITIONAL_PLAYER_ARMY_OFFSET: int
+        -{static}{final} PLAYER_LIST_SIZE_OFFSET: int
+        -{static}{final} INITIAL_NUM_UNCLAIMED_TERRITORIES: int
+        -{static}{final} REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES: int
+        -{static}{final} THREE_ARMIES: int
+        -{static}{final} FORCED_CARD_TURN_IN_THRESHOLD: int
 
+        -playersList: List<PlayerColor>
+        -playersMap: Map<PlayerColor, Player>
+        -currentPlayer: PlayerColor
+        -numUnclaimedTerritoriesLeft: int
+        -totalUnplacedArmiesLeft: int
+        -territoryGraph: TerritoryGraph
+        -currentGamePhase: GamePhase
+        -dieRollParser: DieRollParser
+        -tradeInParser: TradeInParser
+        -dieRolls: List<Integer>
+
+        ~WorldDominationGameEngine(playerOrder: List<PlayerColor>, parser: DieRollParser)
+        -handleOtherDependentObjectCreation(parser: DieRollParser): void
+        ~shufflePlayers(): void
+        -sortPlayersListByDieRoll(): void
+        +WorldDominationGameEngine(playerOrder: List<PlayerColor>)
+        -initializeGraph(): boolean
+        +initializePlayersList(playerOrder: List<PlayerColor>): boolean
+        -handleErrorCheckingForOrderSize(playerOrder: List<PlayerColor>): void
+        -handleErrorCheckingForOrderContents(playerOrder: List<PlayerColor>): void
+        -initializePlayerColorToPlayerMap(playerColors: List<PlayerColor>): void
+        ~assignSetupArmiesToPlayers(): boolean
+        -checkIfPlayersListIsEmpty(): void
+        -handleArmyAssignment(numPlayersInGame: int): void
+
+        +checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean
+        -getTerritoryFromType(relevantTerritory: TerritoryType)
+
+        +placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean
+        -handleScramblePhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkIfTerritoryIsUnclaimed(relevantTerritory: TerritoryType): void
+        -checkIfNumArmiesToPlaceIsValidForScramblePhase(numArmiesToPlace: int): void
+        -checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace: int): void
+        -updateTerritoryObjectWithValidSetupArguments(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -decreaseNumArmiesCurrentPlayerHasToPlace(0: void
+        -addTerritoryToCurrentPlayerCollection(relevantTerritory: TerritoryType): void
+        -updateCurrentPlayer(): void
+        -checkScramblePhaseEndCondition(): void
+        -calculateNumUnplacedArmiesLeft(): void
+
+        -handleSetupPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace: int): void
+        -checkIfCurrentPlayerOwnsTerritory(relevantTerritory: TerritoryType): void
+        -modifyNumArmiesInTerritory(relevantTerritory: TerritoryType, additionalArmies: int): void
+        -modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace: int): void
+        -checkSetupPhaseEndCondition(): void
+        -increaseNumArmiesPlayerHasToPlace(numToIncreaseBy: int): void
+
+        ~calculatePlacementPhaseArmiesForCurrentPlayer(): int
+        -getTerritoriesCurrentPlayerOwns(): Set<TerritoryType>
+        -checkIfPlayerShouldExistOrGameIsOverWithTerritoryCount(numOwnedTerritories: int): void
+        -calculateBonusForOwnedContinents(): int
+
+        -handlePlacementPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkIfPlayerIsHoldingTooManyCards(): void
+        -checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace: int): void
+        -checkAttackPhaseEndCondition(): void
+
+        +tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>
+        -checkIfInValidGamePhase(validGamePhases: Set<GamePhase>): void
+        -checkIfPlayerOwnsCards(givenCardSet: Set<Card>, currentPlayerObject: Player): void
+        -addArmiesToPlayerStockpileIfValidSet(selectedCards: Set<Card>, playerObject: Player): Set<TerritoryType>
+        -modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject: Player, numArmiesToReceive: int, selectedCards: Set<Card>): void
+
+        +getCurrentPlayer(): PlayerColor
+        +getCurrentGamePhase(): GamePhase
+        +getPlayerOrder(): List<PlayerColor>
+        +getDieRolls(): List<Integer>
+        +getCurrentPlayerArmiesToPlace(): int
+        +getNumberOfArmies(territoryType: TerritoryType): int
+
+        ~provideCurrentPlayerForTurn(currentlyGoingPlayer: PlayerColor): void
+        ~setGamePhase(gamePhase: GamePhase): void
+        ~setPlayerOrderList(playersList: List<PlayerColor>): void
+        ~provideMockedPlayerObjects(mockedPlayers: List<Player>): void
+        ~getNumArmiesByPlayerColor(playerColor: PlayerColor): int
+        ~provideMockedTerritoryGraph(mockedGraph: TerritoryGraph): void
+        ~getClaimedTerritoriesForPlayer(playerInQuestion: PlayerColor): Set<TerritoryType>
+        ~WorldDominationGameEngine()
+        ~setParser(parser: DieRollParser): void
+        ~claimAllTerritoriesForCurrentPlayer(territoriesToClaim: Set<TerritoryType>): void
+        ~provideMockedTradeInParser(mockedParser: TradeInParser): void
+        ~setCardsForPlayer(playerColor: PlayerColor, cardsPlayerOwns: Set<Card>): void
+        ~getNumCardsForPlayer(playerColor: PlayerColor): int
     }
 
-    +class WorldDomination {
+    WorldDominationGameEngine --> "*" Player
+    WorldDominationGameEngine --> "*" PlayerColor
+    WorldDominationGameEngine --> DieRollParser
+    WorldDominationGameEngine --> TradeInParser
+    WorldDominationGameEngine ..> Continent
+    WorldDominationGameEngine ..> Card
 
+    +class Player {
+        -{final} playerColor: PlayerColor
+        -numArmiesToPlace: int
+        -territories: Set<TerritoryType>
+        -ownedCards: Set<Card>
+
+        +Player(playerColor: PlayerColor)
+        +ownsTerritory(territory: TerritoryType): boolean
+        +setNumArmiesToPlace(newAmount: int): void
+        +getNumArmiesToPlace(): int
+        +getColor(): PlayerColor
+        +addTerritoryToCollection(relevantTerritory: TerritoryType): void
+        +ownsAllGivenCards(cardsToRemove: Set<Card>): void
+
+        ~setTerritories(territories: Set<TerritoryType>): void
+        ~getTerritories(): Set<TerritoryType>
+        ~Player()
+        ~setOwnedCards(cardsPlayerOwns: Set<Card>): void
+        ~getOwnedCards(): Set<Card>
     }
 
-    +class CapitalRisk {
-
-    }
+    Player --> PlayerColor
+    Player --> "*" TerritoryType
+    Player --> "*" Card
 
     +enum GamePhase {
-        GAME_START,
-        SETUP,
-        PLACEMENT,
-        ATTACK,
-        FORTIFY,
+        SCRAMBLE
+        SETUP
+        PLACEMENT
+        ATTACK
+        FORTIFY
         GAME_OVER
+
+        +toString(): String
     }
 
-    GameEngine --> GamePhase
-    GameEngine --> TerritoryGraph
-    GameEngine --> RiskCardDeck
-    GameEngine --> TradeInParser
-    GameEngine --> DieRollParser
-
-    CapitalRisk --|> GameEngine
-    WorldDomination --|> GameEngine
+    WorldDominationGameEngine --> GamePhase
+    WorldDominationGameEngine --> TerritoryGraph
+    WorldDominationGameEngine ..> TerritoryType
+    WorldDominationGameEngine ..> PlayerColor
 
     +class RiskCardDeck {
+        -{static} {final} NUMBER_OF_WILD_CARDS: int
+        -{static} {final} CARDS_PER_PIECE_TYPE: int
         -deckOfCards: List<Card>
+        -{final} random: Random
+
         +RiskCardDeck()
-        +drawCardFromDeck(): Card
-        +initializeDeck(): boolean
-        -shuffleDeck(): boolean
+        ~RiskCardDeck(random: Random)
+        ~initDeck(): boolean
+        -addTerritoryCards(): void
+        -addWildCards(): void
+        +drawCard(): Card
+        ~shuffle(): boolean
+        ~setDeck(deck: List<Card>): void
+        ~isDeckEmpty(): boolean
     }
 
     +class Die {
@@ -85,21 +320,26 @@ package domain {
     }
 
     +class DieRollParser {
+        -{static} {final} MINIMUM_DIE_ROLL: int
+        -{static} {final} MAXIMUM_DIE_ROLL: int
+        -{static} {final} MINIMUM_AMOUNT_OF_SETUP_DICE: int
+        -{static} {final} MAXIMUM_AMOUNT_OF_SETUP_DICE: int
+        -{static} {final} MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE: int
+        -{static} {final} MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE: int
+        -{static} {final} MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE: int
         -{final} attackerDice: List<Die>
         -{final} defenderDice: List<Die>
-        -{final}randomizer: Random
+        -{final} randomizer: Random
         -setupDie: Die
+
         +DieRollParser()
         +buildDiceLists(): boolean
-
         +rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
         -buildSetupDie(setupDieUpperBound: int): void
-
         +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
         +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
         -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
         -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
-
         +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
         -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
@@ -114,35 +354,58 @@ package domain {
     DieRollParser ..> BattleResult
 
     +enum BattleResult {
-        ATTACKER_VICTORY,
+        ATTACKER_VICTORY
         DEFENDER_VICTORY
+
+        +toString(): String
+    }
+
+    +enum Continent {
+        AFRICA
+        ASIA
+        EUROPE
+        NORTH_AMERICA
+        OCEANIA
+        SOUTH_AMERICA
+
+        -{final} associatedTerritories: Set<TerritoryType>
+        -{final} continentBonus: int
+        ~Continent(associatedTerritories: Set<TerritoryType>, continentArmyBonus: int)
+        ~matchesContinentTerritories(playerTerritoriesInQuestion: Set<TerritoryType>): boolean
+        +toString(): String
+        +getContinentBonusIfPlayerHasTerritories(setToPassIn: Set<TerritoryType>): int
     }
 
 
     +class TradeInParser {
-        -setsTradedInSoFar: int
-        +TradeInParser()
-        +startTrade(attemptedCards: List<Card>): int
-        -verifyValidCombo(attemptedCards: List<Card>): boolean
-        -calculateNumNewPieces(attemptedCards: List<Card>): int
-        -updateSetsTradedIn(attemptedCards: List<Card>): boolean
+        -{static} {final} TRADE_IN_SET_LENGTH: int
+        -{static} {final} MAXIMUM_NUMBER_OF_TRADES: int
+        -{static} {final} ARMY_CALCULATION_OFFSET: int
+        -{static} {final} STARTING_NUMBER_OF_ARMIES: int
+        -{static} {final} ADDITIONAL_NUMBER_OF_ARMIES: int
+        -{static} {final} STARTING_NUMBER_OF_ARMIES_AFTER_THRESHOLD: int
+        -{static} {final} ADDITIONAL_NUMBER_OF_ARMIES_AFTER_THRESHOLD: int
+        -setsTradedIn: int
+
+        +startTrade(cards: Set<Card>): int
+        +getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
+        -checkTradeInState(cards: Set<Card>): void
+        -hasOneOfEachType(cards: Set<Card>): boolean
+        -hasThreeOfSameType(cards: Set<Card>): boolean
+        -countPieceType(cards: Set<Card>, type: PieceType): long
+        -hasWild(cards: Set<Card>): boolean
+        ~setSetsTradedIn(setsTradedIn: int): void
     }
 
     TradeInParser .d.> Card
-
-    +class Player {
-        -cards: Set<Card>
-        -color: PlayerColor
-        +Player(playerColor: PlayerColor)
-    }
-
-    Player -u-> "*" Card
-    Player -u-> PlayerColor
+    TradeInParser ..> Player
 
     +enum PieceType {
-        ARTILLERY,
-        CAVALRY,
+        ARTILLERY
+        CAVALRY
         INFANTRY
+
+        +toString(): String
     }
 
     +interface Card {
@@ -177,6 +440,8 @@ package domain {
 
     +enum TerritoryType {
         ...
+
+        +toString(): String
     }
 
     +class TerritoryGraph {
@@ -202,47 +467,98 @@ package domain {
 
     +class Territory {
         -territoryType: TerritoryType
-        -playerInControl: Player
+        -playerInControl: PlayerColor
         -numArmiesPresent: int
-        +Territory(territoryType: TerritoryType)
 
+        +Territory(territoryType: TerritoryType)
+        ~Territory(playerToBeInControl: Player, territoryType: TerritoryType)
         +setPlayerInControl(newPlayer: Player): boolean 
         +setNumArmiesPresent(newAmount: int): boolean
-
         +getPlayerInControl(): Player
-        +getArmies(): int
+        +getNumArmiesPresent(): int
         +getTerritoryType(): TerritoryType
+        +isOwnedByPlayer(playerToCheck: PlayerColor): boolean
     }
 
-    Territory --> Player
+    Territory --> PlayerColor
     Territory --> TerritoryType
 
     +enum PlayerColor {
-        SETUP,
-        NEUTRAL,
-        BLACK,
-        RED,
-        YELLOW,
-        BLUE,
-        GREEN,
+        SETUP
+        BLACK
+        RED
+        YELLOW
+        BLUE
+        GREEN
         PURPLE
+
+        +toString(): String
+        +getColorString(): String
     }
-
-
 }
+
+presentation.GameMapScreenController --> domain.WorldDominationGameEngine
+presentation.GameMapScreenController --> "*" domain.TerritoryType
+
+presentation.PlayerSelectScreenController --> "*" domain.PlayerColor
+
+presentation.PlayerShuffleScreenController --> "*" domain.PlayerColor
+
+presentation.SceneController --> "*" domain.PlayerColor
+presentation.SceneController --> domain.WorldDominationGameEngine
 
 package datasource {
-    +interface StandardInput {
-        +read(): Object
+    +interface FileLoader {
+        +open(fileName: String): boolean
+        +getFileUrl(): URL
     }
 
-    +class PictureLoader {
-        +PictureLoader(filePath: String)
-        +read(): Object
+    +class ImageFileLoader {
+        -{static} {final} IMAGE_DIRECTORY: String
+
+        +open(fileName: String): boolean
+        -checkFileExistence(fileName: String, file: URL): void
+        +getFileUrl(): URL
     }
 
-    PictureLoader .u.|> StandardInput
+    +class SceneFileLoader {
+        -sceneFile: URL
+
+        +open(fileName: String): boolean
+        -checkFileExistence(file: URL): void
+        +getFileUrl(): URL
+    }
+
+    +class StyleSheetLoader {
+        -cssFile: URL
+
+        +open(fileName: String): boolean
+        -createFilePointer(fileName: String): URL
+        -checkFileExistence(file: URL): void
+        +getFileUrl(): URL
+    }
+
+    ImageFileLoader ..|> FileLoader
+    SceneFileLoader ..|> FileLoader
+    StyleSheetLoader ..|> FileLoader
+
+    +class StringsBundleLoader {
+        -{static} {final} BUNDLE_NAME: String
+        -{static} {final} INSTANCE: StringsBundleLoader
+        -localeName: String
+
+        -openBundle(locale: String): boolean
+        -getResourceBundle(): ResourceBundle
+        +{static} open(locale: String): boolean
+        +{static} getBundle(): ResourceBundle
+    }
 }
 
-@enduml
+presentation.RiskApp ..> datasource.SceneFileLoader
+presentation.RiskApp ..> datasource.StyleSheetLoader
+presentation.RiskApp ..> datasource.ImageFileLoader
 
+presentation.SceneController --> datasource.FileLoader
+presentation.SceneController ..> datasource.StringsBundleLoader
+
+@enduml
