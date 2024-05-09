@@ -19,6 +19,7 @@ import javafx.scene.layout.Pane;
 public class SceneController {
     private static SceneController sceneController;
     private static String languageName = "English";
+    private static GameScene currentScene;
     private final Map<SceneType, Pane> screenMap = new HashMap<>();
     private final Scene main;
     private WorldDominationGameEngine gameEngine;
@@ -57,7 +58,11 @@ public class SceneController {
     }
 
     protected void onKeyPress(KeyEvent event) {
-        System.out.println("Key Pressed: " + event.getCode());
+        currentScene.onKeyPress(event);
+    }
+
+    protected static void setCurrentScene(GameScene scene) {
+        currentScene = scene;
     }
 
     protected static void setRoot(Scene scene) {

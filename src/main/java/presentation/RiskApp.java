@@ -31,7 +31,7 @@ public class RiskApp extends Application {
             fileLoader.open(SceneType.START.getSceneName());
             return FXMLLoader.load(fileLoader.getFileUrl(), SceneController.getLanguageBundle());
         } catch (Exception e) {
-            System.err.println("Error loading scene: " + SceneType.START.getSceneName());
+            System.err.println("Error loading start scene");
             return null;
         }
     }
@@ -59,9 +59,9 @@ public class RiskApp extends Application {
     }
 
     private Scene addKeyListenerToScene(Scene scene) {
-        scene.setOnKeyPressed(event -> {
-            SceneController.getInstance().onKeyPress(event);
-        });
+        scene.setOnKeyPressed(event ->
+            SceneController.getInstance().onKeyPress(event)
+        );
         return scene;
     }
 

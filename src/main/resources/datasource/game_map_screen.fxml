@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonType?>
-<?import javafx.scene.control.DialogPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane maxHeight="630.0" maxWidth="980.0" prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GameMapScreenController">
     <AnchorPane prefHeight="630.0" prefWidth="980.0">
@@ -30,69 +26,67 @@
                <Font name="Cooper Black" size="25.0" />
            </font>
         </Label>
-      <AnchorPane layoutX="22.0" layoutY="156.0" prefHeight="90.0" prefWidth="82.0">
-         <children>
-            <Label alignment="CENTER" layoutX="2.0" prefWidth="78.4" text="%gameMapScreen.color">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-            </Label>
-            <Label fx:id="currentPlayerColor" alignment="CENTER" layoutX="2.0" layoutY="18.0" prefHeight="18.0" prefWidth="78.0" text="COLOR">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-      <AnchorPane layoutX="22.0" layoutY="66.0" prefHeight="90.0" prefWidth="82.0">
-         <children>
-            <Label alignment="CENTER" layoutX="2.0" prefWidth="77.6" text="%gameMapScreen.phase">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-            </Label>
-            <Label fx:id="currentPhase" alignment="CENTER" layoutX="2.0" layoutY="18.0" prefHeight="18.0" prefWidth="78.0" text="PHASE">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-      <AnchorPane fx:id="armiesToPlacePane" layoutX="19.0" layoutY="246.0" prefHeight="90.0" prefWidth="82.0" visible="false">
-         <children>
-            <Label layoutX="2.0" text="Armies to place:">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-            </Label>
-            <Label fx:id="armiesToPlace" alignment="CENTER" layoutX="5.0" layoutY="18.0" prefHeight="18.0" prefWidth="78.0" text="NUMBER">
-               <styleClass>
-                  <String fx:value="text" />
-                  <String fx:value="text-primary" />
-               </styleClass>
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
+       <AnchorPane layoutX="22.0" layoutY="156.0" prefHeight="90.0" prefWidth="82.0">
+          <Label alignment="CENTER" layoutX="2.0" prefWidth="78.4" text="%gameMapScreen.color">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+          </Label>
+          <Label fx:id="currentPlayerColor" alignment="CENTER" layoutX="2.0" layoutY="18.0" prefHeight="18.0"
+                 prefWidth="78.0" text="COLOR">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+             <font>
+                <Font size="16.0"/>
+             </font>
+          </Label>
+       </AnchorPane>
+       <AnchorPane layoutX="22.0" layoutY="66.0" prefHeight="90.0" prefWidth="82.0">
+          <Label alignment="CENTER" layoutX="2.0" prefWidth="77.6" text="%gameMapScreen.phase">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+          </Label>
+          <Label fx:id="currentPhase" alignment="CENTER" layoutX="2.0" layoutY="18.0" prefHeight="18.0" prefWidth="78.0"
+                 text="PHASE">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+             <font>
+                <Font size="16.0"/>
+             </font>
+          </Label>
+       </AnchorPane>
+       <AnchorPane fx:id="armiesToPlacePane" layoutX="19.0" layoutY="246.0" prefHeight="90.0" prefWidth="82.0"
+                   visible="false">
+          <Label layoutX="2.0" text="Armies to place:">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+          </Label>
+          <Label fx:id="armiesToPlace" alignment="CENTER" layoutX="5.0" layoutY="18.0" prefHeight="18.0"
+                 prefWidth="78.0" text="NUMBER">
+             <styleClass>
+                <String fx:value="text"/>
+                <String fx:value="text-primary"/>
+             </styleClass>
+             <font>
+                <Font size="16.0"/>
+             </font>
+          </Label>
+       </AnchorPane>
     </AnchorPane>
    <AnchorPane layoutX="128.0" layoutY="65.0" prefHeight="568.0" prefWidth="854.0">
       <ImageView fitHeight="568.0" fitWidth="864.0" pickOnBounds="true" preserveRatio="true">
          <Image url="@images/risk-map.png" />
       </ImageView>
-      <Button layoutX="34.0" layoutY="96.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="34.0" layoutY="96.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="ALASKA" />
          </accessibleText>
@@ -104,7 +98,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="118.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="118.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="NORTHWEST_TERRITORY" />
          </accessibleText>
@@ -116,7 +110,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="106.0" layoutY="139.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="106.0" layoutY="139.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="ALBERTA" />
          </accessibleText>
@@ -128,7 +122,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="169.0" layoutY="152.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="169.0" layoutY="152.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="ONTARIO" />
          </accessibleText>
@@ -140,7 +134,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="225.0" layoutY="152.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="225.0" layoutY="152.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="QUEBEC" />
          </accessibleText>
@@ -152,7 +146,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="106.0" layoutY="203.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="106.0" layoutY="203.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="WESTERN_UNITED_STATES" />
          </accessibleText>
@@ -164,7 +158,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="169.0" layoutY="229.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="169.0" layoutY="229.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="EASTERN_UNITED_STATES" />
          </accessibleText>
@@ -176,7 +170,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="94.0" layoutY="271.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="94.0" layoutY="271.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="CENTRAL_AMERICA" />
          </accessibleText>
@@ -188,7 +182,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="225.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="225.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="VENEZUELA" />
          </accessibleText>
@@ -200,7 +194,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="241.0" layoutY="388.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="241.0" layoutY="388.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="BRAZIL" />
          </accessibleText>
@@ -212,7 +206,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="157.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="157.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="PERU" />
          </accessibleText>
@@ -224,7 +218,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="201.0" layoutY="472.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="201.0" layoutY="472.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="ARGENTINA" />
          </accessibleText>
@@ -236,7 +230,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="546.0" layoutY="509.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="546.0" layoutY="509.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="MADAGASCAR" />
          </accessibleText>
@@ -248,7 +242,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="522.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="446.0" layoutY="522.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="SOUTH_AFRICA" />
          </accessibleText>
@@ -260,7 +254,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="490.0" layoutY="423.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="490.0" layoutY="423.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="EAST_AFRICA" />
          </accessibleText>
@@ -272,7 +266,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="446.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="CONGO" />
          </accessibleText>
@@ -284,7 +278,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="378.0" layoutY="374.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="378.0" layoutY="374.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="NORTH_AFRICA" />
          </accessibleText>
@@ -296,7 +290,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="446.0" layoutY="343.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="446.0" layoutY="343.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="EGYPT" />
          </accessibleText>
@@ -308,7 +302,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="689.0" layoutY="428.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="689.0" layoutY="428.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="INDONESIA" />
          </accessibleText>
@@ -320,7 +314,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="794.0" layoutY="366.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="794.0" layoutY="366.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="NEW_GUINEA" />
          </accessibleText>
@@ -332,7 +326,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="805.0" layoutY="509.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="805.0" layoutY="509.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="EASTERN_AUSTRALIA" />
          </accessibleText>
@@ -344,7 +338,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="712.0" layoutY="523.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="712.0" layoutY="523.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="WESTERN_AUSTRALIA" />
          </accessibleText>
@@ -356,7 +350,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="505.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="505.0" layoutY="297.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="MIDDLE_EAST" />
          </accessibleText>
@@ -368,7 +362,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="610.0" layoutY="307.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="610.0" layoutY="307.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="INDIA" />
          </accessibleText>
@@ -380,7 +374,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="702.0" layoutY="323.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="702.0" layoutY="323.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="SIAM" />
          </accessibleText>
@@ -392,7 +386,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="677.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="677.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="CHINA" />
          </accessibleText>
@@ -404,7 +398,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="563.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="563.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="AFGHANISTAN" />
          </accessibleText>
@@ -416,7 +410,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="685.0" layoutY="202.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="685.0" layoutY="202.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="MONGOLIA" />
          </accessibleText>
@@ -428,7 +422,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="770.0" layoutY="215.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="770.0" layoutY="215.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="JAPAN" />
          </accessibleText>
@@ -440,7 +434,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="668.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="668.0" layoutY="144.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="IRKUTSK" />
          </accessibleText>
@@ -452,7 +446,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="577.0" layoutY="145.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="577.0" layoutY="145.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="URAL" />
          </accessibleText>
@@ -464,7 +458,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="621.0" layoutY="96.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="621.0" layoutY="96.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="SIBERIA" />
          </accessibleText>
@@ -476,7 +470,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="746.0" layoutY="76.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="746.0" layoutY="76.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="KAMCHATKA" />
          </accessibleText>
@@ -488,7 +482,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="685.0" layoutY="73.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="685.0" layoutY="73.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="YAKUTSK" />
          </accessibleText>
@@ -500,7 +494,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="488.0" layoutY="151.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="488.0" layoutY="151.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="UKRAINE" />
          </accessibleText>
@@ -512,7 +506,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="441.0" layoutY="92.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="441.0" layoutY="92.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="SCANDINAVIA" />
          </accessibleText>
@@ -524,7 +518,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="407.0" layoutY="149.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="407.0" layoutY="149.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="NORTHERN_EUROPE" />
          </accessibleText>
@@ -536,7 +530,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="415.0" layoutY="253.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="415.0" layoutY="253.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="SOUTHERN_EUROPE" />
          </accessibleText>
@@ -548,7 +542,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="314.0" layoutY="246.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="314.0" layoutY="246.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="WESTERN_EUROPE" />
          </accessibleText>
@@ -560,7 +554,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="304.0" layoutY="189.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="304.0" layoutY="189.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="GREAT_BRITAIN" />
          </accessibleText>
@@ -572,7 +566,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="346.0" layoutY="74.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="346.0" layoutY="74.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="ICELAND" />
          </accessibleText>
@@ -584,7 +578,7 @@
             <Font name="Open Sans Semibold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="272.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
+      <Button focusTraversable="false" layoutX="272.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleTerritoryButtonClick" text="0">
          <accessibleText>
             <String fx:value="GREENLAND" />
          </accessibleText>
@@ -602,9 +596,9 @@
       <ButtonType fx:constant="YES" />
       <ButtonType fx:constant="NO" />
    </DialogPane>
-   <DialogPane fx:id="placeArmiesErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true" headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
-      <buttonTypes>
-         <ButtonType fx:constant="CLOSE" />
-      </buttonTypes>
+   <DialogPane fx:id="placeArmiesErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true"
+               headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefWidth="360.0"
+               styleClass="dialog" visible="false">
+      <ButtonType fx:constant="CLOSE"/>
    </DialogPane>
 </AnchorPane>

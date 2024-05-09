@@ -13,8 +13,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 
-public class PlayerShuffleScreenController {
+public class PlayerShuffleScreenController implements GameScene {
     @FXML
     private Label instructionLabel;
     @FXML
@@ -33,6 +34,7 @@ public class PlayerShuffleScreenController {
 
     @FXML
     private void initialize() {
+        SceneController.setCurrentScene(this);
         WorldDominationGameEngine gameEngine = sceneController.getGameEngine();
         this.originalPlayerOrder = sceneController.getOriginalPlayerOrder();
         this.dieRolls = gameEngine.getDieRolls();
@@ -84,6 +86,9 @@ public class PlayerShuffleScreenController {
     private void startGame() {
         sceneController.activate(SceneType.GAME);
     }
+
+    @Override
+    public void onKeyPress(KeyEvent event) {}
 
     private enum DieImage {
         ONE, TWO, THREE, FOUR, FIVE, SIX;

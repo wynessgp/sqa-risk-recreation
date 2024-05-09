@@ -13,9 +13,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-public class GameMapScreenController {
+public class GameMapScreenController implements GameScene {
     @FXML
     private DialogPane claimTerritoryDialog;
     @FXML
@@ -40,7 +42,12 @@ public class GameMapScreenController {
     @FXML
     private void initialize() {
         this.gameEngine = SceneController.getInstance().getGameEngine();
+        SceneController.setCurrentScene(this);
         updateStateLabels();
+        setupDialogButtons();
+    }
+
+    private void setupDialogButtons() {
         this.claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
                 handleClaimTerritory());
         this.claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
@@ -57,20 +64,30 @@ public class GameMapScreenController {
     }
 
     private void gamePhaseActions() {
-        switch (this.gameEngine.getCurrentGamePhase()) {
-            case SCRAMBLE:
-                this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
-                        new Object[]{this.gameEngine.getCurrentPlayer()}));
-                break;
-            case PLACEMENT:
-                this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
-                        new Object[]{this.gameEngine.getCurrentPlayer()}));
-                enablePlacement();
-                break;
-            case ATTACK:
-                this.instructionLabel.setText(SceneController.getString("gameMapScreen.attackInstruction",
-                        new Object[]{this.gameEngine.getCurrentPlayer()}));
+        GamePhase currentPhase = this.gameEngine.getCurrentGamePhase();
+        if (currentPhase == GamePhase.SCRAMBLE) {
+            handleScramblePhase();
+        } else if (currentPhase == GamePhase.SETUP) {
+            handleSetupPhase();
+        } else if (currentPhase == GamePhase.ATTACK) {
+            handleAttackPhase();
         }
+    }
+
+    private void handleScramblePhase() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+                new Object[]{this.gameEngine.getCurrentPlayer()}));
+    }
+
+    private void handleSetupPhase() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
+                new Object[]{this.gameEngine.getCurrentPlayer()}));
+        enablePlacement();
+    }
+
+    private void handleAttackPhase() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.attackInstruction",
+                new Object[]{this.gameEngine.getCurrentPlayer()}));
     }
 
     private void enablePlacement() {
@@ -133,6 +150,17 @@ public class GameMapScreenController {
             toggleDialog(this.placeArmiesErrorDialog);
         }
         updateStateLabels();
+    }
+
+    @Override
+    public void onKeyPress(KeyEvent event) {
+        if (this.claimTerritoryDialog.isVisible()) {
+            if (event.getCode() == KeyCode.ENTER) {
+                handleClaimTerritory();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                toggleDialog(this.claimTerritoryDialog);
+            }
+        }
     }
 
 }

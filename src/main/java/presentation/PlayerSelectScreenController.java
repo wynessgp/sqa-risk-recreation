@@ -7,8 +7,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 
-public class PlayerSelectScreenController {
+public class PlayerSelectScreenController implements GameScene {
     private static final int MIN_PLAYERS = 3;
     private static final int MAX_PLAYERS = 6;
 
@@ -35,6 +36,7 @@ public class PlayerSelectScreenController {
 
     @FXML
     private void initialize() {
+        SceneController.setCurrentScene(this);
         updateInstructionLabel();
     }
 
@@ -102,5 +104,8 @@ public class PlayerSelectScreenController {
             instructionLabel.setText(SceneController.getString("playerSelectScreen.maxPlayers", null));
         }
     }
+
+    @Override
+    public void onKeyPress(KeyEvent event) {}
 
 }
