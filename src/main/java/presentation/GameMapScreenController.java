@@ -52,8 +52,22 @@ public class GameMapScreenController implements GameScene {
                 handleClaimTerritory());
         this.claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
                 toggleDialog(claimTerritoryDialog));
+        setTerritoryDialogText();
         this.placeArmiesErrorDialog.lookupButton(ButtonType.CLOSE).addEventHandler(ActionEvent.ACTION, event ->
                 toggleDialog(placeArmiesErrorDialog));
+        setArmiesErrorDialogText();
+    }
+
+    private void setTerritoryDialogText() {
+        ((Button) this.claimTerritoryDialog.lookupButton(ButtonType.YES)).setText(SceneController
+                .getString("gameMapScreen.dialogYes", null));
+        ((Button) this.claimTerritoryDialog.lookupButton(ButtonType.NO)).setText(SceneController
+                .getString("gameMapScreen.dialogNo", null));
+    }
+
+    private void setArmiesErrorDialogText() {
+        ((Button) this.placeArmiesErrorDialog.lookupButton(ButtonType.CLOSE)).setText(SceneController
+                .getString("gameMapScreen.dialogClose", null));
     }
 
     private void updateStateLabels() {
