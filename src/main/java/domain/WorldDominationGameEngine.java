@@ -372,13 +372,24 @@ public final class WorldDominationGameEngine {
 
     public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                 int numAttackers, int numDefenders) {
-        if (!territoryGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)) {
-            throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
-        }
-        if (!checkIfPlayerOwnsTerritory(sourceTerritory, currentPlayer)) {
+        checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
+        checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
+        throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+    }
+
+    private void checkIfAppropriatePlayersOwnTerritories(TerritoryType source, TerritoryType dest) {
+        if (!checkIfPlayerOwnsTerritory(source, currentPlayer)) {
             throw new IllegalArgumentException("Source territory is not owned by the current player!");
         }
-        throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+        if (checkIfPlayerOwnsTerritory(dest, currentPlayer)) {
+            throw new IllegalArgumentException("Destination territory is owned by the current player!");
+        }
+    }
+
+    private void checkIfTerritoriesAreAdjacent(TerritoryType source, TerritoryType dest) {
+        if (!territoryGraph.areTerritoriesAdjacent(source, dest)) {
+            throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+        }
     }
 
     public PlayerColor getCurrentPlayer() {
