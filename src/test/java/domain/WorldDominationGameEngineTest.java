@@ -1504,13 +1504,13 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
     }
 
-    private static Stream<Arguments> generateInvalidAmountOfArmiesInTerritoryPairs() {
+    private static Stream<Arguments> generateInvalidAmountOfAttackerArmiesInTerritoryPairs() {
         return Stream.of(Arguments.of(3, 3), Arguments.of(2, 3), Arguments.of(2, 2),
                 Arguments.of(1, 3), Arguments.of(1, 2), Arguments.of(1, 1));
     }
 
     @ParameterizedTest
-    @MethodSource("generateInvalidAmountOfArmiesInTerritoryPairs")
+    @MethodSource("generateInvalidAmountOfAttackerArmiesInTerritoryPairs")
     public void test47_attackTerritory_sourceTerritoryHasTooFewAttackers_expectException(
             int numArmiesInSourceTerritory, int numAttackers) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
