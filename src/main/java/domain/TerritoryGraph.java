@@ -31,8 +31,7 @@ public class TerritoryGraph {
 
     boolean areTerritoriesAdjacent(TerritoryType startingTerritory, TerritoryType endingTerritory) {
         return territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory)
-                && territories.get(startingTerritory).contains(endingTerritory)
-                && (startingTerritory != endingTerritory);
+                && territories.get(startingTerritory).contains(endingTerritory);
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
