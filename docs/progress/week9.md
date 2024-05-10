@@ -9,8 +9,8 @@
 **Evaluation Date**: 5/10/2024
 
 **Item Progress**:
-1. [in progress] Almost done with attack phase domain logic
-2. [in progress] Placement phase done, working on attack
+1. [75% done] Almost done with attack phase domain logic
+2. [50% done] Placement phase done, working on attack (in gui-single-turn branch)
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
