@@ -384,6 +384,7 @@ public final class WorldDominationGameEngine {
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
         checkIfPlayerIsHoldingTooManyCards("Player must trade in cards before they can attack!");
+        checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(sourceTerritory, numAttackers);
     }
 
     private void checkIfNumAttackersIsValid(int numAttackers) {
@@ -418,6 +419,13 @@ public final class WorldDominationGameEngine {
     private void checkIfGameIsInAttackPhase() {
         if (currentGamePhase != GamePhase.ATTACK) {
             throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
+        }
+    }
+
+    private void checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(TerritoryType sourceTerritory, int numAttackers) {
+        int numArmiesPresent = territoryGraph.getTerritory(sourceTerritory).getNumArmiesPresent();
+        if (numAttackers > numArmiesPresent - 1) {
+            throw new IllegalArgumentException("Source territory has too few armies to use in this attack!");
         }
     }
 
