@@ -6,10 +6,10 @@
 2. Continue GUI as domain code is written
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 5/10/2024
 
 **Item Progress**:
-1. [in progress] abc
+1. [in progress] Almost done with attack phase domain logic
 2. [in progress] Placement phase done, working on attack
 
 # Part 3. Individual Progress of the Week
@@ -17,9 +17,13 @@
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/128
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/136
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/140
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/141
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/128
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/136
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/140
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
@@ -30,6 +34,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/132
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/134
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/138
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/125
@@ -37,3 +42,5 @@
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/128
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/136
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/140
