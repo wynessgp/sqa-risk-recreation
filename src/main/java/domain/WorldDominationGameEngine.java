@@ -228,7 +228,7 @@ public final class WorldDominationGameEngine {
         checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        increaseNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
         totalUnplacedArmiesLeft--;
         updateCurrentPlayer();
@@ -248,7 +248,7 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private void modifyNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
+    private void increaseNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         int previousNumArmies = territoryObject.getNumArmiesPresent();
         territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
@@ -317,7 +317,7 @@ public final class WorldDominationGameEngine {
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        increaseNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         checkAttackPhaseEndCondition();
     }
 
@@ -450,10 +450,16 @@ public final class WorldDominationGameEngine {
 
     private void modifyArmiesInRespectiveTerritories(List<BattleResult> battleResults, TerritoryType sourceTerritory,
                                                      TerritoryType destTerritory) {
-        int attackersLost = -1 * Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
-        int defendersLost = -1 * Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
-        modifyNumArmiesInTerritory(sourceTerritory, attackersLost);
-        modifyNumArmiesInTerritory(destTerritory, defendersLost);
+        int attackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        int defendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
+        decreaseNumArmiesInTerritory(destTerritory, defendersLost);
+    }
+
+    private void decreaseNumArmiesInTerritory(TerritoryType territory, int numToDecreaseBy) {
+        Territory territoryObject = territoryGraph.getTerritory(territory);
+        int previousNumArmies = territoryObject.getNumArmiesPresent();
+        territoryObject.setNumArmiesPresent(previousNumArmies - numToDecreaseBy);
     }
 
     public PlayerColor getCurrentPlayer() {
