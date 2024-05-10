@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -376,8 +377,18 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.PLACEMENT;
     }
 
-    public void attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
+    public int attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                 int numAttackers, int numDefenders) {
+        doErrorHandlingForAttackTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        List<Integer> attackDice = dieRollParser.rollAttackerDice(numAttackers);
+        List<Integer> defenderDice = dieRollParser.rollDefenderDice(numDefenders);
+        List<BattleResult> battleResults = dieRollParser.generateBattleResults(attackDice, defenderDice);
+        modifyArmiesInRespectiveTerritories(battleResults, sourceTerritory, destTerritory);
+        return 0;
+    }
+
+    private void doErrorHandlingForAttackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
+                                                   int numAttackers, int numDefenders) {
         checkIfNumAttackersIsValid(numAttackers);
         checkIfNumDefendersIsValid(numDefenders);
         checkIfGameIsInAttackPhase();
@@ -435,6 +446,14 @@ public final class WorldDominationGameEngine {
         if (numDefenders > numArmiesPresent) {
             throw new IllegalArgumentException("Source territory has too few defenders for this defense!");
         }
+    }
+
+    private void modifyArmiesInRespectiveTerritories(List<BattleResult> battleResults, TerritoryType sourceTerritory,
+                                                     TerritoryType destTerritory) {
+        int attackersLost = -1 * Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        int defendersLost = -1 * Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        modifyNumArmiesInTerritory(sourceTerritory, attackersLost);
+        modifyNumArmiesInTerritory(destTerritory, defendersLost);
     }
 
     public PlayerColor getCurrentPlayer() {
@@ -509,6 +528,10 @@ public final class WorldDominationGameEngine {
 
     void provideMockedTradeInParser(TradeInParser mockedParser) {
         this.tradeInParser = mockedParser;
+    }
+
+    void provideMockedDieRollParser(DieRollParser mockedParser) {
+        this.dieRollParser = mockedParser;
     }
 
     void setCardsForPlayer(PlayerColor playerColor, Set<Card> cardsPlayerOwns) {
