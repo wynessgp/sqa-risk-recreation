@@ -223,7 +223,7 @@ public class GameMapScreenController implements GameScene {
         try {
             this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), armies);
         } catch (Exception e) {
-            this.territoryErrorDialog.setContentText(e.getMessage());
+            this.territoryErrorDialog.setContentText(SceneController.getString("gameMapScreen.placementError", null));
             toggleDialog(this.territoryErrorDialog);
         }
         updateStateLabels();
