@@ -20,7 +20,8 @@ public class TerritoryGraph {
     }
 
     public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
-        if (!isValidAdjacency(startingTerritory, endingTerritory)) {
+        if (!(territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory))
+                || startingTerritory == endingTerritory || areTerritoriesAdjacent(startingTerritory, endingTerritory)) {
             return false;
         }
         territories.get(startingTerritory).add(endingTerritory);
@@ -28,10 +29,9 @@ public class TerritoryGraph {
         return true;
     }
 
-    private boolean isValidAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    boolean areTerritoriesAdjacent(TerritoryType startingTerritory, TerritoryType endingTerritory) {
         return territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory)
-                && !territories.get(startingTerritory).contains(endingTerritory)
-                && (startingTerritory != endingTerritory);
+                && territories.get(startingTerritory).contains(endingTerritory);
     }
 
     public Territory getTerritory(TerritoryType territoryType) {
