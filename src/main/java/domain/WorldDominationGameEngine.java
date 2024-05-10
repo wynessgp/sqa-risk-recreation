@@ -383,8 +383,9 @@ public final class WorldDominationGameEngine {
         List<Integer> attackDice = dieRollParser.rollAttackerDice(numAttackers);
         List<Integer> defenderDice = dieRollParser.rollDefenderDice(numDefenders);
         List<BattleResult> battleResults = dieRollParser.generateBattleResults(attackDice, defenderDice);
-        modifyArmiesInRespectiveTerritories(battleResults, sourceTerritory, destTerritory);
-        return 0;
+        modifyArmiesInRespectiveTerritories(battleResults, sourceTerritory, destTerritory, numAttackers);
+        return checkIfPlayerOwnsTerritory(destTerritory, currentPlayer)
+                ? territoryGraph.getTerritory(sourceTerritory).getNumArmiesPresent() - 1 : 0;
     }
 
     private void doErrorHandlingForAttackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
@@ -449,11 +450,27 @@ public final class WorldDominationGameEngine {
     }
 
     private void modifyArmiesInRespectiveTerritories(List<BattleResult> battleResults, TerritoryType sourceTerritory,
-                                                     TerritoryType destTerritory) {
+                                                     TerritoryType destTerritory, int numAttackers) {
         int attackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
         int defendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
-        decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
-        decreaseNumArmiesInTerritory(destTerritory, defendersLost);
+        if (defenderLosesAllArmiesInAttack(destTerritory, defendersLost)) {
+            handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
+        } else {
+            decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
+            decreaseNumArmiesInTerritory(destTerritory, defendersLost);
+        }
+    }
+
+    private boolean defenderLosesAllArmiesInAttack(TerritoryType defenderTerritory, int defendersLost) {
+        return (territoryGraph.getTerritory(defenderTerritory).getNumArmiesPresent() - defendersLost) == 0;
+    }
+
+    private void handleAttackerTakingTerritory(TerritoryType source, TerritoryType dest, int numAttackers) {
+        Territory destTerritoryObject = territoryGraph.getTerritory(dest);
+        destTerritoryObject.setPlayerInControl(currentPlayer);
+        destTerritoryObject.setNumArmiesPresent(numAttackers);
+
+        decreaseNumArmiesInTerritory(source, numAttackers);
     }
 
     private void decreaseNumArmiesInTerritory(TerritoryType territory, int numToDecreaseBy) {

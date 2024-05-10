@@ -1682,4 +1682,95 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedPlayer, mockedGraph, mockedSource, mockedDest, mockedDieRollParser);
     }
+
+    private static Stream<Arguments> generateReturnsAndExpectationsForAttackerTakingTerritory() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        List<BattleResult> doubleAttVictory = List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY);
+        List<BattleResult> singleAttVictory = List.of(BattleResult.ATTACKER_VICTORY);
+
+        List<List<Integer>> attackerDiceRolls = List.of(List.of(6, 6, 4), List.of(6, 6), List.of(5, 4),
+                List.of(5, 5), List.of(6));
+        List<List<Integer>> defenderDiceRolls = List.of(List.of(3, 2), List.of(4, 3),
+                List.of(2, 1), List.of(2), List.of(1));
+        List<List<BattleResult>> battleResults = List.of(doubleAttVictory, doubleAttVictory, doubleAttVictory,
+                singleAttVictory, singleAttVictory);
+        List<Integer> startingAttackerAmounts = List.of(10, 7, 6, 5, 2);
+        List<Integer> startingDefenderAmounts = List.of(2, 2, 2, 1, 1);
+        List<Integer> endingAttackerAmountsInSource = List.of(7, 5, 4, 3, 1);
+        List<Integer> endingAttackerAmountsInDest = List.of(3, 2, 2, 2, 1);
+        List<Integer> numAttackers = List.of(3, 2, 2, 2, 1);
+        List<Integer> numDefenders = List.of(2, 2, 2, 1, 1);
+        List<Integer> anticipatedResult = List.of(6, 4, 3, 2, 0);
+
+        for (TerritoryType source : TerritoryType.values()) {
+            for (TerritoryType dest : TerritoryType.values()) {
+                if (source != dest) {
+                    for (int i = 0; i < startingAttackerAmounts.size(); i++) {
+                        toStream.add(Arguments.of(attackerDiceRolls.get(i), defenderDiceRolls.get(i),
+                                battleResults.get(i), startingAttackerAmounts.get(i), startingDefenderAmounts.get(i),
+                                endingAttackerAmountsInSource.get(i), endingAttackerAmountsInDest.get(i),
+                                numAttackers.get(i), numDefenders.get(i), source, dest, anticipatedResult.get(i)));
+                    }
+                }
+            }
+        }
+
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateReturnsAndExpectationsForAttackerTakingTerritory")
+    public void test50_attackTerritory_validInput_attackerTakesTerritory_expectModifiedTerritoriesAndOutput(
+            List<Integer> attackDiceRolls, List<Integer> defenseDiceRolls, List<BattleResult> battleResults,
+            int armiesInSource, int armiesInDest, int numAttackersInSourceAfter, int numAttackersInDestAfter,
+            int numAttackers, int numDefenders, TerritoryType source, TerritoryType dest, int anticipatedResult) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.PURPLE)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3); // safe, valid amount
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(armiesInSource).times(2);
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numAttackersInSourceAfter)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numAttackersInSourceAfter);
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(armiesInDest).anyTimes();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(numAttackersInDestAfter)).andReturn(true);
+        EasyMock.expect(mockedDest.setPlayerInControl(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(source, dest)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(source)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(dest)).andReturn(mockedDest).anyTimes();
+
+        DieRollParser mockedDieRollParser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(mockedDieRollParser.rollAttackerDice(numAttackers)).andReturn(attackDiceRolls);
+        EasyMock.expect(mockedDieRollParser.rollDefenderDice(numDefenders)).andReturn(defenseDiceRolls);
+        EasyMock.expect(mockedDieRollParser.generateBattleResults(attackDiceRolls, defenseDiceRolls))
+                .andReturn(battleResults);
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedSource, mockedDest, mockedDieRollParser);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedDieRollParser(mockedDieRollParser);
+
+        int actualResult = unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders);
+
+        assertEquals(anticipatedResult, actualResult);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedSource, mockedDest, mockedDieRollParser);
+    }
 }
