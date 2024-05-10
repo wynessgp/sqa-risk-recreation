@@ -5,7 +5,6 @@ import domain.WorldDominationGameEngine;
 
 public class AttackLogic {
     private TerritoryType sourceTerritory;
-    private TerritoryType targetTerritory;
 
     boolean sourceSelected() {
         return sourceTerritory != null;
@@ -20,11 +19,7 @@ public class AttackLogic {
     }
 
     boolean setTargetTerritory(TerritoryType territory, WorldDominationGameEngine gameEngine) {
-        if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
-            return false;
-        }
-        targetTerritory = territory;
-        return true;
+        return !gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer());
     }
 
     boolean territoriesAreAdjacent(WorldDominationGameEngine gameEngine) {
