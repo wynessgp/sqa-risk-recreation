@@ -1655,7 +1655,7 @@ public class WorldDominationGameEngineTest {
         EasyMock.expect(mockedSource.setNumArmiesPresent(numAttackersExpectedAfter)).andReturn(true);
 
         Territory mockedDest = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false).anyTimes();
         EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(armiesInDest).anyTimes();
         EasyMock.expect(mockedDest.setNumArmiesPresent(numDefendersExpectedAfter)).andReturn(true);
 
