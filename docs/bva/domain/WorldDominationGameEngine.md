@@ -1400,7 +1400,7 @@ Input:
 
 Output:
 - IllegalArgumentException
-  - message: "Source territory has too few defenders for this attack!"
+  - message: "Source territory has too few defenders for this defense!"
 
 ### Test 18:
 Input:

@@ -385,6 +385,7 @@ public final class WorldDominationGameEngine {
         checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
         checkIfPlayerIsHoldingTooManyCards("Player must trade in cards before they can attack!");
         checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(sourceTerritory, numAttackers);
+        checkIfDestTerritoryHasEnoughArmiesToSupportDefense(destTerritory, numDefenders);
     }
 
     private void checkIfNumAttackersIsValid(int numAttackers) {
@@ -426,6 +427,13 @@ public final class WorldDominationGameEngine {
         int numArmiesPresent = territoryGraph.getTerritory(sourceTerritory).getNumArmiesPresent();
         if (numAttackers > numArmiesPresent - 1) {
             throw new IllegalArgumentException("Source territory has too few armies to use in this attack!");
+        }
+    }
+
+    private void checkIfDestTerritoryHasEnoughArmiesToSupportDefense(TerritoryType destTerritory, int numDefenders) {
+        int numArmiesPresent = territoryGraph.getTerritory(destTerritory).getNumArmiesPresent();
+        if (numDefenders > numArmiesPresent) {
+            throw new IllegalArgumentException("Source territory has too few defenders for this defense!");
         }
     }
 

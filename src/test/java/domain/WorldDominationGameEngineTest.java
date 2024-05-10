@@ -1552,4 +1552,47 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
     }
+
+    @Test
+    public void test48_attackTerritory_destinationTerritoryHasTooFewDefenders_expectException() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3); // safe, valid amount
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        Territory mockedNorthwestTerritories = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedAlaska.getNumArmiesPresent()).andReturn(3);
+        EasyMock.expect(mockedNorthwestTerritories.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+        EasyMock.expect(mockedNorthwestTerritories.getNumArmiesPresent()).andReturn(1);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(
+                TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.NORTHWEST_TERRITORY))
+                .andReturn(mockedNorthwestTerritories).anyTimes();
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY,
+                        2, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory has too few defenders for this defense!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+    }
 }
