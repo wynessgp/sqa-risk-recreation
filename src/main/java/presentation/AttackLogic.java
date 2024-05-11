@@ -26,4 +26,8 @@ public class AttackLogic {
         return false;
     }
 
+    void reset() {
+        sourceTerritory = null;
+    }
+
 }

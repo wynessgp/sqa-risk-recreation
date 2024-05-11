@@ -54,12 +54,20 @@ public class GameMapScreenController implements GameScene {
         SceneController.setCurrentScene(this);
         updateStateLabels();
         setupDialogButtons();
+        setupSkipButton();
     }
 
     private void setupDialogButtons() {
         setupClaimTerritoryDialog();
         setupTerritoryErrorDialog();
         setupArmyPlacementDialog();
+    }
+
+    private void setupSkipButton() {
+        this.attackSkipButton.addEventHandler(ActionEvent.ACTION, event -> {
+            attackLogic.reset();
+            handleAttackPhaseInstructions();
+        });
     }
 
     private void setupClaimTerritoryDialog() {
