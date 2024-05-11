@@ -12,7 +12,7 @@
 **Item Progress**:
 1. [done] scramble and setup phases complete
 2. [50% done] placement phase in progress
-3. [80% done] i18n set up, need to finish migrating strings
+3. [done] set up for existing screens
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -30,6 +30,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/121
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/123
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/124
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/113
@@ -48,3 +49,4 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/118
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/121
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/123
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/124
