@@ -1,5 +1,6 @@
 package domain;
 
+import datasource.StringsBundleLoader;
 import java.util.Set;
 
 public enum Continent {
@@ -41,11 +42,12 @@ public enum Continent {
 
     public String toString() {
         String[] nameArray = this.name().split("_");
-        StringBuilder name = new StringBuilder();
-        for (String s : nameArray) {
-            name.append(s.charAt(0)).append(s.substring(1).toLowerCase()).append(" ");
+        StringBuilder name = new StringBuilder(nameArray[0].toLowerCase());
+        for (int i = 1; i < nameArray.length; i++) {
+            String s = nameArray[i];
+            name.append(s.charAt(0)).append(s.substring(1).toLowerCase());
         }
-        return name.deleteCharAt(name.length() - 1).toString();
+        return StringsBundleLoader.getBundle().getString("global." + name);
     }
 
     int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
