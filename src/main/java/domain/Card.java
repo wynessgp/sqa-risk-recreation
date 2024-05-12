@@ -1,6 +1,6 @@
 package domain;
 
-public interface Card {
+interface Card {
 
     boolean matchesTerritory(TerritoryType territory);
 
