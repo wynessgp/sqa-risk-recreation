@@ -3,41 +3,41 @@ package domain;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Player {
+class Player {
     private final PlayerColor playerColor;
     private int numArmiesToPlace;
     private Set<TerritoryType> territories = new HashSet<>();
     private Set<Card> ownedCards = new HashSet<>();
 
-    public Player(PlayerColor playerColor) {
+    Player(PlayerColor playerColor) {
         this.playerColor = playerColor;
     }
 
-    public boolean ownsTerritory(TerritoryType territory) {
+    boolean ownsTerritory(TerritoryType territory) {
         return territories.contains(territory);
     }
 
-    public void setNumArmiesToPlace(int newAmount) {
+    void setNumArmiesToPlace(int newAmount) {
         numArmiesToPlace = newAmount;
     }
 
-    public int getNumArmiesToPlace() {
+    int getNumArmiesToPlace() {
         return numArmiesToPlace;
     }
 
-    public PlayerColor getColor() {
+    PlayerColor getColor() {
         return playerColor;
     }
 
-    public void addTerritoryToCollection(TerritoryType relevantTerritory) {
+    void addTerritoryToCollection(TerritoryType relevantTerritory) {
         this.territories.add(relevantTerritory);
     }
 
-    public boolean ownsAllGivenCards(Set<Card> givenCards) {
+    boolean ownsAllGivenCards(Set<Card> givenCards) {
         return ownedCards.containsAll(givenCards);
     }
 
-    public void removeAllGivenCards(Set<Card> cardsToRemove) {
+    void removeAllGivenCards(Set<Card> cardsToRemove) {
         ownedCards.removeAll(cardsToRemove);
     }
 
@@ -53,7 +53,7 @@ public class Player {
         playerColor = PlayerColor.SETUP;
     }
 
-    public int getNumCardsHeld() {
+    int getNumCardsHeld() {
         return this.ownedCards.size();
     }
 
@@ -64,4 +64,5 @@ public class Player {
     Set<Card> getGetOwnedCards() {
         return new HashSet<>(ownedCards);
     }
+
 }

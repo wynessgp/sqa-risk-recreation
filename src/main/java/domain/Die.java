@@ -2,17 +2,17 @@ package domain;
 
 import java.util.Random;
 
-public class Die {
+class Die {
 
     private final int maximumPossibleRoll;
     private final int minimumPossibleRoll;
 
-    public Die(int maximumPossibleRoll, int minimumPossibleRoll) {
+    Die(int maximumPossibleRoll, int minimumPossibleRoll) {
         this.maximumPossibleRoll = maximumPossibleRoll;
         this.minimumPossibleRoll = minimumPossibleRoll;
     }
 
-    public Integer rollSingleDie(Random randomizer) {
+    Integer rollSingleDie(Random randomizer) {
         // JDK 11 doesn't include the lower bounded nextInt method; so we offset the maximum
         return randomizer.nextInt((maximumPossibleRoll - minimumPossibleRoll) + 1) + minimumPossibleRoll;
     }

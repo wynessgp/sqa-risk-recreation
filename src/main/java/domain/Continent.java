@@ -5,7 +5,7 @@ import java.util.Set;
 public enum Continent {
 
     AFRICA(Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA, TerritoryType.EGYPT,
-           TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA), 3),
+            TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA), 3),
 
     ASIA(Set.of(TerritoryType.AFGHANISTAN, TerritoryType.CHINA, TerritoryType.INDIA,
             TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MIDDLE_EAST,
@@ -48,7 +48,7 @@ public enum Continent {
         return name.deleteCharAt(name.length() - 1).toString();
     }
 
-    public int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
+    int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
         return (matchesContinentTerritories(setToPassIn)) ? continentBonus : 0;
     }
 }

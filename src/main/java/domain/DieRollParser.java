@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-public class DieRollParser {
+class DieRollParser {
 
     private final List<Die> attackerDice;
     private final List<Die> defenderDice;
@@ -22,7 +22,7 @@ public class DieRollParser {
     private static final int MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE = 2;
     private static final int MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE = 3;
 
-    public DieRollParser() {
+    DieRollParser() {
         this(new Random(), List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL,
                 MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)), List.of(new Die(MAXIMUM_DIE_ROLL,
                 MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MAXIMUM_DIE_ROLL)));
@@ -37,7 +37,7 @@ public class DieRollParser {
         this.setupDie = new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL);
     }
 
-    public List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
+    List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(
                 amountOfDiceToRoll, MINIMUM_VALID_AMOUNT_OF_SETUP_DICE, MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE);
         List<Integer> rollResults = new ArrayList<>();
@@ -54,14 +54,14 @@ public class DieRollParser {
         }
     }
 
-    public List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
+    List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
                 MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE);
 
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
-    public List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
+    List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
         validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
                 MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE);
 
@@ -85,7 +85,7 @@ public class DieRollParser {
         return rollResults;
     }
 
-    public List<BattleResult> generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
+    List<BattleResult> generateBattleResults(List<Integer> defenderRolls, List<Integer> attackerRolls) {
         validateListsAreNotEmpty(defenderRolls, attackerRolls);
         validateListsAreSortedProperly(defenderRolls, attackerRolls);
         List<BattleResult> battleResults = new ArrayList<>();
@@ -128,4 +128,5 @@ public class DieRollParser {
     void setSetupDie(Die setupDie) {
         this.setupDie = setupDie;
     }
+
 }
