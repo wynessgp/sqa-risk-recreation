@@ -453,16 +453,21 @@ public final class WorldDominationGameEngine {
                                                      TerritoryType destTerritory, int numAttackers) {
         int attackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
         int defendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
-        if (defenderLosesAllArmiesInAttack(destTerritory, defendersLost)) {
-            checkIfOpposingPlayerWillLose(destTerritory);
-            handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
+        if (defenderLosesTerritoryInBattle(destTerritory, defendersLost)) {
+            handleDefenderTerritoryLoss(sourceTerritory, destTerritory, numAttackers);
         } else {
             decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
             decreaseNumArmiesInTerritory(destTerritory, defendersLost);
         }
     }
 
-    private void checkIfOpposingPlayerWillLose(TerritoryType destTerritory) {
+    private void handleDefenderTerritoryLoss(TerritoryType sourceTerritory, TerritoryType destTerritory,
+                                             int numAttackers) {
+        handlePlayerLosingGameIfNecessary(destTerritory);
+        handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
+    }
+
+    private void handlePlayerLosingGameIfNecessary(TerritoryType destTerritory) {
         PlayerColor playerInControlOfDest = playersList.get(0);
         for (PlayerColor playerColor : playersList) {
             if (checkIfPlayerOwnsTerritory(destTerritory, playerColor)) {
@@ -474,12 +479,7 @@ public final class WorldDominationGameEngine {
     }
 
     private void removePlayerFromGameIfNecessary(PlayerColor playerInControlOfDest) {
-        int numTerritoriesPlayerOwns = 0;
-        for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, playerInControlOfDest)) {
-                numTerritoriesPlayerOwns++;
-            }
-        }
+        int numTerritoriesPlayerOwns = getNumTerritoriesPlayerOwns(playerInControlOfDest);
         if (numTerritoriesPlayerOwns == 0) {
             playersList.remove(playerInControlOfDest);
             playersMap.get(currentPlayer).addCardsToCollection(playersMap.get(playerInControlOfDest).getOwnedCards());
@@ -487,7 +487,17 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private boolean defenderLosesAllArmiesInAttack(TerritoryType defenderTerritory, int defendersLost) {
+    private int getNumTerritoriesPlayerOwns(PlayerColor potentiallyLosingPlayer) {
+        int numTerritoriesPlayerOwns = 0;
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, potentiallyLosingPlayer)) {
+                numTerritoriesPlayerOwns++;
+            }
+        }
+        return numTerritoriesPlayerOwns;
+    }
+
+    private boolean defenderLosesTerritoryInBattle(TerritoryType defenderTerritory, int defendersLost) {
         return (territoryGraph.getTerritory(defenderTerritory).getNumArmiesPresent() - defendersLost) == 0;
     }
 
