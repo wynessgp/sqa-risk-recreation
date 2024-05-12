@@ -235,7 +235,7 @@ public class PlayerTest {
 
         player.removeAllGivenCards(cardsToRemove);
 
-        assertEquals(Set.of(), player.getGetOwnedCards());
+        assertEquals(Set.of(), player.getOwnedCards());
     }
 
     private static Stream<Arguments> generateRemoveCardCombosAndNonEmptyResult() {
@@ -283,6 +283,6 @@ public class PlayerTest {
 
         player.removeAllGivenCards(cardsToRemove);
 
-        assertEquals(expectedOutput, player.getGetOwnedCards());
+        assertEquals(expectedOutput, player.getOwnedCards());
     }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1772,5 +1773,127 @@ public class WorldDominationGameEngineTest {
         assertEquals(anticipatedResult, actualResult);
 
         EasyMock.verify(mockedPlayer, mockedGraph, mockedSource, mockedDest, mockedDieRollParser);
+    }
+
+    private static Stream<Arguments> generateAllPlayerPairsWithoutSetup() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<PlayerColor> playerColorsWithoutSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        playerColorsWithoutSetup.remove(PlayerColor.SETUP);
+
+        for (PlayerColor playerOne : playerColorsWithoutSetup) {
+            for (PlayerColor playerTwo : playerColorsWithoutSetup) {
+                if (playerOne != playerTwo) {
+                    toStream.add(Arguments.of(playerOne, playerTwo));
+                }
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerPairsWithoutSetup")
+    public void test51_attackTerritory_validInput_defendingPlayerLosesGame_expectCardTransfer(
+            PlayerColor attackingPlayer, PlayerColor losingPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // anticipate removal from the list
+        List<PlayerColor> mockedList = EasyMock.partialMockBuilder(ArrayList.class)
+                .withConstructor()
+                .addMockedMethod("remove", Object.class)
+                .createMock();
+        mockedList.add(attackingPlayer);
+        mockedList.add(losingPlayer);
+        EasyMock.expect(mockedList.remove(losingPlayer)).andReturn(true);
+
+        Set<Card> cardsHeldByLoser = Set.of(new WildCard());
+
+        Player mockedLoser = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(losingPlayer)
+                .addMockedMethod("getOwnedCards")
+                .createMock();
+        EasyMock.expect(mockedLoser.getOwnedCards()).andReturn(cardsHeldByLoser);
+
+        Player mockedAttacker = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(attackingPlayer)
+                .addMockedMethod("addCardsToCollection")
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedAttacker.getNumCardsHeld()).andReturn(3);
+        mockedAttacker.addCardsToCollection(cardsHeldByLoser);
+        EasyMock.expectLastCall().once();
+
+        // anticipate removal from the map
+        Map<PlayerColor, Player> mockedPlayersMap = EasyMock.partialMockBuilder(HashMap.class)
+                .withConstructor()
+                .addMockedMethod("remove", Object.class)
+                .createMock();
+        mockedPlayersMap.put(attackingPlayer, mockedAttacker);
+        mockedPlayersMap.put(losingPlayer, mockedLoser);
+        EasyMock.expect(mockedPlayersMap.remove(losingPlayer)).andReturn(mockedLoser);
+
+        // now handle the graph and the various territories.
+        Territory mockedUkraine = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedUkraine.isOwnedByPlayer(attackingPlayer)).andReturn(true); // attacker from ukraine
+        EasyMock.expect(mockedUkraine.getNumArmiesPresent()).andReturn(5).times(2);
+        EasyMock.expect(mockedUkraine.setNumArmiesPresent(4)).andReturn(true); // 1 army moves away.
+        EasyMock.expect(mockedUkraine.isOwnedByPlayer(losingPlayer)).andReturn(false); // ensure red loses the game
+        EasyMock.expect(mockedUkraine.getNumArmiesPresent()).andReturn(4);
+
+        Territory mockedAfghanistan = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(attackingPlayer)).andReturn(false).times(2);
+        EasyMock.expect(mockedAfghanistan.getNumArmiesPresent()).andReturn(1).anyTimes(); // 1 defender
+        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(losingPlayer)).andReturn(true); // confirm loser owned it
+        EasyMock.expect(mockedAfghanistan.setPlayerInControl(attackingPlayer)).andReturn(true); // attacker takes over
+        EasyMock.expect(mockedAfghanistan.setNumArmiesPresent(1)).andReturn(true); // purple moves their attacker
+        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(losingPlayer)).andReturn(false); // ensure loser loses
+        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(attackingPlayer)).andReturn(true); // now attacker owns it
+
+        TerritoryType ukraine = TerritoryType.UKRAINE;
+        TerritoryType afghanistan = TerritoryType.AFGHANISTAN;
+        // set up the graph, with the remaining territories.
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(ukraine)).andReturn(mockedUkraine).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(afghanistan)).andReturn(mockedAfghanistan).anyTimes();
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(ukraine, afghanistan)).andReturn(true);
+
+        List<TerritoryType> allTerritoriesMinusUkraineAfghan = new ArrayList<>(List.of(TerritoryType.values()));
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        allTerritoriesMinusUkraineAfghan.remove(ukraine);
+        allTerritoriesMinusUkraineAfghan.remove(afghanistan);
+
+        for (TerritoryType territory : allTerritoriesMinusUkraineAfghan) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(losingPlayer)).andReturn(false); // loser doesn't own it
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+
+        DieRollParser mockedParser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(mockedParser.rollAttackerDice(1)).andReturn(List.of(4));
+        EasyMock.expect(mockedParser.rollDefenderDice(1)).andReturn(List.of(1));
+        EasyMock.expect(mockedParser.generateBattleResults(List.of(4), List.of(1)))
+                .andReturn(List.of(BattleResult.ATTACKER_VICTORY));
+
+        EasyMock.replay(mockedList, mockedPlayersMap, mockedAttacker, mockedLoser, mockedUkraine, mockedAfghanistan,
+                mockedGraph, mockedParser);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideMockedDieRollParser(mockedParser);
+        unitUnderTest.provideMockedPlayerMap(mockedPlayersMap);
+        unitUnderTest.setPlayerOrderList(mockedList);
+
+        int actualResult = unitUnderTest.attackTerritory(ukraine, afghanistan, 1, 1);
+        assertEquals(3, actualResult);
+
+        EasyMock.verify(mockedList, mockedPlayersMap, mockedAttacker, mockedLoser, mockedUkraine, mockedAfghanistan,
+                mockedGraph, mockedParser);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
     }
 }

@@ -61,7 +61,11 @@ public class Player {
         this.ownedCards = new HashSet<>(cardsPlayerOwns);
     }
 
-    Set<Card> getGetOwnedCards() {
+    Set<Card> getOwnedCards() {
         return new HashSet<>(ownedCards);
+    }
+
+    public void addCardsToCollection(Set<Card> wildCardCollection) {
+
     }
 }

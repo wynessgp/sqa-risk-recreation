@@ -33,7 +33,7 @@ public final class WorldDominationGameEngine {
     private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
 
     private List<PlayerColor> playersList = new ArrayList<>();
-    private final Map<PlayerColor, Player> playersMap = new HashMap<>();
+    private Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
 
     private int numUnclaimedTerritories;
@@ -454,10 +454,36 @@ public final class WorldDominationGameEngine {
         int attackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
         int defendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
         if (defenderLosesAllArmiesInAttack(destTerritory, defendersLost)) {
+            checkIfOpposingPlayerWillLose(destTerritory);
             handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
         } else {
             decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
             decreaseNumArmiesInTerritory(destTerritory, defendersLost);
+        }
+    }
+
+    private void checkIfOpposingPlayerWillLose(TerritoryType destTerritory) {
+        PlayerColor playerInControlOfDest = playersList.get(0);
+        for (PlayerColor playerColor : playersList) {
+            if (territoryGraph.getTerritory(destTerritory).isOwnedByPlayer(playerColor)) {
+                playerInControlOfDest = playerColor;
+                break;
+            }
+        }
+        removePlayerFromGameIfNecessary(playerInControlOfDest);
+    }
+
+    private void removePlayerFromGameIfNecessary(PlayerColor playerInControlOfDest) {
+        int numTerritoriesPlayerOwns = 0;
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, playerInControlOfDest)) {
+                numTerritoriesPlayerOwns++;
+            }
+        }
+        if (numTerritoriesPlayerOwns == 0) {
+            playersList.remove(playerInControlOfDest);
+            playersMap.get(currentPlayer).addCardsToCollection(playersMap.get(playerInControlOfDest).getOwnedCards());
+            playersMap.remove(playerInControlOfDest);
         }
     }
 
@@ -515,6 +541,9 @@ public final class WorldDominationGameEngine {
 
     void setPlayerOrderList(List<PlayerColor> playersList) {
         this.playersList = playersList;
+        if (!playersList.isEmpty()) {
+            this.currentPlayer = playersList.get(0);
+        }
     }
 
     void provideMockedPlayerObjects(List<Player> mockedPlayers) {
@@ -563,5 +592,9 @@ public final class WorldDominationGameEngine {
 
     int getNumCardsForPlayer(PlayerColor playerColor) {
         return playersMap.get(playerColor).getNumCardsHeld();
+    }
+
+    void provideMockedPlayerMap(Map<PlayerColor, Player> mockedPlayersMap) {
+        this.playersMap = mockedPlayersMap;
     }
 }
