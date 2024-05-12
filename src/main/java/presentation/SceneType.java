@@ -1,6 +1,6 @@
 package presentation;
 
-public enum SceneType {
+enum SceneType {
     START("start_screen"),
     PLAYER_SELECT("player_select_screen"),
     SHUFFLE("player_shuffle_screen"),
