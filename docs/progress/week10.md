@@ -22,6 +22,7 @@
 
 #### PR done and approved
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/149
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/151
 
 #### Other people's PR reviewed by you
 - N/A
@@ -35,3 +36,4 @@
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/149
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/151
