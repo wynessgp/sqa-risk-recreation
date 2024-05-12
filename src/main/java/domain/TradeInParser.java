@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TradeInParser {
+class TradeInParser {
     private static final int TRADE_IN_SET_LENGTH = 3;
     private static final int MAXIMUM_NUMBER_OF_TRADES = 14;
     private static final int ARMY_CALCULATION_OFFSET = 6;
@@ -15,7 +15,7 @@ public class TradeInParser {
 
     private int setsTradedIn = 0;
 
-    public int startTrade(Set<Card> cards) {
+    int startTrade(Set<Card> cards) {
         checkTradeInState(cards);
         if (hasOneOfEachType(cards) || hasThreeOfSameType(cards) || hasWild(cards)) {
             setsTradedIn++;
@@ -26,7 +26,7 @@ public class TradeInParser {
         throw new IllegalStateException("Invalid trade in set");
     }
 
-    public Set<TerritoryType> getMatchedTerritories(Player player, Set<Card> cards) {
+    Set<TerritoryType> getMatchedTerritories(Player player, Set<Card> cards) {
         if (cards.size() != TRADE_IN_SET_LENGTH) {
             throw new IllegalStateException("Invalid number of cards");
         }
@@ -76,4 +76,5 @@ public class TradeInParser {
     void setSetsTradedIn(int setsTradedIn) {
         this.setsTradedIn = setsTradedIn;
     }
+
 }

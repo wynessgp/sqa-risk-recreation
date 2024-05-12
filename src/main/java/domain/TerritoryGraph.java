@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class TerritoryGraph {
+class TerritoryGraph {
     private final Map<TerritoryType, Set<TerritoryType>> territories = new HashMap<>();
     private final Map<TerritoryType, Territory> territoryTypeToObject = new HashMap<>();
 
-    public boolean addNewTerritory(Territory territory) {
+    boolean addNewTerritory(Territory territory) {
         TerritoryType territoryType = territory.getTerritoryType();
         if (territoryTypeToObject.containsKey(territoryType)) {
             return false;
@@ -19,7 +19,7 @@ public class TerritoryGraph {
         return true;
     }
 
-    public boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
+    boolean addNewAdjacency(TerritoryType startingTerritory, TerritoryType endingTerritory) {
         if (!(territories.containsKey(startingTerritory) && territories.containsKey(endingTerritory))
                 || startingTerritory == endingTerritory || areTerritoriesAdjacent(startingTerritory, endingTerritory)) {
             return false;
@@ -34,14 +34,14 @@ public class TerritoryGraph {
                 && territories.get(startingTerritory).contains(endingTerritory);
     }
 
-    public Territory getTerritory(TerritoryType territoryType) {
+    Territory getTerritory(TerritoryType territoryType) {
         if (territoryTypeToObject.containsKey(territoryType)) {
             return territoryTypeToObject.get(territoryType);
         }
         throw new NullPointerException("Territory does not exist");
     }
 
-    public Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
+    Set<Territory> findAdjacentTerritories(TerritoryType territoryType) {
         Set<TerritoryType> adjacent = territories.get(territoryType);
         Set<Territory> result = new HashSet<>();
         if (adjacent != null) {
@@ -52,7 +52,7 @@ public class TerritoryGraph {
         return result;
     }
 
-    public boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
+    boolean addSetOfAdjacencies(TerritoryType territoryType, Set<TerritoryType> adjacencies) {
         Set<TerritoryType> currentAdjacencies = territories.get(territoryType);
         if (graphContainsAdjacencies(territoryType, adjacencies, currentAdjacencies)) {
             return false;
@@ -84,4 +84,5 @@ public class TerritoryGraph {
             territories.get(adjacentTerritoryType).add(territoryType);
         }
     }
+
 }

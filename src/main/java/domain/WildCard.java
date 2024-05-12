@@ -1,6 +1,6 @@
 package domain;
 
-public class WildCard implements Card {
+class WildCard implements Card {
 
     @Override
     public boolean matchesTerritory(TerritoryType territory) {
