@@ -14,7 +14,7 @@ package presentation {
         +{static} main(args: String[]): void
     }
 
-    +enum SceneType {
+    ~enum SceneType {
         START
         PLAYER_SELECT
         SHUFFLE
@@ -111,7 +111,7 @@ package presentation {
 
     PlayerShuffleScreenController --+ DieImage
 
-    +class SceneController {
+    ~class SceneController {
         -{static} sceneController: SceneController
         -{static} languageName: String
         -{final} screenMap: Map<SceneType, Pane>
@@ -254,19 +254,19 @@ package domain {
     WorldDominationGameEngine ..> Continent
     WorldDominationGameEngine ..> Card
 
-    +class Player {
+    ~class Player {
         -{final} playerColor: PlayerColor
         -numArmiesToPlace: int
         -territories: Set<TerritoryType>
         -ownedCards: Set<Card>
 
-        +Player(playerColor: PlayerColor)
-        +ownsTerritory(territory: TerritoryType): boolean
-        +setNumArmiesToPlace(newAmount: int): void
-        +getNumArmiesToPlace(): int
-        +getColor(): PlayerColor
-        +addTerritoryToCollection(relevantTerritory: TerritoryType): void
-        +ownsAllGivenCards(cardsToRemove: Set<Card>): void
+        ~Player(playerColor: PlayerColor)
+        ~ownsTerritory(territory: TerritoryType): boolean
+        ~setNumArmiesToPlace(newAmount: int): void
+        ~getNumArmiesToPlace(): int
+        ~getColor(): PlayerColor
+        ~addTerritoryToCollection(relevantTerritory: TerritoryType): void
+        ~ownsAllGivenCards(cardsToRemove: Set<Card>): void
 
         ~setTerritories(territories: Set<TerritoryType>): void
         ~getTerritories(): Set<TerritoryType>
@@ -295,31 +295,31 @@ package domain {
     WorldDominationGameEngine ..> TerritoryType
     WorldDominationGameEngine ..> PlayerColor
 
-    +class RiskCardDeck {
+    ~class RiskCardDeck {
         -{static} {final} NUMBER_OF_WILD_CARDS: int
         -{static} {final} CARDS_PER_PIECE_TYPE: int
         -deckOfCards: List<Card>
         -{final} random: Random
 
-        +RiskCardDeck()
+        ~RiskCardDeck()
         ~RiskCardDeck(random: Random)
         ~initDeck(): boolean
         -addTerritoryCards(): void
         -addWildCards(): void
-        +drawCard(): Card
+        ~drawCard(): Card
         ~shuffle(): boolean
         ~setDeck(deck: List<Card>): void
         ~isDeckEmpty(): boolean
     }
 
-    +class Die {
+    ~class Die {
         -maximumPossibleRoll: int
         -minimumPossibleRoll: int
-        +Die(maximumPossibleRoll: int, minimumPossibleRoll: int)
-        +rollSingleDie(randomizer: Random): Integer
+        ~Die(maximumPossibleRoll: int, minimumPossibleRoll: int)
+        ~rollSingleDie(randomizer: Random): Integer
     }
 
-    +class DieRollParser {
+    ~class DieRollParser {
         -{static} {final} MINIMUM_DIE_ROLL: int
         -{static} {final} MAXIMUM_DIE_ROLL: int
         -{static} {final} MINIMUM_AMOUNT_OF_SETUP_DICE: int
@@ -332,15 +332,15 @@ package domain {
         -{final} randomizer: Random
         -setupDie: Die
 
-        +DieRollParser()
-        +buildDiceLists(): boolean
-        +rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
+        ~DieRollParser()
+        ~buildDiceLists(): boolean
+        ~rollDiceToDeterminePlayerOrder(amountOfDiceToRoll: int): List<Integer>
         -buildSetupDie(setupDieUpperBound: int): void
-        +rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
-        +rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
+        ~rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
+        ~rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
         -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
         -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
-        +generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
+        ~generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
         -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -calculateBattleResult(defenderRoll: Integer, attackerRoll: Integer): BattleResult
@@ -373,11 +373,11 @@ package domain {
         ~Continent(associatedTerritories: Set<TerritoryType>, continentArmyBonus: int)
         ~matchesContinentTerritories(playerTerritoriesInQuestion: Set<TerritoryType>): boolean
         +toString(): String
-        +getContinentBonusIfPlayerHasTerritories(setToPassIn: Set<TerritoryType>): int
+        ~getContinentBonusIfPlayerHasTerritories(setToPassIn: Set<TerritoryType>): int
     }
 
 
-    +class TradeInParser {
+    ~class TradeInParser {
         -{static} {final} TRADE_IN_SET_LENGTH: int
         -{static} {final} MAXIMUM_NUMBER_OF_TRADES: int
         -{static} {final} ARMY_CALCULATION_OFFSET: int
@@ -387,8 +387,8 @@ package domain {
         -{static} {final} ADDITIONAL_NUMBER_OF_ARMIES_AFTER_THRESHOLD: int
         -setsTradedIn: int
 
-        +startTrade(cards: Set<Card>): int
-        +getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
+        ~startTrade(cards: Set<Card>): int
+        ~getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
         -checkTradeInState(cards: Set<Card>): void
         -hasOneOfEachType(cards: Set<Card>): boolean
         -hasThreeOfSameType(cards: Set<Card>): boolean
@@ -408,13 +408,13 @@ package domain {
         +toString(): String
     }
 
-    +interface Card {
+    ~interface Card {
         +isWild(): boolean
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
     }
 
-    +class WildCard {
+    ~class WildCard {
         +matchesTerritory(territory: TerritoryType): boolean
         +matchesPieceType(pieceType: PieceType): boolean
         +isWild(): boolean
@@ -423,12 +423,13 @@ package domain {
     note "matchesPieceType and isWild returns true, matchesTerritory returns false" as N1
     N1 .u. WildCard
 
-    +class TerritoryCard {
+    ~class TerritoryCard {
         -territoryType: TerritoryType
         -pieceType: PieceType
-        +matchesTerritory(territory: TerritoryType): boolean
-        +matchesPieceType(pieceType: PieceType): boolean
-        +isWild(): boolean
+        ~TerritoryCard(territory: TerritoryType, piece: PieceType)
+        ~matchesTerritory(territory: TerritoryType): boolean
+        ~matchesPieceType(pieceType: PieceType): boolean
+        ~isWild(): boolean
     }
 
     TerritoryCard --> PieceType
@@ -444,19 +445,19 @@ package domain {
         +toString(): String
     }
 
-    +class TerritoryGraph {
+    ~class TerritoryGraph {
         -territories: Map<TerritoryType, Set<Territory>>
         -territoryTypeToObject: Map<TerritoryType, Territory>
-        +TerritoryGraph()
+        ~TerritoryGraph()
 
-        +getTerritory(territoryType: TerritoryType): Territory
-        +findAdjacentTerritories(territoryType: TerritoryType): Set<Territory>
+        ~getTerritory(territoryType: TerritoryType): Territory
+        ~findAdjacentTerritories(territoryType: TerritoryType): Set<Territory>
 
-        +addNewTerritory(territory: Territory): boolean
-        +addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+        ~addNewTerritory(territory: Territory): boolean
+        ~addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
         -isValidAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
 
-        +addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
         -graphContainsAdjacencies(territoryType: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
         -graphHasAdjacencyMapping(adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
         -addAdjacenciesToGraph(territory: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): void
@@ -465,19 +466,19 @@ package domain {
     TerritoryGraph --> "*" Territory
     TerritoryGraph --> "*" TerritoryType
 
-    +class Territory {
+    ~class Territory {
         -territoryType: TerritoryType
         -playerInControl: PlayerColor
         -numArmiesPresent: int
 
-        +Territory(territoryType: TerritoryType)
+        ~Territory(territoryType: TerritoryType)
         ~Territory(playerToBeInControl: Player, territoryType: TerritoryType)
-        +setPlayerInControl(newPlayer: Player): boolean 
-        +setNumArmiesPresent(newAmount: int): boolean
-        +getPlayerInControl(): Player
-        +getNumArmiesPresent(): int
-        +getTerritoryType(): TerritoryType
-        +isOwnedByPlayer(playerToCheck: PlayerColor): boolean
+        ~setPlayerInControl(newPlayer: Player): boolean
+        ~setNumArmiesPresent(newAmount: int): boolean
+        ~getPlayerInControl(): Player
+        ~getNumArmiesPresent(): int
+        ~getTerritoryType(): TerritoryType
+        ~isOwnedByPlayer(playerToCheck: PlayerColor): boolean
     }
 
     Territory --> PlayerColor

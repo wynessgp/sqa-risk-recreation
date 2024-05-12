@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-public final class RiskCardDeck {
+final class RiskCardDeck {
     private static final int NUMBER_OF_WILD_CARDS = 2;
     private static final int CARDS_PER_PIECE_TYPE = 14;
 
     private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
 
-    public RiskCardDeck() {
+    RiskCardDeck() {
         this.random = new Random();
         initDeck();
         shuffle();
@@ -47,7 +47,7 @@ public final class RiskCardDeck {
         }
     }
 
-    public Card drawCard() {
+    Card drawCard() {
         if (isDeckEmpty()) {
             throw new NoSuchElementException("Cannot draw card from an empty deck");
         }
@@ -69,4 +69,5 @@ public final class RiskCardDeck {
     boolean isDeckEmpty() {
         return deckOfCards.isEmpty();
     }
+
 }

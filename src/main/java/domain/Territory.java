@@ -1,11 +1,11 @@
 package domain;
 
-public class Territory {
+class Territory {
     private final TerritoryType territoryType;
     private int numArmiesPresent;
     private PlayerColor playerInControl;
 
-    public Territory(TerritoryType territoryType) {
+    Territory(TerritoryType territoryType) {
         this.territoryType = territoryType;
         this.playerInControl = PlayerColor.SETUP;
         this.numArmiesPresent = 0;
@@ -17,7 +17,7 @@ public class Territory {
         this.numArmiesPresent = 0;
     }
 
-    public boolean setPlayerInControl(PlayerColor player) {
+    boolean setPlayerInControl(PlayerColor player) {
         if (player == PlayerColor.SETUP) {
             throw new IllegalArgumentException("Cannot set the player in control to setup");
         }
@@ -28,7 +28,7 @@ public class Territory {
         return true;
     }
 
-    public boolean setNumArmiesPresent(int newAmount) {
+    boolean setNumArmiesPresent(int newAmount) {
         if (newAmount < 1) {
             throw new IllegalArgumentException("Number of armies to set should be greater than 0");
         }
@@ -36,15 +36,15 @@ public class Territory {
         return true;
     }
 
-    public int getNumArmiesPresent() {
+    int getNumArmiesPresent() {
         return numArmiesPresent;
     }
 
-    public TerritoryType getTerritoryType() {
+    TerritoryType getTerritoryType() {
         return territoryType;
     }
 
-    public boolean isOwnedByPlayer(PlayerColor playerToCheck) {
+    boolean isOwnedByPlayer(PlayerColor playerToCheck) {
         return playerToCheck == playerInControl;
     }
 
