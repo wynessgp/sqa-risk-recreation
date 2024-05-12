@@ -465,7 +465,7 @@ public final class WorldDominationGameEngine {
     private void checkIfOpposingPlayerWillLose(TerritoryType destTerritory) {
         PlayerColor playerInControlOfDest = playersList.get(0);
         for (PlayerColor playerColor : playersList) {
-            if (territoryGraph.getTerritory(destTerritory).isOwnedByPlayer(playerColor)) {
+            if (checkIfPlayerOwnsTerritory(destTerritory, playerColor)) {
                 playerInControlOfDest = playerColor;
                 break;
             }
@@ -531,8 +531,9 @@ public final class WorldDominationGameEngine {
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
-        // also, add this to the players list, otherwise we'll error out on trying to swap turns.
-        playersList.add(currentPlayer);
+        if (!playersList.contains(currentPlayer)) { // make sure we don't add them twice.
+            playersList.add(currentPlayer);
+        }
     }
 
     void setGamePhase(GamePhase gamePhase) {

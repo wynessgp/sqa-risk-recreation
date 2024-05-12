@@ -1740,21 +1740,34 @@ public class WorldDominationGameEngineTest {
 
         Territory mockedSource = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
         EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(armiesInSource).times(2);
         EasyMock.expect(mockedSource.setNumArmiesPresent(numAttackersInSourceAfter)).andReturn(true);
         EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numAttackersInSourceAfter);
 
-        Territory mockedDest = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false);
+        Territory mockedDest = EasyMock.createStrictMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false).once();
         EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(armiesInDest).anyTimes();
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false).once();
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.RED)).andReturn(true).times(2);
+        EasyMock.expect(mockedDest.setPlayerInControl(PlayerColor.PURPLE)).andReturn(true).once();
         EasyMock.expect(mockedDest.setNumArmiesPresent(numAttackersInDestAfter)).andReturn(true);
-        EasyMock.expect(mockedDest.setPlayerInControl(PlayerColor.PURPLE)).andReturn(true);
-        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true).once();
 
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
         EasyMock.expect(mockedGraph.areTerritoriesAdjacent(source, dest)).andReturn(true);
         EasyMock.expect(mockedGraph.getTerritory(source)).andReturn(mockedSource).anyTimes();
         EasyMock.expect(mockedGraph.getTerritory(dest)).andReturn(mockedDest).anyTimes();
+
+        List<TerritoryType> allTerritoriesWithoutSourceDest = new ArrayList<>(List.of(TerritoryType.values()));
+        allTerritoriesWithoutSourceDest.remove(source);
+        allTerritoriesWithoutSourceDest.remove(dest);
+        for (TerritoryType territory : allTerritoriesWithoutSourceDest) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+        }
 
         DieRollParser mockedDieRollParser = EasyMock.createMock(DieRollParser.class);
         EasyMock.expect(mockedDieRollParser.rollAttackerDice(numAttackers)).andReturn(attackDiceRolls);
@@ -1767,6 +1780,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideMockedDieRollParser(mockedDieRollParser);
+        unitUnderTest.setPlayerOrderList(List.of(PlayerColor.PURPLE, PlayerColor.RED));
 
         int actualResult = unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders);
 
