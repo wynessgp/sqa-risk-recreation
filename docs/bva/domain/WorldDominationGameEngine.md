@@ -1340,3 +1340,17 @@ Input:
 Output:
 - IllegalArgumentException
   - message: "Source territory has too few defenders for this defense!"
+
+### Test 18:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = YELLOW
+- player pointer = [Color = YELLOW, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- sourceTerritory = [BRAZIL, numArmiesInTerritory = 7, ownedBy = YELLOW ]
+- destinationTerritory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE ]
+
+Output: N/A (input has no errors!)
