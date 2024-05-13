@@ -1,7 +1,6 @@
 package domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +32,7 @@ public final class WorldDominationGameEngine {
     private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
 
     private List<PlayerColor> playersList = new ArrayList<>();
-    private Map<PlayerColor, Player> playersMap = new HashMap<>();
+    private final Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
 
     private int numUnclaimedTerritories;
@@ -377,19 +376,8 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.PLACEMENT;
     }
 
-    public int attackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
-                                int numAttackers, int numDefenders) {
-        doErrorHandlingForAttackTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
-        List<Integer> attackDice = dieRollParser.rollAttackerDice(numAttackers);
-        List<Integer> defenderDice = dieRollParser.rollDefenderDice(numDefenders);
-        List<BattleResult> battleResults = dieRollParser.generateBattleResults(attackDice, defenderDice);
-        modifyArmiesInRespectiveTerritories(battleResults, sourceTerritory, destTerritory, numAttackers);
-        return checkIfPlayerOwnsTerritory(destTerritory, currentPlayer)
-                ? territoryGraph.getTerritory(sourceTerritory).getNumArmiesPresent() - 1 : 0;
-    }
-
-    private void doErrorHandlingForAttackTerritory(TerritoryType sourceTerritory, TerritoryType destTerritory,
-                                                   int numAttackers, int numDefenders) {
+    void handleErrorCasesForAttackingTerritory(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
         checkIfNumAttackersIsValid(numAttackers);
         checkIfNumDefendersIsValid(numDefenders);
         checkIfGameIsInAttackPhase();
@@ -445,82 +433,8 @@ public final class WorldDominationGameEngine {
     private void checkIfDestTerritoryHasEnoughArmiesToSupportDefense(TerritoryType destTerritory, int numDefenders) {
         int numArmiesPresent = territoryGraph.getTerritory(destTerritory).getNumArmiesPresent();
         if (numDefenders > numArmiesPresent) {
-            throw new IllegalArgumentException("Source territory has too few defenders for this defense!");
+            throw new IllegalArgumentException("Destination territory has too few defenders for this defense!");
         }
-    }
-
-    private void modifyArmiesInRespectiveTerritories(List<BattleResult> battleResults, TerritoryType sourceTerritory,
-                                                     TerritoryType destTerritory, int numAttackers) {
-        int attackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
-        int defendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
-        if (defenderLosesTerritoryInBattle(destTerritory, defendersLost)) {
-            handleDefenderTerritoryLoss(sourceTerritory, destTerritory, numAttackers);
-        } else {
-            decreaseNumArmiesInTerritory(sourceTerritory, attackersLost);
-            decreaseNumArmiesInTerritory(destTerritory, defendersLost);
-        }
-    }
-
-    private void handleDefenderTerritoryLoss(TerritoryType sourceTerritory, TerritoryType destTerritory,
-                                             int numAttackers) {
-        handlePlayerLosingGameIfNecessary(destTerritory);
-        handleCurrentPlayerWinningGameIfNecessary();
-        handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
-    }
-
-    private void handleCurrentPlayerWinningGameIfNecessary() {
-        int numTerritoriesPlayerOwns = getNumTerritoriesPlayerOwns(currentPlayer);
-        if (numTerritoriesPlayerOwns == INITIAL_NUM_UNCLAIMED_TERRITORIES - 1) {
-            currentGamePhase = GamePhase.GAME_OVER;
-        }
-    }
-
-    private void handlePlayerLosingGameIfNecessary(TerritoryType destTerritory) {
-        PlayerColor playerInControlOfDest = playersList.get(0);
-        for (PlayerColor playerColor : playersList) {
-            if (checkIfPlayerOwnsTerritory(destTerritory, playerColor)) {
-                playerInControlOfDest = playerColor;
-                break;
-            }
-        }
-        removePlayerFromGameIfNecessary(playerInControlOfDest);
-    }
-
-    private void removePlayerFromGameIfNecessary(PlayerColor playerInControlOfDest) {
-        int numTerritoriesPlayerOwns = getNumTerritoriesPlayerOwns(playerInControlOfDest);
-        if (numTerritoriesPlayerOwns == 0) {
-            playersList.remove(playerInControlOfDest);
-            playersMap.get(currentPlayer).addCardsToCollection(playersMap.get(playerInControlOfDest).getOwnedCards());
-            playersMap.remove(playerInControlOfDest);
-        }
-    }
-
-    private int getNumTerritoriesPlayerOwns(PlayerColor playerInQuestion) {
-        int numTerritoriesPlayerOwns = 0;
-        for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, playerInQuestion)) {
-                numTerritoriesPlayerOwns++;
-            }
-        }
-        return numTerritoriesPlayerOwns;
-    }
-
-    private boolean defenderLosesTerritoryInBattle(TerritoryType defenderTerritory, int defendersLost) {
-        return (territoryGraph.getTerritory(defenderTerritory).getNumArmiesPresent() - defendersLost) == 0;
-    }
-
-    private void handleAttackerTakingTerritory(TerritoryType source, TerritoryType dest, int numAttackers) {
-        Territory destTerritoryObject = territoryGraph.getTerritory(dest);
-        destTerritoryObject.setPlayerInControl(currentPlayer);
-        destTerritoryObject.setNumArmiesPresent(numAttackers);
-
-        decreaseNumArmiesInTerritory(source, numAttackers);
-    }
-
-    private void decreaseNumArmiesInTerritory(TerritoryType territory, int numToDecreaseBy) {
-        Territory territoryObject = territoryGraph.getTerritory(territory);
-        int previousNumArmies = territoryObject.getNumArmiesPresent();
-        territoryObject.setNumArmiesPresent(previousNumArmies - numToDecreaseBy);
     }
 
     public PlayerColor getCurrentPlayer() {
@@ -601,19 +515,11 @@ public final class WorldDominationGameEngine {
         this.tradeInParser = mockedParser;
     }
 
-    void provideMockedDieRollParser(DieRollParser mockedParser) {
-        this.dieRollParser = mockedParser;
-    }
-
     void setCardsForPlayer(PlayerColor playerColor, Set<Card> cardsPlayerOwns) {
         playersMap.get(playerColor).setOwnedCards(cardsPlayerOwns);
     }
 
     int getNumCardsForPlayer(PlayerColor playerColor) {
         return playersMap.get(playerColor).getNumCardsHeld();
-    }
-
-    void provideMockedPlayerMap(Map<PlayerColor, Player> mockedPlayersMap) {
-        this.playersMap = mockedPlayersMap;
     }
 }
