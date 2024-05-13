@@ -464,7 +464,15 @@ public final class WorldDominationGameEngine {
     private void handleDefenderTerritoryLoss(TerritoryType sourceTerritory, TerritoryType destTerritory,
                                              int numAttackers) {
         handlePlayerLosingGameIfNecessary(destTerritory);
+        handleCurrentPlayerWinningGameIfNecessary();
         handleAttackerTakingTerritory(sourceTerritory, destTerritory, numAttackers);
+    }
+
+    private void handleCurrentPlayerWinningGameIfNecessary() {
+        int numTerritoriesPlayerOwns = getNumTerritoriesPlayerOwns(currentPlayer);
+        if (numTerritoriesPlayerOwns == INITIAL_NUM_UNCLAIMED_TERRITORIES - 1) {
+            currentGamePhase = GamePhase.GAME_OVER;
+        }
     }
 
     private void handlePlayerLosingGameIfNecessary(TerritoryType destTerritory) {
@@ -487,10 +495,10 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private int getNumTerritoriesPlayerOwns(PlayerColor potentiallyLosingPlayer) {
+    private int getNumTerritoriesPlayerOwns(PlayerColor playerInQuestion) {
         int numTerritoriesPlayerOwns = 0;
         for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, potentiallyLosingPlayer)) {
+            if (checkIfPlayerOwnsTerritory(territory, playerInQuestion)) {
                 numTerritoriesPlayerOwns++;
             }
         }

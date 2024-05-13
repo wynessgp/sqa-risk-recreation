@@ -1910,4 +1910,83 @@ public class WorldDominationGameEngineTest {
             EasyMock.verify(mockedTerritory);
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerPairsWithoutSetup")
+    public void test52_attackTerritory_validInput_attackingPlayerWinsGame_expectAllTerritoriesOwnedAndGamePhase(
+            PlayerColor attackingPlayer, PlayerColor defendingPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Player mockedAttacker = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(attackingPlayer)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedAttacker.getNumCardsHeld()).andReturn(3);
+
+        TerritoryType easternUs = TerritoryType.EASTERN_UNITED_STATES;
+        TerritoryType westernUs = TerritoryType.WESTERN_UNITED_STATES;
+        // set up the graph, with the remaining territories.
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(westernUs, easternUs)).andReturn(true);
+
+        Territory mockedEasternUs = EasyMock.partialMockBuilder(Territory.class)
+                .withConstructor(PlayerColor.class, TerritoryType.class)
+                .withArgs(defendingPlayer, easternUs)
+                .createMock();
+        mockedEasternUs.setNumArmiesPresent(1);
+        EasyMock.expect(mockedGraph.getTerritory(easternUs)).andReturn(mockedEasternUs).anyTimes();
+
+        List<Territory> allMockedTerritoriesMinusEastUs = new ArrayList<>();
+        List<TerritoryType> allTerritoriesMinusEastUs = new ArrayList<>(List.of(TerritoryType.values()));
+        allTerritoriesMinusEastUs.remove(TerritoryType.EASTERN_UNITED_STATES);
+
+        for (TerritoryType territory : allTerritoriesMinusEastUs) {
+            Territory mockedTerritory = EasyMock.partialMockBuilder(Territory.class)
+                    .withConstructor(PlayerColor.class, TerritoryType.class)
+                    .withArgs(attackingPlayer, territory)
+                    .addMockedMethod("isOwnedByPlayer")
+                    .createMock();
+            mockedTerritory.setNumArmiesPresent(5);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(attackingPlayer)).andReturn(true).anyTimes();
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(defendingPlayer)).andReturn(false);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritoriesMinusEastUs.add(mockedTerritory);
+        }
+
+        DieRollParser mockedParser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(mockedParser.rollAttackerDice(1)).andReturn(List.of(4));
+        EasyMock.expect(mockedParser.rollDefenderDice(1)).andReturn(List.of(1));
+        EasyMock.expect(mockedParser.generateBattleResults(List.of(4), List.of(1)))
+                .andReturn(List.of(BattleResult.ATTACKER_VICTORY));
+
+        Player mockedDefender = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(defendingPlayer)
+                .createMock();
+
+        EasyMock.replay(mockedAttacker, mockedDefender, mockedEasternUs, mockedGraph, mockedParser);
+
+        // pass the map of mocked players in
+        Map<PlayerColor, Player> playersMap = Map.ofEntries(
+                Map.entry(attackingPlayer, mockedAttacker),
+                Map.entry(defendingPlayer, mockedDefender));
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideMockedDieRollParser(mockedParser);
+        unitUnderTest.provideMockedPlayerMap(playersMap);
+        unitUnderTest.setPlayerOrderList(List.of(attackingPlayer, defendingPlayer));
+
+        int actualResult = unitUnderTest.attackTerritory(westernUs, easternUs, 1, 1);
+        assertEquals(3, actualResult);
+        assertEquals(GamePhase.GAME_OVER, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedAttacker, mockedDefender, mockedEasternUs, mockedGraph, mockedParser);
+
+        for (Territory mockedTerritory : allMockedTerritoriesMinusEastUs) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
 }
