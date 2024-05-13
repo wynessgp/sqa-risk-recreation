@@ -1,11 +1,12 @@
 package domain;
 
+import datasource.StringsBundleLoader;
 import java.util.Set;
 
 public enum Continent {
 
     AFRICA(Set.of(TerritoryType.CONGO, TerritoryType.EAST_AFRICA, TerritoryType.EGYPT,
-           TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA), 3),
+            TerritoryType.MADAGASCAR, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTH_AFRICA), 3),
 
     ASIA(Set.of(TerritoryType.AFGHANISTAN, TerritoryType.CHINA, TerritoryType.INDIA,
             TerritoryType.IRKUTSK, TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MIDDLE_EAST,
@@ -41,14 +42,15 @@ public enum Continent {
 
     public String toString() {
         String[] nameArray = this.name().split("_");
-        StringBuilder name = new StringBuilder();
-        for (String s : nameArray) {
-            name.append(s.charAt(0)).append(s.substring(1).toLowerCase()).append(" ");
+        StringBuilder name = new StringBuilder(nameArray[0].toLowerCase());
+        for (int i = 1; i < nameArray.length; i++) {
+            String s = nameArray[i];
+            name.append(s.charAt(0)).append(s.substring(1).toLowerCase());
         }
-        return name.deleteCharAt(name.length() - 1).toString();
+        return StringsBundleLoader.getBundle().getString("global." + name);
     }
 
-    public int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
+    int getContinentBonusIfPlayerHasTerritories(Set<TerritoryType> setToPassIn) {
         return (matchesContinentTerritories(setToPassIn)) ? continentBonus : 0;
     }
 }
