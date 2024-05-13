@@ -950,18 +950,15 @@ Output:
 - Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
 - GamePhase = PLACEMENT
 
-# method: `attackTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): int`
+# method: `handleErrorCasesForAttackingTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): void`
 
-## Note:
-An implicit assumption with this method is that the defender will always want to roll the maximum amount of dice
-available to them; so if there are two defenders available, two defense dice will be rolled. If there is only
-one defender available, one defense die will be rolled.
+This is part **1** of a series of method calls that constitute attacking in Risk. This will enumerate just the error cases.
 
 ## BVA Step 1
 Input: The respective territory that the attacker is moving troops FROM, the territory they are moving their armies INTO
-to attack, and the number of armies they are using for this attack.
+to attack, and the respective number of attackers and defenders to use in the battle.
 
-There are a lot more things to consider besides the parameters, namely:
+Since this method is all about error handling, here are some reasons we'll run into errors:
 - The current phase the game is in (should only ever be attack if we're here!)
 - The number of armies present in BOTH the source AND destination territory
   - If you're left with 0 armies in the territory you're attacking from as a result, you shouldn't be allowed to do this.
@@ -974,144 +971,103 @@ There are a lot more things to consider besides the parameters, namely:
   - You can't attack a territory that's halfway across the map; they should be adjacent.
 - If the current player is holding on to too many cards
   - This should only happen as a result of taking out a player; this is still a forced trade in.
-- The current state of the Risk card deck
-  - If there are no more cards to draw, tough luck!
 
-Output: The MAXIMUM amount of armies that a player may choose to move between these two territories as a result of WINNING the attacking 
-battle. If you do not take over the opposing territory as a result of this battle, this number will be **0**.
-
-In the event that you DO take over the territory as a result of the attack, here's what will happen:
-- The armies utilized in the attack will automatically be moved into the destination territory.
-  - So if you attack with 3 armies (assuming 3 is valid), and lose none in the attack, then all **3** will be automatically moved to that new territory.
-- If more than **1** army remains in the source territory, you may:
-  - Move anywhere from [0, num armies in source territory - 1] armies into the newly conquered (destination) territory
-  - This `num armies in source territory - 1` figure is calculated AFTER moving the attacker armies involved in the dice roll.
-  - Moving the armies is handled elsewhere, but it is important to understand what the result means.
-
-With all of that being said, there's still more things that we care about as a result of this function:
-- With each attack, the amount of armies present in the defender AND the attacker's territory should decrease, if necessary
-  - i.e. if I lose 2 armies while attacking, and the defender loses 1, both territories need to be updated.
-- If my attack results in me taking over the territory, we want who controls the territory to be updated
-  - Set the number of armies in the territory equal to the number of armies I attacked with
-  - Say that I own the territory now
-  - Add it to my owned territories 
-- If I take over a territory with an attack, I am eligible to claim a card from the deck after my attack phase ends
-  - We should only be able to claim 1 territory card PER attack phase
-- If I eliminate another player as a result of winning an attack, I should get the cards they were holding on to
-  - Additionally, the game needs to remove the player from the turn order
-  - If this puts the player over 5 cards, they will be forced to turn them in before going again.
-- If this is the last territory I needed to take over in order to win the game, then the game should end
-- Since you can traditionally see the dice rolls in a regular risk game, we need to hold on to these things:
-  - The results of rolling the attack dice
-  - The results of rolling the defense dice
-  - The results of each "die" comparison; i.e. if a defender won one roll, attacker the other, etc.
-- If this attack puts me in a place where I have not enough armies to attack ANYWHERE, the attack phase should end.
+Output: An error if the player has too many cards, provides an invalid amount of armies, tries to attack between 
+territories that are not adjacent, or if we're in the wrong phase. If we don't run into an error case, this will 
+not return anything.
 
 ## BVA Step 2
 Input:
 - sourceTerritory: Cases
 - destTerritory: Cases
-- numAttackers: Counts
-- numDefenders: Counts
-- current game phase: Cases
-- currently going player: Cases
+- numAttackers: Interval [1, 3]
+- numDefenders: Interval [1, 2]
+- currentGamePhase: Cases
+- currentlyGoingPlayer: Cases
 - player object: Pointer
-  - Care about the number of cards they hold
-- source, destination territory objects: Pointer
-  - We care primarily about the number of armies and who owns it here
-- RiskCardDeck object: Pointer
+  - We only care about the amount of cards they're holding on to
+- source & destination territory objects: Pointer
+  - Primarily care that:
+    - current player owns the source territory
+    - A different player owns the destination territory
+    - Number of armies in each territory is SUFFICIENT to meet the attackers/defenders
+      - Must be \>= 1 army left in source territory after attackers are accounted for
+      - Must be \>= 0 armies left in destination territory after defenders are accounted for
 
 Output:
-- method output: Interval [0, valid amount of transferable armies]
-  - It's hard to put a strict upper bound on this because there is a lot of variation here.
-- source, destination territory objects: Pointer
-  - Again, we primarily care about ownership / army counts.
-- player object: Pointer
-  - Care about the territories they own as a result, and the cards they own
-- current game phase: Cases
-  - Only changes if I win the game, or run out of armies to attack with.
-  - Otherwise, this will be manually changed by the player if they wish to end the phase early.
-- Ability to claim a card this turn: Boolean
-  - true if and only if you successfully take a territory during the attack phase
-- Attacker dice results, defender dice results, battle results: Collection
+- Method output: N/A (void method)
+- Exceptions if above conditions are not met
+  - IllegalStateException if a Player has too many cards, or we are in the wrong game phase (not attack)
+  - IllegalArgumentException for all other input errors
 
 ## BVA Step 3
 Input:
 - sourceTerritory, destTerritory (Cases):
-  - The 1st possibility (ALASKA)
-  - The 2nd possibility ...
+  - ALASKA
+  - ARGENTINA
   - ...
-  - The 0th, 43rd possibilities (can't set)
-  - Both are the same territory (error case)
-  - Territories are not adjacent (error case)
-- numAttackers (Counts):
-  - Any value \< 1 (error case)
-  - Any value in [1, 3] (provided this does not EXCEED the number of armies in the origin territory)
-  - \> Num armies in origin territory - 1 (error case, must leave at least 1 army in a territory)
-- numDefenders (Counts):
-  - Any value \< 1 (error case)
-  - Any value in [1, 2] (provided this does not EXCEED the number of armies in the destination territory)
-  - Note that defenders CAN go to down to 0 armies in their territory while "defending" (i.e. in the roll)
-- current game phase (Cases):
+  - YAKUTSK
+  - The 0th, 43rd possibility (can't set, Java enums)
+  - Source & destination territories are not adjacent on the Risk map (error case)
+- numAttackers (Interval):
+  - \<= 0 (error case)
+  - 1 (minimum amount of attackers)
+  - 2
+  - 3 (maximal amount of attackers)
+  - \>= 4 (error case)
+- numDefenders (Interval):
+  - \<= 0 (error case)
+  - 1 (minimum amount of defenders)
+  - 2 (maximal amount of attackers)
+  - \>= 3 (error case)
+- currentGamePhase (Cases):
   - SCRAMBLE (error case)
   - SETUP (error case)
   - PLACEMENT (error case)
-  - ATTACK (method should only EVER be called in ATTACK)
+  - ATTACK 
   - FORTIFY (error case)
   - GAME_OVER (error case)
-- currently going player (Cases):
-  - Should always line up with the game engine's tracking
-  - All colors besides `SETUP` are valid, just depends on what the list looks like.
-- player object (Pointer):
-  - Null pointer (won't consider, per Martin's rules)
-  - A pointer to the true object
-    - Want to look at how many cards they hold; if it exceeds 5 we throw an error and force them to trade cards in.
-- source, destination territory objects (Pointer):
-  - Null pointer (won't consider, per Martin's rules)
-  - A pointer to the true object
-    - If `numAttackers > numArmiesInTerritory - 1`, we should error (player is attempting to use too many armies)
-    - Source territory is not owned by current player (error case)
-    - Destination territory is owned by current player (error case)
-- RiskCardDeck object (Pointer):
-  - Null pointer (won't consider, per Martin's rules)
-  - A pointer to the true object
-    - If the card deck is completely empty (i.e. no more cards to draw) upon someone finishing their attack phase, we can't give said player a card.
+  - The 0th, 7th possibilities (can't set, Java enum)
+- currentlyGoingPlayer (Cases):
+  - SETUP (error case)
+  - Any other PlayerColor is fine, but it MUST match the territory input (so colors like):
+    - BLACK
+    - RED
+    - YELLOW
+    - BLUE
+    - GREEN
+    - PURPLE
+  - The 0th, 8th possibilities (can't set, Java enum)
+- Player object (Pointer):
+  - Null pointer (can't set, Martin's rules)
+  - Pointer to the true object
+    - We care about the number of cards they are holding
+      - \>= 5 cards (error case)
+      - Anywhere in [0, 4] is fine. |ownedCards| should never be negative due to it being a collection.
+- sourceTerritory, destTerritory objects (Pointer):
+  - Null pointer (can't set, Martin's rules)
+  - Pointer to the true object
+    - We want to consider ownership of the source, destination territories
+      - Source not owned by current player (error case)
+      - Destination owned by current player (error case, anybody else is fine)
+    - Need to consider the number of armies stationed in each
+      - `numAttackers` > `numArmiesInSourceTerritory - 1` (error case)
+      - `numDefenders` > `numArmiesInDefenderTerritory` (error case)
 
 Output:
-- method output (Interval):
-  - -1 (can't set)
-  - 0 (this will be a frequent result; other numbers only happen when a territory is taken)
-  - valid amount of transferable armies
-    - Should be the `numArmiesInTerritory - num armies used in attack - 1`
-  - valid amount of transferable armies + 1 (can't set)
-- source, destination territory objects (Pointer):
-  - Null pointer (won't consider, per Martin's rules)
-  - A pointer to the true object
-    - The source territory object should have its armies decremented by the amount LOST in the attack
-    - The destination territory object should have its armies decremented by the amount LOST in the defense
-    - If the number of armies that would be left in the destination territory would be \< 0, update the destination territory to:
-      - Indicate the current player is in control
-      - Place `numAttacker` armies in there; and take them from the source territory
-- player object (Pointer):
-  - Null pointer (won't consider, per Martin's rules)
-  - A pointer to the true object
-    - If the player does successfully take over the territory, update this in their owned territories (and remove from the opposing player's territories)
-    - If this attack wiped out the other player, add the other player's cards to our current player's card collection
-- current game phase (Cases):
-  - Progress from ATTACK -> FORTIFY if:
-    - The currently going player only has 1 army in every territory they own
-  - Progress from ATTACK -> GAME_OVER if:
-    - The current player now owns every territory on the board as a result of an attack
-- Ability to claim a card this turn (Boolean):
-  - 0 (false) if the user did not take over a territory
-  - 1 if the user did take over a territory
-- Attacker, defender dice results & battle results (Collection):
-  - All will have a minimum size of 1
-  - Attacker rolls can have a maximum size of 3 (should match numAttackers)
-  - Defender, battle results have a maximum size of 2 (should match numDefenders)
-  - These lists are sorted in non-increasing order; to make it easier to visualize the results for players.
+- method output (N/A)
+- Exceptions
+  - IllegalStateException if:
+    - GamePhase is NOT ATTACK
+    - Player is holding \>= 5 cards
+  - IllegalArgumentException if:
+    - numAttackers is not in [1, 3]
+    - numDefenders is not in [1, 2]
+    - sourceTerritory and destTerritory are NOT adjacent on the Risk map
+    - sourceTerritory is not owned by the current player
+    - destTerritory is owned by the current player
 
-## BVA Step 4:
+## BVA Step 4
 ### Test 1:
 Input:
 - sourceTerritory, destTerritory = ALASKA
@@ -1122,7 +1078,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source, destination territory = [ALASKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
   - equal to each other on purpose
-- RiskCardDeck = [ cards left to draw: 40 ]
 
 Output:
 - IllegalArgumentException
@@ -1141,7 +1096,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [INDIA, numArmiesInTerritory = 2, ownedBy = GREEN]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
@@ -1160,7 +1114,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = YELLOW]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = GREEN]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
@@ -1177,11 +1130,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Destination territory is owned by the same player!"
+  - message: "Destination territory is owned by the current player!"
 
 ### Test 5:
 Input:
@@ -1189,12 +1141,11 @@ Input:
 - destTerritory = VENEZUELA
 - numAttackers = 3
 - numDefenders = 2
-- current game phase = SETUP 
+- current game phase = SETUP
 - currently going player = PURPLE
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalStateException
@@ -1211,7 +1162,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalStateException
@@ -1228,11 +1178,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to attack with must be within [1, 3]"
+  - message: "Number of armies to attack with must be within [1, 3]!"
 
 ### Test 8:
 Input:
@@ -1245,11 +1194,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to attack with must be within [1, 3]"
+  - message: "Number of armies to attack with must be within [1, 3]!"
 
 ### Test 9:
 Input:
@@ -1262,11 +1210,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to defend with must within [1, 2]"
+  - message: "Number of armies to defend with must be within [1, 2]!"
 
 ### Test 10:
 Input:
@@ -1279,11 +1226,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to defend with must within [1, 2]"
+  - message: "Number of armies to defend with must be within [1, 2]!"
 
 ### Test 11:
 Input:
@@ -1296,11 +1242,10 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
-  - message: "Number of armies to defend with must within [1, 2]"
+  - message: "Number of armies to defend with must be within [1, 2]!"
 
 ### Test 12:
 Input:
@@ -1313,7 +1258,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 5, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalStateException
@@ -1327,10 +1271,9 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5), ownedTerritories = {BRAZIL} ] 
+- player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5), ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalStateException
@@ -1347,7 +1290,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 2, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
@@ -1363,7 +1305,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 1, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
@@ -1379,7 +1320,6 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
@@ -1396,323 +1336,7 @@ Input:
 - player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
 - source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 1, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
 
 Output:
 - IllegalArgumentException
   - message: "Source territory has too few defenders for this defense!"
-
-### Test 18:
-Input:
-- sourceTerritory = BRAZIL
-- destTerritory = VENEZUELA
-- numAttackers = 3
-- numDefenders = 2
-- current game phase = ATTACK
-- currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- source territory = [BRAZIL, numArmiesInTerritory = 4, ownedBy = PURPLE]
-- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 35 ]
-
-Output:
-- method output: 0
-- source territory = [BRAZIL, numArmiesInTerritory = 2, ownedBy = PURPLE]
-- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [4, 3, 2]
-- defense dice = [6, 5]
-- battle results = [DEFENDER_VICTORY, DEFENDER_VICTORY]
-
-### Test 19:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 2
-- numDefenders = 2
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [4, 3]
-- defense dice = [6, 5]
-- battle results = [DEFENDER_VICTORY, DEFENDER_VICTORY]
-
-### Test 20:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [1]
-- defense dice = [5]
-- battle results = [DEFENDER_VICTORY]
-
-### Test 21:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [1]
-- defense dice = [5]
-- battle results = [DEFENDER_VICTORY]
-
-### Test 22:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 2
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [6, 4]
-- defense dice = [5, 5]
-- battle results = [ATTACKER_VICTORY, DEFENDER_VICTORY]
-
-### Test 23:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 3
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 4, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 0
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
-- current game phase = ATTACK
-- ability to claim a card = False
-- attack dice = [3, 2, 1]
-- defense dice = [6]
-- battle results = [DEFENDER_VICTORY]
-
-### Test 24:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 3
-- numDefenders = 2
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 7, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 3
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 4, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES, WESTERN_UNITED_STATES}]
-- current game phase = ATTACK
-- ability to claim a card = True
-- attack dice = [6, 5, 3]
-- defense dice = [4, 3]
-- battle results = [ATTACKER_VICTORY, ATTACKER_VICTORY]
-
-### Test 25:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 2
-- numDefenders = 2
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 5, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 2
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 3, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 2, ownedBy = GREEN]
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES, WESTERN_UNITED_STATES}]
-- current game phase = ATTACK
-- ability to claim a card = True
-- attack dice = [4, 3]
-- defense dice = [2, 1]
-- battle results = [ATTACKER_VICTORY, ATTACKER_VICTORY]
-
-### Test 26:
-Input:
-- sourceTerritory = EASTERN_UNITED_STATES
-- destTerritory = WESTERN_UNITED_STATES
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = GREEN
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES} ]
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 6, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = BLUE]
-- RiskCardDeck = [ cards left to draw: 14 ]
-
-Output:
-- method output: 4
-- source territory = [EASTERN_UNITED_STATES, numArmiesInTerritory = 5, ownedBy = GREEN]
-- destination territory = [WESTERN_UNITED_STATES, numArmiesInTerritory = 1, ownedBy = GREEN]
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = {EASTERN_UNITED_STATES, WESTERN_UNITED_STATES}]
-- current game phase = ATTACK
-- ability to claim a card = True
-- attack dice = [4]
-- defense dice = [2]
-- battle results = [ATTACKER_VICTORY]
-
-### Test 27:
-Input:
-- sourceTerritory = UKRAINE
-- destTerritory = AFGHANISTAN
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = RED
-- player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE} ]
-- source territory = [UKRAINE, numArmiesInTerritory = 3, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = YELLOW]
-- RiskCardDeck = [ cards left to draw: 0 ]
-
-Output:
-- method output: 1
-- source territory = [UKRAINE, numArmiesInTerritory = 2, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = RED]
-- player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE, AFGHANISTAN}]
-- current game phase = ATTACK
-- ability to claim a card = False (no cards left)
-- attack dice = [5]
-- defense dice = [3]
-- battle results = [ATTACKER_VICTORY]
-
-### Test 28:
-Input:
-- sourceTerritory = UKRAINE
-- destTerritory = AFGHANISTAN
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = RED
-- player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE, ... (this is the last territory they need) } ]
-  - yellow's player pointer = [Color = YELLOW, |ownedCards| = 0, ownedTerritories = {AFGHANISTAN} ]
-- source territory = [UKRAINE, numArmiesInTerritory = 5, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = YELLOW]
-- RiskCardDeck = [ cards left to draw: 0 ]
-
-Output:
-- method output: 3
-- source territory = [UKRAINE, numArmiesInTerritory = 4, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = RED]
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = { all territories }]
-- current game phase = GAME_OVER
-- ability to claim a card = False (no cards left)
-- attack dice = [4]
-- defense dice = [1]
-- battle results = [ATTACKER_VICTORY]
-
-### Test 29:
-Input:
-- sourceTerritory = UKRAINE
-- destTerritory = AFGHANISTAN
-- numAttackers = 1
-- numDefenders = 2
-- current game phase = ATTACK
-- currently going player = RED
-- player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE, EASTERN_UNITED_STATES} ]
-- source territory = [UKRAINE, numArmiesInTerritory = 2, ownedBy = RED]
-  - This is the only territory in which RED has more than one army left in it
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 3, ownedBy = YELLOW]
-- RiskCardDeck = [ cards left to draw: 0 ]
-
-Output:
-- method output: 0
-- source territory = [UKRAINE, numArmiesInTerritory = 1, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 3, ownedBy = YELLOW]
-- player pointer = [Color = GREEN, |ownedCards| = 4, ownedTerritories = { UKRAINE, AFGHANISTAN }]
-- current game phase = FORTIFY
-- ability to claim a card = True (carried over from a previous attack)
-- attack dice = [1]
-- defense dice = [5, 4]
-- battle results = [DEFENDER_VICTORY]
-
-### Test 30:
-Input:
-- sourceTerritory = UKRAINE
-- destTerritory = AFGHANISTAN
-- numAttackers = 1
-- numDefenders = 1
-- current game phase = ATTACK
-- currently going player = RED
-- player pointer = [Color = RED, |ownedCards| = 4, ownedTerritories = {UKRAINE} ]
-  - yellow's player pointer = [Color = YELLOW, |ownedCards| = 1, ownedTerritories = {AFGHANISTAN} ]
-  - This is Yellow's only territory, so they will lose as a result of this attack
-- source territory = [UKRAINE, numArmiesInTerritory = 5, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = YELLOW]
-- RiskCardDeck = [ cards left to draw: 0 ]
-
-Output:
-- method output: 3
-- source territory = [UKRAINE, numArmiesInTerritory = 4, ownedBy = RED]
-- destination territory = [AFGHANISTAN, numArmiesInTerritory = 1, ownedBy = RED]
-- player pointer = [Color = GREEN, |ownedCards| = 5, ownedTerritories = { UKRAINE, AFGHANISTAN }]
-- current game phase = ATTACK
-- ability to claim a card = False (no cards left)
-- attack dice = [4]
-- defense dice = [1]
-- battle results = [ATTACKER_VICTORY]
