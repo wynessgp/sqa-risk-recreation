@@ -1765,7 +1765,7 @@ public class WorldDominationGameEngineTest {
         for (TerritoryType territory : allTerritoriesWithoutSourceDest) {
             Territory mockedTerritory = EasyMock.createMock(Territory.class);
             EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
-            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
             EasyMock.replay(mockedTerritory);
         }
 
@@ -1850,7 +1850,7 @@ public class WorldDominationGameEngineTest {
 
         // now handle the graph and the various territories.
         Territory mockedUkraine = EasyMock.createMock(Territory.class);
-        EasyMock.expect(mockedUkraine.isOwnedByPlayer(attackingPlayer)).andReturn(true); // attacker from ukraine
+        EasyMock.expect(mockedUkraine.isOwnedByPlayer(attackingPlayer)).andReturn(true).times(2);
         EasyMock.expect(mockedUkraine.getNumArmiesPresent()).andReturn(5).times(2);
         EasyMock.expect(mockedUkraine.setNumArmiesPresent(4)).andReturn(true); // 1 army moves away.
         EasyMock.expect(mockedUkraine.isOwnedByPlayer(losingPlayer)).andReturn(false); // ensure red loses the game
@@ -1863,7 +1863,7 @@ public class WorldDominationGameEngineTest {
         EasyMock.expect(mockedAfghanistan.setPlayerInControl(attackingPlayer)).andReturn(true); // attacker takes over
         EasyMock.expect(mockedAfghanistan.setNumArmiesPresent(1)).andReturn(true); // purple moves their attacker
         EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(losingPlayer)).andReturn(false); // ensure loser loses
-        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(attackingPlayer)).andReturn(true); // now attacker owns it
+        EasyMock.expect(mockedAfghanistan.isOwnedByPlayer(attackingPlayer)).andReturn(true).times(2);
 
         TerritoryType ukraine = TerritoryType.UKRAINE;
         TerritoryType afghanistan = TerritoryType.AFGHANISTAN;
@@ -1881,7 +1881,8 @@ public class WorldDominationGameEngineTest {
         for (TerritoryType territory : allTerritoriesMinusUkraineAfghan) {
             Territory mockedTerritory = EasyMock.createMock(Territory.class);
             EasyMock.expect(mockedTerritory.isOwnedByPlayer(losingPlayer)).andReturn(false); // loser doesn't own it
-            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(attackingPlayer)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
             EasyMock.replay(mockedTerritory);
             allMockedTerritories.add(mockedTerritory);
         }
