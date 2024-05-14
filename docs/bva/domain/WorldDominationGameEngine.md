@@ -1685,20 +1685,23 @@ territory object associated with the destination territory.
 
 We're interested in increasing the number of armies present (bumping it up to `numAttackers`), and changing the
 PlayerColor for who owns it to the current player. We also want to modify the Player object associated with
-the current player to say they now own this territory.
+the current player to say they now own this territory; and say the defender no longer owns it.
 
 ## BVA Step 2
 Input:
 - destTerritory: Cases
 - numAttackers: Interval [1, 3]
 - currently going player: Cases
-- current player object: Pointer
+- attacking player object: Pointer
+- defending player object: Pointer
 - destination territory object: Pointer
 
 Output:
 - method output: Cases
 - destination territory object: Pointer
   - This falls under both input and output because we want to make sure it changes.
+- attacking player object: Pointer
+- defending player object: Pointer
 
 ## BVA Step 3
 Input:
@@ -1729,10 +1732,11 @@ Input:
     - So we'll have to cycle through the players in the game to determine this FIRST
     - Should always be a player who is in the current game or something went really wrong before this method.
     - Army modifications occur before output as well
-- player object (Pointer):
+- player object(s) (Pointer):
   - A null pointer (can't set, Martin's rules)
   - A pointer to the true object
-    - Need to add this territory to a player's collection of owned territories
+    - Need to add this territory to the attacking player's collection of owned territories
+    - Need to remove this territory from the defending player's collection of owned territories
     - Cards cannot be properly used to award the 2 army bonus for owning a territory otherwise
 
 Output:
@@ -1747,10 +1751,10 @@ Output:
   - A pointer to the true object
     - Need to see that the number of armies in the territory = `numAttackers`
     - Need to see that the owner's PlayerColor has changed to be the current player
-- player object (Pointer):
+- player object(s) (Pointer):
   - A null pointer (can't set, Martin's rules)
   - A pointer to the true object
-    - Make sure the newest territory is added.
+    - Make sure the newest territory is added to the attacker's owned territories; removed from defending player's territories.
 
 ## BVA Step 4
 ### Test 1:
@@ -1760,12 +1764,14 @@ Input:
 - currently going player = YELLOW
 - dest territory object = [ownedBy = PURPLE, numArmies = 0, ALASKA] 
   - Note that numArmies should always be 0 otherwise we this has been called in the WRONG place.
-- player object = [YELLOW, ownedTerritories = {YAKUTSK} ]
+- attacking player object = [YELLOW, ownedTerritories = {YAKUTSK} ]
+- defending player object = [PURPLE, ownedTerritories = {ALASKA, NORTHWEST_TERRITORIES} ]
 
 Output: 
 - method output: PURPLE
 - dest territory object = [ownedBy = YELLOW, numArmies = 1, ALASKA]
-- player object = [YELLOW, ownedTerritories = {YAKUTSK, ALASKA} ]
+- attacking player object = [YELLOW, ownedTerritories = {YAKUTSK, ALASKA} ]
+- defending player object = [PURPLE, ownedTerritories = {NORTHWEST_TERRITORIES} ]
 
 ### Test 2:
 Input:
@@ -1773,12 +1779,14 @@ Input:
 - numAttackers = 2
 - currently going player = GREEN
 - dest territory object = [ownedBy = BLACK, numArmies = 0, VENEZUELA]
-- player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA} ]
+- attacking player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA} ]
+- defending player object = [BLACK, ownedTerritories = {VENEZUELA, CENTRAL_AMERICA, WESTERN_UNITED_STATES} ]
 
 Output:
 - method output: BLACK
 - dest territory object = [ownedBy = GREEN, numArmies = 2, VENEZUELA]
-- player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA, VENEZUELA} ]
+- attacking player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA, VENEZUELA} ]
+- defending player object = [BLACK, ownedTerritories = {CENTRAL_AMERICA, WESTERN_UNITED_STATES} ]
 
 ### Test 3:
 Input:
@@ -1786,10 +1794,11 @@ Input:
 - numAttackers = 3
 - currently going player = BLUE
 - dest territory object = [ownedBy = RED, numArmies = 0, EGYPT]
-- player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST} ]
+- attacking player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST} ]
+- defending player object = [RED, ownedTerritories = {EGYPT, YAKUTSK} ]
 
 Output:
 - method output: RED
 - dest territory object = [ownedBy = BLUE, numArmies = 3, EGYPT]
-- player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST, EGYPT} ]
-
+- attacking player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST, EGYPT} ]
+- defending player object = [RED, ownedTerritories = {YAKUTSK} ]
