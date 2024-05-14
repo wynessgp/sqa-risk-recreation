@@ -47,14 +47,24 @@ public class GameMapScreenController implements GameScene {
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private final AttackLogic attackLogic = new AttackLogic();
+    private Dialog errorDialogController;
+    private Dialog claimDialogController;
+    private Dialog selectionDialogController;
 
     @FXML
     private void initialize() {
         this.gameEngine = SceneController.getInstance().getGameEngine();
         SceneController.setCurrentScene(this);
+        setupDialogControllers();
         updateStateLabels();
         setupDialogButtons();
         setupSkipButton();
+    }
+
+    private void setupDialogControllers() {
+        this.errorDialogController = new Dialog(territoryErrorDialog, dialogBackground);
+        this.claimDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
+        this.selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
     }
 
     private void setupDialogButtons() {
@@ -71,42 +81,25 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupClaimTerritoryDialog() {
-        this.claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
+        this.claimDialogController.setupButton(ButtonType.YES, "gameMapScreen.dialogYes", event ->
                 handleClaimTerritory());
-        this.claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
-                toggleDialog(claimTerritoryDialog));
-        setTerritoryDialogText();
-    }
-
-    private void setTerritoryDialogText() {
-        ((Button) this.claimTerritoryDialog.lookupButton(ButtonType.YES)).setText(SceneController
-                .getString("gameMapScreen.dialogYes", null));
-        ((Button) this.claimTerritoryDialog.lookupButton(ButtonType.NO)).setText(SceneController
-                .getString("gameMapScreen.dialogNo", null));
+        this.claimDialogController.setupButton(ButtonType.NO, "gameMapScreen.dialogNo", event ->
+                this.claimDialogController.toggleDisplay());
     }
 
     private void setupTerritoryErrorDialog() {
-        this.territoryErrorDialog.lookupButton(ButtonType.CLOSE).addEventHandler(ActionEvent.ACTION, event ->
-                toggleDialog(territoryErrorDialog));
-        ((Button) this.territoryErrorDialog.lookupButton(ButtonType.CLOSE)).setText(SceneController
-                .getString("gameMapScreen.dialogClose", null));
+        this.errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event ->
+                this.errorDialogController.toggleDisplay());
     }
 
     private void setupArmyPlacementDialog() {
-        this.armyPlacementSelectionDialog.lookupButton(ButtonType.APPLY).addEventHandler(ActionEvent.ACTION, event -> {
-            toggleDialog(armyPlacementSelectionDialog);
+        this.selectionDialogController.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
+            this.selectionDialogController.toggleDisplay();
             handlePlaceArmies(this.armyCountSpinner.getValue());
-        });
-        this.armyPlacementSelectionDialog.lookupButton(ButtonType.CANCEL).addEventHandler(ActionEvent.ACTION, event ->
-                toggleDialog(armyPlacementSelectionDialog));
-        setArmyPlacementDialogText();
-    }
 
-    private void setArmyPlacementDialogText() {
-        ((Button) this.armyPlacementSelectionDialog.lookupButton(ButtonType.APPLY)).setText(SceneController
-                .getString("gameMapScreen.dialogApply", null));
-        ((Button) this.armyPlacementSelectionDialog.lookupButton(ButtonType.CANCEL)).setText(SceneController
-                .getString("gameMapScreen.dialogCancel", null));
+        });
+        this.selectionDialogController.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
+                this.selectionDialogController.toggleDisplay());
     }
 
     private void updateStateLabels() {
@@ -178,7 +171,7 @@ public class GameMapScreenController implements GameScene {
         this.selectedButton.setText("");
         this.selectedButton.setDisable(true);
         this.gameEngine.placeNewArmiesInTerritory(this.selectedTerritory, 1);
-        toggleDialog(this.claimTerritoryDialog);
+        this.claimDialogController.toggleDisplay();
         this.territoryButtonMap.put(this.selectedButton, this.selectedTerritory);
         updateStateLabels();
     }
@@ -193,12 +186,6 @@ public class GameMapScreenController implements GameScene {
         this.selectedButton.styleProperty().setValue(style.toString());
     }
 
-    private void toggleDialog(DialogPane dialog) {
-        boolean visible = dialog.isVisible();
-        dialog.setVisible(!visible);
-        this.dialogBackground.setVisible(!visible);
-    }
-
     @FXML
     private void handleTerritoryButtonClick(ActionEvent event) {
         this.selectedButton = (Button) event.getSource();
@@ -209,9 +196,8 @@ public class GameMapScreenController implements GameScene {
     private void handleGamePhaseAction() {
         GamePhase currentPhase = this.gameEngine.getCurrentGamePhase();
         if (currentPhase == GamePhase.SCRAMBLE) {
-            this.claimTerritoryDialog.setContentText(SceneController.getString("gameMapScreen.claimAsk",
-                    new Object[]{this.selectedTerritory}));
-            toggleDialog(this.claimTerritoryDialog);
+            this.claimDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{this.selectedTerritory});
+            this.claimDialogController.toggleDisplay();
         } else {
             handlePlaceAndAttackPhases(currentPhase);
         }
@@ -231,19 +217,18 @@ public class GameMapScreenController implements GameScene {
         try {
             this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), armies);
         } catch (Exception e) {
-            this.territoryErrorDialog.setContentText(SceneController.getString("gameMapScreen.placementError", null));
-            toggleDialog(this.territoryErrorDialog);
+            this.errorDialogController.setContentText("gameMapScreen.placementError", null);
+            this.errorDialogController.toggleDisplay();
         }
         updateStateLabels();
     }
 
     private void handlePlacement() {
-        this.armyPlacementSelectionDialog.setHeaderText(SceneController.getString(
-                "gameMapScreen.armyPlacementSelection",
-                new Object[]{this.gameEngine.getCurrentPlayerArmiesToPlace()}));
         this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
                 Integer.MAX_VALUE, 1));
-        toggleDialog(this.armyPlacementSelectionDialog);
+        this.selectionDialogController.setTitleText("gameMapScreen.armyPlacementSelection",
+                new Object[]{this.gameEngine.getCurrentPlayerArmiesToPlace()});
+        this.selectionDialogController.toggleDisplay();
     }
 
     private void handleAttack() {
@@ -266,17 +251,17 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void updateTerritoryErrorDialog(String error) {
-        this.territoryErrorDialog.setContentText(SceneController.getString(error, null));
-        toggleDialog(this.territoryErrorDialog);
+        this.errorDialogController.setContentText(error, null);
+        this.errorDialogController.toggleDisplay();
     }
 
     @Override
     public void onKeyPress(KeyEvent event) {
-        if (this.claimTerritoryDialog.isVisible()) {
+        if (this.claimDialogController.isVisible()) {
             if (event.getCode() == KeyCode.ENTER) {
                 handleClaimTerritory();
             } else if (event.getCode() == KeyCode.ESCAPE) {
-                toggleDialog(this.claimTerritoryDialog);
+                this.claimDialogController.toggleDisplay();
             }
         }
     }
