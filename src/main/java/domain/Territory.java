@@ -29,8 +29,8 @@ class Territory {
     }
 
     boolean setNumArmiesPresent(int newAmount) {
-        if (newAmount < 1) {
-            throw new IllegalArgumentException("Number of armies to set should be greater than 0");
+        if (newAmount < 0) {
+            throw new IllegalArgumentException("Number of armies to set should be >= 0");
         }
         this.numArmiesPresent = newAmount;
         return true;
