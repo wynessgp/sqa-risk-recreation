@@ -1667,3 +1667,129 @@ Output:
 - method output: NO_CHANGE
 - source territory pointer = [URAL, numArmies = 1]
 - dest territory pointer = [UKRAINE, numArmies = 3]
+
+# method: `handleAttackerTakingTerritory(destTerritory: TerritoryType, numAttackers: int): PlayerColor`
+
+This is part **4** of a series of method calls that constitute attacking in Risk. It is intended to be called
+if we determine that the defending player will lose their territory as a result of the attack. 
+
+## BVA Step 1
+Input: The destination territory of the attack, the number of attackers utilized to take over the territory, as well
+as the underlying state of who's turn it is in the game. 
+
+Additionally, we'll need to know some information about the underlying state of the territory itself; as we want to 
+modify the amount of armies there and change who owns it. 
+
+Output: The PlayerColor of the Player who controlled the territory before us; and the underlying state of the
+territory object associated with the destination territory. 
+
+We're interested in increasing the number of armies present (bumping it up to `numAttackers`), and changing the
+PlayerColor for who owns it to the current player. We also want to modify the Player object associated with
+the current player to say they now own this territory.
+
+## BVA Step 2
+Input:
+- destTerritory: Cases
+- numAttackers: Interval [1, 3]
+- currently going player: Cases
+- current player object: Pointer
+- destination territory object: Pointer
+
+Output:
+- method output: Cases
+- destination territory object: Pointer
+  - This falls under both input and output because we want to make sure it changes.
+
+## BVA Step 3
+Input:
+- destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd cases (can't set, Java enums)
+  - Should always line up with the destination territory used in all the other attacking related methods.
+- numAttackers (Interval):
+  - \<= 0 (error case, should be handled by former methods)
+  - 1
+  - 2
+  - 3
+  - \>= 4 (error case, should be handled by former methods)
+- currently going player (Cases):
+  - SETUP (error case)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK 
+  - The 0th, 8th possibility (can't set, Java enum)
+- destination territory object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to get information about WHO owns the territory beforehand (ownedBy = ?)
+    - So we'll have to cycle through the players in the game to determine this FIRST
+    - Should always be a player who is in the current game or something went really wrong before this method.
+    - Army modifications occur before output as well
+- player object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to add this territory to a player's collection of owned territories
+    - Cards cannot be properly used to award the 2 army bonus for owning a territory otherwise
+
+Output:
+- method output (Cases):
+  - SETUP (error case, should never happen if we're in the ATTACK phase)
+  - YELLOW
+  - ...
+  - BLACK
+  - The 0th, 8th possibility (can't set, Java enum)
+- destination territory object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to see that the number of armies in the territory = `numAttackers`
+    - Need to see that the owner's PlayerColor has changed to be the current player
+- player object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Make sure the newest territory is added.
+
+## BVA Step 4
+### Test 1:
+Input:
+- destTerritory = ALASKA
+- numAttackers = 1
+- currently going player = YELLOW
+- dest territory object = [ownedBy = PURPLE, numArmies = 0, ALASKA] 
+  - Note that numArmies should always be 0 otherwise we this has been called in the WRONG place.
+- player object = [YELLOW, ownedTerritories = {YAKUTSK} ]
+
+Output: 
+- method output: PURPLE
+- dest territory object = [ownedBy = YELLOW, numArmies = 1, ALASKA]
+- player object = [YELLOW, ownedTerritories = {YAKUTSK, ALASKA} ]
+
+### Test 2:
+Input:
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- currently going player = GREEN
+- dest territory object = [ownedBy = BLACK, numArmies = 0, VENEZUELA]
+- player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA} ]
+
+Output:
+- method output: BLACK
+- dest territory object = [ownedBy = GREEN, numArmies = 2, VENEZUELA]
+- player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA, VENEZUELA} ]
+
+### Test 3:
+Input:
+- destTerritory = EGYPT
+- numAttackers = 3
+- currently going player = BLUE
+- dest territory object = [ownedBy = RED, numArmies = 0, EGYPT]
+- player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST} ]
+
+Output:
+- method output: RED
+- dest territory object = [ownedBy = BLUE, numArmies = 3, EGYPT]
+- player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST, EGYPT} ]
+
