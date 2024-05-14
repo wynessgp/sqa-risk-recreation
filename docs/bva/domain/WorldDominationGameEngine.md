@@ -1354,3 +1354,170 @@ Input:
 - destinationTerritory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE ]
 
 Output: N/A (input has no errors!)
+
+# method: `rollDiceForBattle(numAttackers: int, numDefenders: int): List<BattleResult>`
+
+This is part **2** of a series of method calls that constitute attacking in Risk. This is meant to be invoked AFTER
+calling the error handling method. Note that this isn't completely defenseless to bad input either, as this will
+interact with the DieRollParser, which has input validation of its own.
+
+## BVA Step 1
+Input: The number of attackers that will be participating in the battle, namely, the amount of attacker dice to roll,
+and the amount of defender dice to roll in the battle. Additionally, we will utilize our underlying dice manager to
+roll the dice, and parse the results for us.
+
+Output: A collection detailing the results of each "dice pairing", ordered in the way Risk calculates casualties.
+Namely, you always pair the highest dice against each other, then next highest, etc. Defender wins on ties.
+
+We also want to store the dice roll results for our users, as they likely want to know what they rolled as opposed to
+just seeing numbers go down. This means we should store:
+- The attacker dice roll results
+- The defender dice roll results
+- The overall battle result in its pairwise form
+This will be done utilizing fields / getters on the class.
+
+## BVA Step 2
+Input:
+- numAttackers: Interval [1, 3]
+- numDefenders: Interval [1, 2]
+- die roll parser: Pointer
+
+Output:
+- attackerDiceRolls: Collection
+- defenderDiceRolls: Collection
+- battleResults (will match method output): Collection 
+
+## BVA Step 3
+Input:
+- numAttackers (Interval):
+  - \<= 0 (error case, will be caught by DieRollParser)
+  - 1 (minimal amount of attackers allowed)
+  - 2
+  - 3 (maximal amount of attackers allowed)
+  - \>= 4 (error case, will be caught by DieRollParser)
+- numDefenders (Interval):
+  - \<= 0 (error case, will be caught by DieRollParser)
+  - 1 (minimal amount of defenders allowed)
+  - 2 (maximal amount of defenders allowed)
+  - \>= 3 (error case, will be caught by DieRollParser)
+- DieRollParser (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+
+Output:
+- attackerDiceRolls (Collection):
+  - Size should always match the number of attackers
+    - Assuming number of attackers was valid input
+  - Sorted in non-decreasing order (done by DieRollParser)
+  - Must be able to contain duplicates 
+- defenderDiceRolls (Collection):
+  - Size should always match the number of defenders
+    - Assuming number of defenders was valid input
+  - Sorted in non-decreasing order (done by DieRollParser)
+  - Must be able to contain duplicates
+- battleResults (Collection):
+  - Should have the same size as the minimum of the two inputs
+    - So if numDefenders is smaller, it has the same size as numDefenders.
+  - Must be able to contain duplicates
+
+## BVA Step 4
+### Test 1:
+Input:
+- numAttackers = 0
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]"
+
+### Test 2:
+Input:
+- numAttackers = 4
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]"
+
+### Test 3:
+Input:
+- numAttackers = 1
+- numDefenders = 0
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+
+### Test 4:
+Input:
+- numAttackers = 1
+- numDefenders = 3
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+
+### Test 5:
+Input:
+- numAttackers = 1
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [5]
+- defenderDice = [6]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 6:
+- numAttackers = 1
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [4]
+- defenderDice = [3, 2]
+- battleResults = [ATTACKER_VICTORY]
+
+### Test 7:
+- numAttackers = 2
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [5, 2]
+- defenderDice = [5]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 8:
+- numAttackers = 2
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [4, 3]
+- defenderDice = [5, 2]
+- battleResults = [DEFENDER_VICTORY, ATTACKER_VICTORY]
+
+### Test 9:
+- numAttackers = 3
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [2, 1, 1]
+- defenderDice = [5]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 10:
+- numAttackers = 3
+- numDefenders = 2
+- die roll parser = A pointer to the valid object
+
+Output:
+- attackerDice = [4, 2, 1]
+- defenderDice = [5, 5]
+- battleResults = [DEFENDER_VICTORY, DEFENDER_VICTORY]
