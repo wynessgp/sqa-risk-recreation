@@ -558,7 +558,8 @@ public final class WorldDominationGameEngine {
         decreaseNumArmiesInTerritory(sourceTerritory, numAttackersLost);
         decreaseNumArmiesInTerritory(destinationTerritory, numDefendersLost);
 
-        return AttackConsequence.NO_CHANGE;
+        return getNumberOfArmies(destinationTerritory) == 0
+                ? AttackConsequence.DEFENDER_LOSES_TERRITORY : AttackConsequence.NO_CHANGE;
     }
 
     private void decreaseNumArmiesInTerritory(TerritoryType territory, int numArmiesLost) {

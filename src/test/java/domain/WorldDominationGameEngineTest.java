@@ -1769,4 +1769,46 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedSource, mockedDest, mockedGraph);
     }
 
+    private static Stream<Arguments> generateDefenderLosesTerritoryInputsForHandleArmyLosses() {
+        return Stream.of(
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA, List.of(BattleResult.ATTACKER_VICTORY), 1),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY), 2),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.CONGO, List.of(BattleResult.ATTACKER_VICTORY), 1),
+                Arguments.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY), 2)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateDefenderLosesTerritoryInputsForHandleArmyLosses")
+    public void test53_handleArmyLosses_inputsResultInDefenderLosingTerritory_expectDefenderLosesTerritory(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults,
+            int initialNumDefenders) {
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(3).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(3)).andReturn(true); // note that the attacker will
+        // never lose any armies in an attack in the event that they take over a territory
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(initialNumDefenders).once();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(0)).andReturn(true).anyTimes();
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(0).once();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(destinationTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedSource, mockedDest, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertEquals(AttackConsequence.DEFENDER_LOSES_TERRITORY,
+                unitUnderTest.handleArmyLosses(sourceTerritory, destinationTerritory, battleResults));
+
+        EasyMock.verify(mockedSource, mockedDest, mockedGraph);
+    }
+
 }
