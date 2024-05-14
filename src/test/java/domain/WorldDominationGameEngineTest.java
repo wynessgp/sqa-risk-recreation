@@ -1655,4 +1655,36 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer, mockedGraph, mockedSource, mockedDestination);
     }
 
+    private static Stream<Arguments> generateInvalidInputsForRollDiceForBattle() {
+        int attackerUpperBound = 3;
+        int defenderUpperBound = 2;
+        return Stream.of(
+                Arguments.of(Integer.MIN_VALUE, 2, attackerUpperBound),
+                Arguments.of(-1, 2, attackerUpperBound),
+                Arguments.of(0, 2, attackerUpperBound),
+                Arguments.of(4, 2, attackerUpperBound),
+                Arguments.of(Integer.MAX_VALUE, 2, attackerUpperBound),
+                Arguments.of(1, Integer.MIN_VALUE, defenderUpperBound),
+                Arguments.of(1, -1, defenderUpperBound),
+                Arguments.of(1, 0, defenderUpperBound),
+                Arguments.of(1, 3, defenderUpperBound),
+                Arguments.of(1, Integer.MAX_VALUE, defenderUpperBound)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidInputsForRollDiceForBattle")
+    public void test50_rollDiceForBattle_invalidInput_expectException(
+            int numAttackers, int numDefenders, int upperBoundOnError) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideDieRollParser(new DieRollParser());
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.rollDiceForBattle(numAttackers, numDefenders));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = String.format("Valid amount of dice is in the range [1, %d]", upperBoundOnError);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

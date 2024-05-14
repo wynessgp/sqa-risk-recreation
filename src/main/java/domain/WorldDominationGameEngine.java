@@ -522,4 +522,13 @@ public final class WorldDominationGameEngine {
     int getNumCardsForPlayer(PlayerColor playerColor) {
         return playersMap.get(playerColor).getNumCardsHeld();
     }
+
+    void rollDiceForBattle(int numAttackers, int numDefenders) {
+        dieRollParser.rollAttackerDice(numAttackers);
+        dieRollParser.rollDefenderDice(numDefenders);
+    }
+
+    void provideDieRollParser(DieRollParser dieRollParser) {
+        this.dieRollParser = dieRollParser;
+    }
 }
