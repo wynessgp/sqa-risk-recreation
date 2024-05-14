@@ -48,7 +48,7 @@ public class GameMapScreenController implements GameScene {
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private final AttackLogic attackLogic = new AttackLogic();
     private Dialog errorDialogController;
-    private Dialog claimDialogController;
+    private Dialog confirmDialogController;
     private Dialog selectionDialogController;
 
     @FXML
@@ -63,7 +63,7 @@ public class GameMapScreenController implements GameScene {
 
     private void setupDialogControllers() {
         this.errorDialogController = new Dialog(territoryErrorDialog, dialogBackground);
-        this.claimDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
+        this.confirmDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
         this.selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
     }
 
@@ -81,10 +81,10 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupClaimTerritoryDialog() {
-        this.claimDialogController.setupButton(ButtonType.YES, "gameMapScreen.dialogYes", event ->
+        this.confirmDialogController.setupButton(ButtonType.YES, "gameMapScreen.dialogYes", event ->
                 handleClaimTerritory());
-        this.claimDialogController.setupButton(ButtonType.NO, "gameMapScreen.dialogNo", event ->
-                this.claimDialogController.toggleDisplay());
+        this.confirmDialogController.setupButton(ButtonType.NO, "gameMapScreen.dialogNo", event ->
+                this.confirmDialogController.toggleDisplay());
     }
 
     private void setupTerritoryErrorDialog() {
@@ -171,7 +171,7 @@ public class GameMapScreenController implements GameScene {
         this.selectedButton.setText("");
         this.selectedButton.setDisable(true);
         this.gameEngine.placeNewArmiesInTerritory(this.selectedTerritory, 1);
-        this.claimDialogController.toggleDisplay();
+        this.confirmDialogController.toggleDisplay();
         this.territoryButtonMap.put(this.selectedButton, this.selectedTerritory);
         updateStateLabels();
     }
@@ -196,8 +196,8 @@ public class GameMapScreenController implements GameScene {
     private void handleGamePhaseAction() {
         GamePhase currentPhase = this.gameEngine.getCurrentGamePhase();
         if (currentPhase == GamePhase.SCRAMBLE) {
-            this.claimDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{this.selectedTerritory});
-            this.claimDialogController.toggleDisplay();
+            this.confirmDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{this.selectedTerritory});
+            this.confirmDialogController.toggleDisplay();
         } else {
             handlePlaceAndAttackPhases(currentPhase);
         }
@@ -216,11 +216,22 @@ public class GameMapScreenController implements GameScene {
     private void handlePlaceArmies(int armies) {
         try {
             this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), armies);
-        } catch (Exception e) {
-            this.errorDialogController.setContentText("gameMapScreen.placementError", null);
-            this.errorDialogController.toggleDisplay();
+        } catch (IllegalArgumentException e) {
+            selectPlacementErrorMessage(e.getMessage());
+        } catch (IllegalStateException e) {
+            showErrorMessage("gameMapScreen.scrambleError");
         }
         updateStateLabels();
+    }
+
+    private void selectPlacementErrorMessage(String message) {
+        String key = message.contains("enough") ? "notEnoughArmiesError" : "generalPlacementError";
+        showErrorMessage("gameMapScreen." + key);
+    }
+
+    private void showErrorMessage(String key) {
+        this.errorDialogController.setContentText(key, null);
+        this.errorDialogController.toggleDisplay();
     }
 
     private void handlePlacement() {
@@ -257,11 +268,11 @@ public class GameMapScreenController implements GameScene {
 
     @Override
     public void onKeyPress(KeyEvent event) {
-        if (this.claimDialogController.isVisible()) {
+        if (this.confirmDialogController.isVisible()) {
             if (event.getCode() == KeyCode.ENTER) {
                 handleClaimTerritory();
             } else if (event.getCode() == KeyCode.ESCAPE) {
-                this.claimDialogController.toggleDisplay();
+                this.confirmDialogController.toggleDisplay();
             }
         }
     }
