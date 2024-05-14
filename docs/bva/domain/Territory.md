@@ -68,12 +68,12 @@ Output: Boolean
 # Method: `setNumArmiesPresent(newAmount: int): boolean`
 
 ## BVA Step 1
-Input: A positive number of armies to be placed on the territory.
+Input: A non-negative number of armies to be placed on the territory.
 
 Output: Yes or no answer whether we could change the amount of armies in the given territory.
 
 ## BVA Step 2
-Input: Counts [1, num armies player has in total]
+Input: Counts [0, num armies player has in total]
 
 Output: Boolean
 
