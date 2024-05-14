@@ -98,14 +98,19 @@ Output: Boolean
   - message: "Number of armies to set should be >= 0"
 
 ### Test 2:
+- Input: newAmount = Integer.MIN_VALUE 
+- Output: IllegalArgumentException
+  - message: "Number of armies to set should be >= 0"
+
+### Test 3:
 - Input: newAmount = 0
 - Output: True
   
-### Test 3:
+### Test 4:
 - Input: newAmount = 1
 - Output: True
 
-### Test 4:
+### Test 5:
 - Input: newAmount = 24
 - Output: True
 
