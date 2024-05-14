@@ -1521,3 +1521,149 @@ Output:
 - attackerDice = [4, 2, 1]
 - defenderDice = [5, 5]
 - battleResults = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+
+# method: `handleArmyLosses(srcTerritory: TerritoryType, destTerritory: TerritoryType, battleResults: List<BattleResult>): AttackConsequence`
+
+This is part **3** of a series of method calls that constitute attacking in Risk. 
+
+## BVA Step 1
+Input: The respective territories the attack occurred between, and the results from rolling the dice in the current battle.
+
+Output: An enum that tells us whether the destination should change hands as a result of the attack.
+
+Additionally, this method will modify the number of armies in the respective territories just based on the battleResults.
+So if a defender goes down to 0 armies, a later method about taking over the territory will handle putting the respective
+attackers into the destination.
+
+## BVA Step 2
+Input:
+- srcTerritory, destTerritory: Cases
+- battleResults: Collection
+- source, dest territory objects: Pointer
+  - only care about the number of armies in each territory here, since we'll modify it
+
+Output:
+- method output: Cases
+- source, dest territory objects: Pointer
+  - Modifying the number of armies in each is the most important part
+
+## BVA Step 3
+Input:
+- srcTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK 
+  - The 0th, 43rd possibilities (can't set, Java enum)
+  - These should be adjacent if we did error validation correctly.
+- battleResults (Collection):
+  - An empty collection (can't set)
+  - A collection with 1 element
+  - A collection with 2 elements
+  - A collection with \> 2 elements (can't set)
+  - A collection with duplicates
+  - A collection without duplicates
+
+Output:
+- method output (Cases):
+  - DEFENDER_LOSES_TERRITORY
+  - NO_CHANGE
+  - The 0th, 3rd cases (can't set, Java enum)
+- source, dest territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - We care about modifying the number of armies present in the source, destination territory
+    - They will be modified according to the battle results 
+      - If an attacker wins twice, the defender loses two troops.
+
+## BVA Step 4
+### Test 1:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 2]
+
+### Test 2:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 1]
+
+### Test 3:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 1]
+
+Output:
+- method output: DEFENDER_LOSES_TERRITORY
+- source territory pointer = [SIAM, numArmies = 3] (note that we don't move any attackers yet!)
+- dest territory pointer = [CHINA, numArmies = 0]
+
+### Test 4:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 2]
+
+Output:
+- method output: DEFENDER_LOSES_TERRITORY
+- source territory pointer = [SIAM, numArmies = 3] (note that we don't move any attackers yet!)
+- dest territory pointer = [CHINA, numArmies = 0]
+
+### Test 5:
+Input:
+- srcTerritory = BRAZIL
+- destTerritory = PERU
+- battleResults = [ATTACKER_VICTORY, DEFENDER_VICTORY]
+- source territory pointer = [BRAZIL, numArmies = 3]
+- dest territory pointer = [PERU, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [BRAZIL, numArmies = 2]
+- dest territory pointer = [PERU, numArmies = 2]
+
+### Test 6:
+Input: 
+- srcTerritory = BRAZIL
+- destTerritory = PERU
+- battleResults = [DEFENDER_VICTORY]
+- source territory pointer = [BRAZIL, numArmies = 3]
+- dest territory pointer = [PERU, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [BRAZIL, numArmies = 2]
+- dest territory pointer = [PERU, numArmies = 3]
+
+### Test 7:
+Input:
+- srcTerritory = URAL
+- destTerritory = UKRAINE
+- battleResults = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+- source territory pointer = [URAL, numArmies = 3]
+- dest territory pointer = [UKRAINE, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [URAL, numArmies = 1]
+- dest territory pointer = [UKRAINE, numArmies = 3]
