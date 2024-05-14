@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1723,6 +1724,49 @@ public class WorldDominationGameEngineTest {
         assertEquals(battleResults, unitUnderTest.getBattleResults());
 
         EasyMock.verify(mockedDieRollParser);
+    }
+
+    private static Stream<Arguments> generateNoChangeInputsForHandleArmyLosses() {
+        return Stream.of(
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA, List.of(BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.PERU,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(TerritoryType.URAL, TerritoryType.UKRAINE,
+                        List.of(BattleResult.DEFENDER_VICTORY, BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.NEW_GUINEA, List.of(BattleResult.DEFENDER_VICTORY))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNoChangeInputsForHandleArmyLosses")
+    public void test52_handleArmyLosses_inputsResultInNoChange_expectNoChangeAsResult(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults) {
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(3).anyTimes();
+        int numAttackersRemaining = 3 - Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numAttackersRemaining)).andReturn(true).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(3).anyTimes();
+        int numDefendersRemaining = 3 - Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        EasyMock.expect(mockedDest.setNumArmiesPresent(numDefendersRemaining)).andReturn(true).anyTimes();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(destinationTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedSource, mockedDest, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertEquals(AttackConsequence.NO_CHANGE,
+                unitUnderTest.handleArmyLosses(sourceTerritory, destinationTerritory, battleResults));
+
+        EasyMock.verify(mockedSource, mockedDest, mockedGraph);
     }
 
 }

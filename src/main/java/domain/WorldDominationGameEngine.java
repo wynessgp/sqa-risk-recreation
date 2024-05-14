@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -548,5 +549,19 @@ public final class WorldDominationGameEngine {
 
     public List<BattleResult> getBattleResults() {
         return new ArrayList<>(this.battleResults);
+    }
+
+    AttackConsequence handleArmyLosses(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults) {
+        int numAttackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        int numDefendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        decreaseNumArmiesInTerritory(sourceTerritory, numAttackersLost);
+        decreaseNumArmiesInTerritory(destinationTerritory, numDefendersLost);
+
+        return AttackConsequence.NO_CHANGE;
+    }
+
+    private void decreaseNumArmiesInTerritory(TerritoryType territory, int numArmiesLost) {
+        increaseNumArmiesInTerritory(territory, -1 * numArmiesLost);
     }
 }
