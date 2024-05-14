@@ -1687,4 +1687,42 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generateValidInputsForRollDiceAndOutputs() {
+        return Stream.of(
+                Arguments.of(1, 1, List.of(5), List.of(6), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(1, 2, List.of(4), List.of(3, 2), List.of(BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(2, 1, List.of(5, 2), List.of(5), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(2, 2, List.of(4, 3), List.of(5, 2), List.of(BattleResult.DEFENDER_VICTORY,
+                        BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(3, 1, List.of(2, 1, 1), List.of(5), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(3, 2, List.of(4, 2, 1), List.of(5, 5), List.of(BattleResult.DEFENDER_VICTORY,
+                        BattleResult.DEFENDER_VICTORY))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForRollDiceAndOutputs")
+    public void test51_rollDiceForBattle_validInput_expectSpecificOutput(
+            int numAttackers, int numDefenders, List<Integer> attackRolls,
+            List<Integer> defenseRolls, List<BattleResult> battleResults) {
+
+        DieRollParser mockedDieRollParser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(mockedDieRollParser.rollAttackerDice(numAttackers)).andReturn(attackRolls);
+        EasyMock.expect(mockedDieRollParser.rollDefenderDice(numDefenders)).andReturn(defenseRolls);
+        EasyMock.expect(mockedDieRollParser.generateBattleResults(attackRolls, defenseRolls)).andReturn(battleResults);
+
+        EasyMock.replay(mockedDieRollParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideDieRollParser(mockedDieRollParser);
+
+        assertEquals(battleResults, unitUnderTest.rollDiceForBattle(numAttackers, numDefenders));
+
+        assertEquals(attackRolls, unitUnderTest.getAttackerDiceRolls());
+        assertEquals(defenseRolls, unitUnderTest.getDefenderDiceRolls());
+        assertEquals(battleResults, unitUnderTest.getBattleResults());
+
+        EasyMock.verify(mockedDieRollParser);
+    }
+
 }

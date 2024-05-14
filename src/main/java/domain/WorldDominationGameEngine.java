@@ -45,6 +45,10 @@ public final class WorldDominationGameEngine {
     private TradeInParser tradeInParser;
     private List<Integer> dieRolls;
 
+    private List<Integer> attackerRolls;
+    private List<Integer> defenderRolls;
+    private List<BattleResult> battleResults;
+
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
@@ -523,12 +527,26 @@ public final class WorldDominationGameEngine {
         return playersMap.get(playerColor).getNumCardsHeld();
     }
 
-    void rollDiceForBattle(int numAttackers, int numDefenders) {
-        dieRollParser.rollAttackerDice(numAttackers);
-        dieRollParser.rollDefenderDice(numDefenders);
+    List<BattleResult> rollDiceForBattle(int numAttackers, int numDefenders) {
+        this.attackerRolls = dieRollParser.rollAttackerDice(numAttackers);
+        this.defenderRolls = dieRollParser.rollDefenderDice(numDefenders);
+        this.battleResults = dieRollParser.generateBattleResults(this.attackerRolls, this.defenderRolls);
+        return this.battleResults;
     }
 
     void provideDieRollParser(DieRollParser dieRollParser) {
         this.dieRollParser = dieRollParser;
+    }
+
+    public List<Integer> getAttackerDiceRolls() {
+        return new ArrayList<>(this.attackerRolls);
+    }
+
+    public List<Integer> getDefenderDiceRolls() {
+        return new ArrayList<>(this.defenderRolls);
+    }
+
+    public List<BattleResult> getBattleResults() {
+        return new ArrayList<>(this.battleResults);
     }
 }
