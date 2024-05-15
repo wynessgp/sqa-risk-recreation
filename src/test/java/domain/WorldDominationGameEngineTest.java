@@ -2016,4 +2016,55 @@ public class WorldDominationGameEngineTest {
         }
     }
 
+    private static Stream<Arguments> generateNonWinningArgumentsForHandleCurrentPlayerWinning() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        List<Integer> territoryIndices = List.of(2, 3, 4, 17, 30, 31, 40, 41);
+        List<PlayerColor> allPlayersWithoutSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        allPlayersWithoutSetup.remove(PlayerColor.SETUP);
+
+        for (Integer index : territoryIndices) {
+            for (PlayerColor player : allPlayersWithoutSetup) {
+                toStream.add(Arguments.of(index, player));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonWinningArgumentsForHandleCurrentPlayerWinning")
+    public void test57_handleCurrentPlayerWinningGameIfNecessary_currentPlayerDoesNotWin_expectGameInAttackPhase(
+            int indexOfFirstNonOwnedTerritory, PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        int currentIndex = 0;
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (currentIndex == indexOfFirstNonOwnedTerritory) {
+                break;
+            }
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        unitUnderTest.handleCurrentPlayerWinningGameIfNecessary();
+
+        assertEquals(GamePhase.ATTACK, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedGraph);
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
 }

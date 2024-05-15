@@ -611,4 +611,12 @@ public final class WorldDominationGameEngine {
     void provideMockedPlayersMap(Map<PlayerColor, Player> mockedPlayersMap) {
         this.playersMap = mockedPlayersMap;
     }
+
+    void handleCurrentPlayerWinningGameIfNecessary() {
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (!checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
+                return;
+            }
+        }
+    }
 }
