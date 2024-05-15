@@ -585,4 +585,17 @@ public final class WorldDominationGameEngine {
         }
         return playerInControl;
     }
+
+    public void handlePlayerLosingGameIfNecessary(PlayerColor potentiallyLosingPlayer) {
+        int numTerritoriesPlayerOwns = 0;
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, potentiallyLosingPlayer)) {
+                numTerritoriesPlayerOwns++;
+            }
+        } // this is enough to satisfy the mocks for now.
+    }
+
+    Map<PlayerColor, Player> getPlayerMap() {
+        return playersMap;
+    }
 }
