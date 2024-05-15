@@ -2067,4 +2067,42 @@ public class WorldDominationGameEngineTest {
         }
     }
 
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetup() {
+        List<PlayerColor> playersWithoutSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        playersWithoutSetup.remove(PlayerColor.SETUP);
+
+        return playersWithoutSetup.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test58_handleCurrentPlayerWinningGameIfNecessary_currentPlayerWins_expectGameInGameOverPhase(
+            PlayerColor winningPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(winningPlayer)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(winningPlayer);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        unitUnderTest.handleCurrentPlayerWinningGameIfNecessary();
+
+        assertEquals(GamePhase.GAME_OVER, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedGraph);
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
 }

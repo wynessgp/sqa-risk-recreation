@@ -618,5 +618,6 @@ public final class WorldDominationGameEngine {
                 return;
             }
         }
+        this.currentGamePhase = GamePhase.GAME_OVER;
     }
 }
