@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1942,6 +1943,74 @@ public class WorldDominationGameEngineTest {
 
         for (Territory mockedTerritory : allMockedTerritories) {
             EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    private static Stream<Arguments> generateLosingPlayerCardsAndRespectivePlayersAndPlayerList() {
+        return Stream.of(
+                Arguments.of(
+                        Set.of(),
+                        PlayerColor.RED, PlayerColor.BLUE,
+                        new ArrayList<>(List.of(PlayerColor.RED, PlayerColor.PURPLE,
+                                PlayerColor.BLUE, PlayerColor.GREEN))),
+                Arguments.of(
+                        Set.of(new TerritoryCard(TerritoryType.IRKUTSK, PieceType.INFANTRY),
+                                new TerritoryCard(TerritoryType.UKRAINE, PieceType.CAVALRY)),
+                        PlayerColor.YELLOW, PlayerColor.GREEN,
+                        new ArrayList<>(List.of(PlayerColor.YELLOW, PlayerColor.PURPLE, PlayerColor.GREEN)))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateLosingPlayerCardsAndRespectivePlayersAndPlayerList")
+    public void test56_handlePlayerLosingGameIfNecessary_playerLosesGame_expectCardTransferAndCollectionsChange(
+            Set<Card> losingPlayerCards, PlayerColor attackerColor, PlayerColor defenderColor,
+            List<PlayerColor> playersList) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        List<Territory> allMockedTerritories = new ArrayList<>();
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(defenderColor)).andReturn(false);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            allMockedTerritories.add(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Map<PlayerColor, Player> playersMap = new HashMap<>();
+        List<Player> mockedPlayerObjects = new ArrayList<>(); // verify that everything happened at the end.
+        for (PlayerColor player : playersList) {
+            Player mockedPlayer = EasyMock.createMock(Player.class);
+            if (player == attackerColor) {
+                mockedPlayer.addCardsToCollection(losingPlayerCards);
+                EasyMock.expectLastCall().once();
+            } else if (player == defenderColor) {
+                EasyMock.expect(mockedPlayer.getOwnedCards()).andReturn(losingPlayerCards);
+                EasyMock.expectLastCall().once();
+            }
+            playersMap.put(player, mockedPlayer);
+            EasyMock.replay(mockedPlayer);
+            mockedPlayerObjects.add(mockedPlayer);
+        }
+        unitUnderTest.provideMockedPlayersMap(playersMap);
+        unitUnderTest.provideCurrentPlayerForTurn(attackerColor);
+        unitUnderTest.handlePlayerLosingGameIfNecessary(defenderColor);
+
+        assertFalse(unitUnderTest.getPlayerOrder().contains(defenderColor));
+        assertFalse(unitUnderTest.getPlayerMap().containsKey(defenderColor));
+
+        EasyMock.verify(mockedGraph);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+
+        for (Player mockedPlayer : mockedPlayerObjects) {
+            EasyMock.verify(mockedPlayer);
         }
     }
 

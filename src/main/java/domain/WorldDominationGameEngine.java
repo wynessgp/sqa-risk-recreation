@@ -33,7 +33,7 @@ public final class WorldDominationGameEngine {
     private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
 
     private List<PlayerColor> playersList = new ArrayList<>();
-    private final Map<PlayerColor, Player> playersMap = new HashMap<>();
+    private Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
 
     private int numUnclaimedTerritories;
@@ -587,15 +587,30 @@ public final class WorldDominationGameEngine {
     }
 
     public void handlePlayerLosingGameIfNecessary(PlayerColor potentiallyLosingPlayer) {
+        int numTerritories = getNumTerritoriesPlayerOwns(potentiallyLosingPlayer);
+        if (numTerritories == 0) {
+            Set<Card> losingPlayerCards = playersMap.get(potentiallyLosingPlayer).getOwnedCards();
+            playersMap.get(currentPlayer).addCardsToCollection(losingPlayerCards);
+            playersList.remove(potentiallyLosingPlayer);
+            playersMap.remove(potentiallyLosingPlayer);
+        }
+    }
+
+    private int getNumTerritoriesPlayerOwns(PlayerColor player) {
         int numTerritoriesPlayerOwns = 0;
         for (TerritoryType territory : TerritoryType.values()) {
-            if (checkIfPlayerOwnsTerritory(territory, potentiallyLosingPlayer)) {
+            if (checkIfPlayerOwnsTerritory(territory, player)) {
                 numTerritoriesPlayerOwns++;
             }
-        } // this is enough to satisfy the mocks for now.
+        }
+        return numTerritoriesPlayerOwns;
     }
 
     Map<PlayerColor, Player> getPlayerMap() {
         return playersMap;
+    }
+
+    void provideMockedPlayersMap(Map<PlayerColor, Player> mockedPlayersMap) {
+        this.playersMap = mockedPlayersMap;
     }
 }
