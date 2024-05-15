@@ -1958,3 +1958,96 @@ Output:
 - playersMap = [PURPLE -> playerObject, YELLOW -> playerObject (attacker)] (GREEN is eliminated)
 - attacker player object = [YELLOW, ownedCards = {Wild Card, Territory Card = [CONGO, ARTILLERY], Territory Card = [IRKUTSK, INFANTRY], Territory Card = [UKRAINE, CAVALRY] } ]
 - defender player object = [GREEN, ownedCards = {} ] (this will also no longer exist, so we don't really care to track it)
+
+# method: `handleCurrentPlayerWinningGameIfNecessary(): void`
+
+This is part **6** of a series of method calls that constitute attacking in Risk. This handles the win condition for 
+the class World Domination game mode.
+
+## BVA Step 1
+Input: The state of the whole game board, and who is currently going. We want to see if the current player owns all  
+the territories on the board.
+
+Output: The game phase will be changed to reflect that the game is over if the player owns all the territories, 
+otherwise it will remain the same. 
+
+## BVA Step 2
+Input:
+- ALL territory objects: Pointer
+- currently going player: Cases
+
+Output:
+- method output: N/A
+- current game phase: Cases
+
+## BVA Step 3
+Input:
+- ALL territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Want to check and see if the territory is owned by the currently going player.
+      - Attackers should own [2, 42] as input here...
+    - Don't care about any other fields with the territory.
+- currently going player (Cases):
+  - SETUP (can't set, per error checking being done beforehand)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+
+Output:
+- current game phase (Cases):
+  - Only two possible results:
+    - ATTACK (Player does NOT own all territories)
+    - GAME_OVER (Player OWNS all territories)
+  - Any other case should be an error, but we won't set it to other things either.
+
+## BVA Step 4
+### Test 1:
+Input:
+- all territory objects:
+  - current player OWNS 2 (attacker shouldn't be able to only own 1 after an attack)
+  - current player does NOT own 40
+- currently going player = PURPLE
+
+Output:
+- current game phase = ATTACK
+
+### Test 2:
+Input:
+- all territory objects:
+  - current player OWNS 3
+  - current player does NOT own 39
+- currently going player = GREEN
+
+Output:
+- current game phase = ATTACK
+
+### Test 3:
+Input:
+- all territory objects:
+  - current player OWNS 41
+  - current player does NOT own 1
+- currently going player = YELLOW
+
+Output:
+- current game phase = ATTACK
+
+### Test 4:
+Input:
+- all territory objects: 
+  - current player OWNS all 42
+- currently going player = BLACK
+
+Output:
+- current game phase = GAME_OVER
+
+### Test 5:
+Input:
+- all territory objects
+  - current player OWNS all 42
+- currently going player = RED
+
+Output:
+- current game phase = GAME_OVER
