@@ -2044,14 +2044,19 @@ public class WorldDominationGameEngineTest {
         int currentIndex = 0;
         List<Territory> allMockedTerritories = new ArrayList<>();
         for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
             if (currentIndex == indexOfFirstNonOwnedTerritory) {
+                // add one extra territory to stop us from rolling over...
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(false);
+                EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+                EasyMock.replay(mockedTerritory);
                 break;
             }
-            Territory mockedTerritory = EasyMock.createMock(Territory.class);
             EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(true);
             EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
             EasyMock.replay(mockedTerritory);
             allMockedTerritories.add(mockedTerritory);
+            currentIndex++;
         }
         EasyMock.replay(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
