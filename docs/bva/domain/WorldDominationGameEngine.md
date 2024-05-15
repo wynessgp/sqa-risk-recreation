@@ -1802,3 +1802,159 @@ Output:
 - dest territory object = [ownedBy = BLUE, numArmies = 3, EGYPT]
 - attacking player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST, EGYPT} ]
 - defending player object = [RED, ownedTerritories = {YAKUTSK} ]
+
+# method: `handlePlayerLosingGameIfNecessary(player: PlayerColor): void`
+
+This is part **5** of a series of method calls that constitute attacking in Risk. If a defending player is left with 0
+territories as a result of an attack, this method will remove them from the game.
+
+## BVA Step 1
+Input: The player who has lost a territory as a result of the current attack, and may lose the game as a result. 
+
+We also need to know about: 
+- the underlying state of the entire map (as we need to know if this player owns NO territories).
+- the underlying state of the defending/attacking player objects as a player gives up the cards they own if they lose
+- the underlying state of the players list 
+  - This should already be NICELY set since we're in the ATTACK phase
+- the underlying state of the players map
+  - This should already be NICELY set since we're in the ATTACK phase
+
+Output: If the player owns no territories, the list of players (and map of players) will no longer contain the losing 
+player; their cards are transferred to the attacking player (namely the currently going player). 
+
+## BVA Step 2
+Input:
+- player: Cases
+- ALL territory objects held by the game: Pointer
+- defending/attacking player object: Pointer
+
+Output:
+- method output: N/A
+- playersList: Collection (only if player owns no territories will this be modified)
+- playersMap: Collection (only if player owns no territories will this be modified)
+- defending/attacking player object: Pointer
+
+## BVA Step 3
+Input: 
+- player: Cases
+  - SETUP (error case, can't set - should not happen if we are in the ATTACK phase)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+- territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - For each territory, we're looking to see who it's owned by.
+      - If the given player owns even one territory, then we don't handle anything related to deleting/transferring cards.
+      - So if the player owns [1, 42] nothing special happens with this method.
+- defending/attacking player object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - If the defending player is to be eliminated, we care about:
+      - The cards the attacking player currently holds
+      - The cards the defending player currently holds
+    - The defender's cards will be added to the attacker's collection before they are removed from the game.
+- playersList, playersMap (Collection):
+  - Both have a minimum size of 2 elements (whether it be just elements or key-value pairs)
+  - Both have a maximal size of 6 elements
+  - No duplicates
+  - Any other cases are an error that should've been handled BEFORE ever calling this one.
+
+Output:
+- playersList (Collection):
+  - If the player should in fact be removed, the number of elements in the collection should decrease by 1.
+- playersMap (Collection):
+  - If the player should in fact be removed, the number of elements in the collection should decrease by 1.
+- defending/attacking player object (Pointer):
+  - If the player should in fact be removed:
+    - Take the cards that the losing player owns
+    - Transfer them to attacking player's collection
+
+## BVA Step 4
+### Test 1:
+Input:
+- player: BLUE
+- territory objects:
+  - 41 are NOT owned by BLUE
+  - 1 IS owned by BLUE
+- defending/attacking player objects:
+  - attacker = [RED, ownedCards = {Wild Card, TerritoryCard = [BRAZIL, INFANTRY] } ]
+  - defender = [BLUE, ownedCards = {TerritoryCard = [ARGENTINA, ARTILLERY] } ]
+- playersList = [BLUE, BLACK, RED, YELLOW]
+- playersMap = [BLUE -> playerObject (defender), BLACK -> playerObject, RED -> playerObject (attacker), Yellow -> playerObject]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 2:
+Input:
+- player: GREEN
+- territory objects:
+  - 40 are NOT owned by GREEN
+  - 2 ARE owned by GREEN
+- defending/attacking player objects:
+  - attacker = [PURPLE, ownedCards = {} ]
+  - defender = [GREEN, ownedCards = {Wild Card} ]
+- playersList = [GREEN, PURPLE]
+- playersMap = [GREEN -> playerObject (defender), PURPLE -> playerObject (attacker)]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 3:
+Input:
+- player: YELLOW
+- territory objects: 
+  - 2 is NOT owned by YELLOW (think: 1 not owned by yellow should not be possible in the context of ATTACK and having yellow lose)
+  - 40 ARE owned by YELLOW
+- defending/attacking player objects:
+  - attacker = [BLACK, ownedCards = {} ]
+  - defender = [YELLOW, ownedCards = {} ]
+- playersList = [YELLOW, BLUE, RED, PURPLE, GREEN, BLACK]
+- playersMap = [YELLOW -> playerObject (defender), ..., BLACK -> playerObject (attacker)]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 4:
+Input:
+- player: BLUE
+- territory objects:
+  - All 42 are NOT owned by BLUE
+- defending/attacking player objects:
+  - attacker = [RED, ownedCards = {Wild Card}]
+  - defender = [BLUE, ownedCards = {}]
+- playersList = [RED, PURPLE, BLUE, GREEN]
+- playersMap = [RED -> playerObject (attacker), ..., BLUE -> playerObject (defender), ...]
+
+Output:
+- playersList = [RED, PURPLE, GREEN] (BLUE is eliminated)
+- playersMap = [RED -> playerObject (attacker), PURPLE -> playerObject, GREEN -> playerObject] (BLUE is eliminated)
+- Since BLUE (defender) had no cards, the attacker player object looks like how it started:
+  - attacker = [RED, ownedCards = {Wild Card}]
+  - defender = [BLUE, ownedCards = {} ] (though this object will no longer exist, so it doesn't really matter)
+
+### Test 5:
+Input:
+- player: GREEN
+- territory objects:
+  - All 42 are NOT owned by GREEN
+- defending/attacking player objects:
+  - attacker = [YELLOW, ownedCards = {Wild Card, Territory Card = [CONGO, ARTILLERY] } ]
+  - defender = [GREEN, ownedCards = {Territory Card = [IRKUTSK, INFANTRY], Territory Card = [UKRAINE, CAVALRY] } ]
+- playersList = [GREEN, PURPLE, YELLOW]
+- playersMap = [GREEN -> playerObject (defender), PURPLE -> playerObject, YELLOW -> playerObject (attacker)]
+
+Output:
+- playersList = [PURPLE, YELLOW] (GREEN is eliminated)
+- playersMap = [PURPLE -> playerObject, YELLOW -> playerObject (attacker)] (GREEN is eliminated)
+- attacker player object = [YELLOW, ownedCards = {Wild Card, Territory Card = [CONGO, ARTILLERY], Territory Card = [IRKUTSK, INFANTRY], Territory Card = [UKRAINE, CAVALRY] } ]
+- defender player object = [GREEN, ownedCards = {} ] (this will also no longer exist, so we don't really care to track it)
