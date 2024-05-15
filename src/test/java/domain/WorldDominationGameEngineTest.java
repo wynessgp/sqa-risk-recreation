@@ -1876,7 +1876,7 @@ public class WorldDominationGameEngineTest {
 
     private static Stream<Arguments> generateInputsForHandlePlayerLosingGameIfNecessary() {
         Set<Arguments> toStream = new HashSet<>();
-        List<Integer> territoryAmounts = List.of(1, 2, 17, 30, 41);
+        List<Integer> ownedTerritoryIndex = List.of(1, 2, 17, 30, 41);
         List<PlayerColor> playerInQuestion = List.of(PlayerColor.PURPLE, PlayerColor.BLACK, PlayerColor.YELLOW,
                 PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED);
         // we should make these lists mutable, so we can potentially remove players...
@@ -1891,10 +1891,10 @@ public class WorldDominationGameEngineTest {
                 new ArrayList<>(List.of(PlayerColor.RED, PlayerColor.PURPLE))
         );
 
-        for (Integer territoryAmount : territoryAmounts) {
+        for (Integer index : ownedTerritoryIndex) {
             for (PlayerColor player : playerInQuestion) {
                 int indexOfPlayer = playerInQuestion.indexOf(player);
-                toStream.add(Arguments.of(territoryAmount, player,
+                toStream.add(Arguments.of(index, player,
                         playersListContainingPotentiallyLosingPlayer.get(indexOfPlayer)));
             }
         }
@@ -1905,24 +1905,26 @@ public class WorldDominationGameEngineTest {
     @ParameterizedTest
     @MethodSource("generateInputsForHandlePlayerLosingGameIfNecessary")
     public void test55_handlePlayerLosingGameIfNecessary_playerHasNotLost_expectCollectionsToRemainTheSame(
-            int numTerritoriesPlayerOwns, PlayerColor potentiallyLosingPlayer, List<PlayerColor> playersList) {
+            int ownedTerritoryIndex, PlayerColor potentiallyLosingPlayer, List<PlayerColor> playersList) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
         List<Territory> allMockedTerritories = new ArrayList<>();
 
-        int numOwnedTerritories = 0;
+        int currentIndex = 0;
         for (TerritoryType territory : TerritoryType.values()) {
             Territory mockedTerritory = EasyMock.createMock(Territory.class);
-            if (numOwnedTerritories < numTerritoriesPlayerOwns) {
-                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(true);
-                numOwnedTerritories++;
-            } else {
-                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(false);
-            }
             EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
             allMockedTerritories.add(mockedTerritory);
-            EasyMock.replay(mockedTerritory);
+            if (currentIndex < ownedTerritoryIndex) {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(false);
+                EasyMock.replay(mockedTerritory);
+                currentIndex++;
+            } else {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(true);
+                EasyMock.replay(mockedTerritory);
+                break;
+            }
         }
         EasyMock.replay(mockedGraph);
 

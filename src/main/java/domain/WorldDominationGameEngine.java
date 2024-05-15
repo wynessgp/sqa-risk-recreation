@@ -587,8 +587,7 @@ public final class WorldDominationGameEngine {
     }
 
     public void handlePlayerLosingGameIfNecessary(PlayerColor potentiallyLosingPlayer) {
-        int numTerritories = getNumTerritoriesPlayerOwns(potentiallyLosingPlayer);
-        if (numTerritories == 0) {
+        if (!playerOwnsAtLeastOneTerritory(potentiallyLosingPlayer)) {
             Set<Card> losingPlayerCards = playersMap.get(potentiallyLosingPlayer).getOwnedCards();
             playersMap.get(currentPlayer).addCardsToCollection(losingPlayerCards);
             playersList.remove(potentiallyLosingPlayer);
@@ -596,14 +595,13 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private int getNumTerritoriesPlayerOwns(PlayerColor player) {
-        int numTerritoriesPlayerOwns = 0;
+    private boolean playerOwnsAtLeastOneTerritory(PlayerColor player) {
         for (TerritoryType territory : TerritoryType.values()) {
             if (checkIfPlayerOwnsTerritory(territory, player)) {
-                numTerritoriesPlayerOwns++;
+                return true;
             }
         }
-        return numTerritoriesPlayerOwns;
+        return false;
     }
 
     Map<PlayerColor, Player> getPlayerMap() {
