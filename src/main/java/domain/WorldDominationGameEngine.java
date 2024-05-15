@@ -565,4 +565,24 @@ public final class WorldDominationGameEngine {
     private void decreaseNumArmiesInTerritory(TerritoryType territory, int numArmiesLost) {
         increaseNumArmiesInTerritory(territory, -1 * numArmiesLost);
     }
+
+    PlayerColor handleAttackerTakingTerritory(TerritoryType territory, int numAttackers) {
+        PlayerColor playerLosingTerritory = getPlayerInControlOfTerritory(territory);
+        territoryGraph.getTerritory(territory).setNumArmiesPresent(numAttackers);
+        territoryGraph.getTerritory(territory).setPlayerInControl(currentPlayer);
+        playersMap.get(currentPlayer).addTerritoryToCollection(territory);
+        playersMap.get(playerLosingTerritory).removeTerritoryFromCollection(territory);
+        return playerLosingTerritory;
+    }
+
+    private PlayerColor getPlayerInControlOfTerritory(TerritoryType territory) {
+        PlayerColor playerInControl = playersList.get(0);
+        for (PlayerColor player : playersList) {
+            if (checkIfPlayerOwnsTerritory(territory, player)) {
+                playerInControl = player;
+                break;
+            }
+        }
+        return playerInControl;
+    }
 }

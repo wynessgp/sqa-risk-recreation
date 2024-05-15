@@ -69,4 +69,7 @@ class Player {
 
     }
 
+    void removeTerritoryFromCollection(TerritoryType destTerritory) {
+
+    }
 }

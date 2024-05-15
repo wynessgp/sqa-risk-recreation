@@ -1811,4 +1811,66 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedSource, mockedDest, mockedGraph);
     }
 
+    private static Stream<Arguments> generateAllValidCombosForHandleAttacker() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Integer> validNumAttackers = List.of(1, 2, 3);
+        List<PlayerColor> validPlayerColors = new ArrayList<>(List.of(PlayerColor.values()));
+        validPlayerColors.remove(PlayerColor.SETUP);
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            for (Integer numAttackers : validNumAttackers) {
+                for (PlayerColor attackingPlayer : validPlayerColors) {
+                    for (PlayerColor defendingPlayer : validPlayerColors) {
+                        if (attackingPlayer != defendingPlayer) {
+                            toStream.add(Arguments.of(territory, numAttackers, attackingPlayer, defendingPlayer));
+                        }
+                    }
+                }
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllValidCombosForHandleAttacker")
+    public void test54_handleAttackerTakingTerritory_validInput_expectPlayerColorOfDefendingPlayer(
+            TerritoryType destTerritory, int numAttackers, PlayerColor attackingPlayer, PlayerColor defendingPlayer) {
+
+        Territory mockedDestTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDestTerritory.isOwnedByPlayer(attackingPlayer)).andReturn(false).once();
+        EasyMock.expect(mockedDestTerritory.isOwnedByPlayer(defendingPlayer)).andReturn(true).once();
+        EasyMock.expect(mockedDestTerritory.setNumArmiesPresent(numAttackers)).andReturn(true).once();
+        EasyMock.expect(mockedDestTerritory.setPlayerInControl(attackingPlayer)).andReturn(true).once();
+
+        Player mockedAttacker = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(attackingPlayer)
+                .addMockedMethod("addTerritoryToCollection")
+                .createMock();
+        mockedAttacker.addTerritoryToCollection(destTerritory);
+        EasyMock.expectLastCall().once();
+
+        Player mockedDefender = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(defendingPlayer)
+                .addMockedMethod("removeTerritoryFromCollection")
+                .createMock();
+        mockedDefender.removeTerritoryFromCollection(destTerritory);
+        EasyMock.expectLastCall().once();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDestTerritory).anyTimes();
+
+        EasyMock.replay(mockedDestTerritory, mockedAttacker, mockedDefender, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.setPlayerOrderList(List.of(attackingPlayer, defendingPlayer));
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedAttacker, mockedDefender));
+
+        assertEquals(defendingPlayer, unitUnderTest.handleAttackerTakingTerritory(destTerritory, numAttackers));
+
+        EasyMock.verify(mockedDestTerritory, mockedAttacker, mockedDefender, mockedGraph);
+    }
+
 }
