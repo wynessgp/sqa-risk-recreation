@@ -399,7 +399,7 @@ public final class WorldDominationGameEngine {
     private void checkIfNumAttackersIsValid(int numAttackers) {
         if (numAttackers < MINIMUM_NUMBER_OF_ATTACKING_ARMIES || numAttackers > MAXIMUM_NUMBER_OF_ATTACKING_ARMIES) {
             throw new IllegalArgumentException(String.format("Number of armies to attack with must be within [%d, %d]!",
-                            MINIMUM_NUMBER_OF_ATTACKING_ARMIES, MAXIMUM_NUMBER_OF_ATTACKING_ARMIES));
+                    MINIMUM_NUMBER_OF_ATTACKING_ARMIES, MAXIMUM_NUMBER_OF_ATTACKING_ARMIES));
         }
     }
 
@@ -630,9 +630,10 @@ public final class WorldDominationGameEngine {
         checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
         checkIfEnoughArmiesInSource(sourceTerritory, numArmies);
         checkIfInValidGamePhaseForMovement();
-        if (recentlyAttackedSource != sourceTerritory || recentlyAttackedDestination != destTerritory) {
-            throw new IllegalArgumentException("Cannot split armies between this source and destination!");
-        }
+        checkIfTerritoriesWereRecentlyAttacked(sourceTerritory, destTerritory);
+        decreaseNumArmiesInTerritory(sourceTerritory, numArmies);
+        increaseNumArmiesInTerritory(destTerritory, numArmies);
+        handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary();
     }
 
     private void checkIfPlayerOwnsBothSourceAndDestinationTerritories(TerritoryType source, TerritoryType dest) {
@@ -659,11 +660,33 @@ public final class WorldDominationGameEngine {
         }
     }
 
+    private void checkIfTerritoriesWereRecentlyAttacked(TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        if ((recentlyAttackedSource != sourceTerritory || recentlyAttackedDestination != destTerritory)
+                && currentGamePhase == GamePhase.ATTACK) {
+            throw new IllegalArgumentException("Cannot split armies between this source and destination!");
+        }
+    }
+
+    private void handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary() {
+        if (currentGamePhase == GamePhase.FORTIFY) {
+            currentGamePhase = GamePhase.PLACEMENT;
+            updateCurrentPlayer();
+        }
+    }
+
     void setRecentlyAttackedSource(TerritoryType recentlyAttackedSrc) {
         this.recentlyAttackedSource = recentlyAttackedSrc;
     }
 
     void setRecentlyAttackedDest(TerritoryType recentlyAttackedDest) {
         this.recentlyAttackedDestination = recentlyAttackedDest;
+    }
+
+    public TerritoryType getRecentlyAttackedSource() {
+        return null;
+    }
+
+    public TerritoryType getRecentlyAttackedDest() {
+        return null;
     }
 }

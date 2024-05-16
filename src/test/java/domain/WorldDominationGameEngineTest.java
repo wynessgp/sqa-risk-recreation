@@ -3,6 +3,7 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -2331,6 +2332,98 @@ public class WorldDominationGameEngineTest {
 
         String expectedMessage = "Cannot split armies between this source and destination!";
         assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateValidInputsForMoveArmiesAttackPhase() {
+        return Stream.of(
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 1),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 2),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 3),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 2),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 5),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 6),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.EGYPT, 2, 1),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDIA, 75, 74),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.WESTERN_UNITED_STATES, 4, 3),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 9),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 5),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 1)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
+    public void test65_moveArmiesBetweenFriendlyTerritories_validInputAttackPhase_expectTerritoriesToReflectMovement(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+
+        unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, numArmiesToMove);
+
+        assertEquals(GamePhase.ATTACK, unitUnderTest.getCurrentGamePhase());
+        assertEquals(PlayerColor.GREEN, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
+    public void test66_moveArmiesBetweenFriendlyTerritories_fortifyPhase_endPlayerTurnAndExpectMovedArmies(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        unitUnderTest.setPlayerOrderList(List.of(PlayerColor.PURPLE, PlayerColor.GREEN));
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, numArmiesToMove);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(PlayerColor.GREEN, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
 
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
     }
