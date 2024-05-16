@@ -630,14 +630,56 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     private static Stream<Arguments> generateAdjacentTerritoryPairs() {
-        // just pick a few adjacent territory pairs.
+        // need to test an edge of EVERY territory if we want full mutation coverage
         return Stream.of(
-                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA),
-                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE),
+                // North America
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY),
+                Arguments.of(TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ALBERTA),
+                Arguments.of(TerritoryType.GREENLAND, TerritoryType.ICELAND),
+                Arguments.of(TerritoryType.ALBERTA, TerritoryType.ONTARIO),
+                Arguments.of(TerritoryType.ONTARIO, TerritoryType.QUEBEC),
+                Arguments.of(TerritoryType.QUEBEC, TerritoryType.EASTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.WESTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA),
+                Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.VENEZUELA),
+                // South America
+                Arguments.of(TerritoryType.VENEZUELA, TerritoryType.PERU),
+                Arguments.of(TerritoryType.PERU, TerritoryType.BRAZIL),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.NORTH_AFRICA),
+                Arguments.of(TerritoryType.ARGENTINA, TerritoryType.PERU),
+                // Europe
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.ICELAND),
+                Arguments.of(TerritoryType.ICELAND, TerritoryType.SCANDINAVIA),
+                Arguments.of(TerritoryType.SCANDINAVIA, TerritoryType.UKRAINE),
+                Arguments.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.SOUTHERN_EUROPE),
+                Arguments.of(TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE),
+                Arguments.of(TerritoryType.UKRAINE, TerritoryType.URAL),
+                Arguments.of(TerritoryType.WESTERN_EUROPE, TerritoryType.NORTH_AFRICA),
+                // Africa
+                Arguments.of(TerritoryType.NORTH_AFRICA, TerritoryType.EGYPT),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.EAST_AFRICA),
                 Arguments.of(TerritoryType.CONGO, TerritoryType.SOUTH_AFRICA),
-                Arguments.of(TerritoryType.SIAM, TerritoryType.INDIA),
-                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.WESTERN_UNITED_STATES),
-                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.INDONESIA)
+                Arguments.of(TerritoryType.EAST_AFRICA, TerritoryType.MIDDLE_EAST),
+                Arguments.of(TerritoryType.SOUTH_AFRICA, TerritoryType.MADAGASCAR),
+                Arguments.of(TerritoryType.MADAGASCAR, TerritoryType.EAST_AFRICA),
+                // Asia
+                Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.MIDDLE_EAST),
+                Arguments.of(TerritoryType.MIDDLE_EAST, TerritoryType.INDIA),
+                Arguments.of(TerritoryType.URAL, TerritoryType.SIBERIA),
+                Arguments.of(TerritoryType.INDIA, TerritoryType.CHINA),
+                Arguments.of(TerritoryType.CHINA, TerritoryType.SIAM),
+                Arguments.of(TerritoryType.SIBERIA, TerritoryType.IRKUTSK),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDONESIA),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.JAPAN),
+                Arguments.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.YAKUTSK, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.JAPAN, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.MONGOLIA),
+                // Oceania
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.WESTERN_AUSTRALIA),
+                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.EASTERN_AUSTRALIA),
+                Arguments.of(TerritoryType.WESTERN_AUSTRALIA, TerritoryType.EASTERN_AUSTRALIA),
+                Arguments.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.NEW_GUINEA)
         );
     }
 
