@@ -577,4 +577,55 @@ public class WorldDominationGameEngineIntegrationTest {
         int expectedNumArmies = 33;
         assertEquals(expectedNumArmies, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.BLUE));
     }
+
+    private static Stream<Arguments> generateNonAdjacentTerritoryPairs() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        toStream.add(Arguments.of(TerritoryType.IRKUTSK, TerritoryType.ALASKA));
+        toStream.add(Arguments.of(TerritoryType.PERU, TerritoryType.YAKUTSK));
+        toStream.add(Arguments.of(TerritoryType.ALBERTA, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.ARGENTINA, TerritoryType.MADAGASCAR));
+        toStream.add(Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.INDONESIA, TerritoryType.EASTERN_AUSTRALIA));
+        toStream.add(Arguments.of(TerritoryType.CHINA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.MONGOLIA, TerritoryType.EASTERN_UNITED_STATES));
+        toStream.add(Arguments.of(TerritoryType.UKRAINE, TerritoryType.BRAZIL));
+        toStream.add(Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.CONGO));
+        toStream.add(Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.CENTRAL_AMERICA));
+        toStream.add(Arguments.of(TerritoryType.SIAM, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.BRAZIL));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritoryPairs")
+    public void test20_attackTerritory_territoriesAreNotAdjacent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        // since we aim to utilize as few mocks as possible, this test will be a little long.
+        List<PlayerColor> playersList = List.of(PlayerColor.PURPLE, PlayerColor.YELLOW, PlayerColor.GREEN);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for Purple
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for Yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        // place their remaining armies, so we can move into attack.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 5));
+
+        // move into attack
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, destTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(actualMessage, expectedMessage);
+    }
 }

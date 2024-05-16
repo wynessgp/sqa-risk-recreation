@@ -706,4 +706,9 @@ public final class WorldDominationGameEngine {
             throw new IllegalStateException("Cannot forcibly end this game phase!");
         }
     }
+
+    public void attackTerritory(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
+        handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+    }
 }
