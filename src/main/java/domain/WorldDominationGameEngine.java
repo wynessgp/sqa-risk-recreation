@@ -624,10 +624,19 @@ public final class WorldDominationGameEngine {
     public void moveArmiesBetweenFriendlyTerritories(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
-        if (!checkIfPlayerOwnsTerritory(sourceTerritory, currentPlayer)) {
+        checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
+        int numArmiesInSource = getNumberOfArmies(sourceTerritory);
+        if (numArmies >= numArmiesInSource) {
+            throw new IllegalArgumentException(
+                    "Source territory does not have enough armies to support this movement!");
+        }
+    }
+
+    private void checkIfPlayerOwnsBothSourceAndDestinationTerritories(TerritoryType source, TerritoryType dest) {
+        if (!checkIfPlayerOwnsTerritory(source, currentPlayer)) {
             throw new IllegalArgumentException("Provided territories are not owned by the current player!");
         }
-        if (!checkIfPlayerOwnsTerritory(destTerritory, currentPlayer)) {
+        if (!checkIfPlayerOwnsTerritory(dest, currentPlayer)) {
             throw new IllegalArgumentException("Provided territories are not owned by the current player!");
         }
     }
