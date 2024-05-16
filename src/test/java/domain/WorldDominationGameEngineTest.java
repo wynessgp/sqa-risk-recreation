@@ -2110,4 +2110,27 @@ public class WorldDominationGameEngineTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritories")
+    public void test59_moveArmiesBetweenFriendlyTerritories_territoriesAreNotAdjacent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(false);
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not adjacent!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
+    }
+
 }

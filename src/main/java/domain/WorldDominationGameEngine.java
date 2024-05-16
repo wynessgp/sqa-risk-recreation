@@ -620,4 +620,11 @@ public final class WorldDominationGameEngine {
         }
         this.currentGamePhase = GamePhase.GAME_OVER;
     }
+
+    public void moveArmiesBetweenFriendlyTerritories(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
+        if (!territoryGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)) {
+            throw new IllegalArgumentException("Provided territories are not adjacent!");
+        }
+    }
 }
