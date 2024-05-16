@@ -492,3 +492,355 @@ Then the player should get bonus armies
 And when the player attempts to place their armies
 
 Then the new armies should be placed in the respective territory
+
+# method: `attackTerritory(srcTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): int`
+
+Note: this method was purposefully excluded from the non-integration test file because it calls the different
+"parts" that are unit tests in the non-integration test file. The BVA for this will include the inputs / outputs to ALL
+the different parts, though the tests will NOT elaborate on the outputs using mocked objects. We will use normal assertions.
+
+## BVA Step 1
+Input: The respective territory that the attacker is moving troops FROM, the territory they are moving their armies INTO
+to attack, and the number of armies they are using for this attack.
+
+There are a lot more things to consider besides the parameters, namely:
+- The current phase the game is in (should only ever be attack if we're here!)
+- The number of armies present in BOTH the source AND destination territory
+  - If you're left with 0 armies in the territory you're attacking from as a result, you shouldn't be allowed to do this.
+  - Need to know if you can use that many attackers legally
+  - Need to know how many defenders are in the battle via the destination territory. If you can't use that many, error!
+- Who owns the respective territories
+  - You can't attack yourself!
+  - If you don't own the territory you've selected, you also can't attack from there...
+- If the territories border each other
+  - You can't attack a territory that's halfway across the map; they should be adjacent.
+- If the current player is holding on to too many cards
+  - This should only happen as a result of taking out a player; this is still a forced trade in.
+
+Output: The MAXIMUM amount of armies that a player may choose to move between these two territories as a result of WINNING the attacking
+battle. If you do not take over the opposing territory as a result of this battle, this number will be **0**.
+
+In the event that you DO take over the territory as a result of the attack, here's what will happen:
+- The armies utilized in the attack will automatically be moved into the destination territory.
+  - So if you attack with 3 armies (assuming 3 is valid), and lose none in the attack, then all **3** will be automatically moved to that new territory.
+- If more than **1** army remains in the source territory, you may:
+  - Move anywhere from [0, num armies in source territory - 1] armies into the newly conquered (destination) territory
+  - This `num armies in source territory - 1` figure is calculated AFTER moving the attacker armies involved in the dice roll.
+
+With all of that being said, there's still more things that we care about as a result of this function:
+- With each attack, the amount of armies present in the defender AND the attacker's territory should decrease, if necessary
+  - i.e. if I lose 1 army while attacking, and the defender loses 1, both territories need to be updated.
+- If my attack results in me taking over the territory, we want who controls the territory to be updated
+  - Set the number of armies in the territory equal to the number of armies I attacked with
+  - Say that I own the territory now
+  - Add it to my owned territories
+- If I take over a territory with an attack, I am eligible to claim a card from the deck after my attack phase ends
+  - We should only be able to claim 1 territory card PER attack phase (Boolean)
+  - Say this source, destination were recently attacked to be eligible to split troops between them.
+- If I eliminate another player as a result of winning an attack, I should get the cards they were holding on to
+  - Additionally, the game needs to remove the player from the turn order
+  - If this puts the player over 5 cards, they will be forced to turn them in before going again.
+- If this is the last territory I needed to take over in order to win the game, then the game should end
+- Since you can traditionally see the dice rolls in a regular risk game, we need to hold on to these things:
+  - The results of rolling the attack dice
+  - The results of rolling the defense dice
+  - The results of each "die" comparison; i.e. if a defender won one roll, attacker the other, etc.
+
+## BVA Step 2
+Input:
+- sourceTerritory: Cases
+- destTerritory: Cases
+- numAttackers: Counts
+- numDefenders: Counts
+- current game phase: Cases
+- currently going player: Cases
+- player object: Pointer
+  - Care about the number of cards they hold
+- source, destination territory objects: Pointer
+  - We care primarily about the number of armies and who owns it here
+
+Output:
+- method output: Interval [0, valid amount of transferable armies]
+  - It's hard to put a strict upper bound on this because there is a lot of variation here.
+- source, destination territory objects: Pointer
+  - Again, we primarily care about ownership / army counts.
+- player object: Pointer
+  - Care about the territories they own as a result, and the cards they own
+- current game phase: Cases
+  - Only changes if I win the game, or run out of armies to attack with.
+  - Otherwise, this will be manually changed by the player if they wish to end the phase early.
+- Ability to claim a card this turn: Boolean
+  - true if and only if you successfully take a territory during the attack phase
+- Attacker dice results, defender dice results, battle results: Collection
+
+## BVA Step 3
+Input:
+- sourceTerritory, destTerritory (Cases):
+  - The 1st possibility (ALASKA)
+  - The 2nd possibility ...
+  - ...
+  - The 0th, 43rd possibilities (can't set)
+  - Both are the same territory (error case)
+  - Territories are not adjacent (error case)
+- numAttackers (Counts):
+  - Any value \< 1 (error case)
+  - Any value in [1, 3] (provided this does not EXCEED the number of armies in the origin territory)
+  - \> Num armies in origin territory - 1 (error case, must leave at least 1 army in a territory)
+- numDefenders (Counts):
+  - Any value \< 1 (error case)
+  - Any value in [1, 2] (provided this does not EXCEED the number of armies in the destination territory)
+  - Note that defenders CAN go to down to 0 armies in their territory while "defending" (i.e. in the roll)
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK (method should only EVER be called in ATTACK)
+  - FORTIFY (error case)
+  - GAME_OVER (error case)
+- currently going player (Cases):
+  - Should always line up with the game engine's tracking
+  - All colors besides `SETUP` are valid, just depends on what the list looks like.
+- player object (Pointer):
+  - Null pointer (won't consider, per Martin's rules)
+  - A pointer to the true object
+    - Want to look at how many cards they hold; if it exceeds 5 we throw an error and force them to trade cards in.
+- source, destination territory objects (Pointer):
+  - Null pointer (won't consider, per Martin's rules)
+  - A pointer to the true object
+    - If `numAttackers > numArmiesInTerritory - 1`, we should error (player is attempting to use too many armies)
+    - Source territory is not owned by current player (error case)
+    - Destination territory is owned by current player (error case)
+
+Output:
+- method output (Interval):
+  - -1 (can't set)
+  - 0 (this will be a frequent result; other numbers only happen when a territory is taken)
+  - valid amount of transferable armies
+    - Should be the `numArmiesInTerritory - num armies used in attack - 1`
+  - valid amount of transferable armies + 1 (can't set)
+- source, destination territory objects (Pointer):
+  - Null pointer (won't consider, per Martin's rules)
+  - A pointer to the true object
+    - The source territory object should have its armies decremented by the amount LOST in the attack
+    - The destination territory object should have its armies decremented by the amount LOST in the defense
+    - If the number of armies that would be left in the destination territory would be \< 0, update the destination territory to:
+      - Indicate the current player is in control
+      - Place `numAttacker` armies in there; and take them from the source territory
+- player object (Pointer):
+  - Null pointer (won't consider, per Martin's rules)
+  - A pointer to the true object
+    - If the player does successfully take over the territory, update this in their owned territories (and remove from the opposing player's territories)
+    - If this attack wiped out the other player, add the other player's cards to our current player's card collection
+- current game phase (Cases):
+  - Progress from ATTACK -> FORTIFY if:
+    - The currently going player only has 1 army in every territory they own
+  - Progress from ATTACK -> GAME_OVER if:
+    - The current player now owns every territory on the board as a result of an attack
+- Ability to claim a card this turn (Boolean):
+  - 0 (false) if the user did not take over a territory (and did not PREVIOUSLY this turn)
+  - 1 if the user did take over a territory
+- Attacker, defender dice results & battle results (Collection):
+  - All will have a minimum size of 1
+  - Attacker rolls can have a maximum size of 3 (should match numAttackers)
+  - Defender, battle results have a maximum size of 2 (should match numDefenders)
+  - These lists are sorted in non-increasing order; to make it easier to visualize the results for players.
+
+## BVA Step 4
+Here are the things we want to consider:
+
+Error items:
+Preventing players from providing territories that are not adjacent
+- Check that we still throw the typical error
+Preventing players from attacking territories they shouldn't be able to
+- Launching an attack from a territory they don't own should error
+- Launching an attack from a territory they DO own to a territory they ALSO own should error
+Prevent players from trying to use too many attackers
+- Providing a number not in [1, 3] as a parameter should error
+- Providing a number of attackers >= num armies in source territory should error
+Prevent players from trying to use too many defenders
+- Providing a number not in [1, 2] as a parameter should error
+- Providing a number of defenders > num armies in destination territory should error
+Preventing players from attacking in an unsuitable phase
+- If the game isn't in the attack phase, then it's an error
+
+Non-error items:
+If a player attacks a territory, but they **DO NOT** take OVER the territory
+- The board state should reflect the troops lost in the attack
+- The board state should reflect that no territories changed hands
+- The player should NOT be able to split armies between any recently won attacks
+  - Set recently attacked dest / source to null...
+If a player attacks a territory, and they **DO** take over the territory
+- The board state should reflect that the number of attackers have been moved into the destination
+- The board state should reflect that the destination territory has changed hands
+- The player SHOULD be able to split armies between these two territories if they wish
+  - Recently attacked dest / source should be equal to the territories used in the attack
+- The player should be eligible to claim a card at the end of the turn
+
+### Test 1:
+Given that the current player is PURPLE
+
+When PURPLE tries to attack FROM Ukraine TO ALASKA with a valid number of attackers and defenders
+
+Then an error should be thrown
+
+And the user should be informed that the territories are not adjacent
+
+### Test 2:
+Given that the current player is PURPLE
+
+And that the territories they are attacking are adjacent (ALASKA, KAMCHATKA)
+
+And that PURPLE does not own the source territory
+
+When PURPLE tries to attack with a valid number of attackers and defenders
+
+Then an error should be thrown
+
+And the user should be informed that they cannot attack from a territory they do not own
+
+### Test 3:
+Given that the current player is GREEN
+
+And that the territories they are attacking are adjacent (ALASKA, KAMCHATKA)
+
+And that GREEN owns the SOURCE *and* DESTINATION territories
+
+When GREEN tries to attack with a valid number of attackers and defenders
+
+Then an error should be thrown
+
+And the user should be informed that they cannot attack a territory they own
+
+### Test 4:
+Given that the current player is YELLOW
+
+And that the territories they are attacking are adjacent (CONGO, EGYPT)
+
+And that YELLOW owns the SOURCE territory
+
+And that YELLOW does **NOT** own the DESTINATION territory
+
+And that the game is NOT in the ATTACK phase
+
+When YELLOW tries to attack with a valid number of attackers and defenders
+
+Then an error should be thrown
+
+And the user should be informed that they cannot attack a territory outside the attack phase
+
+### Test 5:
+Given that the current player is BLUE
+
+And that the territories they are attacking are adjacent (CHINA, SIAM)
+
+And that BLUE owns the SOURCE territory
+
+And that BLUE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When BLUE tries to attack with an invalid number of attackers and a valid number of defenders
+- numAttackers parameter is outside [1, 3]
+
+Then an error should be thrown 
+
+And the user should be informed that the valid number of attackers is a number in [1, 3]
+
+### Test 6:
+Given that the current player is BLUE
+
+And that the territories they are attacking are adjacent (CHINA, SIAM)
+
+And that BLUE owns the SOURCE territory
+
+And that BLUE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When BLUE tries to attack with an invalid number of attackers and a valid number of defenders
+- not enough attackers in source territory to support attack
+
+Then an error should be thrown
+
+And the user should be informed that there are too few armies in the source territory to support the attack
+
+### Test 7:
+Given that the current player is RED
+
+And that the territories they are attacking are adjacent (CHINA, SIAM)
+
+And that RED owns the SOURCE territory
+
+And that RED does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When RED tries to attack with a valid number of attackers and an invalid number of defenders
+- numDefenders parameter is outside [1, 2]
+
+Then an error should be thrown
+
+And the user should be informed that the valid number of defenders is a number in [1, 2]
+
+### Test 8:
+Given that the current player is RED
+
+And that the territories they are attacking are adjacent (CHINA, SIAM)
+
+And that RED owns the SOURCE territory
+
+And that RED does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When RED tries to attack with a valid number of attackers and an invalid number of defenders
+- not enough defenders in destination territory to support defense
+
+Then an error should be thrown
+
+And the user should be informed that there are too few defenders in the destination territory to support the defense
+
+### Test 9:
+Given that the current player is PURPLE
+
+And that the territories they are attacking are adjacent (PERU, ARGENTINA)
+
+And that PURPLE owns the SOURCE territory
+
+And that PURPLE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When PURPLE tries to attack with a valid number of attackers and defenders
+
+And the attack ends with PURPLE not taking over the territory
+- Have both sides lose one army
+
+Then the armies in the SOURCE and DESTINATION territory should be updated
+
+And the destination territory should **NOT** be controlled by Purple
+
+And PURPLE should not be allowed to claim a card yet
+
+### Test 10:
+Given that the current player is PURPLE
+
+And that the territories they are attacking are adjacent (PERU, ARGENTINA)
+
+And that PURPLE owns the SOURCE territory
+
+And that PURPLE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+When PURPLE tries to attack with a valid number of attackers and defenders
+
+And the attack ends with PURPLE taking over the territory
+
+Then the armies in the SOURCE and DESTINATION territory should be updated
+
+And the destination territory **SHOULD** be controlled by Purple
+
+And PURPLE **SHOULD** be allowed to claim a card at the end of their turn
+
+And PURPLE **SHOULD** be allowed to split the attacking force if they choose
