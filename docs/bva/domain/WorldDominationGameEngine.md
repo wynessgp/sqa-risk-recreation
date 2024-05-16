@@ -2423,8 +2423,8 @@ Input:
 - numArmies = 1
 - source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
 - dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
-- recently attacked source = ALASKA
-- recently attacked dest = KAMCHATKA
+- recently attacked source = ANY (likely null)
+- recently attacked dest = ANY (likely null)
 - currently going player = PURPLE
 
 Output:
