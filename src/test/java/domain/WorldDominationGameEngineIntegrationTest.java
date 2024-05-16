@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
@@ -742,6 +743,51 @@ public class WorldDominationGameEngineIntegrationTest {
         String actualMessage = exception.getMessage();
 
         String expectedMessage = "Destination territory is owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateAdjacentTerritoryPairsAndIncorrectPhases() {
+        List<Arguments> territoryPairs = generateAdjacentTerritoryPairs().collect(Collectors.toList());
+        List<GamePhase> illegalGamePhases = new ArrayList<>(List.of(GamePhase.values()));
+        illegalGamePhases.remove(GamePhase.ATTACK);
+        Set<Arguments> toStream = new HashSet<>();
+
+        for (Arguments territoryPair : territoryPairs) {
+            for (GamePhase illegalGamePhase : illegalGamePhases) {
+                Object[] territories = territoryPair.get();
+                toStream.add(Arguments.of(territories[0], territories[1], illegalGamePhase));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairsAndIncorrectPhases")
+    public void test23_attackTerritory_incorrectGamePhase_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, GamePhase invalidPhase) {
+        List<PlayerColor> playersList = List.of(PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.RED,
+                PlayerColor.PURPLE);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for Yellow
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for Green
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 5));
+
+        // move into an "illegal" phase
+        unitUnderTest.setGamePhase(invalidPhase);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, destTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Attacking territories is not allowed in any phase besides attack!";
         assertEquals(expectedMessage, actualMessage);
     }
 }
