@@ -50,6 +50,9 @@ public final class WorldDominationGameEngine {
     private List<Integer> defenderRolls;
     private List<BattleResult> battleResults;
 
+    private TerritoryType recentlyAttackedSource = null;
+    private TerritoryType recentlyAttackedDestination = null;
+
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
         numUnclaimedTerritories = INITIAL_NUM_UNCLAIMED_TERRITORIES;
@@ -626,9 +629,9 @@ public final class WorldDominationGameEngine {
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
         checkIfEnoughArmiesInSource(sourceTerritory, numArmies);
-        Set<GamePhase> validGamePhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
-        if (!validGamePhases.contains(currentGamePhase)) {
-            throw new IllegalStateException("Friendly army movement can only be done in the ATTACK or FORTIFY phase!");
+        checkIfInValidGamePhaseForMovement();
+        if (recentlyAttackedSource != sourceTerritory || recentlyAttackedDestination != destTerritory) {
+            throw new IllegalArgumentException("Cannot split armies between this source and destination!");
         }
     }
 
@@ -647,5 +650,20 @@ public final class WorldDominationGameEngine {
             throw new IllegalArgumentException(
                     "Source territory does not have enough armies to support this movement!");
         }
+    }
+
+    private void checkIfInValidGamePhaseForMovement() {
+        Set<GamePhase> validGamePhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
+        if (!validGamePhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Friendly army movement can only be done in the ATTACK or FORTIFY phase!");
+        }
+    }
+
+    void setRecentlyAttackedSource(TerritoryType recentlyAttackedSrc) {
+        this.recentlyAttackedSource = recentlyAttackedSrc;
+    }
+
+    void setRecentlyAttackedDest(TerritoryType recentlyAttackedDest) {
+        this.recentlyAttackedDestination = recentlyAttackedDest;
     }
 }

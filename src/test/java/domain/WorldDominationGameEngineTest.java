@@ -2286,4 +2286,53 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
     }
 
+    private static Stream<Arguments> generateInvalidRecentlyAttackedTerritories() {
+        return Stream.of(
+                Arguments.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY),
+                Arguments.of(TerritoryType.UKRAINE, TerritoryType.URAL),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.ALASKA),
+                Arguments.of(TerritoryType.INDIA, TerritoryType.SIAM)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidRecentlyAttackedTerritories")
+    public void test64_moveArmiesBetweenFriendlyTerritories_territoriesDoNotMatchRecentlyAttacked_expectException(
+            TerritoryType recentlyAttackedSrc, TerritoryType recentlyAttackedDest) {
+        TerritoryType alaska = TerritoryType.ALASKA;
+        TerritoryType kamchatka = TerritoryType.KAMCHATKA;
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(alaska, kamchatka)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(alaska)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(kamchatka)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setRecentlyAttackedSource(recentlyAttackedSrc);
+        unitUnderTest.setRecentlyAttackedDest(recentlyAttackedDest);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(alaska, kamchatka, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
 }
