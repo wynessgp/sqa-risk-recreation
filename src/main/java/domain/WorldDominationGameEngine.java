@@ -689,4 +689,11 @@ public final class WorldDominationGameEngine {
     public TerritoryType getRecentlyAttackedDest() {
         return null;
     }
+
+    public void forceGamePhaseToEnd() {
+        Set<GamePhase> validPhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
+        if (!validPhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Cannot forcibly end this game phase!");
+        }
+    }
 }

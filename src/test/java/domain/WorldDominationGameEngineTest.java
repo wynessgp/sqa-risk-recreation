@@ -2428,4 +2428,18 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesMinusAttackAndFortify")
+    public void test67_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(invalidGamePhase);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+
+        Exception exception = assertThrows(IllegalStateException.class, unitUnderTest::forceGamePhaseToEnd);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot forcibly end this game phase!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
