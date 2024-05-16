@@ -2132,8 +2132,9 @@ Output:
   - Territories were not adjacent (message: "Provided territories are not adjacent!")
   - Territories are not owned by the current player (message: "Provided territories are not owned by the current player!")
   - `numArmies` >= num armies in territory (message: "Source territory does not have enough armies to support this movement!")
-  - Done in an incorrect game phase (message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!")
   - Called in attack, but armies are not able to be split between the two territories (message: "Cannot split armies between this source and destination!")
+- IllegalStateException if:
+  - Done in an incorrect game phase (message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!")
 - source, destination territory objects (Pointer):
   - A null pointer (can't set, Martin's rules)
   - A pointer to the true object
@@ -2293,7 +2294,7 @@ Input:
 - currently going player = PURPLE
 
 Output:
-- IllegalArgumentException
+- IllegalStateException
   - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
 
 ### Test 10:
@@ -2309,7 +2310,7 @@ Input:
 - currently going player = PURPLE
 
 Output:
-- IllegalArgumentException
+- IllegalStateException
   - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
 
 ### Test 11:
@@ -2325,7 +2326,7 @@ Input:
 - currently going player = PURPLE
 
 Output:
-- IllegalArgumentException
+- IllegalStateException
   - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
 
 ### Test 12:
