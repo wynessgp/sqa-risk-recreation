@@ -2051,3 +2051,385 @@ Input:
 
 Output:
 - current game phase = GAME_OVER
+
+# method: `moveArmiesBetweenFriendlyTerritories(srcTerritory: TerritoryType, destTerritory: TerritoryType, numArmies: int): void`
+
+## BVA Step 1
+Input: The two territories that the current player wants to move armies between, and the number of armies to move 
+between the two territories. This will interact with the underlying territory objects, so those must be considered as well.
+
+We also need to consider the game phase: if we're in the ATTACK phase, this can only be done after a territory is taken 
+over, and it HAS to utilize the territories that were just used in the attack.
+If we're in the FORTIFY phase, the phase needs to swing back around to PLACEMENT.
+
+Output: An exception if the movement is not able to be done (too many armies, territories are not adjacent, in the
+incorrect game phase, window to split armies in the attack phase has ended, either territory is not owned by current player). 
+
+If the movement is able to be done, then the source and destination territories will be modified.
+If this movement is done in the attack phase, then the player should lose the ability to split armies between the most
+RECENTLY attacked territories.
+(Namely, we can just remove those two territories from being recently attacked)
+If this movement is done in the fortify phase, then the fortify phase should end, and we should be on the next player's
+PLACEMENT phase.
+
+## BVA Step 2
+Input:
+- srcTerritory, destTerritory: Cases
+- numArmies: Interval [1, num armies present in territory - 1]
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+Output:
+- method output: N/A
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+## BVA Step 3
+Input:
+- srcTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+- numArmies (Interval):
+  - \<= 0 (error case)
+  - Anything in [1, num armies present in territory - 1] 
+    - 1
+    - num armies present in territory - 1
+  - \>= num armies present in territory (error case)
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - If either territory is not owned by the current player (error case)
+    - Source territory doesn't have enough armies to support the move (error case)
+    - Territories are not adjacent on the Risk map (error case)
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK 
+  - FORTIFY
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (error case)
+- recently attacked source, dest (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+  - These NEED to match up with the inputs provided as source & destination territory
+    - If we are in the attack phase and they do not, this is an error.
+- currently going player (Cases):
+  - Should always line up with the GameEngine's tracking.
+
+Output:
+- IllegalArgumentException if:
+  - Territories were not adjacent (message: "Provided territories are not adjacent!")
+  - Territories are not owned by the current player (message: "Provided territories are not owned by the current player!")
+  - `numArmies` >= num armies in territory (message: "Source territory does not have enough armies to support this movement!")
+  - Done in an incorrect game phase (message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!")
+  - Called in attack, but armies are not able to be split between the two territories (message: "Cannot split armies between this source and destination!")
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Looking to see that `numArmies` was removed from source territory
+    - And that `numArmies` was added to the destination territory
+- current game phase (Cases):
+  - If we started in ATTACK, keep it in ATTACK, but remove the ability to split armies
+    - Assuming they had the ability to split armies at first
+    - Namely, clear the recently attacked source and dest
+  - If we started in FORTIFY, move to the PLACEMENT phase of the next player.
+- recently attacked source, destination: Cases
+  - These values NEED to be CLEARED if we are in the attack phase.
+- currently going player (Cases):
+  - If we are in the ATTACK phase, should remain the same player.
+  - If we are in the FORTIFY phase, should ADVANCE to the next player in turn order.
+
+## BVA Step 4
+### Test 1:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = BRAZIL
+- numArmies = 1
+- current game phase = ATTACK
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = BRAZIL
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not adjacent!"
+
+### Test 2:
+Input:
+Input:
+- srcTerritory = CONGO
+- destTerritory = CHINA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [CONGO, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [CHINA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = CONGO
+- recently attacked dest = CHINA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not adjacent!"
+
+### Test 3:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = YELLOW]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 4:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 5:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = BLUE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 6:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 2
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 7:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 3
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 8:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 12
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 9:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = SCRAMBLE
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 10:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = SETUP
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 11:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = PLACEMENT
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 12:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = ALASKA
+- recently attacked dest = NORTHWEST_TERRITORIES
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 13:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = IRKUTSK
+- recently attacked dest = KAMCHATKA
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 14:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = UKRAINE
+- recently attacked dest = URAL
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 15:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+- current game phase = ATTACK
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = PURPLE
+
+### Test 16:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 2
+- source territory pointer = [ALASKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 5, ownedBy = PURPLE]
+- current game phase = ATTACK
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = PURPLE
+
+### Test 17:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = FORTIFY
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+- current game phase = PLACEMENT
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = GREEN
+  - imagine that player order was [PURPLE, GREEN, ...]
