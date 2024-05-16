@@ -623,10 +623,11 @@ public final class WorldDominationGameEngine {
 
     public void moveArmiesBetweenFriendlyTerritories(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
-        if (!territoryGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)) {
-            throw new IllegalArgumentException("Provided territories are not adjacent!");
-        }
+        checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         if (!checkIfPlayerOwnsTerritory(sourceTerritory, currentPlayer)) {
+            throw new IllegalArgumentException("Provided territories are not owned by the current player!");
+        }
+        if (!checkIfPlayerOwnsTerritory(destTerritory, currentPlayer)) {
             throw new IllegalArgumentException("Provided territories are not owned by the current player!");
         }
     }
