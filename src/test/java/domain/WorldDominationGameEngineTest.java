@@ -2127,7 +2127,7 @@ public class WorldDominationGameEngineTest {
                 () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 1));
         String actualMessage = exception.getMessage();
 
-        String expectedMessage = "Provided territories are not adjacent!";
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
         assertEquals(expectedMessage, actualMessage);
 
         EasyMock.verify(mockedGraph);
