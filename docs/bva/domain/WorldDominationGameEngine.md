@@ -2434,3 +2434,95 @@ Output:
 - recently attacked source, destination = NULL (only time we'll use this!)
 - currently going player = GREEN
   - imagine that player order was [PURPLE, GREEN, ...]
+
+# method: `forceGamePhaseToEnd(): void`
+
+## BVA Step 1
+Input: The current phase that the game is in, who's turn it is in the game.
+
+Output: An updated form of the current game phase, who's turn it is. An IllegalStateException if this
+is called from a phase that the player cannot forcibly end; and must do it via game actions instead.
+
+## BVA Step 2
+Input: 
+- current game phase (Cases)
+- currently going player (Cases)
+
+Output:
+- current game phase (Cases)
+- currently going player (Cases)
+- IllegalStateException 
+
+## BVA Step 3
+Input:
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK
+  - FORTIFY
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (can't set, Java enum)
+- currently going player (Cases):
+  - SETUP (error case; should be handled by this point)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+
+Output:
+- IllegalStateException if:
+  - called from game phases:
+    - SCRAMBLE
+    - SETUP
+    - PLACEMENT
+    - GAME_OVER
+- current game phase (Cases):
+  - FORTIFY, if we started in ATTACK
+  - PLACEMENT, if we started in FORTIFY
+    - Update the currently going player, too.
+- currently going player (Cases):
+  - The exact same player we had before calling this method if in ATTACK
+  - The next player to go in turn order if we called in FORTIFY
+    - Note that we'll also draw the current player's card
+      - This BVA will be elaborated on in a different method.
+
+## BVA Step 4
+### Test 1:
+Input:
+- current game phase = ATTACK
+- currently going player = GREEN
+
+Output:
+- current game phase = FORTIFY
+- currently going player = GREEN
+
+### Test 2:
+Input:
+- current game phase = ATTACK
+- currently going player = YELLOW
+
+Output:
+- current game phase = FORTIFY
+- currently going player = YELLOW
+
+### Test 3:
+Input:
+- current game phase = FORTIFY
+- currently going player = GREEN
+
+Output:
+- current game phase = PLACEMENT
+- currently going player = BLACK
+  - player order might've been [... -> GREEN -> BLACK -> ...]
+
+### Test 4:
+Input:
+- current game phase = FORTIFY
+- currently going player = BLACK
+
+Output:
+- current game phase = PLACEMENT
+- currently going player = PURPLE
+  - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]
