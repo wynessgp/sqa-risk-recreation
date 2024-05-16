@@ -691,10 +691,19 @@ public final class WorldDominationGameEngine {
     }
 
     public void forceGamePhaseToEnd() {
+        checkIfValidPhaseToForciblyEnd();
+        if (currentGamePhase == GamePhase.ATTACK) {
+            currentGamePhase = GamePhase.FORTIFY;
+        } else {
+            currentGamePhase = GamePhase.PLACEMENT;
+            updateCurrentPlayer();
+        }
+    }
+
+    private void checkIfValidPhaseToForciblyEnd() {
         Set<GamePhase> validPhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
         if (!validPhases.contains(currentGamePhase)) {
             throw new IllegalStateException("Cannot forcibly end this game phase!");
         }
-        currentGamePhase = GamePhase.FORTIFY;
     }
 }

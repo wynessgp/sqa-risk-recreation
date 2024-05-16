@@ -2456,4 +2456,19 @@ public class WorldDominationGameEngineTest {
         assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
     }
 
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test69_forceGamePhaseToEnd_fortifyPhase_expectPlacementPhaseAndNextPlayer(
+            List<PlayerColor> playerOrder) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setPlayerOrderList(playerOrder);
+        unitUnderTest.provideCurrentPlayerForTurn(playerOrder.get(playerOrder.size() - 1));
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
+    }
+
 }
