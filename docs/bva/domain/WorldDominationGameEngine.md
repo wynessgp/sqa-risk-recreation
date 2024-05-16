@@ -2491,14 +2491,50 @@ Output:
 ## BVA Step 4
 ### Test 1:
 Input:
-- current game phase = ATTACK
+- current game phase = SCRAMBLE
 - currently going player = GREEN
 
 Output:
-- current game phase = FORTIFY
-- currently going player = GREEN
+- IllegalStateException
+  - message: "Cannot forcibly end this game phase!"
 
 ### Test 2:
+Input:
+- current game phase = SETUP
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 3:
+Input:
+- current game phase = PLACEMENT
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 4:
+Input:
+- current game phase = GAME_OVER
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 5:
+Input:
+- current game phase = ATTACK
+- currently going player = RED
+
+Output:
+- current game phase = FORTIFY
+- currently going player = RED
+
+### Test 6:
 Input:
 - current game phase = ATTACK
 - currently going player = YELLOW
@@ -2507,7 +2543,7 @@ Output:
 - current game phase = FORTIFY
 - currently going player = YELLOW
 
-### Test 3:
+### Test 7:
 Input:
 - current game phase = FORTIFY
 - currently going player = GREEN
@@ -2517,7 +2553,7 @@ Output:
 - currently going player = BLACK
   - player order might've been [... -> GREEN -> BLACK -> ...]
 
-### Test 4:
+### Test 8:
 Input:
 - current game phase = FORTIFY
 - currently going player = BLACK
