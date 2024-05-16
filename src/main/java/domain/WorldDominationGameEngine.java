@@ -695,5 +695,6 @@ public final class WorldDominationGameEngine {
         if (!validPhases.contains(currentGamePhase)) {
             throw new IllegalStateException("Cannot forcibly end this game phase!");
         }
+        currentGamePhase = GamePhase.FORTIFY;
     }
 }

@@ -2442,4 +2442,18 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
+            PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
+        assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+    }
+
 }
