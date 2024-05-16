@@ -2129,7 +2129,7 @@ Input:
 
 Output:
 - IllegalArgumentException if:
-  - Territories were not adjacent (message: "Provided territories are not adjacent!")
+  - Territories were not adjacent (message: "Source and destination territory must be two adjacent territories!")
   - Territories are not owned by the current player (message: "Provided territories are not owned by the current player!")
   - `numArmies` >= num armies in territory (message: "Source territory does not have enough armies to support this movement!")
   - Called in attack, but armies are not able to be split between the two territories (message: "Cannot split armies between this source and destination!")
@@ -2166,7 +2166,7 @@ Input:
 
 Output:
 - IllegalArgumentException
-  - message: "Provided territories are not adjacent!"
+  - message: "Source and destination territory must be two adjacent territories!"
 
 ### Test 2:
 Input:
@@ -2183,7 +2183,7 @@ Input:
 
 Output:
 - IllegalArgumentException
-  - message: "Provided territories are not adjacent!"
+  - message: "Source and destination territory must be two adjacent territories!"
 
 ### Test 3:
 Input:
