@@ -7,7 +7,8 @@ public enum GamePhase {
     PLACEMENT,
     SCRAMBLE,
     ATTACK,
-    GAME_OVER;
+    GAME_OVER,
+    FORTIFY;
 
     public String toString() {
         return StringsBundleLoader.getBundle().getString("global." + this.name().toLowerCase());

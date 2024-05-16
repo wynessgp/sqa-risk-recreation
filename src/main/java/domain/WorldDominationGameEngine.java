@@ -625,10 +625,10 @@ public final class WorldDominationGameEngine {
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
-        int numArmiesInSource = getNumberOfArmies(sourceTerritory);
-        if (numArmies >= numArmiesInSource) {
-            throw new IllegalArgumentException(
-                    "Source territory does not have enough armies to support this movement!");
+        checkIfEnoughArmiesInSource(sourceTerritory, numArmies);
+        Set<GamePhase> validGamePhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
+        if (!validGamePhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Friendly army movement can only be done in the ATTACK or FORTIFY phase!");
         }
     }
 
@@ -638,6 +638,14 @@ public final class WorldDominationGameEngine {
         }
         if (!checkIfPlayerOwnsTerritory(dest, currentPlayer)) {
             throw new IllegalArgumentException("Provided territories are not owned by the current player!");
+        }
+    }
+
+    private void checkIfEnoughArmiesInSource(TerritoryType sourceTerritory, int numArmiesToMove) {
+        int numArmiesInSource = getNumberOfArmies(sourceTerritory);
+        if (numArmiesToMove >= numArmiesInSource) {
+            throw new IllegalArgumentException(
+                    "Source territory does not have enough armies to support this movement!");
         }
     }
 }

@@ -2242,4 +2242,48 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
     }
 
+    private static Stream<Arguments> generateAllPhasesMinusAttackAndFortify() {
+        List<GamePhase> allPhasesMinusAttackAndFortify = new ArrayList<>(List.of(GamePhase.values()));
+        allPhasesMinusAttackAndFortify.remove(GamePhase.ATTACK);
+        allPhasesMinusAttackAndFortify.remove(GamePhase.FORTIFY);
+
+        return allPhasesMinusAttackAndFortify.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesMinusAttackAndFortify")
+    public void test63_moveArmiesBetweenFriendlyTerritories_invalidGamePhase_expectException(
+            GamePhase invalidGamePhase) {
+        TerritoryType alaska = TerritoryType.ALASKA;
+        TerritoryType kamchatka = TerritoryType.KAMCHATKA;
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(alaska, kamchatka)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(alaska)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(kamchatka)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        unitUnderTest.setGamePhase(invalidGamePhase);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(alaska, kamchatka, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Friendly army movement can only be done in the ATTACK or FORTIFY phase!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
 }
