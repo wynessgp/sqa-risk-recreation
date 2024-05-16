@@ -628,4 +628,48 @@ public class WorldDominationGameEngineIntegrationTest {
         String expectedMessage = "Source and destination territory must be two adjacent territories!";
         assertEquals(actualMessage, expectedMessage);
     }
+
+    private static Stream<Arguments> generateAdjacentTerritoryPairs() {
+        // just pick a few adjacent territory pairs.
+        return Stream.of(
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.SOUTH_AFRICA),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDIA),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.WESTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.INDONESIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test21_attackTerritory_attackerDoesNotOwnSource_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN,
+                PlayerColor.PURPLE);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for Red
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for Yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        // place their remaining armies, so we can move into attack.
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 5));
+
+        // move into attack
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, destTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory is not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

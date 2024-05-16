@@ -65,8 +65,254 @@ public final class WorldDominationGameEngine {
 
     private void handleOtherDependentObjectCreation(DieRollParser parser) {
         this.territoryGraph = initializeGraph();
+        addAllEdgesToTerritoryGraph();
         this.dieRollParser = parser;
         this.tradeInParser = new TradeInParser();
+    }
+
+    private void addAllEdgesToTerritoryGraph() {
+        addNorthAmericanGraphEdges();
+        addSouthAmericanGraphEdges();
+        addAfricanGraphEdges();
+        addEuropeanGraphEdges();
+        addAsianGraphEdges();
+        addOceanicGraphEdges();
+    }
+
+    private void addNorthAmericanGraphEdges() {
+        addAlaskaEdges();
+        addNorthwestTerritoryEdges();
+        addGreenlandEdges();
+        addAlbertaEdges();
+        addOntarioEdges();
+        addRemainingNorthAmericanGraphEdges();
+    }
+
+    private void addAlaskaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ALASKA,
+                Set.of(TerritoryType.KAMCHATKA, TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ALBERTA));
+    }
+
+    private void addNorthwestTerritoryEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTHWEST_TERRITORY,
+                Set.of(TerritoryType.GREENLAND, TerritoryType.ALBERTA, TerritoryType.ONTARIO));
+    }
+
+    private void addGreenlandEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.GREENLAND,
+                Set.of(TerritoryType.ICELAND, TerritoryType.ONTARIO, TerritoryType.QUEBEC));
+    }
+
+    private void addAlbertaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ALBERTA,
+                Set.of(TerritoryType.ONTARIO, TerritoryType.WESTERN_UNITED_STATES));
+    }
+
+    private void addOntarioEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ONTARIO,
+                Set.of(TerritoryType.QUEBEC, TerritoryType.WESTERN_UNITED_STATES, TerritoryType.EASTERN_UNITED_STATES));
+    }
+
+    private void addRemainingNorthAmericanGraphEdges() {
+        addQuebecEdges();
+        addWesternUnitedStatesEdges();
+        addEasternUnitedStatsEdges();
+        addCentralAmericaEdges();
+    }
+
+    private void addQuebecEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.QUEBEC, Set.of(TerritoryType.EASTERN_UNITED_STATES));
+    }
+
+    private void addWesternUnitedStatesEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.WESTERN_UNITED_STATES,
+                Set.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA));
+    }
+
+    private void addEasternUnitedStatsEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EASTERN_UNITED_STATES, Set.of(TerritoryType.CENTRAL_AMERICA));
+    }
+
+    private void addCentralAmericaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CENTRAL_AMERICA, Set.of(TerritoryType.VENEZUELA));
+    }
+
+    private void addSouthAmericanGraphEdges() {
+        addVenezuelaEdges();
+        addPeruEdges();
+        addBrazilEdges();
+    }
+
+    private void addVenezuelaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.VENEZUELA, Set.of(TerritoryType.PERU, TerritoryType.BRAZIL));
+    }
+
+    private void addPeruEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.PERU, Set.of(TerritoryType.BRAZIL, TerritoryType.ARGENTINA));
+    }
+
+    private void addBrazilEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.BRAZIL,
+                Set.of(TerritoryType.ARGENTINA, TerritoryType.NORTH_AFRICA));
+    }
+
+    private void addAfricanGraphEdges() {
+        addNorthAfricaEdges();
+        addEgyptEdges();
+        addCongoEdges();
+        addEastAfricaEdges();
+        addSouthAfricaEdges();
+    }
+
+    private void addNorthAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTH_AFRICA,
+                Set.of(TerritoryType.WESTERN_EUROPE, TerritoryType.EGYPT, TerritoryType.CONGO,
+                        TerritoryType.EAST_AFRICA, TerritoryType.SOUTHERN_EUROPE));
+    }
+
+    private void addEgyptEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EGYPT,
+                Set.of(TerritoryType.SOUTHERN_EUROPE, TerritoryType.MIDDLE_EAST, TerritoryType.EAST_AFRICA));
+    }
+
+    private void addCongoEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CONGO,
+                Set.of(TerritoryType.EAST_AFRICA, TerritoryType.SOUTH_AFRICA));
+    }
+
+    private void addEastAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EAST_AFRICA,
+                Set.of(TerritoryType.SOUTH_AFRICA, TerritoryType.MADAGASCAR, TerritoryType.MIDDLE_EAST));
+    }
+
+    private void addSouthAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SOUTH_AFRICA, Set.of(TerritoryType.MADAGASCAR));
+    }
+
+    private void addEuropeanGraphEdges() {
+        addGreatBritainEdges();
+        addIcelandEdges();
+        addScandinaviaEdges();
+        addNorthernEuropeEdges();
+        addSouthernEuropeEdges();
+        addUkraineEdges();
+    }
+
+    private void addGreatBritainEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.GREAT_BRITAIN,
+                Set.of(TerritoryType.ICELAND, TerritoryType.SCANDINAVIA, TerritoryType.NORTHERN_EUROPE,
+                        TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addIcelandEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ICELAND, Set.of(TerritoryType.SCANDINAVIA));
+    }
+
+    private void addScandinaviaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SCANDINAVIA,
+                Set.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.UKRAINE));
+    }
+
+    private void addNorthernEuropeEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTHERN_EUROPE,
+                Set.of(TerritoryType.UKRAINE, TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addSouthernEuropeEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SOUTHERN_EUROPE,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.UKRAINE, TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addUkraineEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.UKRAINE,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.URAL, TerritoryType.AFGHANISTAN));
+    }
+
+    private void addAsianGraphEdges() {
+        addAfghanistanEdges();
+        addMiddleEastEdges();
+        addUralEdges();
+        addIndiaEdges();
+        addChinaEdges();
+        addSiberiaEdges();
+        addRemainingAsianGraphEdges();
+    }
+
+    private void addRemainingAsianGraphEdges() {
+        addSiamEdges();
+        addMongoliaEdges();
+        addIrkutskEdges();
+        addYakutskEdges();
+        addJapanEdges();
+    }
+
+    private void addAfghanistanEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.AFGHANISTAN,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.INDIA, TerritoryType.CHINA, TerritoryType.URAL));
+    }
+
+    private void addMiddleEastEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.MIDDLE_EAST, Set.of(TerritoryType.INDIA));
+    }
+
+    private void addUralEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.URAL, Set.of(TerritoryType.CHINA, TerritoryType.SIBERIA));
+    }
+
+    private void addIndiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.INDIA, Set.of(TerritoryType.CHINA, TerritoryType.SIAM));
+    }
+
+    private void addChinaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CHINA,
+                Set.of(TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.MONGOLIA));
+    }
+
+    private void addSiberiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SIBERIA,
+                Set.of(TerritoryType.YAKUTSK, TerritoryType.IRKUTSK, TerritoryType.MONGOLIA));
+    }
+
+    private void addSiamEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SIAM, Set.of(TerritoryType.INDONESIA));
+    }
+
+    private void addMongoliaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.MONGOLIA,
+                Set.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA, TerritoryType.JAPAN));
+    }
+
+    private void addIrkutskEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.IRKUTSK,
+                Set.of(TerritoryType.YAKUTSK, TerritoryType.KAMCHATKA));
+    }
+
+    private void addYakutskEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.YAKUTSK, Set.of(TerritoryType.KAMCHATKA));
+    }
+
+    private void addJapanEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.JAPAN, Set.of(TerritoryType.KAMCHATKA));
+    }
+
+    private void addOceanicGraphEdges() {
+        addIndonesiaEdges();
+        addNewGuineaEdges();
+        addWesternAustraliaEdges();
+    }
+
+    private void addIndonesiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.INDONESIA,
+                Set.of(TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA));
+    }
+
+    private void addNewGuineaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NEW_GUINEA,
+                Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.WESTERN_AUSTRALIA));
+    }
+
+    private void addWesternAustraliaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.WESTERN_AUSTRALIA, Set.of(TerritoryType.EASTERN_AUSTRALIA));
     }
 
     void shufflePlayers() {
