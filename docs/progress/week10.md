@@ -7,12 +7,12 @@
 3. Prepare for final delivery
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: x/x/2024
+**Evaluation Date**: 5/17/2024
 
 **Item Progress**:
-1. [in progress] abc
-2. [in progress] abc
-3. [not started] abc
+1. [90% done] win and loss conditions done, need to finish last part of single turn
+2. [50% done] working on attack/fortify phases
+3. [in progress] will play through game when complete
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -25,14 +25,16 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/151
 
 #### Other people's PR reviewed by you
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/134
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/153
 
 ### Team member: Grant Wyness
 #### PR created:
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/153
 
 #### PR done and approved
-- N/A
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/134
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/153
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/149
