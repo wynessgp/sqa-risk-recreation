@@ -1120,4 +1120,51 @@ public class WorldDominationGameEngineIntegrationTest {
 
         EasyMock.verify(mockedParser);
     }
+
+    @Test
+    public void test30_attackTerritory_validInput_playerWinsGame_expectGameOverGamePhase() {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+
+        DieRollParser mockedParser = EasyMock.createMock(DieRollParser.class);
+        List<Integer> dieRolls = new ArrayList<>();
+        for (int i = playersList.size(); i > 0; i--) {
+            dieRolls.add(i);
+        }
+        EasyMock.expect(mockedParser.rollDiceToDeterminePlayerOrder(playersList.size())).andReturn(dieRolls);
+        EasyMock.expect(mockedParser.rollAttackerDice(3)).andReturn(List.of(6, 6, 5));
+        EasyMock.expect(mockedParser.rollDefenderDice(1)).andReturn(List.of(3));
+        EasyMock.expect(mockedParser.generateBattleResults(List.of(6, 6, 5), List.of(3)))
+                .andReturn(List.of(BattleResult.ATTACKER_VICTORY));
+        EasyMock.replay(mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+        // skew the list to only have two players to speed up the test.
+        unitUnderTest.setPlayerOrderList(List.of(PlayerColor.BLUE, PlayerColor.PURPLE));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        // note that PURPLE is going to need more armies in order to actually claim 41 territories
+        unitUnderTest.setNumArmiesForPlayer(PlayerColor.PURPLE, 60);
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (territory == TerritoryType.ALASKA) { // guarantee adjacent territories.
+                unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+                assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, 1));
+            } else {
+                assertTrue(unitUnderTest.placeNewArmiesInTerritory(territory, 1));
+            }
+            unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        }
+        // purple should now own all but 1 territory, and have 19 armies left. Skip to placement, place 14 more in
+        // ALBERTA, and wipe out BLUE.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALBERTA, 14);
+
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        unitUnderTest.attackTerritory(TerritoryType.ALBERTA, TerritoryType.ALASKA, 3, 1);
+
+        assertEquals(GamePhase.GAME_OVER, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedParser);
+    }
+
 }

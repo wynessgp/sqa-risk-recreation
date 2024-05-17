@@ -969,10 +969,15 @@ public final class WorldDominationGameEngine {
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers) {
         handleAttackerTakingTerritory(destTerritory, numAttackers);
         decreaseNumArmiesInTerritory(sourceTerritory, numAttackers);
+        handleCurrentPlayerWinningGameIfNecessary();
         currentPlayerCanClaimCard = true;
     }
 
     public boolean getIfCurrentPlayerCanClaimCard() {
         return currentPlayerCanClaimCard;
+    }
+
+    void setNumArmiesForPlayer(PlayerColor playerColor, int numArmies) {
+        playersMap.get(playerColor).setNumArmiesToPlace(numArmies);
     }
 }
