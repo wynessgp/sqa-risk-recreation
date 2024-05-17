@@ -225,7 +225,8 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void selectPlacementErrorMessage(String message) {
-        String key = message.contains("enough") ? "notEnoughArmiesError" : "generalPlacementError";
+        String key = message.contains("enough") ? "notEnoughArmiesError" : message.contains("< 1") ? "tooFewArmiesError"
+                : "generalPlacementError";
         showErrorMessage("gameMapScreen." + key);
     }
 
