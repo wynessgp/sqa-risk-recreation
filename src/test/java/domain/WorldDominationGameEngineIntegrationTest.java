@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -957,5 +958,87 @@ public class WorldDominationGameEngineIntegrationTest {
 
         String expectedMessage = "Destination territory has too few defenders for this defense!";
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateReturnsAndExpectationsForAttackerNotTakingTerritory() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        List<BattleResult> doubleDefVictory = List.of(BattleResult.DEFENDER_VICTORY, BattleResult.DEFENDER_VICTORY);
+        List<BattleResult> singleDefVictory = List.of(BattleResult.DEFENDER_VICTORY);
+        List<BattleResult> doubleAttVictory = List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY);
+        List<BattleResult> singleAttVictory = List.of(BattleResult.ATTACKER_VICTORY);
+        List<Arguments> territoryPairs = generateAdjacentTerritoryPairs().collect(Collectors.toList());
+
+        List<List<Integer>> attackerDiceRolls = List.of(List.of(4, 3, 2), List.of(4, 3), List.of(1), List.of(2),
+                List.of(6, 5, 4), List.of(3, 2), List.of(6));
+        List<List<Integer>> defenderDiceRolls = List.of(List.of(6, 5), List.of(6, 5), List.of(5), List.of(4, 3),
+                List.of(1, 2), List.of(1, 1), List.of(3));
+        List<List<BattleResult>> battleResults = List.of(doubleDefVictory, doubleDefVictory, singleDefVictory,
+                singleDefVictory, doubleAttVictory, doubleAttVictory, singleAttVictory);
+        List<Integer> startingAttackerAmounts = List.of(4, 3, 2, 2, 4, 3, 2);
+        List<Integer> startingDefenderAmounts = List.of(2, 2, 1, 2, 3, 3, 2);
+        List<Integer> endingAttackerAmounts = List.of(2, 1, 1, 1, 4, 3, 2);
+        List<Integer> endingDefenderAmounts = List.of(2, 2, 1, 2, 1, 1, 1);
+        List<Integer> numAttackers = List.of(3, 2, 1, 1, 3, 2, 1);
+        List<Integer> numDefenders = List.of(2, 2, 1, 2, 2, 2, 1);
+
+        for (Arguments territoryPair : territoryPairs) {
+            Object[] territories = territoryPair.get();
+            for (int i = 0; i < startingAttackerAmounts.size(); i++) {
+                toStream.add(Arguments.of(attackerDiceRolls.get(i), defenderDiceRolls.get(i),
+                        battleResults.get(i), startingAttackerAmounts.get(i), startingDefenderAmounts.get(i),
+                        endingAttackerAmounts.get(i), endingDefenderAmounts.get(i), numAttackers.get(i),
+                        numDefenders.get(i), territories[0], territories[1]));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateReturnsAndExpectationsForAttackerNotTakingTerritory")
+    public void test28_attackTerritory_validInput_attackerDoesNotTakeTerritory_expectDecreasedArmiesAndNoCardClaiming(
+            List<Integer> attackDiceRolls, List<Integer> defenseDiceRolls, List<BattleResult> battleResults,
+            int armiesInSource, int armiesInDest, int numAttackersExpectedAfter, int numDefendersExpectedAfter,
+            int numAttackers, int numDefenders, TerritoryType source, TerritoryType dest) {
+        // I'll utilize a mocked DieRollParser here to ensure we don't take the territory.
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+
+        DieRollParser mockedParser = EasyMock.createMock(DieRollParser.class);
+        List<Integer> dieRolls = new ArrayList<>();
+        for (int i = playersList.size(); i > 0; i--) {
+            dieRolls.add(i);
+        }
+        EasyMock.expect(mockedParser.rollDiceToDeterminePlayerOrder(playersList.size())).andReturn(dieRolls);
+        EasyMock.expect(mockedParser.rollAttackerDice(numAttackers)).andReturn(attackDiceRolls);
+        EasyMock.expect(mockedParser.rollDefenderDice(numDefenders)).andReturn(defenseDiceRolls);
+        EasyMock.expect(mockedParser.generateBattleResults(attackDiceRolls, defenseDiceRolls)).andReturn(battleResults);
+        EasyMock.replay(mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(source, 1)); // claim for Blue
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(dest, 1)); // claim for Black
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        // subtract 1 from num armies in each as we already put 1 there in claiming the territories.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        if (armiesInSource != 1) {
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(source, armiesInSource - 1));
+        }
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLACK);
+        if (armiesInDest != 1) {
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(dest, armiesInDest - 1));
+        }
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        assertEquals(0, unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders));
+
+        assertEquals(numAttackersExpectedAfter, unitUnderTest.getNumberOfArmies(source));
+        assertEquals(numDefendersExpectedAfter, unitUnderTest.getNumberOfArmies(dest));
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedParser);
     }
 }

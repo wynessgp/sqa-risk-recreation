@@ -953,8 +953,17 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    public void attackTerritory(
+    public int attackTerritory(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
         handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
+        if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
+            return 0;
+        }
+        return 0;
+    }
+
+    public boolean getIfCurrentPlayerCanClaimCard() {
+        return false;
     }
 }
