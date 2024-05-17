@@ -728,7 +728,7 @@ public final class WorldDominationGameEngine {
     }
 
     void setPlayerOrderList(List<PlayerColor> playersList) {
-        this.playersList = playersList;
+        this.playersList = new ArrayList<>(playersList);
         if (!playersList.isEmpty()) {
             this.currentPlayer = playersList.get(0);
         }
