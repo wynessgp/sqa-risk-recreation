@@ -65,8 +65,8 @@ class Player {
         return new HashSet<>(ownedCards);
     }
 
-    void addCardsToCollection(Set<Card> wildCardCollection) {
-        this.ownedCards = wildCardCollection;
+    void addCardsToCollection(Set<Card> cardsToBeAdded) {
+        this.ownedCards.addAll(cardsToBeAdded);
     }
 
     void removeTerritoryFromCollection(TerritoryType territory) {
