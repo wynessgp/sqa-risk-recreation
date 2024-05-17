@@ -105,13 +105,17 @@ public class GameMapScreenController implements GameScene {
         if (this.gameEngine.getCurrentGamePhase() == GamePhase.PLACEMENT) {
             handlePlaceArmies(value);
         } else if (this.gameEngine.getCurrentGamePhase() == GamePhase.ATTACK) {
-            if (!attackLogic.sourceArmiesSelected()) {
-                attackLogic.setAttackArmies(value);
-                getArmiesForDefense();
-            } else {
-                attackLogic.setDefendArmies(value);
-                attackLogic.performAttack(this.gameEngine);
-            }
+            attackPhaseLogic(value);
+        }
+    }
+
+    private void attackPhaseLogic(int value) {
+        if (!attackLogic.sourceArmiesSelected()) {
+            attackLogic.setAttackArmies(value);
+            getArmiesForDefense();
+        } else {
+            attackLogic.setDefendArmies(value);
+            attackLogic.performAttack(this.gameEngine);
         }
     }
 

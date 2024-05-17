@@ -5,8 +5,10 @@ import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 
 public class AttackLogic {
-    private TerritoryType sourceTerritory, targetTerritory;
-    private int attackArmies = 0, defendArmies = 0;
+    private TerritoryType sourceTerritory;
+    private TerritoryType targetTerritory;
+    private int attackArmies = 0;
+    private int defendArmies = 0;
 
     void performAttack(WorldDominationGameEngine gameEngine) {
         gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
