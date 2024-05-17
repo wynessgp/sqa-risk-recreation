@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +26,14 @@ public final class WorldDominationGameEngine {
 
     private static final int FORCED_CARD_TURN_IN_THRESHOLD = 5;
 
+    private static final int MINIMUM_NUMBER_OF_ATTACKING_ARMIES = 1;
+    private static final int MAXIMUM_NUMBER_OF_ATTACKING_ARMIES = 3;
+
+    private static final int MINIMUM_NUMBER_OF_DEFENDING_ARMIES = 1;
+    private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
+
     private List<PlayerColor> playersList = new ArrayList<>();
-    private final Map<PlayerColor, Player> playersMap = new HashMap<>();
+    private Map<PlayerColor, Player> playersMap = new HashMap<>();
     private PlayerColor currentPlayer;
 
     private int numUnclaimedTerritories;
@@ -38,6 +45,14 @@ public final class WorldDominationGameEngine {
     private DieRollParser dieRollParser;
     private TradeInParser tradeInParser;
     private List<Integer> dieRolls;
+
+    private List<Integer> attackerRolls;
+    private List<Integer> defenderRolls;
+    private List<BattleResult> battleResults;
+
+    private TerritoryType recentlyAttackedSource = null;
+    private TerritoryType recentlyAttackedDestination = null;
+    private boolean currentPlayerCanClaimCard = false;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
@@ -51,8 +66,254 @@ public final class WorldDominationGameEngine {
 
     private void handleOtherDependentObjectCreation(DieRollParser parser) {
         this.territoryGraph = initializeGraph();
+        addAllEdgesToTerritoryGraph();
         this.dieRollParser = parser;
         this.tradeInParser = new TradeInParser();
+    }
+
+    private void addAllEdgesToTerritoryGraph() {
+        addNorthAmericanGraphEdges();
+        addSouthAmericanGraphEdges();
+        addAfricanGraphEdges();
+        addEuropeanGraphEdges();
+        addAsianGraphEdges();
+        addOceanicGraphEdges();
+    }
+
+    private void addNorthAmericanGraphEdges() {
+        addAlaskaEdges();
+        addNorthwestTerritoryEdges();
+        addGreenlandEdges();
+        addAlbertaEdges();
+        addOntarioEdges();
+        addRemainingNorthAmericanGraphEdges();
+    }
+
+    private void addAlaskaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ALASKA,
+                Set.of(TerritoryType.KAMCHATKA, TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ALBERTA));
+    }
+
+    private void addNorthwestTerritoryEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTHWEST_TERRITORY,
+                Set.of(TerritoryType.GREENLAND, TerritoryType.ALBERTA, TerritoryType.ONTARIO));
+    }
+
+    private void addGreenlandEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.GREENLAND,
+                Set.of(TerritoryType.ICELAND, TerritoryType.ONTARIO, TerritoryType.QUEBEC));
+    }
+
+    private void addAlbertaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ALBERTA,
+                Set.of(TerritoryType.ONTARIO, TerritoryType.WESTERN_UNITED_STATES));
+    }
+
+    private void addOntarioEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ONTARIO,
+                Set.of(TerritoryType.QUEBEC, TerritoryType.WESTERN_UNITED_STATES, TerritoryType.EASTERN_UNITED_STATES));
+    }
+
+    private void addRemainingNorthAmericanGraphEdges() {
+        addQuebecEdges();
+        addWesternUnitedStatesEdges();
+        addEasternUnitedStatsEdges();
+        addCentralAmericaEdges();
+    }
+
+    private void addQuebecEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.QUEBEC, Set.of(TerritoryType.EASTERN_UNITED_STATES));
+    }
+
+    private void addWesternUnitedStatesEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.WESTERN_UNITED_STATES,
+                Set.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA));
+    }
+
+    private void addEasternUnitedStatsEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EASTERN_UNITED_STATES, Set.of(TerritoryType.CENTRAL_AMERICA));
+    }
+
+    private void addCentralAmericaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CENTRAL_AMERICA, Set.of(TerritoryType.VENEZUELA));
+    }
+
+    private void addSouthAmericanGraphEdges() {
+        addVenezuelaEdges();
+        addPeruEdges();
+        addBrazilEdges();
+    }
+
+    private void addVenezuelaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.VENEZUELA, Set.of(TerritoryType.PERU, TerritoryType.BRAZIL));
+    }
+
+    private void addPeruEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.PERU, Set.of(TerritoryType.BRAZIL, TerritoryType.ARGENTINA));
+    }
+
+    private void addBrazilEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.BRAZIL,
+                Set.of(TerritoryType.ARGENTINA, TerritoryType.NORTH_AFRICA));
+    }
+
+    private void addAfricanGraphEdges() {
+        addNorthAfricaEdges();
+        addEgyptEdges();
+        addCongoEdges();
+        addEastAfricaEdges();
+        addSouthAfricaEdges();
+    }
+
+    private void addNorthAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTH_AFRICA,
+                Set.of(TerritoryType.WESTERN_EUROPE, TerritoryType.EGYPT, TerritoryType.CONGO,
+                        TerritoryType.EAST_AFRICA, TerritoryType.SOUTHERN_EUROPE));
+    }
+
+    private void addEgyptEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EGYPT,
+                Set.of(TerritoryType.SOUTHERN_EUROPE, TerritoryType.MIDDLE_EAST, TerritoryType.EAST_AFRICA));
+    }
+
+    private void addCongoEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CONGO,
+                Set.of(TerritoryType.EAST_AFRICA, TerritoryType.SOUTH_AFRICA));
+    }
+
+    private void addEastAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.EAST_AFRICA,
+                Set.of(TerritoryType.SOUTH_AFRICA, TerritoryType.MADAGASCAR, TerritoryType.MIDDLE_EAST));
+    }
+
+    private void addSouthAfricaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SOUTH_AFRICA, Set.of(TerritoryType.MADAGASCAR));
+    }
+
+    private void addEuropeanGraphEdges() {
+        addGreatBritainEdges();
+        addIcelandEdges();
+        addScandinaviaEdges();
+        addNorthernEuropeEdges();
+        addSouthernEuropeEdges();
+        addUkraineEdges();
+    }
+
+    private void addGreatBritainEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.GREAT_BRITAIN,
+                Set.of(TerritoryType.ICELAND, TerritoryType.SCANDINAVIA, TerritoryType.NORTHERN_EUROPE,
+                        TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addIcelandEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.ICELAND, Set.of(TerritoryType.SCANDINAVIA));
+    }
+
+    private void addScandinaviaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SCANDINAVIA,
+                Set.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.UKRAINE));
+    }
+
+    private void addNorthernEuropeEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NORTHERN_EUROPE,
+                Set.of(TerritoryType.UKRAINE, TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addSouthernEuropeEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SOUTHERN_EUROPE,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.UKRAINE, TerritoryType.WESTERN_EUROPE));
+    }
+
+    private void addUkraineEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.UKRAINE,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.URAL, TerritoryType.AFGHANISTAN));
+    }
+
+    private void addAsianGraphEdges() {
+        addAfghanistanEdges();
+        addMiddleEastEdges();
+        addUralEdges();
+        addIndiaEdges();
+        addChinaEdges();
+        addSiberiaEdges();
+        addRemainingAsianGraphEdges();
+    }
+
+    private void addRemainingAsianGraphEdges() {
+        addSiamEdges();
+        addMongoliaEdges();
+        addIrkutskEdges();
+        addYakutskEdges();
+        addJapanEdges();
+    }
+
+    private void addAfghanistanEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.AFGHANISTAN,
+                Set.of(TerritoryType.MIDDLE_EAST, TerritoryType.INDIA, TerritoryType.CHINA, TerritoryType.URAL));
+    }
+
+    private void addMiddleEastEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.MIDDLE_EAST, Set.of(TerritoryType.INDIA));
+    }
+
+    private void addUralEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.URAL, Set.of(TerritoryType.CHINA, TerritoryType.SIBERIA));
+    }
+
+    private void addIndiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.INDIA, Set.of(TerritoryType.CHINA, TerritoryType.SIAM));
+    }
+
+    private void addChinaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.CHINA,
+                Set.of(TerritoryType.SIAM, TerritoryType.SIBERIA, TerritoryType.MONGOLIA));
+    }
+
+    private void addSiberiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SIBERIA,
+                Set.of(TerritoryType.YAKUTSK, TerritoryType.IRKUTSK, TerritoryType.MONGOLIA));
+    }
+
+    private void addSiamEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.SIAM, Set.of(TerritoryType.INDONESIA));
+    }
+
+    private void addMongoliaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.MONGOLIA,
+                Set.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA, TerritoryType.JAPAN));
+    }
+
+    private void addIrkutskEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.IRKUTSK,
+                Set.of(TerritoryType.YAKUTSK, TerritoryType.KAMCHATKA));
+    }
+
+    private void addYakutskEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.YAKUTSK, Set.of(TerritoryType.KAMCHATKA));
+    }
+
+    private void addJapanEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.JAPAN, Set.of(TerritoryType.KAMCHATKA));
+    }
+
+    private void addOceanicGraphEdges() {
+        addIndonesiaEdges();
+        addNewGuineaEdges();
+        addWesternAustraliaEdges();
+    }
+
+    private void addIndonesiaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.INDONESIA,
+                Set.of(TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA));
+    }
+
+    private void addNewGuineaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.NEW_GUINEA,
+                Set.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.WESTERN_AUSTRALIA));
+    }
+
+    private void addWesternAustraliaEdges() {
+        territoryGraph.addSetOfAdjacencies(TerritoryType.WESTERN_AUSTRALIA, Set.of(TerritoryType.EASTERN_AUSTRALIA));
     }
 
     void shufflePlayers() {
@@ -221,7 +482,7 @@ public final class WorldDominationGameEngine {
         checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace);
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        increaseNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
         totalUnplacedArmiesLeft--;
         updateCurrentPlayer();
@@ -241,7 +502,7 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private void modifyNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
+    private void increaseNumArmiesInTerritory(TerritoryType relevantTerritory, int additionalArmies) {
         Territory territoryObject = territoryGraph.getTerritory(relevantTerritory);
         int previousNumArmies = territoryObject.getNumArmiesPresent();
         territoryObject.setNumArmiesPresent(previousNumArmies + additionalArmies);
@@ -305,18 +566,18 @@ public final class WorldDominationGameEngine {
     }
 
     private void handlePlacementPhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
-        checkIfPlayerIsHoldingTooManyCards();
+        checkIfPlayerIsHoldingTooManyCards("Player cannot place armies while they are holding more than 5 cards!");
         checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace);
         checkIfCurrentPlayerOwnsTerritory(relevantTerritory);
         checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace);
         decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace);
-        modifyNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
+        increaseNumArmiesInTerritory(relevantTerritory, numArmiesToPlace);
         checkAttackPhaseEndCondition();
     }
 
-    private void checkIfPlayerIsHoldingTooManyCards() {
+    private void checkIfPlayerIsHoldingTooManyCards(String errorMessage) {
         if (playersMap.get(currentPlayer).getNumCardsHeld() >= FORCED_CARD_TURN_IN_THRESHOLD) {
-            throw new IllegalStateException("Player cannot place armies while they are holding more than 5 cards!");
+            throw new IllegalStateException(errorMessage);
         }
     }
 
@@ -370,6 +631,67 @@ public final class WorldDominationGameEngine {
         currentGamePhase = GamePhase.PLACEMENT;
     }
 
+    void handleErrorCasesForAttackingTerritory(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
+        checkIfNumAttackersIsValid(numAttackers);
+        checkIfNumDefendersIsValid(numDefenders);
+        checkIfGameIsInAttackPhase();
+        checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
+        checkIfAppropriatePlayersOwnTerritories(sourceTerritory, destTerritory);
+        checkIfPlayerIsHoldingTooManyCards("Player must trade in cards before they can attack!");
+        checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(sourceTerritory, numAttackers);
+        checkIfDestTerritoryHasEnoughArmiesToSupportDefense(destTerritory, numDefenders);
+    }
+
+    private void checkIfNumAttackersIsValid(int numAttackers) {
+        if (numAttackers < MINIMUM_NUMBER_OF_ATTACKING_ARMIES || numAttackers > MAXIMUM_NUMBER_OF_ATTACKING_ARMIES) {
+            throw new IllegalArgumentException(String.format("Number of armies to attack with must be within [%d, %d]!",
+                    MINIMUM_NUMBER_OF_ATTACKING_ARMIES, MAXIMUM_NUMBER_OF_ATTACKING_ARMIES));
+        }
+    }
+
+    private void checkIfNumDefendersIsValid(int numDefenders) {
+        if (numDefenders < MINIMUM_NUMBER_OF_DEFENDING_ARMIES || numDefenders > MAXIMUM_NUMBER_OF_DEFENDING_ARMIES) {
+            throw new IllegalArgumentException(String.format("Number of armies to defend with must be within [%d, %d]!",
+                    MINIMUM_NUMBER_OF_DEFENDING_ARMIES, MAXIMUM_NUMBER_OF_DEFENDING_ARMIES));
+        }
+    }
+
+    private void checkIfAppropriatePlayersOwnTerritories(TerritoryType source, TerritoryType dest) {
+        if (!checkIfPlayerOwnsTerritory(source, currentPlayer)) {
+            throw new IllegalArgumentException("Source territory is not owned by the current player!");
+        }
+        if (checkIfPlayerOwnsTerritory(dest, currentPlayer)) {
+            throw new IllegalArgumentException("Destination territory is owned by the current player!");
+        }
+    }
+
+    private void checkIfTerritoriesAreAdjacent(TerritoryType source, TerritoryType dest) {
+        if (!territoryGraph.areTerritoriesAdjacent(source, dest)) {
+            throw new IllegalArgumentException("Source and destination territory must be two adjacent territories!");
+        }
+    }
+
+    private void checkIfGameIsInAttackPhase() {
+        if (currentGamePhase != GamePhase.ATTACK) {
+            throw new IllegalStateException("Attacking territories is not allowed in any phase besides attack!");
+        }
+    }
+
+    private void checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(TerritoryType sourceTerritory, int numAttackers) {
+        int numArmiesPresent = territoryGraph.getTerritory(sourceTerritory).getNumArmiesPresent();
+        if (numAttackers > numArmiesPresent - 1) {
+            throw new IllegalArgumentException("Source territory has too few armies to use in this attack!");
+        }
+    }
+
+    private void checkIfDestTerritoryHasEnoughArmiesToSupportDefense(TerritoryType destTerritory, int numDefenders) {
+        int numArmiesPresent = territoryGraph.getTerritory(destTerritory).getNumArmiesPresent();
+        if (numDefenders > numArmiesPresent) {
+            throw new IllegalArgumentException("Destination territory has too few defenders for this defense!");
+        }
+    }
+
     public PlayerColor getCurrentPlayer() {
         return currentPlayer;
     }
@@ -396,8 +718,9 @@ public final class WorldDominationGameEngine {
 
     void provideCurrentPlayerForTurn(PlayerColor currentlyGoingPlayer) {
         currentPlayer = currentlyGoingPlayer;
-        // also, add this to the players list, otherwise we'll error out on trying to swap turns.
-        playersList.add(currentPlayer);
+        if (!playersList.contains(currentPlayer)) { // make sure we don't add them twice.
+            playersList.add(currentPlayer);
+        }
     }
 
     void setGamePhase(GamePhase gamePhase) {
@@ -405,7 +728,10 @@ public final class WorldDominationGameEngine {
     }
 
     void setPlayerOrderList(List<PlayerColor> playersList) {
-        this.playersList = playersList;
+        this.playersList = new ArrayList<>(playersList);
+        if (!playersList.isEmpty()) {
+            this.currentPlayer = playersList.get(0);
+        }
     }
 
     void provideMockedPlayerObjects(List<Player> mockedPlayers) {
@@ -450,5 +776,213 @@ public final class WorldDominationGameEngine {
 
     int getNumCardsForPlayer(PlayerColor playerColor) {
         return playersMap.get(playerColor).getNumCardsHeld();
+    }
+
+    List<BattleResult> rollDiceForBattle(int numAttackers, int numDefenders) {
+        this.attackerRolls = dieRollParser.rollAttackerDice(numAttackers);
+        this.defenderRolls = dieRollParser.rollDefenderDice(numDefenders);
+        this.battleResults = dieRollParser.generateBattleResults(this.attackerRolls, this.defenderRolls);
+        return this.battleResults;
+    }
+
+    void provideDieRollParser(DieRollParser dieRollParser) {
+        this.dieRollParser = dieRollParser;
+    }
+
+    public List<Integer> getAttackerDiceRolls() {
+        return new ArrayList<>(this.attackerRolls);
+    }
+
+    public List<Integer> getDefenderDiceRolls() {
+        return new ArrayList<>(this.defenderRolls);
+    }
+
+    public List<BattleResult> getBattleResults() {
+        return new ArrayList<>(this.battleResults);
+    }
+
+    AttackConsequence handleArmyLosses(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults) {
+        int numAttackersLost = Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        int numDefendersLost = Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        decreaseNumArmiesInTerritory(sourceTerritory, numAttackersLost);
+        decreaseNumArmiesInTerritory(destinationTerritory, numDefendersLost);
+
+        return getNumberOfArmies(destinationTerritory) == 0
+                ? AttackConsequence.DEFENDER_LOSES_TERRITORY : AttackConsequence.NO_CHANGE;
+    }
+
+    private void decreaseNumArmiesInTerritory(TerritoryType territory, int numArmiesLost) {
+        increaseNumArmiesInTerritory(territory, -1 * numArmiesLost);
+    }
+
+    PlayerColor handleAttackerTakingTerritory(TerritoryType territory, int numAttackers) {
+        PlayerColor playerLosingTerritory = getPlayerInControlOfTerritory(territory);
+        territoryGraph.getTerritory(territory).setNumArmiesPresent(numAttackers);
+        territoryGraph.getTerritory(territory).setPlayerInControl(currentPlayer);
+        playersMap.get(currentPlayer).addTerritoryToCollection(territory);
+        playersMap.get(playerLosingTerritory).removeTerritoryFromCollection(territory);
+        return playerLosingTerritory;
+    }
+
+    private PlayerColor getPlayerInControlOfTerritory(TerritoryType territory) {
+        PlayerColor playerInControl = playersList.get(0);
+        for (PlayerColor player : playersList) {
+            if (checkIfPlayerOwnsTerritory(territory, player)) {
+                playerInControl = player;
+                break;
+            }
+        }
+        return playerInControl;
+    }
+
+    public void handlePlayerLosingGameIfNecessary(PlayerColor potentiallyLosingPlayer) {
+        if (!playerOwnsAtLeastOneTerritory(potentiallyLosingPlayer)) {
+            Set<Card> losingPlayerCards = playersMap.get(potentiallyLosingPlayer).getOwnedCards();
+            playersMap.get(currentPlayer).addCardsToCollection(losingPlayerCards);
+            playersList.remove(potentiallyLosingPlayer);
+            playersMap.remove(potentiallyLosingPlayer);
+        }
+    }
+
+    private boolean playerOwnsAtLeastOneTerritory(PlayerColor player) {
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (checkIfPlayerOwnsTerritory(territory, player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Map<PlayerColor, Player> getPlayerMap() {
+        return playersMap;
+    }
+
+    void provideMockedPlayersMap(Map<PlayerColor, Player> mockedPlayersMap) {
+        this.playersMap = mockedPlayersMap;
+    }
+
+    void handleCurrentPlayerWinningGameIfNecessary() {
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (!checkIfPlayerOwnsTerritory(territory, currentPlayer)) {
+                return;
+            }
+        }
+        this.currentGamePhase = GamePhase.GAME_OVER;
+    }
+
+    public void moveArmiesBetweenFriendlyTerritories(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
+        checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
+        checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
+        checkIfEnoughArmiesInSource(sourceTerritory, numArmies);
+        checkIfInValidGamePhaseForMovement();
+        checkIfTerritoriesWereRecentlyAttacked(sourceTerritory, destTerritory);
+        decreaseNumArmiesInTerritory(sourceTerritory, numArmies);
+        increaseNumArmiesInTerritory(destTerritory, numArmies);
+        handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary();
+    }
+
+    private void checkIfPlayerOwnsBothSourceAndDestinationTerritories(TerritoryType source, TerritoryType dest) {
+        if (!checkIfPlayerOwnsTerritory(source, currentPlayer)) {
+            throw new IllegalArgumentException("Provided territories are not owned by the current player!");
+        }
+        if (!checkIfPlayerOwnsTerritory(dest, currentPlayer)) {
+            throw new IllegalArgumentException("Provided territories are not owned by the current player!");
+        }
+    }
+
+    private void checkIfEnoughArmiesInSource(TerritoryType sourceTerritory, int numArmiesToMove) {
+        int numArmiesInSource = getNumberOfArmies(sourceTerritory);
+        if (numArmiesToMove >= numArmiesInSource) {
+            throw new IllegalArgumentException(
+                    "Source territory does not have enough armies to support this movement!");
+        }
+    }
+
+    private void checkIfInValidGamePhaseForMovement() {
+        Set<GamePhase> validGamePhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
+        if (!validGamePhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Friendly army movement can only be done in the ATTACK or FORTIFY phase!");
+        }
+    }
+
+    private void checkIfTerritoriesWereRecentlyAttacked(TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        if ((recentlyAttackedSource != sourceTerritory || recentlyAttackedDestination != destTerritory)
+                && currentGamePhase == GamePhase.ATTACK) {
+            throw new IllegalArgumentException("Cannot split armies between this source and destination!");
+        }
+    }
+
+    private void handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary() {
+        if (currentGamePhase == GamePhase.FORTIFY) {
+            currentGamePhase = GamePhase.PLACEMENT;
+            updateCurrentPlayer();
+        }
+    }
+
+    void setRecentlyAttackedSource(TerritoryType recentlyAttackedSrc) {
+        this.recentlyAttackedSource = recentlyAttackedSrc;
+    }
+
+    void setRecentlyAttackedDest(TerritoryType recentlyAttackedDest) {
+        this.recentlyAttackedDestination = recentlyAttackedDest;
+    }
+
+    public TerritoryType getRecentlyAttackedSource() {
+        return null;
+    }
+
+    public TerritoryType getRecentlyAttackedDest() {
+        return null;
+    }
+
+    public void forceGamePhaseToEnd() {
+        checkIfValidPhaseToForciblyEnd();
+        if (currentGamePhase == GamePhase.ATTACK) {
+            currentGamePhase = GamePhase.FORTIFY;
+        } else {
+            currentGamePhase = GamePhase.PLACEMENT;
+            updateCurrentPlayer();
+        }
+    }
+
+    private void checkIfValidPhaseToForciblyEnd() {
+        Set<GamePhase> validPhases = Set.of(GamePhase.ATTACK, GamePhase.FORTIFY);
+        if (!validPhases.contains(currentGamePhase)) {
+            throw new IllegalStateException("Cannot forcibly end this game phase!");
+        }
+    }
+
+    public int attackTerritory(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
+        handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
+        if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
+            return 0;
+        }
+        handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
+        return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void handleDefenderLosingTerritoryConsequences(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers) {
+        PlayerColor potentiallyLosingPlayer = handleAttackerTakingTerritory(destTerritory, numAttackers);
+        decreaseNumArmiesInTerritory(sourceTerritory, numAttackers);
+        handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer);
+        handleCurrentPlayerWinningGameIfNecessary();
+        currentPlayerCanClaimCard = true;
+    }
+
+    public boolean getIfCurrentPlayerCanClaimCard() {
+        return currentPlayerCanClaimCard;
+    }
+
+    void setNumArmiesForPlayer(PlayerColor playerColor, int numArmies) {
+        playersMap.get(playerColor).setNumArmiesToPlace(numArmies);
+    }
+
+    Set<Card> getCardsForPlayer(PlayerColor playerColor) {
+        return playersMap.get(playerColor).getOwnedCards();
     }
 }

@@ -267,3 +267,192 @@ Cards the player owns = {}
 
 Output:
 Cards the player owns = { wild card }
+
+# method: `addCardsToCollection(cardsToBeAdded: Set<Card>): void`
+## BVA Step 1
+Input: A collection of cards to be added to the Player's underlying card collection
+
+Output: The underlying state of the Player's card collection (modifies a field)
+
+## BVA Step 2
+Input:
+- cardsToBeAdded: Collection
+- Cards the player owns: Collection
+
+Output: Collection (but not from function output)
+
+## BVA Step 3
+Input:
+- cardsToBeAdded: (Collection)
+  - An empty collection
+  - Collection with \> 1 element
+  - Collection of max size (44 possible cards)
+  - Cannot have duplicates with a set
+- Cards the player owns (Collection)
+  - An empty collection 
+  - Collection with \> 1 element 
+  - Collection of max size (all 44 cards)
+  - Cannot have duplicates with a set
+
+Output: (Collection)
+- Matches the input underlying collection, but with the relevant cards added (where possible)
+- There shouldn't be any duplicate cards in the Risk card deck, so we will not attempt with those inputs
+
+## BVA Step 4
+### Test 1:
+Input:
+- cardsToBeAdded = {}
+- Cards the player owns = {}
+
+Output:
+Cards the player owns = {}
+
+### Test 2:
+Input:
+- cardsToBeAdded = {}
+- Cards the player owns = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+
+Output:
+Cards the player owns = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+
+### Test 3:
+Input:
+- cardsToBeAdded = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+- Cards the player owns = {}
+
+Output:
+Cards the player owns = {Wild Card, TerritoryCard = [ALASKA, INFANTRY]}
+
+### Test 4:
+Input:
+- cardsToBeAdded = {Wild Card}
+- Cards the player owns = {TerritoryCard = [BRAZIL, ARTILLERY]}
+
+Output:
+Cards the player owns = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY]}
+
+### Test 5:
+- cardsToBeAdded = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY]}
+- Cards the player owns = {}
+
+Output:
+Underlying card collection = {Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY]}
+
+### Test 6:
+- cardsToBeAdded = { all cards }
+- Cards the player owns = {}
+
+Output:
+Cards the player owns = { all cards }
+
+### Test 7:
+- cardsToBeAdded = { all cards minus a wild card }
+- Cards the player owns = { wild card }
+
+Output:
+Cards the player owns = { all cards }
+
+### Test 8:
+- cardsToBeAdded = { Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY] }
+- cards the player owns = { Wild Card, TerritoryCard = [AFGHANISTAN, CAVALRY] }
+
+Output:
+Cards the player owns = { Wild Card, TerritoryCard = [BRAZIL, ARTILLERY], TerritoryCard = [CONGO, INFANTRY], Wild Card, TerritoryCard = [AFGHANISTAN, CAVALRY] }
+
+# method: `removeTerritoryFromCollection(territory: TerritoryType): void`
+
+## BVA Step 1
+Input: A given territory to remove from the player's underlying collection of owned territories
+
+Output: The underlying collection of territories the player has, minus the respective territory IF
+the respective player owned it. If they didn't, nothing will happen.
+
+## BVA Step 2
+Input:
+- territory: Cases
+- Underlying owned territories: Collection
+
+Output:
+- Underlying owned territories: Collection
+
+## BVA Step 3
+Input:
+- territory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+- Underlying owned territories (Collection):
+  - A collection with 0 elements
+  - A collection with 1 element
+  - A collection with [2, 41] elements
+  - A collection with 42 elements (max size)
+  - Any other cases should not happen
+  - No duplicates as the collection is a set
+
+Output:
+- Underlying owned territories (Collection):
+  - A collection with 0 elements
+  - A collection with 1 element
+  - A collection with [2, 40] elements
+  - A collection with 41 elements (max size - no matter what you call to remove on an input of size 42, something will get removed...)
+  - Any other cases should not happen
+  - No duplicates as the collection is a set
+
+## BVA Step 4
+### Test 1:
+Input:
+- territory = ALASKA
+- owned territories = {}
+
+Output:
+- owned territories = {}
+
+### Test 2:
+Input: 
+- territory = BRAZIL
+- owned territories = {}
+
+Output:
+- owned territories = {}
+
+### Test 3:
+Input:
+- territory = ALASKA
+- owned territories = {ONTARIO}
+
+Output:
+- owned territories = {ONTARIO}
+
+### Test 4:
+Input:
+- territory = ALASKA
+- owned territories = {ALASKA}
+
+Output:
+- owned territories = {}
+
+### Test 5:
+Input:
+- territory = QUEBEC
+- owned territories = {YAKUTSK, URAL, ALASKA}
+
+Output:
+- owned territories = {YAKUTSK, URAL, ALASKA}
+
+### Test 6:
+Input:
+- territory = URAL
+- owned territories = {YAKUTSK, URAL, ALASKA}
+
+Output:
+- owned territories = {YAKUTSK, ALASKA}
+
+### Test 7:
+Input:
+- territory = AFGHANISTAN
+- owned territories = { all territories }
+
+Output:
+- owned territories = { all territories minus afghanistan }
