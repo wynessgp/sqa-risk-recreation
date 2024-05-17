@@ -52,6 +52,7 @@ public final class WorldDominationGameEngine {
 
     private TerritoryType recentlyAttackedSource = null;
     private TerritoryType recentlyAttackedDestination = null;
+    private boolean currentPlayerCanClaimCard = true;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
@@ -960,10 +961,20 @@ public final class WorldDominationGameEngine {
         if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
             return 0;
         }
-        return 0;
+        handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
+        return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void handleDefenderLosingTerritoryConsequences(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers) {
+        PlayerColor potentiallyLosingPlayer = handleAttackerTakingTerritory(destTerritory, numAttackers);
+        decreaseNumArmiesInTerritory(sourceTerritory, numAttackers);
+        handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer);
+        handleCurrentPlayerWinningGameIfNecessary();
+        currentPlayerCanClaimCard = true;
     }
 
     public boolean getIfCurrentPlayerCanClaimCard() {
-        return false;
+        return currentPlayerCanClaimCard;
     }
 }
