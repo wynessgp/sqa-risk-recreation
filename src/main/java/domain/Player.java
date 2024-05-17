@@ -42,7 +42,7 @@ class Player {
     }
 
     void setTerritories(Set<TerritoryType> territories) {
-        this.territories = territories;
+        this.territories = new HashSet<>(territories);
     }
 
     Set<TerritoryType> getTerritories() {
@@ -70,6 +70,6 @@ class Player {
     }
 
     void removeTerritoryFromCollection(TerritoryType territory) {
-
+        this.territories.remove(territory);
     }
 }

@@ -309,4 +309,29 @@ public class PlayerTest {
 
         assertEquals(territoriesPlayerOwns, player.getTerritories());
     }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesPlayerOwnsAndTerritoriesInThem() {
+        return Stream.of(
+                Arguments.of(Set.of(TerritoryType.ALASKA), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.URAL),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.YAKUTSK),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.AFGHANISTAN),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.URAL)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesPlayerOwnsAndTerritoriesInThem")
+    public void test10_removeTerritoryFromCollection_territoryInCollection_expectItemNoLongerInSet(
+            Set<TerritoryType> territoriesPlayerOwns, TerritoryType toRemove) {
+        Player player = new Player();
+        player.setTerritories(territoriesPlayerOwns);
+
+        player.removeTerritoryFromCollection(toRemove);
+
+        assertFalse(player.getTerritories().contains(toRemove));
+    }
 }
