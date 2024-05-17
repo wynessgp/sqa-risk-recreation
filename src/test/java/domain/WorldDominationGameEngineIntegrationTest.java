@@ -1167,4 +1167,52 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.verify(mockedParser);
     }
 
+    @Test
+    public void test31_attackTerritory_validInput_defenderLosesGame_expectCardTransferBetweenPlayersAndLoserRemoved() {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+
+        DieRollParser mockedParser = EasyMock.createMock(DieRollParser.class);
+        List<Integer> dieRolls = new ArrayList<>();
+        for (int i = playersList.size(); i > 0; i--) {
+            dieRolls.add(i);
+        }
+        EasyMock.expect(mockedParser.rollDiceToDeterminePlayerOrder(playersList.size())).andReturn(dieRolls);
+        EasyMock.expect(mockedParser.rollAttackerDice(3)).andReturn(List.of(6, 6, 5));
+        EasyMock.expect(mockedParser.rollDefenderDice(1)).andReturn(List.of(3));
+        EasyMock.expect(mockedParser.generateBattleResults(List.of(6, 6, 5), List.of(3)))
+                .andReturn(List.of(BattleResult.ATTACKER_VICTORY));
+        EasyMock.replay(mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        // provide BLUE with some cards first.
+        Set<Card> blueCards = Set.of(new WildCard(), new TerritoryCard(TerritoryType.MADAGASCAR, PieceType.ARTILLERY));
+        // provide BLACK with some cards too.
+        Set<Card> blackCards = Set.of(new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.URAL, PieceType.CAVALRY));
+        unitUnderTest.setCardsForPlayer(PlayerColor.BLUE, blueCards);
+        unitUnderTest.setCardsForPlayer(PlayerColor.BLACK, blackCards);
+
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1); // claim for BLUE
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALBERTA, 1); // claim for BLACK
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 5); // place more armies for BLUE
+
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // now have BLUE attack BLACK in ALBERTA. Since black only owns this territory, they should lose the game.
+        unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.ALBERTA, 3, 1);
+
+        // check that BLUE owns BLACK's cards.
+        assertTrue(unitUnderTest.getCardsForPlayer(PlayerColor.BLUE).containsAll(blackCards));
+        // make sure BLACK is no longer in turns order / the map.
+        assertFalse(unitUnderTest.getPlayerOrder().contains(PlayerColor.BLACK));
+        assertFalse(unitUnderTest.getPlayerMap().containsKey(PlayerColor.BLACK));
+
+        EasyMock.verify(mockedParser);
+    }
+
 }

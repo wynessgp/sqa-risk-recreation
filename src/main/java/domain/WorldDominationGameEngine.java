@@ -967,8 +967,9 @@ public final class WorldDominationGameEngine {
 
     private void handleDefenderLosingTerritoryConsequences(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers) {
-        handleAttackerTakingTerritory(destTerritory, numAttackers);
+        PlayerColor potentiallyLosingPlayer = handleAttackerTakingTerritory(destTerritory, numAttackers);
         decreaseNumArmiesInTerritory(sourceTerritory, numAttackers);
+        handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer);
         handleCurrentPlayerWinningGameIfNecessary();
         currentPlayerCanClaimCard = true;
     }
@@ -979,5 +980,9 @@ public final class WorldDominationGameEngine {
 
     void setNumArmiesForPlayer(PlayerColor playerColor, int numArmies) {
         playersMap.get(playerColor).setNumArmiesToPlace(numArmies);
+    }
+
+    Set<Card> getCardsForPlayer(PlayerColor playerColor) {
+        return playersMap.get(playerColor).getOwnedCards();
     }
 }
