@@ -928,4 +928,34 @@ public class WorldDominationGameEngineIntegrationTest {
         String expectedMessage = "Number of armies to defend with must be within [1, 2]!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test27_attackTerritory_invalidNumArmiesInDestination_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for Blue
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for Black
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+        // don't place any additional armies in the destination; there's only one case in which the number of defenders
+        // is invalid in normal play: 1 army in territory and 2 defenders are being used
+
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, destTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Destination territory has too few defenders for this defense!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
