@@ -285,4 +285,28 @@ public class PlayerTest {
 
         assertEquals(expectedOutput, player.getOwnedCards());
     }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesPlayerOwnsAndTerritoriesNotInThem() {
+        return Stream.of(
+                Arguments.of(Set.of(), TerritoryType.ALASKA),
+                Arguments.of(Set.of(), TerritoryType.BRAZIL),
+                Arguments.of(Set.of(TerritoryType.ONTARIO), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.QUEBEC),
+                Arguments.of(Set.of(TerritoryType.WESTERN_AUSTRALIA, TerritoryType.INDONESIA), TerritoryType.UKRAINE),
+                Arguments.of(Set.of(TerritoryType.MIDDLE_EAST), TerritoryType.MONGOLIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesPlayerOwnsAndTerritoriesNotInThem")
+    public void test09_removeTerritoryFromCollection_territoryNotInCollection_expectSetToRemainSame(
+            Set<TerritoryType> territoriesPlayerOwns, TerritoryType toRemove) {
+        Player player = new Player();
+        player.setTerritories(territoriesPlayerOwns);
+
+        player.removeTerritoryFromCollection(toRemove);
+
+        assertEquals(territoriesPlayerOwns, player.getTerritories());
+    }
 }
