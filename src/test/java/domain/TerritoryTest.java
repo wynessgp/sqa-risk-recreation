@@ -85,11 +85,11 @@ class TerritoryTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0})
+    @ValueSource(ints = {Integer.MIN_VALUE, -17, -2, -1})
     void test03_setNumArmiesPresent_invalidNumber_expectException(int illegalInput) {
         Territory territory = new Territory(TerritoryType.ALASKA);
 
-        String expectedMessage = "Number of armies to set should be greater than 0";
+        String expectedMessage = "Number of armies to set should be >= 0";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> territory.setNumArmiesPresent(illegalInput));
 

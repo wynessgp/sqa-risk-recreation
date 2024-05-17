@@ -949,3 +949,1618 @@ Output:
 - Method output: {}
 - Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
 - GamePhase = PLACEMENT
+
+# method: `handleErrorCasesForAttackingTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): void`
+
+This is part **1** of a series of method calls that constitute attacking in Risk. This will enumerate just the error cases.
+
+## BVA Step 1
+Input: The respective territory that the attacker is moving troops FROM, the territory they are moving their armies INTO
+to attack, and the respective number of attackers and defenders to use in the battle.
+
+Since this method is all about error handling, here are some reasons we'll run into errors:
+- The current phase the game is in (should only ever be attack if we're here!)
+- The number of armies present in BOTH the source AND destination territory
+  - If you're left with 0 armies in the territory you're attacking from as a result, you shouldn't be allowed to do this.
+  - Need to know if you can use that many attackers legally
+  - Need to know how many defenders are in the battle via the destination territory
+- Who owns the respective territories
+  - You can't attack yourself!
+  - If you don't own the territory you've selected, you also can't attack from there...
+- If the territories border each other
+  - You can't attack a territory that's halfway across the map; they should be adjacent.
+- If the current player is holding on to too many cards
+  - This should only happen as a result of taking out a player; this is still a forced trade in.
+
+Output: An error if the player has too many cards, provides an invalid amount of armies, tries to attack between 
+territories that are not adjacent, or if we're in the wrong phase. If we don't run into an error case, this will 
+not return anything.
+
+## BVA Step 2
+Input:
+- sourceTerritory: Cases
+- destTerritory: Cases
+- numAttackers: Interval [1, 3]
+- numDefenders: Interval [1, 2]
+- currentGamePhase: Cases
+- currentlyGoingPlayer: Cases
+- player object: Pointer
+  - We only care about the amount of cards they're holding on to
+- source & destination territory objects: Pointer
+  - Primarily care that:
+    - current player owns the source territory
+    - A different player owns the destination territory
+    - Number of armies in each territory is SUFFICIENT to meet the attackers/defenders
+      - Must be \>= 1 army left in source territory after attackers are accounted for
+      - Must be \>= 0 armies left in destination territory after defenders are accounted for
+
+Output:
+- Method output: N/A (void method)
+- Exceptions if above conditions are not met
+  - IllegalStateException if a Player has too many cards, or we are in the wrong game phase (not attack)
+  - IllegalArgumentException for all other input errors
+
+## BVA Step 3
+Input:
+- sourceTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibility (can't set, Java enums)
+  - Source & destination territories are not adjacent on the Risk map (error case)
+- numAttackers (Interval):
+  - \<= 0 (error case)
+  - 1 (minimum amount of attackers)
+  - 2
+  - 3 (maximal amount of attackers)
+  - \>= 4 (error case)
+- numDefenders (Interval):
+  - \<= 0 (error case)
+  - 1 (minimum amount of defenders)
+  - 2 (maximal amount of attackers)
+  - \>= 3 (error case)
+- currentGamePhase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK 
+  - FORTIFY (error case)
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (can't set, Java enum)
+- currentlyGoingPlayer (Cases):
+  - SETUP (error case)
+  - Any other PlayerColor is fine, but it MUST match the territory input (so colors like):
+    - BLACK
+    - RED
+    - YELLOW
+    - BLUE
+    - GREEN
+    - PURPLE
+  - The 0th, 8th possibilities (can't set, Java enum)
+- Player object (Pointer):
+  - Null pointer (can't set, Martin's rules)
+  - Pointer to the true object
+    - We care about the number of cards they are holding
+      - \>= 5 cards (error case)
+      - Anywhere in [0, 4] is fine. |ownedCards| should never be negative due to it being a collection.
+- sourceTerritory, destTerritory objects (Pointer):
+  - Null pointer (can't set, Martin's rules)
+  - Pointer to the true object
+    - We want to consider ownership of the source, destination territories
+      - Source not owned by current player (error case)
+      - Destination owned by current player (error case, anybody else is fine)
+    - Need to consider the number of armies stationed in each
+      - `numAttackers` > `numArmiesInSourceTerritory - 1` (error case)
+      - `numDefenders` > `numArmiesInDefenderTerritory` (error case)
+
+Output:
+- method output (N/A)
+- Exceptions
+  - IllegalStateException if:
+    - GamePhase is NOT ATTACK
+    - Player is holding \>= 5 cards
+  - IllegalArgumentException if:
+    - numAttackers is not in [1, 3]
+    - numDefenders is not in [1, 2]
+    - sourceTerritory and destTerritory are NOT adjacent on the Risk map
+    - sourceTerritory is not owned by the current player
+    - destTerritory is owned by the current player
+
+## BVA Step 4
+### Test 1:
+Input:
+- sourceTerritory, destTerritory = ALASKA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source, destination territory = [ALASKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+  - equal to each other on purpose
+
+Output:
+- IllegalArgumentException
+  - message: "Source and destination territory must be two adjacent territories!"
+
+This above test will have be repeated will all territories as input
+
+### Test 2:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = INDIA
+- numAttackers = 2
+- numDefenders = 1
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [INDIA, numArmiesInTerritory = 2, ownedBy = GREEN]
+
+Output:
+- IllegalArgumentException
+  - message: "Source and destination territory must be two adjacent territories!"
+
+The above test will be repeated with several non-adjacent territories.
+
+### Test 3:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = YELLOW]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = GREEN]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory is not owned by the current player!"
+
+### Test 4:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+
+Output:
+- IllegalArgumentException
+  - message: "Destination territory is owned by the current player!"
+
+### Test 5:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = SETUP
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalStateException
+  - message: "Attacking territories is not allowed in any phase besides attack!"
+
+### Test 6:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = FORTIFY
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalStateException
+  - message: "Attacking territories is not allowed in any phase besides attack!"
+
+### Test 7:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = -1
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to attack with must be within [1, 3]!"
+
+### Test 8:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 10
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to attack with must be within [1, 3]!"
+
+### Test 9:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = -1
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must be within [1, 2]!"
+
+### Test 10:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 10
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must be within [1, 2]!"
+
+### Test 11:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 0
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Number of armies to defend with must be within [1, 2]!"
+
+### Test 12:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 1
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 5]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalStateException
+  - message: "Player must trade in cards before they can attack!"
+
+### Test 13:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 1
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5)]
+- source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalStateException
+  - message: "Player must trade in cards before they can attack!"
+
+### Test 14:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
+- source territory = [BRAZIL, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory has too few armies to use in this attack!"
+
+### Test 15:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 1
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
+- source territory = [BRAZIL, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory has too few armies to use in this attack!"
+
+### Test 16:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 3
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
+- source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory has too few armies to use in this attack!"
+
+### Test 17:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = PURPLE
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
+- source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- destination territory = [VENEZUELA, numArmiesInTerritory = 1, ownedBy = BLUE]
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory has too few defenders for this defense!"
+
+### Test 18:
+Input:
+- sourceTerritory = BRAZIL
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- numDefenders = 2
+- current game phase = ATTACK
+- currently going player = YELLOW
+- player pointer = [Color = YELLOW, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- sourceTerritory = [BRAZIL, numArmiesInTerritory = 7, ownedBy = YELLOW ]
+- destinationTerritory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE ]
+
+Output: N/A (input has no errors!)
+
+# method: `rollDiceForBattle(numAttackers: int, numDefenders: int): List<BattleResult>`
+
+This is part **2** of a series of method calls that constitute attacking in Risk. This is meant to be invoked AFTER
+calling the error handling method. Note that this isn't completely defenseless to bad input either, as this will
+interact with the DieRollParser, which has input validation of its own.
+
+## BVA Step 1
+Input: The number of attackers that will be participating in the battle, namely, the amount of attacker dice to roll,
+and the amount of defender dice to roll in the battle. Additionally, we will utilize our underlying dice manager to
+roll the dice, and parse the results for us.
+
+Output: A collection detailing the results of each "dice pairing", ordered in the way Risk calculates casualties.
+Namely, you always pair the highest dice against each other, then next highest, etc. Defender wins on ties.
+
+We also want to store the dice roll results for our users, as they likely want to know what they rolled as opposed to
+just seeing numbers go down. This means we should store:
+- The attacker dice roll results
+- The defender dice roll results
+- The overall battle result in its pairwise form
+This will be done utilizing fields / getters on the class.
+
+## BVA Step 2
+Input:
+- numAttackers: Interval [1, 3]
+- numDefenders: Interval [1, 2]
+- die roll parser: Pointer
+
+Output:
+- attackerDiceRolls: Collection
+- defenderDiceRolls: Collection
+- battleResults (will match method output): Collection 
+
+## BVA Step 3
+Input:
+- numAttackers (Interval):
+  - \<= 0 (error case, will be caught by DieRollParser)
+  - 1 (minimal amount of attackers allowed)
+  - 2
+  - 3 (maximal amount of attackers allowed)
+  - \>= 4 (error case, will be caught by DieRollParser)
+- numDefenders (Interval):
+  - \<= 0 (error case, will be caught by DieRollParser)
+  - 1 (minimal amount of defenders allowed)
+  - 2 (maximal amount of defenders allowed)
+  - \>= 3 (error case, will be caught by DieRollParser)
+- DieRollParser (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+
+Output:
+- attackerDiceRolls (Collection):
+  - Size should always match the number of attackers
+    - Assuming number of attackers was valid input
+  - Sorted in non-decreasing order (done by DieRollParser)
+  - Must be able to contain duplicates 
+- defenderDiceRolls (Collection):
+  - Size should always match the number of defenders
+    - Assuming number of defenders was valid input
+  - Sorted in non-decreasing order (done by DieRollParser)
+  - Must be able to contain duplicates
+- battleResults (Collection):
+  - Should have the same size as the minimum of the two inputs
+    - So if numDefenders is smaller, it has the same size as numDefenders.
+  - Must be able to contain duplicates
+
+## BVA Step 4
+### Test 1:
+Input:
+- numAttackers = 0
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]"
+
+### Test 2:
+Input:
+- numAttackers = 4
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 3]"
+
+### Test 3:
+Input:
+- numAttackers = 1
+- numDefenders = 0
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+
+### Test 4:
+Input:
+- numAttackers = 1
+- numDefenders = 3
+- die roll parser = A pointer to the true object
+
+Output:
+- IllegalArgumentException
+  - message: "Valid amount of dice is in the range [1, 2]"
+
+### Test 5:
+Input:
+- numAttackers = 1
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [5]
+- defenderDice = [6]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 6:
+- numAttackers = 1
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [4]
+- defenderDice = [3, 2]
+- battleResults = [ATTACKER_VICTORY]
+
+### Test 7:
+- numAttackers = 2
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [5, 2]
+- defenderDice = [5]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 8:
+- numAttackers = 2
+- numDefenders = 2
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [4, 3]
+- defenderDice = [5, 2]
+- battleResults = [DEFENDER_VICTORY, ATTACKER_VICTORY]
+
+### Test 9:
+- numAttackers = 3
+- numDefenders = 1
+- die roll parser = A pointer to the true object
+
+Output:
+- attackerDice = [2, 1, 1]
+- defenderDice = [5]
+- battleResults = [DEFENDER_VICTORY]
+
+### Test 10:
+- numAttackers = 3
+- numDefenders = 2
+- die roll parser = A pointer to the valid object
+
+Output:
+- attackerDice = [4, 2, 1]
+- defenderDice = [5, 5]
+- battleResults = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+
+# method: `handleArmyLosses(srcTerritory: TerritoryType, destTerritory: TerritoryType, battleResults: List<BattleResult>): AttackConsequence`
+
+This is part **3** of a series of method calls that constitute attacking in Risk. 
+
+## BVA Step 1
+Input: The respective territories the attack occurred between, and the results from rolling the dice in the current battle.
+
+Output: An enum that tells us whether the destination should change hands as a result of the attack.
+
+Additionally, this method will modify the number of armies in the respective territories just based on the battleResults.
+So if a defender goes down to 0 armies, a later method about taking over the territory will handle putting the respective
+attackers into the destination.
+
+## BVA Step 2
+Input:
+- srcTerritory, destTerritory: Cases
+- battleResults: Collection
+- source, dest territory objects: Pointer
+  - only care about the number of armies in each territory here, since we'll modify it
+
+Output:
+- method output: Cases
+- source, dest territory objects: Pointer
+  - Modifying the number of armies in each is the most important part
+
+## BVA Step 3
+Input:
+- srcTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK 
+  - The 0th, 43rd possibilities (can't set, Java enum)
+  - These should be adjacent if we did error validation correctly.
+- battleResults (Collection):
+  - An empty collection (can't set)
+  - A collection with 1 element
+  - A collection with 2 elements
+  - A collection with \> 2 elements (can't set)
+  - A collection with duplicates
+  - A collection without duplicates
+
+Output:
+- method output (Cases):
+  - DEFENDER_LOSES_TERRITORY
+  - NO_CHANGE
+  - The 0th, 3rd cases (can't set, Java enum)
+- source, dest territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - We care about modifying the number of armies present in the source, destination territory
+    - They will be modified according to the battle results 
+      - If an attacker wins twice, the defender loses two troops.
+
+## BVA Step 4
+### Test 1:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 2]
+
+### Test 2:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 1]
+
+### Test 3:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 1]
+
+Output:
+- method output: DEFENDER_LOSES_TERRITORY
+- source territory pointer = [SIAM, numArmies = 3] (note that we don't move any attackers yet!)
+- dest territory pointer = [CHINA, numArmies = 0]
+
+### Test 4:
+Input:
+- srcTerritory = SIAM
+- destTerritory = CHINA
+- battleResults = [ATTACKER_VICTORY, ATTACKER_VICTORY]
+- source territory pointer = [SIAM, numArmies = 3]
+- dest territory pointer = [CHINA, numArmies = 2]
+
+Output:
+- method output: DEFENDER_LOSES_TERRITORY
+- source territory pointer = [SIAM, numArmies = 3] (note that we don't move any attackers yet!)
+- dest territory pointer = [CHINA, numArmies = 0]
+
+### Test 5:
+Input:
+- srcTerritory = BRAZIL
+- destTerritory = PERU
+- battleResults = [ATTACKER_VICTORY, DEFENDER_VICTORY]
+- source territory pointer = [BRAZIL, numArmies = 3]
+- dest territory pointer = [PERU, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [BRAZIL, numArmies = 2]
+- dest territory pointer = [PERU, numArmies = 2]
+
+### Test 6:
+Input: 
+- srcTerritory = BRAZIL
+- destTerritory = PERU
+- battleResults = [DEFENDER_VICTORY]
+- source territory pointer = [BRAZIL, numArmies = 3]
+- dest territory pointer = [PERU, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [BRAZIL, numArmies = 2]
+- dest territory pointer = [PERU, numArmies = 3]
+
+### Test 7:
+Input:
+- srcTerritory = URAL
+- destTerritory = UKRAINE
+- battleResults = [DEFENDER_VICTORY, DEFENDER_VICTORY]
+- source territory pointer = [URAL, numArmies = 3]
+- dest territory pointer = [UKRAINE, numArmies = 3]
+
+Output:
+- method output: NO_CHANGE
+- source territory pointer = [URAL, numArmies = 1]
+- dest territory pointer = [UKRAINE, numArmies = 3]
+
+# method: `handleAttackerTakingTerritory(destTerritory: TerritoryType, numAttackers: int): PlayerColor`
+
+This is part **4** of a series of method calls that constitute attacking in Risk. It is intended to be called
+if we determine that the defending player will lose their territory as a result of the attack. 
+
+## BVA Step 1
+Input: The destination territory of the attack, the number of attackers utilized to take over the territory, as well
+as the underlying state of who's turn it is in the game. 
+
+Additionally, we'll need to know some information about the underlying state of the territory itself; as we want to 
+modify the amount of armies there and change who owns it. 
+
+Output: The PlayerColor of the Player who controlled the territory before us; and the underlying state of the
+territory object associated with the destination territory. 
+
+We're interested in increasing the number of armies present (bumping it up to `numAttackers`), and changing the
+PlayerColor for who owns it to the current player. We also want to modify the Player object associated with
+the current player to say they now own this territory; and say the defender no longer owns it.
+
+## BVA Step 2
+Input:
+- destTerritory: Cases
+- numAttackers: Interval [1, 3]
+- currently going player: Cases
+- attacking player object: Pointer
+- defending player object: Pointer
+- destination territory object: Pointer
+
+Output:
+- method output: Cases
+- destination territory object: Pointer
+  - This falls under both input and output because we want to make sure it changes.
+- attacking player object: Pointer
+- defending player object: Pointer
+
+## BVA Step 3
+Input:
+- destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd cases (can't set, Java enums)
+  - Should always line up with the destination territory used in all the other attacking related methods.
+- numAttackers (Interval):
+  - \<= 0 (error case, should be handled by former methods)
+  - 1
+  - 2
+  - 3
+  - \>= 4 (error case, should be handled by former methods)
+- currently going player (Cases):
+  - SETUP (error case)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK 
+  - The 0th, 8th possibility (can't set, Java enum)
+- destination territory object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to get information about WHO owns the territory beforehand (ownedBy = ?)
+    - So we'll have to cycle through the players in the game to determine this FIRST
+    - Should always be a player who is in the current game or something went really wrong before this method.
+    - Army modifications occur before output as well
+- player object(s) (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to add this territory to the attacking player's collection of owned territories
+    - Need to remove this territory from the defending player's collection of owned territories
+    - Cards cannot be properly used to award the 2 army bonus for owning a territory otherwise
+
+Output:
+- method output (Cases):
+  - SETUP (error case, should never happen if we're in the ATTACK phase)
+  - YELLOW
+  - ...
+  - BLACK
+  - The 0th, 8th possibility (can't set, Java enum)
+- destination territory object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Need to see that the number of armies in the territory = `numAttackers`
+    - Need to see that the owner's PlayerColor has changed to be the current player
+- player object(s) (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Make sure the newest territory is added to the attacker's owned territories; removed from defending player's territories.
+
+## BVA Step 4
+### Test 1:
+Input:
+- destTerritory = ALASKA
+- numAttackers = 1
+- currently going player = YELLOW
+- dest territory object = [ownedBy = PURPLE, numArmies = 0, ALASKA] 
+  - Note that numArmies should always be 0 otherwise we this has been called in the WRONG place.
+- attacking player object = [YELLOW, ownedTerritories = {YAKUTSK} ]
+- defending player object = [PURPLE, ownedTerritories = {ALASKA, NORTHWEST_TERRITORIES} ]
+
+Output: 
+- method output: PURPLE
+- dest territory object = [ownedBy = YELLOW, numArmies = 1, ALASKA]
+- attacking player object = [YELLOW, ownedTerritories = {YAKUTSK, ALASKA} ]
+- defending player object = [PURPLE, ownedTerritories = {NORTHWEST_TERRITORIES} ]
+
+### Test 2:
+Input:
+- destTerritory = VENEZUELA
+- numAttackers = 2
+- currently going player = GREEN
+- dest territory object = [ownedBy = BLACK, numArmies = 0, VENEZUELA]
+- attacking player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA} ]
+- defending player object = [BLACK, ownedTerritories = {VENEZUELA, CENTRAL_AMERICA, WESTERN_UNITED_STATES} ]
+
+Output:
+- method output: BLACK
+- dest territory object = [ownedBy = GREEN, numArmies = 2, VENEZUELA]
+- attacking player object = [GREEN, ownedTerritories = {PERU, BRAZIL, ARGENTINA, VENEZUELA} ]
+- defending player object = [BLACK, ownedTerritories = {CENTRAL_AMERICA, WESTERN_UNITED_STATES} ]
+
+### Test 3:
+Input:
+- destTerritory = EGYPT
+- numAttackers = 3
+- currently going player = BLUE
+- dest territory object = [ownedBy = RED, numArmies = 0, EGYPT]
+- attacking player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST} ]
+- defending player object = [RED, ownedTerritories = {EGYPT, YAKUTSK} ]
+
+Output:
+- method output: RED
+- dest territory object = [ownedBy = BLUE, numArmies = 3, EGYPT]
+- attacking player object = [BLUE, ownedTerritories = {SOUTHERN_EUROPE, CONGO, NORTH_AFRICA, MIDDLE_EAST, EGYPT} ]
+- defending player object = [RED, ownedTerritories = {YAKUTSK} ]
+
+# method: `handlePlayerLosingGameIfNecessary(player: PlayerColor): void`
+
+This is part **5** of a series of method calls that constitute attacking in Risk. If a defending player is left with 0
+territories as a result of an attack, this method will remove them from the game.
+
+## BVA Step 1
+Input: The player who has lost a territory as a result of the current attack, and may lose the game as a result. 
+
+We also need to know about: 
+- the underlying state of the entire map (as we need to know if this player owns NO territories).
+- the underlying state of the defending/attacking player objects as a player gives up the cards they own if they lose
+- the underlying state of the players list 
+  - This should already be NICELY set since we're in the ATTACK phase
+- the underlying state of the players map
+  - This should already be NICELY set since we're in the ATTACK phase
+
+Output: If the player owns no territories, the list of players (and map of players) will no longer contain the losing 
+player; their cards are transferred to the attacking player (namely the currently going player). 
+
+## BVA Step 2
+Input:
+- player: Cases
+- ALL territory objects held by the game: Pointer
+- defending/attacking player object: Pointer
+
+Output:
+- method output: N/A
+- playersList: Collection (only if player owns no territories will this be modified)
+- playersMap: Collection (only if player owns no territories will this be modified)
+- defending/attacking player object: Pointer
+
+## BVA Step 3
+Input: 
+- player: Cases
+  - SETUP (error case, can't set - should not happen if we are in the ATTACK phase)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+- territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - For each territory, we're looking to see who it's owned by.
+      - If the given player owns even one territory, then we don't handle anything related to deleting/transferring cards.
+      - So if the player owns [1, 42] nothing special happens with this method.
+- defending/attacking player object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - If the defending player is to be eliminated, we care about:
+      - The cards the attacking player currently holds
+      - The cards the defending player currently holds
+    - The defender's cards will be added to the attacker's collection before they are removed from the game.
+- playersList, playersMap (Collection):
+  - Both have a minimum size of 2 elements (whether it be just elements or key-value pairs)
+  - Both have a maximal size of 6 elements
+  - No duplicates
+  - Any other cases are an error that should've been handled BEFORE ever calling this one.
+
+Output:
+- playersList (Collection):
+  - If the player should in fact be removed, the number of elements in the collection should decrease by 1.
+- playersMap (Collection):
+  - If the player should in fact be removed, the number of elements in the collection should decrease by 1.
+- defending/attacking player object (Pointer):
+  - If the player should in fact be removed:
+    - Take the cards that the losing player owns
+    - Transfer them to attacking player's collection
+
+## BVA Step 4
+### Test 1:
+Input:
+- player: BLUE
+- territory objects:
+  - 41 are NOT owned by BLUE
+  - 1 IS owned by BLUE
+- defending/attacking player objects:
+  - attacker = [RED, ownedCards = {Wild Card, TerritoryCard = [BRAZIL, INFANTRY] } ]
+  - defender = [BLUE, ownedCards = {TerritoryCard = [ARGENTINA, ARTILLERY] } ]
+- playersList = [BLUE, BLACK, RED, YELLOW]
+- playersMap = [BLUE -> playerObject (defender), BLACK -> playerObject, RED -> playerObject (attacker), Yellow -> playerObject]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 2:
+Input:
+- player: GREEN
+- territory objects:
+  - 40 are NOT owned by GREEN
+  - 2 ARE owned by GREEN
+- defending/attacking player objects:
+  - attacker = [PURPLE, ownedCards = {} ]
+  - defender = [GREEN, ownedCards = {Wild Card} ]
+- playersList = [GREEN, PURPLE]
+- playersMap = [GREEN -> playerObject (defender), PURPLE -> playerObject (attacker)]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 3:
+Input:
+- player: YELLOW
+- territory objects: 
+  - 2 is NOT owned by YELLOW (think: 1 not owned by yellow should not be possible in the context of ATTACK and having yellow lose)
+  - 40 ARE owned by YELLOW
+- defending/attacking player objects:
+  - attacker = [BLACK, ownedCards = {} ]
+  - defender = [YELLOW, ownedCards = {} ]
+- playersList = [YELLOW, BLUE, RED, PURPLE, GREEN, BLACK]
+- playersMap = [YELLOW -> playerObject (defender), ..., BLACK -> playerObject (attacker)]
+
+Output:
+- playersList remains the same
+- playersMap remains the same
+- No cards are transferred
+
+### Test 4:
+Input:
+- player: BLUE
+- territory objects:
+  - All 42 are NOT owned by BLUE
+- defending/attacking player objects:
+  - attacker = [RED, ownedCards = {Wild Card}]
+  - defender = [BLUE, ownedCards = {}]
+- playersList = [RED, PURPLE, BLUE, GREEN]
+- playersMap = [RED -> playerObject (attacker), ..., BLUE -> playerObject (defender), ...]
+
+Output:
+- playersList = [RED, PURPLE, GREEN] (BLUE is eliminated)
+- playersMap = [RED -> playerObject (attacker), PURPLE -> playerObject, GREEN -> playerObject] (BLUE is eliminated)
+- Since BLUE (defender) had no cards, the attacker player object looks like how it started:
+  - attacker = [RED, ownedCards = {Wild Card}]
+  - defender = [BLUE, ownedCards = {} ] (though this object will no longer exist, so it doesn't really matter)
+
+### Test 5:
+Input:
+- player: GREEN
+- territory objects:
+  - All 42 are NOT owned by GREEN
+- defending/attacking player objects:
+  - attacker = [YELLOW, ownedCards = {Wild Card, Territory Card = [CONGO, ARTILLERY] } ]
+  - defender = [GREEN, ownedCards = {Territory Card = [IRKUTSK, INFANTRY], Territory Card = [UKRAINE, CAVALRY] } ]
+- playersList = [GREEN, PURPLE, YELLOW]
+- playersMap = [GREEN -> playerObject (defender), PURPLE -> playerObject, YELLOW -> playerObject (attacker)]
+
+Output:
+- playersList = [PURPLE, YELLOW] (GREEN is eliminated)
+- playersMap = [PURPLE -> playerObject, YELLOW -> playerObject (attacker)] (GREEN is eliminated)
+- attacker player object = [YELLOW, ownedCards = {Wild Card, Territory Card = [CONGO, ARTILLERY], Territory Card = [IRKUTSK, INFANTRY], Territory Card = [UKRAINE, CAVALRY] } ]
+- defender player object = [GREEN, ownedCards = {} ] (this will also no longer exist, so we don't really care to track it)
+
+# method: `handleCurrentPlayerWinningGameIfNecessary(): void`
+
+This is part **6** of a series of method calls that constitute attacking in Risk. This handles the win condition for 
+the class World Domination game mode.
+
+## BVA Step 1
+Input: The state of the whole game board, and who is currently going. We want to see if the current player owns all  
+the territories on the board.
+
+Output: The game phase will be changed to reflect that the game is over if the player owns all the territories, 
+otherwise it will remain the same. 
+
+## BVA Step 2
+Input:
+- ALL territory objects: Pointer
+- currently going player: Cases
+
+Output:
+- method output: N/A
+- current game phase: Cases
+
+## BVA Step 3
+Input:
+- ALL territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Want to check and see if the territory is owned by the currently going player.
+      - Attackers should own [2, 42] as input here...
+    - Don't care about any other fields with the territory.
+- currently going player (Cases):
+  - SETUP (can't set, per error checking being done beforehand)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+
+Output:
+- current game phase (Cases):
+  - Only two possible results:
+    - ATTACK (Player does NOT own all territories)
+    - GAME_OVER (Player OWNS all territories)
+  - Any other case should be an error, but we won't set it to other things either.
+
+## BVA Step 4
+### Test 1:
+Input:
+- all territory objects:
+  - current player OWNS 2 (attacker shouldn't be able to only own 1 after an attack)
+  - current player does NOT own 40
+- currently going player = PURPLE
+
+Output:
+- current game phase = ATTACK
+
+### Test 2:
+Input:
+- all territory objects:
+  - current player OWNS 3
+  - current player does NOT own 39
+- currently going player = GREEN
+
+Output:
+- current game phase = ATTACK
+
+### Test 3:
+Input:
+- all territory objects:
+  - current player OWNS 41
+  - current player does NOT own 1
+- currently going player = YELLOW
+
+Output:
+- current game phase = ATTACK
+
+### Test 4:
+Input:
+- all territory objects: 
+  - current player OWNS all 42
+- currently going player = BLACK
+
+Output:
+- current game phase = GAME_OVER
+
+### Test 5:
+Input:
+- all territory objects
+  - current player OWNS all 42
+- currently going player = RED
+
+Output:
+- current game phase = GAME_OVER
+
+# method: `moveArmiesBetweenFriendlyTerritories(srcTerritory: TerritoryType, destTerritory: TerritoryType, numArmies: int): void`
+
+## BVA Step 1
+Input: The two territories that the current player wants to move armies between, and the number of armies to move 
+between the two territories. This will interact with the underlying territory objects, so those must be considered as well.
+
+We also need to consider the game phase: if we're in the ATTACK phase, this can only be done after a territory is taken 
+over, and it HAS to utilize the territories that were just used in the attack.
+If we're in the FORTIFY phase, the phase needs to swing back around to PLACEMENT.
+
+Output: An exception if the movement is not able to be done (too many armies, territories are not adjacent, in the
+incorrect game phase, window to split armies in the attack phase has ended, either territory is not owned by current player). 
+
+If the movement is able to be done, then the source and destination territories will be modified.
+If this movement is done in the attack phase, then the player should lose the ability to split armies between the most
+RECENTLY attacked territories.
+(Namely, we can just remove those two territories from being recently attacked)
+If this movement is done in the fortify phase, then the fortify phase should end, and we should be on the next player's
+PLACEMENT phase.
+
+## BVA Step 2
+Input:
+- srcTerritory, destTerritory: Cases
+- numArmies: Interval [1, num armies present in territory - 1]
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+Output:
+- method output: N/A
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+## BVA Step 3
+Input:
+- srcTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+- numArmies (Interval):
+  - \<= 0 (error case)
+  - Anything in [1, num armies present in territory - 1] 
+    - 1
+    - num armies present in territory - 1
+  - \>= num armies present in territory (error case)
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - If either territory is not owned by the current player (error case)
+    - Source territory doesn't have enough armies to support the move (error case)
+    - Territories are not adjacent on the Risk map (error case)
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK 
+  - FORTIFY
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (error case)
+- recently attacked source, dest (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+  - These NEED to match up with the inputs provided as source & destination territory
+    - If we are in the attack phase and they do not, this is an error.
+- currently going player (Cases):
+  - Should always line up with the GameEngine's tracking.
+
+Output:
+- IllegalArgumentException if:
+  - Territories were not adjacent (message: "Source and destination territory must be two adjacent territories!")
+  - Territories are not owned by the current player (message: "Provided territories are not owned by the current player!")
+  - `numArmies` >= num armies in territory (message: "Source territory does not have enough armies to support this movement!")
+  - Called in attack, but armies are not able to be split between the two territories (message: "Cannot split armies between this source and destination!")
+- IllegalStateException if:
+  - Done in an incorrect game phase (message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!")
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Looking to see that `numArmies` was removed from source territory
+    - And that `numArmies` was added to the destination territory
+- current game phase (Cases):
+  - If we started in ATTACK, keep it in ATTACK, but remove the ability to split armies
+    - Assuming they had the ability to split armies at first
+    - Namely, clear the recently attacked source and dest
+  - If we started in FORTIFY, move to the PLACEMENT phase of the next player.
+- recently attacked source, destination: Cases
+  - These values NEED to be CLEARED if we are in the attack phase.
+- currently going player (Cases):
+  - If we are in the ATTACK phase, should remain the same player.
+  - If we are in the FORTIFY phase, should ADVANCE to the next player in turn order.
+
+## BVA Step 4
+### Test 1:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = BRAZIL
+- numArmies = 1
+- current game phase = ATTACK
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = BRAZIL
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source and destination territory must be two adjacent territories!"
+
+### Test 2:
+Input:
+Input:
+- srcTerritory = CONGO
+- destTerritory = CHINA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [CONGO, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [CHINA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = CONGO
+- recently attacked dest = CHINA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source and destination territory must be two adjacent territories!"
+
+### Test 3:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = YELLOW]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 4:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 5:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = BLUE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Provided territories are not owned by the current player!"
+
+### Test 6:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 2
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 7:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 3
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 8:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 12
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalArgumentException
+  - message: "Source territory does not have enough armies to support this movement!"
+
+### Test 9:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = SCRAMBLE
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalStateException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 10:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = SETUP
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalStateException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 11:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = PLACEMENT
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- IllegalStateException
+  - message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!"
+
+### Test 12:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = ALASKA
+- recently attacked dest = NORTHWEST_TERRITORIES
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 13:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = IRKUTSK
+- recently attacked dest = KAMCHATKA
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 14:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = UKRAINE
+- recently attacked dest = URAL
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot split armies between this source and destination!"
+
+### Test 15:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+- current game phase = ATTACK
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = PURPLE
+
+### Test 16:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = 2
+- source territory pointer = [ALASKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 5, ownedBy = PURPLE]
+- current game phase = ATTACK
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = PURPLE
+
+### Test 17:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = FORTIFY
+- numArmies = 1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ANY (likely null)
+- recently attacked dest = ANY (likely null)
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+- current game phase = PLACEMENT
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = GREEN
+  - imagine that player order was [PURPLE, GREEN, ...]
+
+# method: `forceGamePhaseToEnd(): void`
+
+## BVA Step 1
+Input: The current phase that the game is in, who's turn it is in the game.
+
+Output: An updated form of the current game phase, who's turn it is. An IllegalStateException if this
+is called from a phase that the player cannot forcibly end; and must do it via game actions instead.
+
+## BVA Step 2
+Input: 
+- current game phase (Cases)
+- currently going player (Cases)
+
+Output:
+- current game phase (Cases)
+- currently going player (Cases)
+- IllegalStateException 
+
+## BVA Step 3
+Input:
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK
+  - FORTIFY
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (can't set, Java enum)
+- currently going player (Cases):
+  - SETUP (error case; should be handled by this point)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+
+Output:
+- IllegalStateException if:
+  - called from game phases:
+    - SCRAMBLE
+    - SETUP
+    - PLACEMENT
+    - GAME_OVER
+- current game phase (Cases):
+  - FORTIFY, if we started in ATTACK
+  - PLACEMENT, if we started in FORTIFY
+    - Update the currently going player, too.
+- currently going player (Cases):
+  - The exact same player we had before calling this method if in ATTACK
+  - The next player to go in turn order if we called in FORTIFY
+    - Note that we'll also draw the current player's card
+      - This BVA will be elaborated on in a different method.
+
+## BVA Step 4
+### Test 1:
+Input:
+- current game phase = SCRAMBLE
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this game phase!"
+
+### Test 2:
+Input:
+- current game phase = SETUP
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 3:
+Input:
+- current game phase = PLACEMENT
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 4:
+Input:
+- current game phase = GAME_OVER
+- currently going player = GREEN
+
+Output:
+- IllegalStateException
+  - message: "Cannot forcibly end this phase!"
+
+### Test 5:
+Input:
+- current game phase = ATTACK
+- currently going player = RED
+
+Output:
+- current game phase = FORTIFY
+- currently going player = RED
+
+### Test 6:
+Input:
+- current game phase = ATTACK
+- currently going player = YELLOW
+
+Output:
+- current game phase = FORTIFY
+- currently going player = YELLOW
+
+### Test 7:
+Input:
+- current game phase = FORTIFY
+- currently going player = GREEN
+
+Output:
+- current game phase = PLACEMENT
+- currently going player = BLACK
+  - player order might've been [... -> GREEN -> BLACK -> ...]
+
+### Test 8:
+Input:
+- current game phase = FORTIFY
+- currently going player = BLACK
+
+Output:
+- current game phase = PLACEMENT
+- currently going player = PURPLE
+  - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]

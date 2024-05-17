@@ -15,7 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
-public class SceneController {
+class SceneController {
     private static SceneController sceneController;
     private static String languageName = "English";
     private final Map<SceneType, Pane> screenMap = new HashMap<>();

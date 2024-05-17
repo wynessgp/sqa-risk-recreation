@@ -68,19 +68,19 @@ Output: Boolean
 # Method: `setNumArmiesPresent(newAmount: int): boolean`
 
 ## BVA Step 1
-Input: A positive number of armies to be placed on the territory.
+Input: A non-negative number of armies to be placed on the territory.
 
 Output: Yes or no answer whether we could change the amount of armies in the given territory.
 
 ## BVA Step 2
-Input: Counts [1, num armies player has in total]
+Input: Counts [0, num armies player has in total]
 
 Output: Boolean
 
 ## BVA Step 3
 Input: 
 - -1 (error case)
-- 0 (error case; it should only ever be 0 due to set up)
+- 0 
 - 1
 - \>1
 - Num armies the player has in total 
@@ -95,18 +95,22 @@ Output: Boolean
 ### Test 1:
 - Input: newAmount = -1
 - Output: IllegalArgumentException
-  - message: "Number of armies to set should be greater than 0"
+  - message: "Number of armies to set should be >= 0"
 
 ### Test 2:
-- Input: newAmount = 0
+- Input: newAmount = Integer.MIN_VALUE 
 - Output: IllegalArgumentException
-  - message: "Number of armies to set should be greater than 0"
-  
+  - message: "Number of armies to set should be >= 0"
+
 ### Test 3:
+- Input: newAmount = 0
+- Output: True
+  
+### Test 4:
 - Input: newAmount = 1
 - Output: True
 
-### Test 4:
+### Test 5:
 - Input: newAmount = 24
 - Output: True
 
