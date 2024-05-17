@@ -1,6 +1,6 @@
 package domain;
 
-public enum AttackConsequence {
+enum AttackConsequence {
     DEFENDER_LOSES_TERRITORY,
     NO_CHANGE
 }
