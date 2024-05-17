@@ -834,4 +834,54 @@ public class WorldDominationGameEngineIntegrationTest {
         String expectedMessage = "Number of armies to attack with must be within [1, 3]!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    private static Stream<Arguments> generateAdjacentTerritoryPairsAndInvalidAmountInSourceCombos() {
+        List<Arguments> territoryPairs = generateAdjacentTerritoryPairs().collect(Collectors.toList());
+        List<Integer> armyInTerritoryAmounts = List.of(1, 1, 1, 2, 2, 3);
+        List<Integer> numAttackerAmounts = List.of(1, 2, 3, 2, 3, 3);
+        Set<Arguments> toStream = new HashSet<>();
+
+        for (Arguments territoryPair : territoryPairs) {
+            int index = 0;
+            for (Integer armyInTerritoryAmount : armyInTerritoryAmounts) {
+                Object[] territories = territoryPair.get();
+                toStream.add(Arguments.of(territories[0], territories[1], armyInTerritoryAmount,
+                        numAttackerAmounts.get(index)));
+                index++;
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairsAndInvalidAmountInSourceCombos")
+    public void test25_attackTerritory_invalidNumArmiesInSource_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInTerritory, int numAttackers) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for Blue
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for Black
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        if (numArmiesInTerritory != 1) { // if it is 1, we will error during placement.
+            assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, numArmiesInTerritory - 1));
+        }
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLACK);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 5));
+
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.attackTerritory(sourceTerritory, destTerritory, numAttackers, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory has too few armies to use in this attack!";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
