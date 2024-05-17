@@ -1,12 +1,16 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1288,4 +1292,1183 @@ public class WorldDominationGameEngineTest {
     public void test38_tradeInCards_validInput_expectReturnSetOfSizeOne() {
         testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
     }
+
+    @ParameterizedTest
+    @EnumSource(TerritoryType.class)
+    public void test39_handleErrorCasesForAttackingTerritory_inputIsDuplicatedTerritory_expectException(
+            TerritoryType duplicateTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(duplicateTerritory, duplicateTerritory,
+                        3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateNonAdjacentTerritories() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        toStream.add(Arguments.of(TerritoryType.IRKUTSK, TerritoryType.ALASKA));
+        toStream.add(Arguments.of(TerritoryType.PERU, TerritoryType.YAKUTSK));
+        toStream.add(Arguments.of(TerritoryType.ALBERTA, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.ARGENTINA, TerritoryType.MADAGASCAR));
+        toStream.add(Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.INDONESIA, TerritoryType.EASTERN_AUSTRALIA));
+        toStream.add(Arguments.of(TerritoryType.CHINA, TerritoryType.GREAT_BRITAIN));
+        toStream.add(Arguments.of(TerritoryType.MONGOLIA, TerritoryType.EASTERN_UNITED_STATES));
+        toStream.add(Arguments.of(TerritoryType.UKRAINE, TerritoryType.BRAZIL));
+        toStream.add(Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.CONGO));
+        toStream.add(Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.CENTRAL_AMERICA));
+        toStream.add(Arguments.of(TerritoryType.SIAM, TerritoryType.JAPAN));
+        toStream.add(Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.BRAZIL));
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritories")
+    public void test40_handleErrorCasesForAttackingTerritory_inputTerritoriesAreNotAdjacent_expectException(
+            TerritoryType firstTerritory, TerritoryType nonAdjacentTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(firstTerritory, nonAdjacentTerritory)).andReturn(false);
+
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(firstTerritory, nonAdjacentTerritory, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
+    public void test41_handleErrorCasesForAttackingTerritory_sourceTerritoryNotOwnedByPlayer_expectException(
+            TerritoryType sourceTerritory, PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        Territory mockedTerritory = createMockedTerritoryReturnsFalseForIsOwnedBy(currentPlayer);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, TerritoryType.ALASKA)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedTerritory).anyTimes();
+
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(sourceTerritory, TerritoryType.ALASKA, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory is not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
+    public void test42_handleErrorCasesForAttackingTerritory_destinationTerritoryOwnedByCurrentPlayer_expectException(
+            TerritoryType destinationTerritory, PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        Territory mockedTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(true);
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(currentPlayer)).andReturn(true);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(TerritoryType.ALASKA, destinationTerritory)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska);
+        EasyMock.expect(mockedGraph.getTerritory(destinationTerritory)).andReturn(mockedTerritory);
+
+        EasyMock.replay(mockedGraph, mockedTerritory, mockedAlaska);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA, destinationTerritory,
+                        3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Destination territory is owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph, mockedTerritory, mockedAlaska);
+    }
+
+    private static Stream<Arguments> generateAllPhasesBesidesAttack() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        for (GamePhase gamePhase : GamePhase.values()) {
+            if (gamePhase != GamePhase.ATTACK) {
+                toStream.add(Arguments.of(gamePhase));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesBesidesAttack")
+    public void test43_handleErrorCasesForAttackingTerritory_gamePhaseIsNotAttack_expectException(
+            GamePhase providedGamePhase) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(providedGamePhase);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Attacking territories is not allowed in any phase besides attack!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 4, 17, Integer.MAX_VALUE})
+    public void test44_handleErrorCasesForAttackingTerritory_invalidAmountOfAttackers_expectException(
+            int illegalAttackerAmount) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, illegalAttackerAmount, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Number of armies to attack with must be within [1, 3]!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 3, 17, Integer.MAX_VALUE})
+    public void test45_handleErrorCasesForAttackingTerritory_invalidAmountOfDefenders_expectException(
+            int illegalDefenderAmount) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, 3, illegalDefenderAmount));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Number of armies to defend with must be within [1, 2]!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6, 7, 15, Integer.MAX_VALUE})
+    public void test46_handleErrorCasesForAttackingTerritory_playerHasTooManyCards_expectException(
+            int illegalAmountOfCards) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(illegalAmountOfCards);
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        Territory mockedNorthwestTerritories = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedNorthwestTerritories.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(
+                TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.NORTHWEST_TERRITORY))
+                .andReturn(mockedNorthwestTerritories);
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, 3, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Player must trade in cards before they can attack!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+    }
+
+    private static Stream<Arguments> generateInvalidAmountOfAttackerArmiesInTerritoryPairs() {
+        return Stream.of(Arguments.of(3, 3), Arguments.of(2, 3), Arguments.of(2, 2),
+                Arguments.of(1, 3), Arguments.of(1, 2), Arguments.of(1, 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidAmountOfAttackerArmiesInTerritoryPairs")
+    public void test47_handleErrorCasesForAttackingTerritory_sourceTerritoryHasTooFewAttackers_expectException(
+            int numArmiesInSourceTerritory, int numAttackers) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3); // safe, valid amount
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        Territory mockedNorthwestTerritories = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedAlaska.getNumArmiesPresent()).andReturn(numArmiesInSourceTerritory);
+        EasyMock.expect(mockedNorthwestTerritories.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(
+                TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.NORTHWEST_TERRITORY))
+                .andReturn(mockedNorthwestTerritories);
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, numAttackers, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory has too few armies to use in this attack!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+    }
+
+    @Test
+    public void test48_handleErrorCasesForAttackingTerritory_destinationTerritoryHasTooFewDefenders_expectException() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3); // safe, valid amount
+
+        Territory mockedAlaska = EasyMock.createMock(Territory.class);
+        Territory mockedNorthwestTerritories = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedAlaska.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedAlaska.getNumArmiesPresent()).andReturn(3);
+        EasyMock.expect(mockedNorthwestTerritories.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+        EasyMock.expect(mockedNorthwestTerritories.getNumArmiesPresent()).andReturn(1);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(
+                TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedAlaska).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.NORTHWEST_TERRITORY))
+                .andReturn(mockedNorthwestTerritories).anyTimes();
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.handleErrorCasesForAttackingTerritory(TerritoryType.ALASKA,
+                        TerritoryType.NORTHWEST_TERRITORY, 2, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Destination territory has too few defenders for this defense!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedAlaska, mockedNorthwestTerritories);
+    }
+
+    private static Stream<Arguments> generateAdjacentTerritoryPairs() {
+        // just pick a few adjacent territory pairs.
+        return Stream.of(
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.EGYPT),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDIA),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.WESTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.INDONESIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test49_handleErrorCasesForAttackingTerritory_validInput_expectNoException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(3); // safe, valid amount
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        Territory mockedDestination = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.RED)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(3);
+        EasyMock.expect(mockedDestination.isOwnedByPlayer(PlayerColor.RED)).andReturn(false);
+        EasyMock.expect(mockedDestination.getNumArmiesPresent()).andReturn(1);
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDestination).anyTimes();
+
+        EasyMock.replay(mockedPlayer, mockedGraph, mockedSource, mockedDestination);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertDoesNotThrow(() -> unitUnderTest.handleErrorCasesForAttackingTerritory(
+                sourceTerritory, destTerritory, 2, 1));
+
+        EasyMock.verify(mockedPlayer, mockedGraph, mockedSource, mockedDestination);
+    }
+
+    private static Stream<Arguments> generateInvalidInputsForRollDiceForBattle() {
+        int attackerUpperBound = 3;
+        int defenderUpperBound = 2;
+        return Stream.of(
+                Arguments.of(Integer.MIN_VALUE, 2, attackerUpperBound),
+                Arguments.of(-1, 2, attackerUpperBound),
+                Arguments.of(0, 2, attackerUpperBound),
+                Arguments.of(4, 2, attackerUpperBound),
+                Arguments.of(Integer.MAX_VALUE, 2, attackerUpperBound),
+                Arguments.of(1, Integer.MIN_VALUE, defenderUpperBound),
+                Arguments.of(1, -1, defenderUpperBound),
+                Arguments.of(1, 0, defenderUpperBound),
+                Arguments.of(1, 3, defenderUpperBound),
+                Arguments.of(1, Integer.MAX_VALUE, defenderUpperBound)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidInputsForRollDiceForBattle")
+    public void test50_rollDiceForBattle_invalidInput_expectException(
+            int numAttackers, int numDefenders, int upperBoundOnError) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideDieRollParser(new DieRollParser());
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.rollDiceForBattle(numAttackers, numDefenders));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = String.format("Valid amount of dice is in the range [1, %d]", upperBoundOnError);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateValidInputsForRollDiceAndOutputs() {
+        return Stream.of(
+                Arguments.of(1, 1, List.of(5), List.of(6), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(1, 2, List.of(4), List.of(3, 2), List.of(BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(2, 1, List.of(5, 2), List.of(5), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(2, 2, List.of(4, 3), List.of(5, 2), List.of(BattleResult.DEFENDER_VICTORY,
+                        BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(3, 1, List.of(2, 1, 1), List.of(5), List.of(BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(3, 2, List.of(4, 2, 1), List.of(5, 5), List.of(BattleResult.DEFENDER_VICTORY,
+                        BattleResult.DEFENDER_VICTORY))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForRollDiceAndOutputs")
+    public void test51_rollDiceForBattle_validInput_expectSpecificOutput(
+            int numAttackers, int numDefenders, List<Integer> attackRolls,
+            List<Integer> defenseRolls, List<BattleResult> battleResults) {
+
+        DieRollParser mockedDieRollParser = EasyMock.createMock(DieRollParser.class);
+        EasyMock.expect(mockedDieRollParser.rollAttackerDice(numAttackers)).andReturn(attackRolls);
+        EasyMock.expect(mockedDieRollParser.rollDefenderDice(numDefenders)).andReturn(defenseRolls);
+        EasyMock.expect(mockedDieRollParser.generateBattleResults(attackRolls, defenseRolls)).andReturn(battleResults);
+
+        EasyMock.replay(mockedDieRollParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideDieRollParser(mockedDieRollParser);
+
+        assertEquals(battleResults, unitUnderTest.rollDiceForBattle(numAttackers, numDefenders));
+
+        assertEquals(attackRolls, unitUnderTest.getAttackerDiceRolls());
+        assertEquals(defenseRolls, unitUnderTest.getDefenderDiceRolls());
+        assertEquals(battleResults, unitUnderTest.getBattleResults());
+
+        EasyMock.verify(mockedDieRollParser);
+    }
+
+    private static Stream<Arguments> generateNoChangeInputsForHandleArmyLosses() {
+        return Stream.of(
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA, List.of(BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY)),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.PERU,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(TerritoryType.URAL, TerritoryType.UKRAINE,
+                        List.of(BattleResult.DEFENDER_VICTORY, BattleResult.DEFENDER_VICTORY)),
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.NEW_GUINEA, List.of(BattleResult.DEFENDER_VICTORY))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNoChangeInputsForHandleArmyLosses")
+    public void test52_handleArmyLosses_inputsResultInNoChange_expectNoChangeAsResult(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults) {
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(3).anyTimes();
+        int numAttackersRemaining = 3 - Collections.frequency(battleResults, BattleResult.DEFENDER_VICTORY);
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numAttackersRemaining)).andReturn(true).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(3).anyTimes();
+        int numDefendersRemaining = 3 - Collections.frequency(battleResults, BattleResult.ATTACKER_VICTORY);
+        EasyMock.expect(mockedDest.setNumArmiesPresent(numDefendersRemaining)).andReturn(true).anyTimes();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(destinationTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedSource, mockedDest, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertEquals(AttackConsequence.NO_CHANGE,
+                unitUnderTest.handleArmyLosses(sourceTerritory, destinationTerritory, battleResults));
+
+        EasyMock.verify(mockedSource, mockedDest, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateDefenderLosesTerritoryInputsForHandleArmyLosses() {
+        return Stream.of(
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA, List.of(BattleResult.ATTACKER_VICTORY), 1),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.CHINA,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY), 2),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.CONGO, List.of(BattleResult.ATTACKER_VICTORY), 1),
+                Arguments.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.GREAT_BRITAIN,
+                        List.of(BattleResult.ATTACKER_VICTORY, BattleResult.ATTACKER_VICTORY), 2)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateDefenderLosesTerritoryInputsForHandleArmyLosses")
+    public void test53_handleArmyLosses_inputsResultInDefenderLosingTerritory_expectDefenderLosesTerritory(
+            TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults,
+            int initialNumDefenders) {
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(3).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(3)).andReturn(true); // note that the attacker will
+        // never lose any armies in an attack in the event that they take over a territory
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(initialNumDefenders).once();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(0)).andReturn(true).anyTimes();
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(0).once();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(destinationTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedSource, mockedDest, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        assertEquals(AttackConsequence.DEFENDER_LOSES_TERRITORY,
+                unitUnderTest.handleArmyLosses(sourceTerritory, destinationTerritory, battleResults));
+
+        EasyMock.verify(mockedSource, mockedDest, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateAllValidCombosForHandleAttacker() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Integer> validNumAttackers = List.of(1, 2, 3);
+        List<PlayerColor> validPlayerColors = new ArrayList<>(List.of(PlayerColor.values()));
+        validPlayerColors.remove(PlayerColor.SETUP);
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            for (Integer numAttackers : validNumAttackers) {
+                for (PlayerColor attackingPlayer : validPlayerColors) {
+                    for (PlayerColor defendingPlayer : validPlayerColors) {
+                        if (attackingPlayer != defendingPlayer) {
+                            toStream.add(Arguments.of(territory, numAttackers, attackingPlayer, defendingPlayer));
+                        }
+                    }
+                }
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllValidCombosForHandleAttacker")
+    public void test54_handleAttackerTakingTerritory_validInput_expectPlayerColorOfDefendingPlayer(
+            TerritoryType destTerritory, int numAttackers, PlayerColor attackingPlayer, PlayerColor defendingPlayer) {
+
+        Territory mockedDestTerritory = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDestTerritory.isOwnedByPlayer(attackingPlayer)).andReturn(false).once();
+        EasyMock.expect(mockedDestTerritory.isOwnedByPlayer(defendingPlayer)).andReturn(true).once();
+        EasyMock.expect(mockedDestTerritory.setNumArmiesPresent(numAttackers)).andReturn(true).once();
+        EasyMock.expect(mockedDestTerritory.setPlayerInControl(attackingPlayer)).andReturn(true).once();
+
+        Player mockedAttacker = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(attackingPlayer)
+                .addMockedMethod("addTerritoryToCollection")
+                .createMock();
+        mockedAttacker.addTerritoryToCollection(destTerritory);
+        EasyMock.expectLastCall().once();
+
+        Player mockedDefender = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(defendingPlayer)
+                .addMockedMethod("removeTerritoryFromCollection")
+                .createMock();
+        mockedDefender.removeTerritoryFromCollection(destTerritory);
+        EasyMock.expectLastCall().once();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDestTerritory).anyTimes();
+
+        EasyMock.replay(mockedDestTerritory, mockedAttacker, mockedDefender, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.setPlayerOrderList(List.of(attackingPlayer, defendingPlayer));
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedAttacker, mockedDefender));
+
+        assertEquals(defendingPlayer, unitUnderTest.handleAttackerTakingTerritory(destTerritory, numAttackers));
+
+        EasyMock.verify(mockedDestTerritory, mockedAttacker, mockedDefender, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateInputsForHandlePlayerLosingGameIfNecessary() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Integer> ownedTerritoryIndex = List.of(1, 2, 17, 30, 41);
+        List<PlayerColor> playerInQuestion = List.of(PlayerColor.PURPLE, PlayerColor.BLACK, PlayerColor.YELLOW,
+                PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED);
+        // we should make these lists mutable, so we can potentially remove players...
+        List<List<PlayerColor>> playersListContainingPotentiallyLosingPlayer = List.of(
+                new ArrayList<>(List.of(PlayerColor.BLACK, PlayerColor.PURPLE, PlayerColor.GREEN)),
+                new ArrayList<>(List.of(PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.BLACK, PlayerColor.BLUE)),
+                new ArrayList<>(List.of(PlayerColor.BLUE, PlayerColor.YELLOW)),
+                new ArrayList<>(List.of(PlayerColor.PURPLE, PlayerColor.GREEN, PlayerColor.BLUE, PlayerColor.RED,
+                        PlayerColor.BLACK, PlayerColor.YELLOW)),
+                new ArrayList<>(List.of(PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.PURPLE,
+                        PlayerColor.BLUE)),
+                new ArrayList<>(List.of(PlayerColor.RED, PlayerColor.PURPLE))
+        );
+
+        for (Integer index : ownedTerritoryIndex) {
+            for (PlayerColor player : playerInQuestion) {
+                int indexOfPlayer = playerInQuestion.indexOf(player);
+                toStream.add(Arguments.of(index, player,
+                        playersListContainingPotentiallyLosingPlayer.get(indexOfPlayer)));
+            }
+        }
+
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInputsForHandlePlayerLosingGameIfNecessary")
+    public void test55_handlePlayerLosingGameIfNecessary_playerHasNotLost_expectCollectionsToRemainTheSame(
+            int ownedTerritoryIndex, PlayerColor potentiallyLosingPlayer, List<PlayerColor> playersList) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        List<Territory> allMockedTerritories = new ArrayList<>();
+
+        int currentIndex = 0;
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            allMockedTerritories.add(mockedTerritory);
+            if (currentIndex < ownedTerritoryIndex) {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(false);
+                EasyMock.replay(mockedTerritory);
+                currentIndex++;
+            } else {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(potentiallyLosingPlayer)).andReturn(true);
+                EasyMock.replay(mockedTerritory);
+                break;
+            }
+        }
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.setPlayerOrderList(playersList);
+        List<Player> playerObjects = new ArrayList<>();
+        for (PlayerColor player : playersList) {
+            playerObjects.add(new Player(player));
+        }
+        unitUnderTest.provideMockedPlayerObjects(playerObjects);
+
+        unitUnderTest.handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer);
+
+        assertTrue(unitUnderTest.getPlayerOrder().contains(potentiallyLosingPlayer));
+        assertTrue(unitUnderTest.getPlayerMap().containsKey(potentiallyLosingPlayer));
+
+        EasyMock.verify(mockedGraph);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    private static Stream<Arguments> generateLosingPlayerCardsAndRespectivePlayersAndPlayerList() {
+        return Stream.of(
+                Arguments.of(
+                        Set.of(),
+                        PlayerColor.RED, PlayerColor.BLUE,
+                        new ArrayList<>(List.of(PlayerColor.RED, PlayerColor.PURPLE,
+                                PlayerColor.BLUE, PlayerColor.GREEN))),
+                Arguments.of(
+                        Set.of(new TerritoryCard(TerritoryType.IRKUTSK, PieceType.INFANTRY),
+                                new TerritoryCard(TerritoryType.UKRAINE, PieceType.CAVALRY)),
+                        PlayerColor.YELLOW, PlayerColor.GREEN,
+                        new ArrayList<>(List.of(PlayerColor.YELLOW, PlayerColor.PURPLE, PlayerColor.GREEN)))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateLosingPlayerCardsAndRespectivePlayersAndPlayerList")
+    public void test56_handlePlayerLosingGameIfNecessary_playerLosesGame_expectCardTransferAndCollectionsChange(
+            Set<Card> losingPlayerCards, PlayerColor attackerColor, PlayerColor defenderColor,
+            List<PlayerColor> playersList) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        List<Territory> allMockedTerritories = new ArrayList<>();
+
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(defenderColor)).andReturn(false);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            allMockedTerritories.add(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        Map<PlayerColor, Player> playersMap = new HashMap<>();
+        List<Player> mockedPlayerObjects = new ArrayList<>(); // verify that everything happened at the end.
+        for (PlayerColor player : playersList) {
+            Player mockedPlayer = EasyMock.createMock(Player.class);
+            if (player == attackerColor) {
+                mockedPlayer.addCardsToCollection(losingPlayerCards);
+                EasyMock.expectLastCall().once();
+            } else if (player == defenderColor) {
+                EasyMock.expect(mockedPlayer.getOwnedCards()).andReturn(losingPlayerCards);
+                EasyMock.expectLastCall().once();
+            }
+            playersMap.put(player, mockedPlayer);
+            EasyMock.replay(mockedPlayer);
+            mockedPlayerObjects.add(mockedPlayer);
+        }
+        unitUnderTest.provideMockedPlayersMap(playersMap);
+        unitUnderTest.provideCurrentPlayerForTurn(attackerColor);
+        unitUnderTest.handlePlayerLosingGameIfNecessary(defenderColor);
+
+        assertFalse(unitUnderTest.getPlayerOrder().contains(defenderColor));
+        assertFalse(unitUnderTest.getPlayerMap().containsKey(defenderColor));
+
+        EasyMock.verify(mockedGraph);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+
+        for (Player mockedPlayer : mockedPlayerObjects) {
+            EasyMock.verify(mockedPlayer);
+        }
+    }
+
+    private static Stream<Arguments> generateNonWinningArgumentsForHandleCurrentPlayerWinning() {
+        Set<Arguments> toStream = new HashSet<>();
+
+        List<Integer> territoryIndices = List.of(2, 3, 4, 17, 30, 31, 40, 41);
+        List<PlayerColor> allPlayersWithoutSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        allPlayersWithoutSetup.remove(PlayerColor.SETUP);
+
+        for (Integer index : territoryIndices) {
+            for (PlayerColor player : allPlayersWithoutSetup) {
+                toStream.add(Arguments.of(index, player));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonWinningArgumentsForHandleCurrentPlayerWinning")
+    public void test57_handleCurrentPlayerWinningGameIfNecessary_currentPlayerDoesNotWin_expectGameInAttackPhase(
+            int indexOfFirstNonOwnedTerritory, PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        int currentIndex = 0;
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            if (currentIndex == indexOfFirstNonOwnedTerritory) {
+                // add one extra territory to stop us from rolling over...
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(false);
+                EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+                EasyMock.replay(mockedTerritory);
+                break;
+            }
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(currentPlayer)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+            currentIndex++;
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        unitUnderTest.handleCurrentPlayerWinningGameIfNecessary();
+
+        assertEquals(GamePhase.ATTACK, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedGraph);
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetup() {
+        List<PlayerColor> playersWithoutSetup = new ArrayList<>(List.of(PlayerColor.values()));
+        playersWithoutSetup.remove(PlayerColor.SETUP);
+
+        return playersWithoutSetup.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test58_handleCurrentPlayerWinningGameIfNecessary_currentPlayerWins_expectGameInGameOverPhase(
+            PlayerColor winningPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mockedTerritory.isOwnedByPlayer(winningPlayer)).andReturn(true);
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory);
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+        EasyMock.replay(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(winningPlayer);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        unitUnderTest.handleCurrentPlayerWinningGameIfNecessary();
+
+        assertEquals(GamePhase.GAME_OVER, unitUnderTest.getCurrentGamePhase());
+
+        EasyMock.verify(mockedGraph);
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritories")
+    public void test59_moveArmiesBetweenFriendlyTerritories_territoriesAreNotAdjacent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(false);
+        EasyMock.replay(mockedGraph);
+
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test60_moveArmiesBetweenFriendlyTerritories_sourceIsNotOwnedByCurrentPlayer_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource);
+
+        EasyMock.replay(mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedSource, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test61_moveArmiesBetweenFriendlyTerritories_destIsNotOwnedByCurrentPlayer_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource);
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(false);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest);
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateInvalidNumArmiesInTerritoryAndAmountToMovePairs() {
+        return Stream.of(
+                Arguments.of(1, 1),
+                Arguments.of(1, 2),
+                Arguments.of(1, Integer.MAX_VALUE),
+                Arguments.of(2, 2),
+                Arguments.of(2, 3),
+                Arguments.of(2, Integer.MAX_VALUE),
+                Arguments.of(3, 3),
+                Arguments.of(3, 27),
+                Arguments.of(3, Integer.MAX_VALUE)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidNumArmiesInTerritoryAndAmountToMovePairs")
+    public void test62_moveArmiesBetweenFriendlyTerritories_notEnoughArmiesInSource_expectException(
+            int numArmiesInTerritory, int invalidAmountToMoveOut) {
+        TerritoryType alaska = TerritoryType.ALASKA;
+        TerritoryType kamchatka = TerritoryType.KAMCHATKA;
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(alaska, kamchatka)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInTerritory).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(alaska)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(kamchatka)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(alaska, kamchatka, invalidAmountToMoveOut));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory does not have enough armies to support this movement!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateAllPhasesMinusAttackAndFortify() {
+        List<GamePhase> allPhasesMinusAttackAndFortify = new ArrayList<>(List.of(GamePhase.values()));
+        allPhasesMinusAttackAndFortify.remove(GamePhase.ATTACK);
+        allPhasesMinusAttackAndFortify.remove(GamePhase.FORTIFY);
+
+        return allPhasesMinusAttackAndFortify.stream().map(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesMinusAttackAndFortify")
+    public void test63_moveArmiesBetweenFriendlyTerritories_invalidGamePhase_expectException(
+            GamePhase invalidGamePhase) {
+        TerritoryType alaska = TerritoryType.ALASKA;
+        TerritoryType kamchatka = TerritoryType.KAMCHATKA;
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(alaska, kamchatka)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(alaska)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(kamchatka)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        unitUnderTest.setGamePhase(invalidGamePhase);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(alaska, kamchatka, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Friendly army movement can only be done in the ATTACK or FORTIFY phase!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateInvalidRecentlyAttackedTerritories() {
+        return Stream.of(
+                Arguments.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY),
+                Arguments.of(TerritoryType.UKRAINE, TerritoryType.URAL),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.ALASKA),
+                Arguments.of(TerritoryType.INDIA, TerritoryType.SIAM)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateInvalidRecentlyAttackedTerritories")
+    public void test64_moveArmiesBetweenFriendlyTerritories_territoriesDoNotMatchRecentlyAttacked_expectException(
+            TerritoryType recentlyAttackedSrc, TerritoryType recentlyAttackedDest) {
+        TerritoryType alaska = TerritoryType.ALASKA;
+        TerritoryType kamchatka = TerritoryType.KAMCHATKA;
+
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(alaska, kamchatka)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedGraph.getTerritory(alaska)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(kamchatka)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setRecentlyAttackedSource(recentlyAttackedSrc);
+        unitUnderTest.setRecentlyAttackedDest(recentlyAttackedDest);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(alaska, kamchatka, 1));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    private static Stream<Arguments> generateValidInputsForMoveArmiesAttackPhase() {
+        return Stream.of(
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 1),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 2),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 3),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 2),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 5),
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.NORTHERN_EUROPE, 7, 6),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.EGYPT, 2, 1),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDIA, 75, 74),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.WESTERN_UNITED_STATES, 4, 3),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 9),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 5),
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA, 10, 1)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
+    public void test65_moveArmiesBetweenFriendlyTerritories_validInputAttackPhase_expectTerritoriesToReflectMovement(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+
+        unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, numArmiesToMove);
+
+        assertEquals(GamePhase.ATTACK, unitUnderTest.getCurrentGamePhase());
+        assertEquals(PlayerColor.GREEN, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
+    public void test66_moveArmiesBetweenFriendlyTerritories_fortifyPhase_endPlayerTurnAndExpectMovedArmies(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
+        EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
+        EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
+        EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
+
+        EasyMock.replay(mockedDest, mockedSource, mockedGraph);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        unitUnderTest.setPlayerOrderList(List.of(PlayerColor.PURPLE, PlayerColor.GREEN));
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, numArmiesToMove);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(PlayerColor.GREEN, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+
+        EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPhasesMinusAttackAndFortify")
+    public void test67_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(invalidGamePhase);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+
+        Exception exception = assertThrows(IllegalStateException.class, unitUnderTest::forceGamePhaseToEnd);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot forcibly end this game phase!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
+            PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
+        assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test69_forceGamePhaseToEnd_fortifyPhase_expectPlacementPhaseAndNextPlayer(
+            List<PlayerColor> playerOrder) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setPlayerOrderList(playerOrder);
+        unitUnderTest.provideCurrentPlayerForTurn(playerOrder.get(playerOrder.size() - 1));
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
+    }
+
 }

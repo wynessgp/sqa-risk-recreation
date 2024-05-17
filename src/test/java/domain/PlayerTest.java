@@ -235,7 +235,7 @@ public class PlayerTest {
 
         player.removeAllGivenCards(cardsToRemove);
 
-        assertEquals(Set.of(), player.getGetOwnedCards());
+        assertEquals(Set.of(), player.getOwnedCards());
     }
 
     private static Stream<Arguments> generateRemoveCardCombosAndNonEmptyResult() {
@@ -283,6 +283,124 @@ public class PlayerTest {
 
         player.removeAllGivenCards(cardsToRemove);
 
-        assertEquals(expectedOutput, player.getGetOwnedCards());
+        assertEquals(expectedOutput, player.getOwnedCards());
     }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesPlayerOwnsAndTerritoriesNotInThem() {
+        return Stream.of(
+                Arguments.of(Set.of(), TerritoryType.ALASKA),
+                Arguments.of(Set.of(), TerritoryType.BRAZIL),
+                Arguments.of(Set.of(TerritoryType.ONTARIO), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.QUEBEC),
+                Arguments.of(Set.of(TerritoryType.WESTERN_AUSTRALIA, TerritoryType.INDONESIA), TerritoryType.UKRAINE),
+                Arguments.of(Set.of(TerritoryType.MIDDLE_EAST), TerritoryType.MONGOLIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesPlayerOwnsAndTerritoriesNotInThem")
+    public void test09_removeTerritoryFromCollection_territoryNotInCollection_expectSetToRemainSame(
+            Set<TerritoryType> territoriesPlayerOwns, TerritoryType toRemove) {
+        Player player = new Player();
+        player.setTerritories(territoriesPlayerOwns);
+
+        player.removeTerritoryFromCollection(toRemove);
+
+        assertEquals(territoriesPlayerOwns, player.getTerritories());
+    }
+
+    private static Stream<Arguments> generateSetsOfTerritoriesPlayerOwnsAndTerritoriesInThem() {
+        return Stream.of(
+                Arguments.of(Set.of(TerritoryType.ALASKA), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.URAL),
+                Arguments.of(Set.of(TerritoryType.YAKUTSK, TerritoryType.URAL, TerritoryType.ALASKA),
+                        TerritoryType.YAKUTSK),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.AFGHANISTAN),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.ALASKA),
+                Arguments.of(Set.of(TerritoryType.values()), TerritoryType.URAL)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfTerritoriesPlayerOwnsAndTerritoriesInThem")
+    public void test10_removeTerritoryFromCollection_territoryInCollection_expectItemNoLongerInSet(
+            Set<TerritoryType> territoriesPlayerOwns, TerritoryType toRemove) {
+        Player player = new Player();
+        player.setTerritories(territoriesPlayerOwns);
+
+        player.removeTerritoryFromCollection(toRemove);
+
+        assertFalse(player.getTerritories().contains(toRemove));
+    }
+
+    private static Stream<Arguments> generateSetsOfCards() {
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(new WildCard());
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            allCards.add(new TerritoryCard(territoryType, currentPiece));
+            pieceTypeCount++;
+        }
+        allCards.add(new WildCard());
+
+        return Stream.of(
+                Arguments.of(allCards),
+                Arguments.of(Set.of()),
+                Arguments.of(Set.of(new WildCard())),
+                Arguments.of(Set.of(new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY))),
+                Arguments.of(Set.of(new WildCard(), new WildCard(),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY))),
+                Arguments.of(Set.of(new TerritoryCard(TerritoryType.NEW_GUINEA, PieceType.CAVALRY)))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfCards")
+    public void test11_addCardsToCollection_playerSetIsEmpty_equalToProvidedInput(
+            Set<Card> cardsToAdd) {
+        Player player = new Player();
+
+        player.addCardsToCollection(cardsToAdd);
+
+        assertEquals(cardsToAdd, player.getOwnedCards());
+    }
+
+    private static Stream<Arguments> generatePlayerOwnedAndPassedInSetsOfCards() {
+        Set<Card> allCardsMinusWildCard = new HashSet<>();
+        allCardsMinusWildCard.add(new WildCard());
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            allCardsMinusWildCard.add(new TerritoryCard(territoryType, currentPiece));
+            pieceTypeCount++;
+        }
+
+        return Stream.of(
+                Arguments.of(Set.of(new WildCard()), Set.of(allCardsMinusWildCard)),
+                Arguments.of(Set.of(new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                        Set.of(new WildCard())),
+                Arguments.of(Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY)),
+                        Set.of(new WildCard())),
+                Arguments.of(Set.of(new WildCard(), new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                                new TerritoryCard(TerritoryType.CONGO, PieceType.INFANTRY)),
+                        Set.of(new WildCard(), new TerritoryCard(TerritoryType.AFGHANISTAN, PieceType.CAVALRY)))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generatePlayerOwnedAndPassedInSetsOfCards")
+    public void test12_addCardsToCollection_playerSetNotEmpty_checkPlayerSetOwnsAllNewCards(
+            Set<Card> playerCardSet, Set<Card> toPassIn) {
+        Player player = new Player();
+
+        player.setOwnedCards(playerCardSet);
+        player.addCardsToCollection(toPassIn);
+
+        assertTrue(player.getOwnedCards().containsAll(toPassIn));
+        assertTrue(player.getOwnedCards().containsAll(playerCardSet));
+    }
+
 }
