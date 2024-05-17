@@ -334,4 +334,37 @@ public class PlayerTest {
 
         assertFalse(player.getTerritories().contains(toRemove));
     }
+
+    private static Stream<Arguments> generateSetsOfCards() {
+        Set<Card> allCards = new HashSet<>();
+        allCards.add(new WildCard());
+        int pieceTypeCount = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            PieceType currentPiece = PieceType.values()[pieceTypeCount / 14];
+            allCards.add(new TerritoryCard(territoryType, currentPiece));
+            pieceTypeCount++;
+        }
+        allCards.add(new WildCard());
+
+        return Stream.of(
+                Arguments.of(allCards),
+                Arguments.of(Set.of()),
+                Arguments.of(Set.of(new WildCard())),
+                Arguments.of(Set.of(new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY))),
+                Arguments.of(Set.of(new WildCard(), new WildCard(),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY))),
+                Arguments.of(Set.of(new TerritoryCard(TerritoryType.NEW_GUINEA, PieceType.CAVALRY)))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateSetsOfCards")
+    public void test11_addCardsToCollection_playerSetIsEmpty_equalToProvidedInput(
+            Set<Card> cardsToAdd) {
+        Player player = new Player();
+
+        player.addCardsToCollection(cardsToAdd);
+
+        assertEquals(cardsToAdd, player.getOwnedCards());
+    }
 }

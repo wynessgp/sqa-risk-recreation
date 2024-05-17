@@ -66,7 +66,7 @@ class Player {
     }
 
     void addCardsToCollection(Set<Card> wildCardCollection) {
-
+        this.ownedCards = wildCardCollection;
     }
 
     void removeTerritoryFromCollection(TerritoryType territory) {
