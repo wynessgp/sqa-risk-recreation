@@ -95,11 +95,24 @@ public class GameMapScreenController implements GameScene {
     private void setupArmyPlacementDialog() {
         this.selectionDialogController.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
             this.selectionDialogController.toggleDisplay();
-            handlePlaceArmies(this.armyCountSpinner.getValue());
-
+            handleSelectionDialogAction(this.armyCountSpinner.getValue());
         });
         this.selectionDialogController.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
                 this.selectionDialogController.toggleDisplay());
+    }
+
+    private void handleSelectionDialogAction(int value) {
+        if (this.gameEngine.getCurrentGamePhase() == GamePhase.PLACEMENT) {
+            handlePlaceArmies(value);
+        } else if (this.gameEngine.getCurrentGamePhase() == GamePhase.ATTACK) {
+            if (!attackLogic.sourceArmiesSelected()) {
+                attackLogic.setAttackArmies(value);
+                getArmiesForDefense();
+            } else {
+                attackLogic.setDefendArmies(value);
+                attackLogic.performAttack(this.gameEngine);
+            }
+        }
     }
 
     private void updateStateLabels() {
@@ -257,9 +270,21 @@ public class GameMapScreenController implements GameScene {
     private void handleTargetTerritorySelection() {
         if (!attackLogic.setTargetTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
             updateTerritoryErrorDialog("gameMapScreen.attackTargetError");
-        } else if (!attackLogic.territoriesAreAdjacent(this.gameEngine)) {
-            updateTerritoryErrorDialog("gameMapScreen.attackAdjacentError");
+        } else {
+            getArmiesForAttack();
         }
+    }
+
+    private void getArmiesForAttack() {
+        this.selectionDialogController.setTitleText("gameMapScreen.attackArmySelection",
+                new Object[]{gameEngine.getCurrentPlayer()});
+        this.selectionDialogController.toggleDisplay();
+    }
+
+    private void getArmiesForDefense() {
+        this.selectionDialogController.setTitleText("gameMapScreen.defendArmySelection",
+                new Object[]{attackLogic.getTargetOwner(gameEngine)});
+        this.selectionDialogController.toggleDisplay();
     }
 
     private void updateTerritoryErrorDialog(String error) {

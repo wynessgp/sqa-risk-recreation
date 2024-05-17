@@ -1,13 +1,23 @@
 package presentation;
 
+import domain.PlayerColor;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 
 public class AttackLogic {
-    private TerritoryType sourceTerritory;
+    private TerritoryType sourceTerritory, targetTerritory;
+    private int attackArmies = 0, defendArmies = 0;
+
+    void performAttack(WorldDominationGameEngine gameEngine) {
+        gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
+    }
 
     boolean sourceSelected() {
         return sourceTerritory != null;
+    }
+
+    boolean sourceArmiesSelected() {
+        return attackArmies > 0;
     }
 
     boolean setSourceTerritory(TerritoryType territory, WorldDominationGameEngine gameEngine) {
@@ -19,15 +29,32 @@ public class AttackLogic {
     }
 
     boolean setTargetTerritory(TerritoryType territory, WorldDominationGameEngine gameEngine) {
-        return !gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer());
+        if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
+            return false;
+        }
+        targetTerritory = territory;
+        return true;
     }
 
-    boolean territoriesAreAdjacent(WorldDominationGameEngine gameEngine) {
-        return false;
+    void setAttackArmies(int armies) {
+        this.attackArmies = armies;
+    }
+
+    void setDefendArmies(int armies) {
+        this.defendArmies = armies;
     }
 
     void reset() {
         sourceTerritory = null;
+    }
+
+    PlayerColor getTargetOwner(WorldDominationGameEngine gameEngine) {
+        for (PlayerColor color : gameEngine.getPlayerOrder()) {
+            if (gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, color)) {
+                return color;
+            }
+        }
+        return null;
     }
 
 }
