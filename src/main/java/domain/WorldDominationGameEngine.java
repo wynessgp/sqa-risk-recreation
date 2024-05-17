@@ -52,7 +52,7 @@ public final class WorldDominationGameEngine {
 
     private TerritoryType recentlyAttackedSource = null;
     private TerritoryType recentlyAttackedDestination = null;
-    private boolean currentPlayerCanClaimCard = true;
+    private boolean currentPlayerCanClaimCard = false;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
