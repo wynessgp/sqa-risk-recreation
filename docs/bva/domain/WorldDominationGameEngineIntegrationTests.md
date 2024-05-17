@@ -814,7 +814,6 @@ And that the game is IN the ATTACK phase
 When PURPLE tries to attack with a valid number of attackers and defenders
 
 And the attack ends with PURPLE not taking over the territory
-- Have both sides lose one army
 
 Then the armies in the SOURCE and DESTINATION territory should be updated
 
