@@ -1075,7 +1075,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source, destination territory = [ALASKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
   - equal to each other on purpose
 
@@ -1093,7 +1093,7 @@ Input:
 - numDefenders = 1
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [INDIA, numArmiesInTerritory = 2, ownedBy = GREEN]
 
@@ -1111,7 +1111,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = YELLOW]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = GREEN]
 
@@ -1127,7 +1127,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = PURPLE]
 
@@ -1143,7 +1143,7 @@ Input:
 - numDefenders = 2
 - current game phase = SETUP
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1159,7 +1159,7 @@ Input:
 - numDefenders = 2
 - current game phase = FORTIFY
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1175,7 +1175,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1191,7 +1191,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1207,7 +1207,7 @@ Input:
 - numDefenders = -1
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1223,7 +1223,7 @@ Input:
 - numDefenders = 10
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1239,7 +1239,7 @@ Input:
 - numDefenders = 0
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 3, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 3]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1255,7 +1255,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 5, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 5]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1271,7 +1271,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5), ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 6 (any amount > 5)]
 - source territory = [BRAZIL, numArmiesInTerritory = 6, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1287,7 +1287,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
 - source territory = [BRAZIL, numArmiesInTerritory = 2, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1300,9 +1300,10 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 1
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
 - source territory = [BRAZIL, numArmiesInTerritory = 1, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1315,9 +1316,10 @@ Input:
 - sourceTerritory = BRAZIL
 - destTerritory = VENEZUELA
 - numAttackers = 3
+- numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
 - source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 3, ownedBy = BLUE]
 
@@ -1333,7 +1335,7 @@ Input:
 - numDefenders = 2
 - current game phase = ATTACK
 - currently going player = PURPLE
-- player pointer = [Color = PURPLE, |ownedCards| = 4, ownedTerritories = {BRAZIL} ]
+- player pointer = [Color = PURPLE, |ownedCards| = 4]
 - source territory = [BRAZIL, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - destination territory = [VENEZUELA, numArmiesInTerritory = 1, ownedBy = BLUE]
 
@@ -2562,59 +2564,3 @@ Output:
 - current game phase = PLACEMENT
 - currently going player = PURPLE
   - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]
-
-# method: `claimCardForCurrentPlayerIfPossible(): void`
-
-Note: this method will automatically be called at the end of the single turn cycle. Once a player ends their fortify
-phase, they should automatically receive a card given they captured a territory.
-
-## BVA Step 1
-Input: The underlying state of if a player is able to claim a card or not (AKA, they took over a territory this turn),
-as well as the current cards the player owns and who the current player is. Additionally, we need to consider the state
-of the Card Deck (if there are no cards to draw, tough luck!)
-
-Output: If the player is unable to claim a card, nothing will happen. If they are, a card will be added to their
-collection from the deck of available cards. If there are cards to claim, the Deck will change. If there are none, 
-nothing happens.
-
-## BVA Step 2
-Input:
-- currently going player: Cases
-- ability to claim a card: Boolean
-- current player object: Pointer
-- risk card deck: Pointer
-
-Output:
-- current player object: Pointer
-- risk card deck: Pointer
-
-## BVA Step 3
-Input:
-- currently going player (Cases):
-  - SETUP (error case, should not happen at this stage of the game)
-  - YELLOW
-  - PURPLE
-  - ...
-  - BLACK
-  - The 0th, 8th possibilities (can't set, Java enum)
-- ability to claim a card (Boolean):
-  - 0 (false)
-  - 1 (true -> means claim a card if there are still some available!)
-  - A value other than true/false (can't set)
-- current player object (Pointer):
-  - A null pointer (can't set, Martin's rules)
-  - A pointer to the true object
-    - Want to know what cards they currently possess as their collection might change as a result of this method.
-- risk card deck (Pointer):
-  - A null pointer (can't set, Martin's rules)
-  - A pointer to the true object
-    - if the deck has no more cards to give, we can't give a card to the player.
-
-Output:
-- current player object (Pointer):
-  - Assuming claiming a card was possible, the player should have an additional card.
-- risk card deck (Pointer):
-  - Removes the drawn card from the deck if there were cards to begin with
-  - Remains empty if there weren't any
-
-## BVA Step 4
