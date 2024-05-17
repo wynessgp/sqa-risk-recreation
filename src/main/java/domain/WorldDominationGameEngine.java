@@ -967,10 +967,8 @@ public final class WorldDominationGameEngine {
 
     private void handleDefenderLosingTerritoryConsequences(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers) {
-        PlayerColor potentiallyLosingPlayer = handleAttackerTakingTerritory(destTerritory, numAttackers);
+        handleAttackerTakingTerritory(destTerritory, numAttackers);
         decreaseNumArmiesInTerritory(sourceTerritory, numAttackers);
-        handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer);
-        handleCurrentPlayerWinningGameIfNecessary();
         currentPlayerCanClaimCard = true;
     }
 

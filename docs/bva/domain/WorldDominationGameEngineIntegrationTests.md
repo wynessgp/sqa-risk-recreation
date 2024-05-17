@@ -675,6 +675,9 @@ If a player attacks a territory, and they **DO** take over the territory
 - The player SHOULD be able to split armies between these two territories if they wish
   - Recently attacked dest / source should be equal to the territories used in the attack
 - The player should be eligible to claim a card at the end of the turn
+- If this is the last territory they need to win the game, the game should be over!
+- If this is the last territory another player was holding on to, they should lose the game.
+  - The attacking player takes their cards.
 
 ### Test 1:
 Given that the current player is PURPLE
@@ -843,3 +846,43 @@ And the destination territory **SHOULD** be controlled by Purple
 And PURPLE **SHOULD** be allowed to claim a card at the end of their turn
 
 And PURPLE **SHOULD** be allowed to split the attacking force if they choose
+
+### Test 11:
+Given that the current player is PURPLE
+
+And that the territories they are attacking are adjacent
+
+And that PURPLE owns the SOURCE territory
+
+And that PURPLE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+And that this is the last territory PURPLE needs to WIN the game
+
+When PURPLE tries to attack with a valid number of attackers and defenders
+
+And the attack ends with PURPLE taking over the territory
+
+Then the GAME should END (game phase should be GAME_OVER)
+
+### Test 12:
+Given that the current player is PURPLE
+
+And that the territories they are attacking are adjacent
+
+And that PURPLE owns the SOURCE territory
+
+And that PURPLE does **NOT** own the DESTINATION territory
+
+And that the game is IN the ATTACK phase
+
+And that this is the last territory YELLOW owns
+
+When PURPLE tries to attack with a valid number of attackers and defenders
+
+And the attack ends with PURPLE taking over the territory
+
+Then YELLOW should LOSE the game
+
+And PURPLE should get any Risk cards that YELLOW owned
