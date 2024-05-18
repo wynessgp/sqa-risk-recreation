@@ -5,12 +5,18 @@ import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 
 public class AttackLogic {
+    private final WorldDominationGameEngine gameEngine;
     private TerritoryType sourceTerritory;
     private TerritoryType targetTerritory;
     private int attackArmies = 0;
     private int defendArmies = 0;
+    private PlayerColor targetOwner;
 
-    AttackResult performAttack(WorldDominationGameEngine gameEngine) {
+    AttackLogic(WorldDominationGameEngine gameEngine) {
+        this.gameEngine = gameEngine;
+    }
+
+    AttackResult performAttack() {
         try {
             gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
             return AttackResult.SUCCESS;
@@ -27,7 +33,7 @@ public class AttackLogic {
         return attackArmies > 0;
     }
 
-    boolean setSourceTerritory(TerritoryType territory, WorldDominationGameEngine gameEngine) {
+    boolean setSourceTerritory(TerritoryType territory) {
         if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
             sourceTerritory = territory;
             return true;
@@ -35,7 +41,7 @@ public class AttackLogic {
         return false;
     }
 
-    boolean setTargetTerritory(TerritoryType territory, WorldDominationGameEngine gameEngine) {
+    boolean setTargetTerritory(TerritoryType territory) {
         if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
             return false;
         }
@@ -56,15 +62,18 @@ public class AttackLogic {
         targetTerritory = null;
         attackArmies = 0;
         defendArmies = 0;
+        targetOwner = null;
     }
 
-    PlayerColor getTargetOwner(WorldDominationGameEngine gameEngine) {
-        for (PlayerColor color : gameEngine.getPlayerOrder()) {
-            if (gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, color)) {
-                return color;
+    PlayerColor getTargetOwner() {
+        if (targetOwner == null) {
+            for (PlayerColor color : gameEngine.getPlayerOrder()) {
+                if (gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, color)) {
+                    targetOwner = color;
+                }
             }
         }
-        return null;
+        return targetOwner;
     }
 
 }

@@ -1,5 +1,6 @@
 package presentation;
 
+import domain.BattleResult;
 import domain.GamePhase;
 import domain.PlayerColor;
 import domain.TerritoryType;
@@ -46,7 +47,7 @@ public class GameMapScreenController implements GameScene {
     private TerritoryType selectedTerritory;
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
-    private final AttackLogic attackLogic = new AttackLogic();
+    private AttackLogic attackLogic;
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
@@ -54,6 +55,7 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private void initialize() {
         this.gameEngine = SceneController.getInstance().getGameEngine();
+        this.attackLogic = new AttackLogic(this.gameEngine);
         SceneController.setCurrentScene(this);
         setupDialogControllers();
         updateStateLabels();
@@ -115,16 +117,45 @@ public class GameMapScreenController implements GameScene {
             getArmiesForDefense();
         } else {
             attackLogic.setDefendArmies(value);
-            handleAttackErrors(attackLogic.performAttack(this.gameEngine));
+            handleAttackErrors(attackLogic.performAttack());
             updateStateLabels();
         }
     }
 
     private void handleAttackErrors(AttackResult result) {
         if (result == AttackResult.SUCCESS) {
-            // TODO
+            displayResults();
+            checkForLoss();
+            checkForWin();
+            attackLogic.reset();
         } else {
             showErrorMessage("gameMapScreen." + result.toKey());
+        }
+    }
+
+    private void displayResults() {
+        for (int roll : gameEngine.getAttackerDiceRolls()) {
+            System.out.println("Attacker rolled: " + roll);
+        }
+        for (int roll : gameEngine.getDefenderDiceRolls()) {
+            System.out.println("Defender rolled: " + roll);
+        }
+        for (BattleResult battleResult : gameEngine.getBattleResults()) {
+            System.out.println(battleResult);
+        }
+    }
+
+    private void checkForLoss() {
+        int players = gameEngine.getPlayerOrder().size();
+        if (players < SceneController.getInstance().getNumberOfPlayers()) {
+            SceneController.getInstance().setNumberOfPlayers(players);
+            System.out.println("Player " + attackLogic.getTargetOwner() + " has been eliminated!");
+        }
+    }
+
+    private void checkForWin() {
+        if (gameEngine.getPlayerOrder().size() == 1) {
+            System.out.println("Player " + gameEngine.getCurrentPlayer() + " has won the game!");
         }
     }
 
@@ -270,7 +301,7 @@ public class GameMapScreenController implements GameScene {
 
     private void handleAttack() {
         if (!attackLogic.sourceSelected()) {
-            if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
+            if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton))) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
             }
             handleAttackPhaseInstructions();
@@ -285,7 +316,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleTargetTerritorySelection() {
-        if (!attackLogic.setTargetTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
+        if (!attackLogic.setTargetTerritory(this.territoryButtonMap.get(this.selectedButton))) {
             updateTerritoryErrorDialog("gameMapScreen.attackTargetError");
         } else {
             getArmiesForAttack();
@@ -302,7 +333,7 @@ public class GameMapScreenController implements GameScene {
     private void getArmiesForDefense() {
         resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.defendArmySelection",
-                new Object[]{attackLogic.getTargetOwner(gameEngine)});
+                new Object[]{attackLogic.getTargetOwner()});
         this.selectionDialogController.toggleDisplay();
     }
 

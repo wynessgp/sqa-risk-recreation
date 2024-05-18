@@ -24,6 +24,7 @@ class SceneController {
     private final Scene main;
     private WorldDominationGameEngine gameEngine;
     private List<PlayerColor> originalPlayerOrder;
+    private int numberOfPlayers;
 
     private SceneController(Scene main) {
         this.main = main;
@@ -47,6 +48,7 @@ class SceneController {
     protected void initializePlayers(List<PlayerColor> players) {
         this.gameEngine = new WorldDominationGameEngine(players);
         this.originalPlayerOrder = new ArrayList<>(players);
+        this.numberOfPlayers = players.size();
     }
 
     protected WorldDominationGameEngine getGameEngine() {
@@ -59,6 +61,14 @@ class SceneController {
 
     protected void onKeyPress(KeyEvent event) {
         currentScene.onKeyPress(event);
+    }
+
+    protected int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    protected void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
     }
 
     protected static void setCurrentScene(GameScene scene) {
