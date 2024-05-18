@@ -11,6 +11,7 @@ public class AttackLogic {
     private int attackArmies = 0;
     private int defendArmies = 0;
     private PlayerColor targetOwner;
+    private boolean attackArmiesSet = false;
 
     AttackLogic(WorldDominationGameEngine gameEngine) {
         this.gameEngine = gameEngine;
@@ -30,7 +31,7 @@ public class AttackLogic {
     }
 
     boolean sourceArmiesSelected() {
-        return attackArmies > 0;
+        return attackArmiesSet;
     }
 
     boolean setSourceTerritory(TerritoryType territory) {
@@ -51,6 +52,7 @@ public class AttackLogic {
 
     void setAttackArmies(int armies) {
         this.attackArmies = armies;
+        attackArmiesSet = true;
     }
 
     void setDefendArmies(int armies) {
@@ -63,6 +65,7 @@ public class AttackLogic {
         attackArmies = 0;
         defendArmies = 0;
         targetOwner = null;
+        attackArmiesSet = false;
     }
 
     PlayerColor getTargetOwner() {
