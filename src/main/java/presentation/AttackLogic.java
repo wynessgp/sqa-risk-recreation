@@ -48,6 +48,9 @@ public class AttackLogic {
 
     void reset() {
         sourceTerritory = null;
+        targetTerritory = null;
+        attackArmies = 0;
+        defendArmies = 0;
     }
 
     PlayerColor getTargetOwner(WorldDominationGameEngine gameEngine) {

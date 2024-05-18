@@ -116,6 +116,7 @@ public class GameMapScreenController implements GameScene {
         } else {
             attackLogic.setDefendArmies(value);
             attackLogic.performAttack(this.gameEngine);
+            updateStateLabels();
         }
     }
 
@@ -253,14 +254,14 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handlePlacement() {
-        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
-                Integer.MAX_VALUE, 1));
+        resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.armyPlacementSelection",
                 new Object[]{this.gameEngine.getCurrentPlayerArmiesToPlace()});
         this.selectionDialogController.toggleDisplay();
     }
 
     private void handleAttack() {
+        resetSelectionDialog();
         if (!attackLogic.sourceSelected()) {
             if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
@@ -269,6 +270,11 @@ public class GameMapScreenController implements GameScene {
         } else {
             handleTargetTerritorySelection();
         }
+    }
+
+    private void resetSelectionDialog() {
+        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
+                Integer.MAX_VALUE, 1));
     }
 
     private void handleTargetTerritorySelection() {
