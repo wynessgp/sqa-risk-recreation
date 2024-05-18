@@ -134,15 +134,9 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void displayResults() {
-        for (int roll : gameEngine.getAttackerDiceRolls()) {
-            System.out.println("Attacker rolled: " + roll);
-        }
-        for (int roll : gameEngine.getDefenderDiceRolls()) {
-            System.out.println("Defender rolled: " + roll);
-        }
-        for (BattleResult battleResult : gameEngine.getBattleResults()) {
-            System.out.println(battleResult);
-        }
+        gameEngine.getAttackerDiceRolls().forEach(roll -> System.out.println("Attacker rolled: " + roll));
+        gameEngine.getDefenderDiceRolls().forEach(roll -> System.out.println("Defender rolled: " + roll));
+        gameEngine.getBattleResults().forEach(System.out::println);
     }
 
     private void checkForLoss() {
