@@ -10,8 +10,13 @@ public class AttackLogic {
     private int attackArmies = 0;
     private int defendArmies = 0;
 
-    void performAttack(WorldDominationGameEngine gameEngine) {
-        gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
+    AttackResult performAttack(WorldDominationGameEngine gameEngine) {
+        try {
+            gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
+            return AttackResult.SUCCESS;
+        } catch (Exception e) {
+            return AttackResult.parseError(e.getMessage());
+        }
     }
 
     boolean sourceSelected() {

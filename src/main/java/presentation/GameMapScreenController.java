@@ -115,8 +115,16 @@ public class GameMapScreenController implements GameScene {
             getArmiesForDefense();
         } else {
             attackLogic.setDefendArmies(value);
-            attackLogic.performAttack(this.gameEngine);
+            handleAttackErrors(attackLogic.performAttack(this.gameEngine));
             updateStateLabels();
+        }
+    }
+
+    private void handleAttackErrors(AttackResult result) {
+        if (result == AttackResult.SUCCESS) {
+            // TODO
+        } else {
+            showErrorMessage("gameMapScreen." + result.toKey());
         }
     }
 
@@ -261,7 +269,6 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttack() {
-        resetSelectionDialog();
         if (!attackLogic.sourceSelected()) {
             if (!attackLogic.setSourceTerritory(this.territoryButtonMap.get(this.selectedButton), this.gameEngine)) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
@@ -286,12 +293,14 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void getArmiesForAttack() {
+        resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.attackArmySelection",
                 new Object[]{gameEngine.getCurrentPlayer()});
         this.selectionDialogController.toggleDisplay();
     }
 
     private void getArmiesForDefense() {
+        resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.defendArmySelection",
                 new Object[]{attackLogic.getTargetOwner(gameEngine)});
         this.selectionDialogController.toggleDisplay();
