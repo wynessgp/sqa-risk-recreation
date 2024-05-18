@@ -15,12 +15,18 @@ Input:
 - SETUP
 - PLACEMENT
 - SCRAMBLE
+- ATTACK
+- FORTIFY
+- GAME_OVER
 - No other inputs possible
 
 Output:
 - "Setup"
 - "Placement"
 - "Scramble"
+- "Attack"
+- "Fortify"
+- "Game over"
 - No other outputs possible
 
 ## BVA Step 4
@@ -36,3 +42,14 @@ Output: "Placement"
 Input: SCRAMBLE
 
 Output: "Scramble"
+### Test value 4
+Input: ATTACK
+
+Output: "Attack"
+### Test value 5
+
+Input: FORTIFY
+### Test value 6
+Input: GAME_OVER
+
+Output: "Game over"
