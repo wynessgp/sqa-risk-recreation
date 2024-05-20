@@ -27,6 +27,8 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private DialogPane armyPlacementSelectionDialog;
     @FXML
+    private DialogPane attackResultsDialog;
+    @FXML
     private AnchorPane dialogBackground;
     @FXML
     private AnchorPane armiesToPlacePane;
@@ -39,6 +41,12 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private Label armiesToPlace;
     @FXML
+    private Label attackerRollsLabel;
+    @FXML
+    private Label defenderRollsLabel;
+    @FXML
+    private Label attackResultsLabel;
+    @FXML
     private Button attackSkipButton;
     @FXML
     private Spinner<Integer> armyCountSpinner;
@@ -50,6 +58,7 @@ public class GameMapScreenController implements GameScene {
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
+    private Dialog attackResultsDialogController;
 
     @FXML
     private void initialize() {
@@ -66,12 +75,14 @@ public class GameMapScreenController implements GameScene {
         this.errorDialogController = new Dialog(territoryErrorDialog, dialogBackground);
         this.confirmDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
         this.selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
+        this.attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
     }
 
     private void setupDialogButtons() {
         setupClaimTerritoryDialog();
         setupTerritoryErrorDialog();
         setupArmyPlacementDialog();
+        setupAttackResultsDialog();
     }
 
     private void setupSkipButton() {
@@ -100,6 +111,11 @@ public class GameMapScreenController implements GameScene {
         });
         this.selectionDialogController.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
                 this.selectionDialogController.toggleDisplay());
+    }
+
+    private void setupAttackResultsDialog() {
+        this.attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogClose", event ->
+                this.attackResultsDialogController.toggleDisplay());
     }
 
     private void handleSelectionDialogAction(int value) {
@@ -133,9 +149,31 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void displayResults() {
-        gameEngine.getAttackerDiceRolls().forEach(roll -> System.out.println("Attacker rolled: " + roll));
-        gameEngine.getDefenderDiceRolls().forEach(roll -> System.out.println("Defender rolled: " + roll));
-        gameEngine.getBattleResults().forEach(System.out::println);
+        displayAttackerRolls();
+        displayDefenderRolls();
+        displayAttackResults();
+        attackResultsDialogController.toggleDisplay();
+    }
+
+    private void displayAttackerRolls() {
+        StringBuilder rolls = new StringBuilder();
+        gameEngine.getAttackerDiceRolls().forEach(roll -> rolls.append(roll).append(", "));
+        attackerRollsLabel.setText(SceneController.getString("gameMapScreen.attackerRolls", new Object[]{
+                gameEngine.getCurrentPlayer(), rolls.delete(rolls.length() - 2, rolls.length()).toString()}));
+    }
+
+    private void displayDefenderRolls() {
+        StringBuilder rolls = new StringBuilder();
+        gameEngine.getDefenderDiceRolls().forEach(roll -> rolls.append(roll).append(", "));
+        defenderRollsLabel.setText(SceneController.getString("gameMapScreen.defenderRolls", new Object[]{
+                attackLogic.getTargetOwner(), rolls.delete(rolls.length() - 2, rolls.length()).toString()}));
+    }
+
+    private void displayAttackResults() {
+        StringBuilder results = new StringBuilder();
+        gameEngine.getBattleResults().forEach(result -> results.append(result).append(", "));
+        attackResultsLabel.setText(SceneController.getString("gameMapScreen.attackResults",
+                new Object[]{results.delete(results.length() - 2, results.length()).toString()}));
     }
 
     private void checkForLoss() {

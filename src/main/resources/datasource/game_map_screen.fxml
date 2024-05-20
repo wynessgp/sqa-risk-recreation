@@ -607,4 +607,16 @@
       <ButtonType fx:constant="APPLY" />
       <ButtonType fx:constant="CANCEL" />
    </DialogPane>
+   <DialogPane fx:id="attackResultsDialog" expanded="true" headerText="%gameMapScreen.attackResultsTitle" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+      <ButtonType fx:constant="OK" />
+      <content>
+         <Pane prefHeight="65.0" prefWidth="360.0">
+            <children>
+               <Label fx:id="attackerRollsLabel" layoutX="14.0" layoutY="5.0" text="%gameMapScreen.attackerRolls" />
+               <Label fx:id="defenderRollsLabel" layoutX="14.0" layoutY="22.0" text="%gameMapScreen.defenderRolls" />
+               <Label fx:id="attackResultsLabel" layoutX="14.0" layoutY="39.0" text="%gameMapScreen.attackResults" />
+            </children>
+         </Pane>
+      </content>
+   </DialogPane>
 </AnchorPane>
