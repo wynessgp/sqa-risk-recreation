@@ -148,7 +148,8 @@ public class GameMapScreenController implements GameScene {
 
     private void checkForWin() {
         if (gameEngine.getPlayerOrder().size() == 1) {
-            System.out.println("Player " + gameEngine.getCurrentPlayer() + " has won the game!");
+            SceneController.getInstance().setWinner(gameEngine.getCurrentPlayer());
+            SceneController.getInstance().activate(SceneType.WIN);
         }
     }
 

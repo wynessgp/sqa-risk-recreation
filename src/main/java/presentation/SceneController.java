@@ -25,6 +25,7 @@ class SceneController {
     private WorldDominationGameEngine gameEngine;
     private List<PlayerColor> originalPlayerOrder;
     private int numberOfPlayers;
+    private PlayerColor winner;
 
     private SceneController(Scene main) {
         this.main = main;
@@ -69,6 +70,14 @@ class SceneController {
 
     protected void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
+    }
+
+    protected void setWinner(PlayerColor winner) {
+        this.winner = winner;
+    }
+
+    protected PlayerColor getWinner() {
+        return winner;
     }
 
     protected static void setCurrentScene(GameScene scene) {
