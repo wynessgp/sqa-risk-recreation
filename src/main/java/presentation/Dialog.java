@@ -38,4 +38,12 @@ class Dialog {
         this.dialog.lookupButton(buttonType).addEventHandler(javafx.event.ActionEvent.ACTION, eventHandler);
     }
 
+    void showButton(ButtonType button) {
+        this.dialog.lookupButton(button).setVisible(true);
+    }
+
+    void hideButton(ButtonType button) {
+        this.dialog.lookupButton(button).setVisible(false);
+    }
+
 }

@@ -1,6 +1,5 @@
 package presentation;
 
-import domain.BattleResult;
 import domain.GamePhase;
 import domain.PlayerColor;
 import domain.TerritoryType;
@@ -290,6 +289,7 @@ public class GameMapScreenController implements GameScene {
         resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.armyPlacementSelection",
                 new Object[]{this.gameEngine.getCurrentPlayerArmiesToPlace()});
+        this.selectionDialogController.showButton(ButtonType.CANCEL);
         this.selectionDialogController.toggleDisplay();
     }
 
@@ -321,6 +321,7 @@ public class GameMapScreenController implements GameScene {
         resetSelectionDialog();
         this.selectionDialogController.setTitleText("gameMapScreen.attackArmySelection",
                 new Object[]{gameEngine.getCurrentPlayer()});
+        this.selectionDialogController.hideButton(ButtonType.CANCEL);
         this.selectionDialogController.toggleDisplay();
     }
 
