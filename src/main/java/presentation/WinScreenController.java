@@ -10,6 +10,7 @@ public class WinScreenController implements GameScene {
 
     @FXML
     private void initialize() {
+        SceneController.setCurrentScene(this);
         winLabel.setText(SceneController.getString("winScreen.playerWinner",
                 new Object[]{SceneController.getInstance().getWinner()}));
     }
