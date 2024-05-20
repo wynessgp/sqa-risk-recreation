@@ -13,7 +13,10 @@ public class GamePhaseTest {
         return Stream.of(
                 Arguments.of(GamePhase.SETUP, "Setup"),
                 Arguments.of(GamePhase.PLACEMENT, "Placement"),
-                Arguments.of(GamePhase.SCRAMBLE, "Scramble")
+                Arguments.of(GamePhase.SCRAMBLE, "Scramble"),
+                Arguments.of(GamePhase.ATTACK, "Attack"),
+                Arguments.of(GamePhase.FORTIFY, "Fortify"),
+                Arguments.of(GamePhase.GAME_OVER, "Game over")
         );
     }
 
