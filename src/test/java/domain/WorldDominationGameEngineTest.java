@@ -2493,7 +2493,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
-    public void test70_claimCardForCurrentPlayerIfPossible_playerHasNoCards_cannotClaimCard_expectEmptyCollection(
+    public void test70_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2505,6 +2505,8 @@ public class WorldDominationGameEngineTest {
 
         EasyMock.replay(mockedPlayer);
 
+        // note that it doesn't matter what the card deck looks like here; we aren't going to
+        // claim a card anyway. This will be checked in the next test.
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
 
