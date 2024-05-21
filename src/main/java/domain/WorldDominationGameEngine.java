@@ -53,6 +53,7 @@ public final class WorldDominationGameEngine {
     private TerritoryType recentlyAttackedSource = null;
     private TerritoryType recentlyAttackedDestination = null;
     private boolean currentPlayerCanClaimCard = false;
+    private RiskCardDeck cardDeck;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
@@ -987,7 +988,27 @@ public final class WorldDominationGameEngine {
     }
 
     void claimCardForCurrentPlayerIfPossible() {
-
+        if (currentPlayerCanClaimCard) {
+            addCardToCurrentPlayersCollection();
+        }
+        currentPlayerCanClaimCard = false;
     }
 
+    private void addCardToCurrentPlayersCollection() {
+        try {
+            Player playerObject = playersMap.get(currentPlayer);
+            Card drawnCard = cardDeck.drawCard();
+            playerObject.addCardsToCollection(Set.of(drawnCard));
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    void setAbilityToClaimCard() {
+        this.currentPlayerCanClaimCard = true;
+    }
+
+    void provideMockedCardDeck(RiskCardDeck mockedDeck) {
+        this.cardDeck = mockedDeck;
+    }
 }

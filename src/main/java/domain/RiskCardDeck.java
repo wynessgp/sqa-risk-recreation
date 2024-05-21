@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-final class RiskCardDeck {
+class RiskCardDeck {
     private static final int NUMBER_OF_WILD_CARDS = 2;
     private static final int CARDS_PER_PIECE_TYPE = 14;
 
@@ -69,5 +69,4 @@ final class RiskCardDeck {
     boolean isDeckEmpty() {
         return deckOfCards.isEmpty();
     }
-
 }

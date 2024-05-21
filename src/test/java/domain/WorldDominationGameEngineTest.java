@@ -2518,4 +2518,70 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer);
     }
 
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw() {
+        List<Arguments> playerColorsMinusSetup = generateAllPlayerColorsMinusSetup().collect(Collectors.toList());
+
+        List<Set<Card>> playerCards = List.of(
+                Set.of(),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new WildCard(),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY)));
+        List<Card> cardsToDrawFromDeck = List.of(
+                new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY),
+                new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                new WildCard(),
+                new TerritoryCard(TerritoryType.JAPAN, PieceType.INFANTRY),
+                new WildCard());
+
+        Set<Arguments> toStream = new HashSet<>();
+        int cardSetIndex = 0;
+        for (Set<Card> cardSet : playerCards) {
+            for (Arguments playerColor : playerColorsMinusSetup) {
+                Object[] currentPlayer = playerColor.get();
+                toStream.add(Arguments.of(currentPlayer[0], cardSet, cardsToDrawFromDeck.get(cardSetIndex)));
+            }
+            cardSetIndex++;
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw")
+    public void test71_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns, Card cardToDraw) {
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("addCardsToCollection")
+                .createMock();
+        mockedPlayer.addCardsToCollection(Set.of(cardToDraw));
+        EasyMock.expectLastCall().once();
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
+
+        RiskCardDeck mockedDeck = EasyMock.createMock(RiskCardDeck.class);
+        EasyMock.expect(mockedDeck.drawCard()).andReturn(cardToDraw);
+
+        EasyMock.replay(mockedPlayer, mockedDeck);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedCardDeck(mockedDeck);
+        unitUnderTest.setAbilityToClaimCard();
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer, mockedDeck);
+    }
+
 }
