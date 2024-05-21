@@ -12,7 +12,6 @@ class RiskCardDeck {
 
     private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
-    private volatile boolean initialized = false;
 
     RiskCardDeck() {
         this.random = new Random();
@@ -24,7 +23,6 @@ class RiskCardDeck {
 
     RiskCardDeck(Random random) {
         this.random = random;
-        initialized = true;
     }
 
     boolean initDeck() {
