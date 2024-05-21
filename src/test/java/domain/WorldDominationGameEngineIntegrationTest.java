@@ -1180,7 +1180,7 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.expect(mockedParser.rollDiceToDeterminePlayerOrder(playersList.size())).andReturn(dieRolls);
         EasyMock.expect(mockedParser.rollAttackerDice(3)).andReturn(List.of(6, 6, 5));
         EasyMock.expect(mockedParser.rollDefenderDice(1)).andReturn(List.of(3));
-        EasyMock.expect(mockedParser.generateBattleResults(List.of(6, 6, 5), List.of(3)))
+        EasyMock.expect(mockedParser.generateBattleResults(List.of(3), List.of(6, 6, 5)))
                 .andReturn(List.of(BattleResult.ATTACKER_VICTORY));
         EasyMock.replay(mockedParser);
 
