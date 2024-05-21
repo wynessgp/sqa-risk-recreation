@@ -6,26 +6,30 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-final class RiskCardDeck {
+class RiskCardDeck {
     private static final int NUMBER_OF_WILD_CARDS = 2;
     private static final int CARDS_PER_PIECE_TYPE = 14;
 
     private List<Card> deckOfCards = new ArrayList<>();
     private final Random random;
+    private volatile boolean initialized = false;
 
     RiskCardDeck() {
         this.random = new Random();
-        initDeck();
+        if (!initDeck()) {
+            return;
+        }
         shuffle();
     }
 
     RiskCardDeck(Random random) {
         this.random = random;
+        initialized = true;
     }
 
     boolean initDeck() {
         if (!isDeckEmpty()) {
-            throw new IllegalStateException("Deck was previously initialized");
+            return false;
         }
         addTerritoryCards();
         addWildCards();

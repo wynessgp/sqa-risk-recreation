@@ -132,8 +132,7 @@ public class RiskCardDeckTest {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 44})
-    public void test06_initDeck_withNonEmptyDeck_throwsException(int size) {
-        String expectedMessage = "Deck was previously initialized";
+    public void test06_initDeck_withNonEmptyDeck_returnsFalse(int size) {
         Random random = EasyMock.createMock(Random.class);
         RiskCardDeck riskCardDeck = new RiskCardDeck(random);
 
@@ -145,8 +144,7 @@ public class RiskCardDeckTest {
         }
 
         riskCardDeck.setDeck(cards);
-        Exception exception = assertThrows(IllegalStateException.class, riskCardDeck::initDeck);
-        assertEquals(expectedMessage, exception.getMessage());
+        assertFalse(riskCardDeck.initDeck());
 
         for (Card card : cards) {
             EasyMock.verify(card);
