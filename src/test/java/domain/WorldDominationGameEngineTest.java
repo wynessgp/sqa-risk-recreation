@@ -2471,4 +2471,29 @@ public class WorldDominationGameEngineTest {
         assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test70_claimCardForCurrentPlayerIfPossible_playerHasNoCards_cannotClaimCard_expectEmptyCollection(
+            PlayerColor currentPlayer) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .createMock();
+        mockedPlayer.setOwnedCards(new HashSet<>());
+
+        EasyMock.replay(mockedPlayer);
+
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        assertEquals(Set.of(), unitUnderTest.getCardsForPlayer(currentPlayer));
+
+        EasyMock.verify(mockedPlayer);
+    }
+
 }
