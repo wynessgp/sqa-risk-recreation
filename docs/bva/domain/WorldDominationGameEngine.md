@@ -2564,3 +2564,169 @@ Output:
 - current game phase = PLACEMENT
 - currently going player = PURPLE
   - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]
+
+# method: `claimCardForCurrentPlayerIfPossible(): void`
+
+Note: this method will automatically be called at the end of the single turn cycle. Once a player ends their fortify
+phase, they should automatically receive a card given they captured a territory.
+
+## BVA Step 1
+Input: The underlying state of if a player is able to claim a card or not (AKA, they took over a territory this turn),
+as well as the current cards the player owns and who the current player is. Additionally, we need to consider the state
+of the Card Deck (if there are no cards to draw, tough luck!)
+
+Output: If the player is unable to claim a card, nothing will happen. If they are, a card will be added to their
+collection from the deck of available cards. If there are cards to claim, the Deck will change. If there are none,
+nothing happens.
+
+## BVA Step 2
+Input:
+- currently going player: Cases
+- ability to claim a card: Boolean
+- current player object: Pointer
+- risk card deck: Pointer
+
+Output:
+- current player object: Pointer
+- risk card deck: Pointer
+
+## BVA Step 3
+Input:
+- currently going player (Cases):
+  - SETUP (error case, should not happen at this stage of the game)
+  - YELLOW
+  - PURPLE
+  - ...
+  - BLACK
+  - The 0th, 8th possibilities (can't set, Java enum)
+- ability to claim a card (Boolean):
+  - 0 (false)
+  - 1 (true -> means claim a card if there are still some available!)
+  - A value other than true/false (can't set)
+- current player object (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Want to know what cards they currently possess as their collection might change as a result of this method.
+- risk card deck (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - if the deck has no more cards to give, we can't give a card to the player.
+
+Output:
+- current player object (Pointer):
+  - Assuming claiming a card was possible, the player should have an additional card.
+- risk card deck (Pointer):
+  - Removes the drawn card from the deck if there were cards to begin with
+  - Remains empty if there weren't any
+- ability to claim card (Boolean):
+  - Only needs to be set to false if the person did claim a card, we'll set it to false regardless.
+
+## BVA Step 4
+### Test 1:
+Input:
+- currently going player = GREEN
+- ability to claim a card = false
+- current player object = [GREEN, ownedCards = {} ]
+- risk card deck = [ all possible risk cards ]
+
+Output:
+- current player object = [GREEN, ownedCards = {} ]
+- risk card deck = [ all possible owned cards ]
+- ability to claim a card = false
+
+### Test 2:
+Input:
+- currently going player = PURPLE
+- ability to claim a card = false
+- current player object = [PURPLE, ownedCards = {} ]
+- risk card deck = [ all possible risk cards ]
+
+Output:
+- current player object = [PURPLE, ownedCards = {} ]
+- risk card deck = [ all possible owned cards ]
+- ability to claim a card = false
+
+### Test 3:
+Input:
+- currently going player = PURPLE
+- ability to claim a card = false
+- current player object = [PURPLE, ownedCards = { wild card } ]
+- risk card deck = [ all risk cards - purple's owned ones ]
+
+Output:
+- current player object = [PURPLE, ownedCards = { wild card } ]
+- risk card deck = [ all risk cards - purple's owned ones ] 
+- ability to claim a card = false
+
+### Test 4:
+Input:
+- currently going player = PURPLE
+- ability to claim a card = false
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ 1 remaining card; not including the ones purple owns ]
+
+Output:
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ 1 remaining card; not including the ones purple owns ]
+- ability to claim a card = false
+
+### Test 5:
+Input:
+- currently going player = PURPLE
+- ability to claim a card = false
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ no remaining cards ]
+
+Output:
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ no remaining cards ]
+- ability to claim a card = false
+
+### Test 6:
+Input:
+- currently going player = PURPLE
+- ability to claim a card = false
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ all risk cards - purple's owned ones ]
+
+Output:
+- current player object = [PURPLE, ownedCards = { wild card, territory card = [ALASKA, INFANTRY] } ]
+- risk card deck = [ all risk cards - purple's owned ones ]
+- ability to claim a card = false
+
+### Test 7:
+Input:
+- currently going player = YELLOW
+- ability to claim a card = true
+- current player object = [YELLOW, ownedCards = {} ]
+- risk card deck = [ all risk cards ]
+
+Output:
+- current player object = [YELLOW, ownedCards = { territory card = [SOUTHERN_EUROPE, CAVALRY] } ]
+- risk card deck = [ all risk cards - southern europe card]
+- ability to claim a card = false
+
+### Test 8:
+Input:
+- currently going player = YELLOW
+- ability to claim a card = true
+- current player object = [YELLOW, ownedCards = { territory card = [BRAZIL, ARTILLERY], territory card = [IRKUTSK, ARTILLERY] }
+- risk card deck = [only southern europe card]
+
+Output:
+- current player object = [YELLOW, ownedCards = { territory card = [BRAZIL, ARTILLERY], territory card = [IRKUTSK, ARTILLERY], territory card = [SOUTHERN_EUROPE, CAVALRY] } ]
+- risk card deck = []
+- ability to claim a card = false
+
+### Test 9:
+Input:
+- currently going player = YELLOW
+- ability to claim a card = true
+- current player object = [YELLOW, ownedCards = { territory card = [BRAZIL, ARTILLERY], territory card = [IRKUTSK, ARTILLERY] }
+- risk card deck = []
+
+Output:
+- current player object = [YELLOW, ownedCards = { territory card = [BRAZIL, ARTILLERY], territory card = [IRKUTSK, ARTILLERY] } ]
+  - They just don't receive a card since there isn't a new one to get.
+- risk card deck = []
+- ability to claim a card = false
