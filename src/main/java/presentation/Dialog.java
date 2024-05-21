@@ -17,12 +17,12 @@ class Dialog {
     }
 
     boolean isVisible() {
-        return this.dialog.isVisible();
+        return dialog.isVisible();
     }
 
     void toggleDisplay() {
-        this.dialog.setVisible(!this.isVisible());
-        this.dialogBackground.setVisible(this.isVisible());
+        this.dialog.setVisible(!isVisible());
+        this.dialogBackground.setVisible(isVisible());
     }
 
     void setTitleText(String key, Object[] replacements) {
@@ -34,16 +34,16 @@ class Dialog {
     }
 
     void setupButton(ButtonType buttonType, String key, EventHandler<Event> eventHandler) {
-        ((Button) this.dialog.lookupButton(buttonType)).setText(SceneController.getString(key, null));
-        this.dialog.lookupButton(buttonType).addEventHandler(javafx.event.ActionEvent.ACTION, eventHandler);
+        ((Button) dialog.lookupButton(buttonType)).setText(SceneController.getString(key, null));
+        dialog.lookupButton(buttonType).addEventHandler(javafx.event.ActionEvent.ACTION, eventHandler);
     }
 
     void showButton(ButtonType button) {
-        this.dialog.lookupButton(button).setVisible(true);
+        dialog.lookupButton(button).setVisible(true);
     }
 
     void hideButton(ButtonType button) {
-        this.dialog.lookupButton(button).setVisible(false);
+        dialog.lookupButton(button).setVisible(false);
     }
 
 }

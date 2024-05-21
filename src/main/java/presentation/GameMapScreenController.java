@@ -241,8 +241,8 @@ public class GameMapScreenController implements GameScene {
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
         attackSkipButton.setVisible(true);
-        attackSkipButton.setText(SceneController.getString(sourceSelected
-                ? "gameMapScreen.resetAttackButton" : "gameMapScreen.cancelAttackButton", null));
+        attackSkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
+                : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
@@ -269,8 +269,7 @@ public class GameMapScreenController implements GameScene {
         StringBuilder style = new StringBuilder("-fx-background-color:");
         style.append(gameEngine.getCurrentPlayer().getColorString());
         if (gameEngine.getCurrentPlayer() == PlayerColor.YELLOW) {
-            style.append(
-                    "; -fx-border-color: black; -fx-text-fill: black");
+            style.append("; -fx-border-color: black; -fx-text-fill: black");
         }
         selectedButton.styleProperty().setValue(style.toString());
     }
