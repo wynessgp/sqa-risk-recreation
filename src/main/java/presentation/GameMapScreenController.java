@@ -252,11 +252,18 @@ public class GameMapScreenController implements GameScene {
             TerritoryType territory = entry.getValue();
             territoryButton.setDisable(false);
             territoryButton.setText(gameEngine.getNumberOfArmies(territory) + "");
+            setButtonBackgroundColor(getTerritoryOwner(territory), territoryButton);
         }
     }
 
+    private PlayerColor getTerritoryOwner(TerritoryType territory) {
+        return gameEngine.getPlayerOrder().stream()
+                .filter(player -> gameEngine.checkIfPlayerOwnsTerritory(territory, player)).findFirst()
+                .orElse(null);
+    }
+
     private void handleClaimTerritory() {
-        setButtonBackgroundColor();
+        setButtonBackgroundColor(gameEngine.getCurrentPlayer(), selectedButton);
         selectedButton.setText("");
         selectedButton.setDisable(true);
         gameEngine.placeNewArmiesInTerritory(selectedTerritory, 1);
@@ -265,13 +272,13 @@ public class GameMapScreenController implements GameScene {
         updateStateLabels();
     }
 
-    private void setButtonBackgroundColor() {
+    private void setButtonBackgroundColor(PlayerColor player, Button button) {
         StringBuilder style = new StringBuilder("-fx-background-color:");
-        style.append(gameEngine.getCurrentPlayer().getColorString());
-        if (gameEngine.getCurrentPlayer() == PlayerColor.YELLOW) {
+        style.append(player.getColorString());
+        if (player == PlayerColor.YELLOW) {
             style.append("; -fx-border-color: black; -fx-text-fill: black");
         }
-        selectedButton.styleProperty().setValue(style.toString());
+        button.styleProperty().setValue(style.toString());
     }
 
     @FXML
