@@ -114,7 +114,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupAttackResultsDialog() {
-        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogClose", event ->
+        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
                 attackResultsDialogController.toggleDisplay());
     }
 
