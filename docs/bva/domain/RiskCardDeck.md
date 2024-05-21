@@ -102,7 +102,7 @@ Output: 1, same list with a different arrangement
 Input: An empty list of Cards
 
 Output:
-- Success (true) or failure (exception) of the deck initialization
+- Success (true) or failure (false) of the deck initialization
 - List of cards, containing 42 different territory cards and 2 wild cards
 
 ## BVA Step 2
@@ -116,8 +116,7 @@ Input: Empty collection, > 1 element collection
 Output:
 - Boolean:
   - 1 (true)
-  - 0 (false, should never happen)
-  - IllegalStateException
+  - 0 (false)
 - Collection:
   - List of cards, containing 42 different territory cards and 2 wild cards
 
@@ -130,9 +129,9 @@ Output: 1 (true), list of cards containing 42 unique TerritoryCards and 2 WildCa
 ### Test value 2
 Input: list containing one Card
 
-Output: IllegalStateException (Deck was previously initialized)
+Output: 0 (false), deck was previously initialized
 
 ### Test value 3
 Input: list containing 44 Cards
 
-Output: IllegalStateException (Deck was previously initialized)
+Output: 0
