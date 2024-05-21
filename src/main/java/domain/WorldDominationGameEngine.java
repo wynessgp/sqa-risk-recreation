@@ -1000,7 +1000,8 @@ public final class WorldDominationGameEngine {
             Card drawnCard = cardDeck.drawCard();
             playerObject.addCardsToCollection(Set.of(drawnCard));
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            // SpotBugs dictates we do something with this exception; so we'll just say we couldn't claim a card...
+            System.out.printf("Could not claim card: %s%n", exception.getMessage());
         }
     }
 

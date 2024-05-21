@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -2580,6 +2581,37 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer, mockedDeck);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
+    public void test72_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .createMock();
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
+
+        RiskCardDeck mockedDeck = EasyMock.createMock(RiskCardDeck.class);
+        EasyMock.expect(mockedDeck.drawCard()).andThrow(
+                new NoSuchElementException("Cannot draw card from an empty deck"));
+
+        EasyMock.replay(mockedPlayer, mockedDeck);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedCardDeck(mockedDeck);
+        unitUnderTest.setAbilityToClaimCard();
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer, mockedDeck);
     }
