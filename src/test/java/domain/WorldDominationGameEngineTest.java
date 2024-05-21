@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
@@ -2471,17 +2472,36 @@ public class WorldDominationGameEngineTest {
         assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
     }
 
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetupAndSomeCardSets() {
+        List<Arguments> playerColorsMinusSetup = generateAllPlayerColorsMinusSetup().collect(Collectors.toList());
+
+        List<Set<Card>> playerCards = List.of(
+                Set.of(),
+                Set.of(new WildCard()),
+                Set.of(new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY)));
+
+        Set<Arguments> toStream = new HashSet<>();
+        for (Set<Card> cardSet : playerCards) {
+            for (Arguments playerColor : playerColorsMinusSetup) {
+                Object[] currentPlayer = playerColor.get();
+                toStream.add(Arguments.of(currentPlayer[0], cardSet));
+            }
+        }
+        return toStream.stream();
+    }
+
     @ParameterizedTest
-    @MethodSource("generateAllPlayerColorsMinusSetup")
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
     public void test70_claimCardForCurrentPlayerIfPossible_playerHasNoCards_cannotClaimCard_expectEmptyCollection(
-            PlayerColor currentPlayer) {
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
                 .withArgs(currentPlayer)
                 .createMock();
-        mockedPlayer.setOwnedCards(new HashSet<>());
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
 
         EasyMock.replay(mockedPlayer);
 
@@ -2491,7 +2511,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
-        assertEquals(Set.of(), unitUnderTest.getCardsForPlayer(currentPlayer));
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer);
     }
