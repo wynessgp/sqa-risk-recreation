@@ -124,9 +124,8 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupGeneralMessageDialog() {
-        generalMessageDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event -> {
-            generalMessageDialogController.toggleDisplay();
-        });
+        generalMessageDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
+                generalMessageDialogController.toggleDisplay());
     }
 
     private void handleSelectionDialogAction(int value) {
@@ -153,10 +152,10 @@ public class GameMapScreenController implements GameScene {
             displayResults();
             checkForLoss();
             checkForWin();
-            attackLogic.reset();
         } else {
             showErrorMessage("gameMapScreen." + result.toKey());
         }
+        attackLogic.reset();
     }
 
     private void displayResults() {
