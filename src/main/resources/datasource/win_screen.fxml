@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.WinScreenController">
+   <Label alignment="CENTER" layoutX="290.0" layoutY="166.0" prefWidth="400.0" text="%winScreen.winTitle">
+      <font>
+         <Font size="80.0" />
+      </font>
+      <styleClass>
+         <String fx:value="text" />
+         <String fx:value="text-primary" />
+      </styleClass>
+   </Label>
+   <Label fx:id="winLabel" alignment="CENTER" layoutX="290.0" layoutY="285.0" prefWidth="400.0" styleClass="text" text="Winner: PlayerColor">
+      <font>
+         <Font size="40.0" />
+      </font></Label>
+   <Button alignment="CENTER" layoutX="420.0" layoutY="488.0" mnemonicParsing="false" onAction="#onPlayAgain" prefWidth="140.0" text="%winScreen.playAgain">
+      <styleClass>
+         <String fx:value="button" />
+         <String fx:value="defaultButton" />
+      </styleClass>
+      <font>
+         <Font size="24.0" />
+      </font>
+   </Button>
+</AnchorPane>

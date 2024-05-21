@@ -31,7 +31,7 @@ public class RiskApp extends Application {
             fileLoader.open(SceneType.START.getSceneName());
             return FXMLLoader.load(fileLoader.getFileUrl(), SceneController.getLanguageBundle());
         } catch (Exception e) {
-            System.err.println("Error loading scene: " + SceneType.START.getSceneName());
+            System.err.println("Error loading start scene");
             return null;
         }
     }
@@ -47,14 +47,22 @@ public class RiskApp extends Application {
 
     private void initializeScreen(Parent root, Stage stage) {
         Scene cssModifiedScene = addCssFileToScene(cssFileString, new Scene(root));
-        SceneController.setRoot(cssModifiedScene);
-        stage.setScene(cssModifiedScene);
+        Scene keypressScene = addKeyListenerToScene(cssModifiedScene);
+        SceneController.setRoot(keypressScene);
+        stage.setScene(keypressScene);
         performStageSetup(stage);
     }
 
     private Scene addCssFileToScene(String cssFileString, Scene sceneInQuestion) {
         sceneInQuestion.getStylesheets().add(cssFileString);
         return sceneInQuestion;
+    }
+
+    private Scene addKeyListenerToScene(Scene scene) {
+        scene.setOnKeyPressed(event ->
+            SceneController.getInstance().onKeyPress(event)
+        );
+        return scene;
     }
 
     private void performStageSetup(Stage stage) {

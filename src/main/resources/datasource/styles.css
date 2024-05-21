@@ -46,3 +46,7 @@
     -fx-border-width: 2px;
     -fx-padding: 5px;
 }
+
+.spinner {
+    -fx-background-color: transparent;
+}

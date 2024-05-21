@@ -13,13 +13,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-public class GameMapScreenController {
+public class GameMapScreenController implements GameScene {
     @FXML
     private DialogPane claimTerritoryDialog;
     @FXML
-    private DialogPane placeArmiesErrorDialog;
+    private DialogPane territoryErrorDialog;
+    @FXML
+    private DialogPane armyPlacementSelectionDialog;
+    @FXML
+    private DialogPane attackResultsDialog;
     @FXML
     private AnchorPane dialogBackground;
     @FXML
@@ -32,101 +40,351 @@ public class GameMapScreenController {
     private Label instructionLabel;
     @FXML
     private Label armiesToPlace;
+    @FXML
+    private Label attackerRollsLabel;
+    @FXML
+    private Label defenderRollsLabel;
+    @FXML
+    private Label attackResultsLabel;
+    @FXML
+    private Button attackSkipButton;
+    @FXML
+    private Spinner<Integer> armyCountSpinner;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
+    private AttackLogic attackLogic;
+    private Dialog errorDialogController;
+    private Dialog confirmDialogController;
+    private Dialog selectionDialogController;
+    private Dialog attackResultsDialogController;
 
     @FXML
     private void initialize() {
-        this.gameEngine = SceneController.getInstance().getGameEngine();
+        gameEngine = SceneController.getInstance().getGameEngine();
+        attackLogic = new AttackLogic(gameEngine);
+        SceneController.setCurrentScene(this);
+        setupDialogControllers();
         updateStateLabels();
-        this.claimTerritoryDialog.lookupButton(ButtonType.YES).addEventHandler(ActionEvent.ACTION, event ->
+        setupDialogButtons();
+        setupSkipButton();
+    }
+
+    private void setupDialogControllers() {
+        errorDialogController = new Dialog(territoryErrorDialog, dialogBackground);
+        confirmDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
+        selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
+        attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
+    }
+
+    private void setupDialogButtons() {
+        setupClaimTerritoryDialog();
+        setupTerritoryErrorDialog();
+        setupArmyPlacementDialog();
+        setupAttackResultsDialog();
+    }
+
+    private void setupSkipButton() {
+        attackSkipButton.addEventHandler(ActionEvent.ACTION, event -> {
+            attackLogic.reset();
+            handleAttackPhaseInstructions();
+        });
+    }
+
+    private void setupClaimTerritoryDialog() {
+        confirmDialogController.setupButton(ButtonType.YES, "gameMapScreen.dialogYes", event ->
                 handleClaimTerritory());
-        this.claimTerritoryDialog.lookupButton(ButtonType.NO).addEventHandler(ActionEvent.ACTION, event ->
-                toggleDialog(claimTerritoryDialog));
-        this.placeArmiesErrorDialog.lookupButton(ButtonType.CLOSE).addEventHandler(ActionEvent.ACTION, event ->
-                toggleDialog(placeArmiesErrorDialog));
+        confirmDialogController.setupButton(ButtonType.NO, "gameMapScreen.dialogNo", event ->
+                confirmDialogController.toggleDisplay());
+    }
+
+    private void setupTerritoryErrorDialog() {
+        errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event ->
+                errorDialogController.toggleDisplay());
+    }
+
+    private void setupArmyPlacementDialog() {
+        selectionDialogController.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
+            selectionDialogController.toggleDisplay();
+            handleSelectionDialogAction(armyCountSpinner.getValue());
+        });
+        selectionDialogController.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
+                selectionDialogController.toggleDisplay());
+    }
+
+    private void setupAttackResultsDialog() {
+        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogClose", event ->
+                attackResultsDialogController.toggleDisplay());
+    }
+
+    private void handleSelectionDialogAction(int value) {
+        if (gameEngine.getCurrentGamePhase() == GamePhase.PLACEMENT) {
+            handlePlaceArmies(value);
+        } else if (gameEngine.getCurrentGamePhase() == GamePhase.ATTACK) {
+            attackPhaseLogic(value);
+        }
+    }
+
+    private void attackPhaseLogic(int value) {
+        if (!attackLogic.sourceArmiesSelected()) {
+            attackLogic.setAttackArmies(value);
+            getArmiesForDefense();
+        } else {
+            attackLogic.setDefendArmies(value);
+            handleAttackErrors(attackLogic.performAttack());
+            updateStateLabels();
+        }
+    }
+
+    private void handleAttackErrors(AttackResult result) {
+        if (result == AttackResult.SUCCESS) {
+            displayResults();
+            checkForLoss();
+            checkForWin();
+            attackLogic.reset();
+        } else {
+            showErrorMessage("gameMapScreen." + result.toKey());
+        }
+    }
+
+    private void displayResults() {
+        displayAttackerRolls();
+        displayDefenderRolls();
+        displayAttackResults();
+        attackResultsDialogController.toggleDisplay();
+    }
+
+    private void displayAttackerRolls() {
+        StringBuilder rolls = new StringBuilder();
+        gameEngine.getAttackerDiceRolls().forEach(roll -> rolls.append(roll).append(", "));
+        attackerRollsLabel.setText(SceneController.getString("gameMapScreen.attackerRolls", new Object[]{
+                gameEngine.getCurrentPlayer(), rolls.delete(rolls.length() - 2, rolls.length()).toString()}));
+    }
+
+    private void displayDefenderRolls() {
+        StringBuilder rolls = new StringBuilder();
+        gameEngine.getDefenderDiceRolls().forEach(roll -> rolls.append(roll).append(", "));
+        defenderRollsLabel.setText(SceneController.getString("gameMapScreen.defenderRolls", new Object[]{
+                attackLogic.getTargetOwner(), rolls.delete(rolls.length() - 2, rolls.length()).toString()}));
+    }
+
+    private void displayAttackResults() {
+        StringBuilder results = new StringBuilder();
+        gameEngine.getBattleResults().forEach(result -> results.append(result).append(", "));
+        attackResultsLabel.setText(SceneController.getString("gameMapScreen.attackResults",
+                new Object[]{results.delete(results.length() - 2, results.length()).toString()}));
+    }
+
+    private void checkForLoss() {
+        int players = gameEngine.getPlayerOrder().size();
+        if (players < SceneController.getInstance().getNumberOfPlayers()) {
+            SceneController.getInstance().setNumberOfPlayers(players);
+            System.out.println("Player " + attackLogic.getTargetOwner() + " has been eliminated!");
+        }
+    }
+
+    private void checkForWin() {
+        if (gameEngine.getPlayerOrder().size() == 1) {
+            SceneController.getInstance().setWinner(gameEngine.getCurrentPlayer());
+            SceneController.getInstance().activate(SceneType.WIN);
+        }
     }
 
     private void updateStateLabels() {
-        this.currentPlayerColor.setText(this.gameEngine.getCurrentPlayer().toString());
-        this.currentPhase.setText(this.gameEngine.getCurrentGamePhase().toString());
-        this.armiesToPlace.setText(this.gameEngine.getCurrentPlayerArmiesToPlace() + "");
+        currentPlayerColor.setText(gameEngine.getCurrentPlayer().toString());
+        currentPhase.setText(gameEngine.getCurrentGamePhase().toString());
+        armiesToPlace.setText(gameEngine.getCurrentPlayerArmiesToPlace() + "");
+        if (gameEngine.getCurrentGamePhase() != GamePhase.SCRAMBLE) {
+            enablePlacement();
+        }
         gamePhaseActions();
     }
 
     private void gamePhaseActions() {
-        if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
-                    new Object[]{this.gameEngine.getCurrentPlayer()}));
+        GamePhase currentPhase = gameEngine.getCurrentGamePhase();
+        if (currentPhase == GamePhase.SCRAMBLE) {
+            handleScramblePhaseInstructions();
+        } else if (currentPhase == GamePhase.SETUP) {
+            handleSetupPhaseInstructions();
         } else {
-            this.instructionLabel.setText(SceneController.getString("gameMapScreen.placeInstruction",
-                    new Object[]{this.gameEngine.getCurrentPlayer()}));
-            enablePlacement();
+            placementAttackPhaseActions(currentPhase);
         }
+    }
+
+    private void placementAttackPhaseActions(GamePhase currentPhase) {
+        if (currentPhase == GamePhase.PLACEMENT) {
+            handlePlacementPhaseInstructions();
+        } else if (currentPhase == GamePhase.ATTACK) {
+            handleAttackPhaseInstructions();
+        }
+    }
+
+    private void handleScramblePhaseInstructions() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+                new Object[]{gameEngine.getCurrentPlayer()}));
+    }
+
+    private void handleSetupPhaseInstructions() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
+                new Object[]{gameEngine.getCurrentPlayer()}));
+    }
+
+    private void handlePlacementPhaseInstructions() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
+                new Object[]{gameEngine.getCurrentPlayer()}));
+    }
+
+    private void handleAttackPhaseInstructions() {
+        boolean sourceSelected = attackLogic.sourceSelected();
+        instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
+                        : "gameMapScreen.attackInstructionSource",
+                new Object[]{gameEngine.getCurrentPlayer()}));
+        attackSkipButton.setVisible(true);
+        attackSkipButton.setText(SceneController.getString(sourceSelected
+                ? "gameMapScreen.resetAttackButton" : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
         this.armiesToPlacePane.setVisible(true);
-        for (Entry<Button, TerritoryType> entry : this.territoryButtonMap.entrySet()) {
+        for (Entry<Button, TerritoryType> entry : territoryButtonMap.entrySet()) {
             Button territoryButton = entry.getKey();
             TerritoryType territory = entry.getValue();
             territoryButton.setDisable(false);
-            territoryButton.setText(this.gameEngine.getNumberOfArmies(territory) + "");
+            territoryButton.setText(gameEngine.getNumberOfArmies(territory) + "");
         }
     }
 
     private void handleClaimTerritory() {
         setButtonBackgroundColor();
-        this.selectedButton.setText("");
-        this.selectedButton.setDisable(true);
-        this.gameEngine.placeNewArmiesInTerritory(this.selectedTerritory, 1);
-        toggleDialog(this.claimTerritoryDialog);
-        this.territoryButtonMap.put(this.selectedButton, this.selectedTerritory);
+        selectedButton.setText("");
+        selectedButton.setDisable(true);
+        gameEngine.placeNewArmiesInTerritory(selectedTerritory, 1);
+        confirmDialogController.toggleDisplay();
+        territoryButtonMap.put(selectedButton, selectedTerritory);
         updateStateLabels();
     }
 
     private void setButtonBackgroundColor() {
         StringBuilder style = new StringBuilder("-fx-background-color:");
-        style.append(this.gameEngine.getCurrentPlayer().getColorString());
+        style.append(gameEngine.getCurrentPlayer().getColorString());
         if (gameEngine.getCurrentPlayer() == PlayerColor.YELLOW) {
             style.append(
                     "; -fx-border-color: black; -fx-text-fill: black");
         }
-        this.selectedButton.styleProperty().setValue(style.toString());
-    }
-
-    private void toggleDialog(DialogPane dialog) {
-        boolean visible = dialog.isVisible();
-        dialog.setVisible(!visible);
-        this.dialogBackground.setVisible(!visible);
+        selectedButton.styleProperty().setValue(style.toString());
     }
 
     @FXML
     private void handleTerritoryButtonClick(ActionEvent event) {
-        this.selectedButton = (Button) event.getSource();
-        this.selectedTerritory = TerritoryType.valueOf(this.selectedButton.getAccessibleText());
+        selectedButton = (Button) event.getSource();
+        selectedTerritory = TerritoryType.valueOf(selectedButton.getAccessibleText());
         handleGamePhaseAction();
     }
 
     private void handleGamePhaseAction() {
-        if (this.gameEngine.getCurrentGamePhase() == GamePhase.SCRAMBLE) {
-            this.claimTerritoryDialog.setContentText(SceneController.getString("gameMapScreen.claimAsk",
-                    new Object[]{this.selectedTerritory}));
-            toggleDialog(this.claimTerritoryDialog);
+        GamePhase currentPhase = gameEngine.getCurrentGamePhase();
+        if (currentPhase == GamePhase.SCRAMBLE) {
+            confirmDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{selectedTerritory});
+            confirmDialogController.toggleDisplay();
         } else {
-            handlePlaceArmies();
+            handlePlaceAndAttackPhases(currentPhase);
         }
     }
 
-    private void handlePlaceArmies() {
+    private void handlePlaceAndAttackPhases(GamePhase currentPhase) {
+        if (currentPhase == GamePhase.SETUP) {
+            handlePlaceArmies(1);
+        } else if (currentPhase == GamePhase.PLACEMENT) {
+            handlePlacement();
+        } else if (currentPhase == GamePhase.ATTACK) {
+            handleAttack();
+        }
+    }
+
+    private void handlePlaceArmies(int armies) {
         try {
-            this.gameEngine.placeNewArmiesInTerritory(this.territoryButtonMap.get(this.selectedButton), 1);
-        } catch (Exception e) {
-            toggleDialog(this.placeArmiesErrorDialog);
+            gameEngine.placeNewArmiesInTerritory(territoryButtonMap.get(selectedButton), armies);
+        } catch (IllegalArgumentException e) {
+            selectPlacementErrorMessage(e.getMessage());
+        } catch (IllegalStateException e) {
+            showErrorMessage("gameMapScreen.scrambleError");
         }
         updateStateLabels();
+    }
+
+    private void selectPlacementErrorMessage(String message) {
+        String key = message.contains("enough") ? "notEnoughArmiesError" : message.contains("< 1") ? "tooFewArmiesError"
+                : "generalPlacementError";
+        showErrorMessage("gameMapScreen." + key);
+    }
+
+    private void showErrorMessage(String key) {
+        errorDialogController.setContentText(key, null);
+        errorDialogController.toggleDisplay();
+    }
+
+    private void handlePlacement() {
+        resetSelectionDialog();
+        selectionDialogController.setTitleText("gameMapScreen.armyPlacementSelection",
+                new Object[]{gameEngine.getCurrentPlayerArmiesToPlace()});
+        selectionDialogController.showButton(ButtonType.CANCEL);
+        selectionDialogController.toggleDisplay();
+    }
+
+    private void handleAttack() {
+        if (!attackLogic.sourceSelected()) {
+            if (!attackLogic.setSourceTerritory(territoryButtonMap.get(selectedButton))) {
+                updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
+            }
+            handleAttackPhaseInstructions();
+        } else {
+            handleTargetTerritorySelection();
+        }
+    }
+
+    private void resetSelectionDialog() {
+        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
+                Integer.MAX_VALUE, 1));
+    }
+
+    private void handleTargetTerritorySelection() {
+        if (!attackLogic.setTargetTerritory(territoryButtonMap.get(selectedButton))) {
+            updateTerritoryErrorDialog("gameMapScreen.attackTargetError");
+        } else {
+            getArmiesForAttack();
+        }
+    }
+
+    private void getArmiesForAttack() {
+        resetSelectionDialog();
+        selectionDialogController.setTitleText("gameMapScreen.attackArmySelection",
+                new Object[]{gameEngine.getCurrentPlayer()});
+        selectionDialogController.hideButton(ButtonType.CANCEL);
+        selectionDialogController.toggleDisplay();
+    }
+
+    private void getArmiesForDefense() {
+        resetSelectionDialog();
+        selectionDialogController.setTitleText("gameMapScreen.defendArmySelection",
+                new Object[]{attackLogic.getTargetOwner()});
+        selectionDialogController.toggleDisplay();
+    }
+
+    private void updateTerritoryErrorDialog(String error) {
+        errorDialogController.setContentText(error, null);
+        errorDialogController.toggleDisplay();
+    }
+
+    @Override
+    public void onKeyPress(KeyEvent event) {
+        if (this.confirmDialogController.isVisible()) {
+            if (event.getCode() == KeyCode.ENTER) {
+                handleClaimTerritory();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                confirmDialogController.toggleDisplay();
+            }
+        }
     }
 
 }

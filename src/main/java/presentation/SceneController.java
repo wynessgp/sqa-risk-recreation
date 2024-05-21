@@ -13,15 +13,19 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 
 class SceneController {
     private static SceneController sceneController;
     private static String languageName = "English";
+    private static GameScene currentScene;
     private final Map<SceneType, Pane> screenMap = new HashMap<>();
     private final Scene main;
     private WorldDominationGameEngine gameEngine;
     private List<PlayerColor> originalPlayerOrder;
+    private int numberOfPlayers;
+    private PlayerColor winner;
 
     private SceneController(Scene main) {
         this.main = main;
@@ -45,6 +49,7 @@ class SceneController {
     protected void initializePlayers(List<PlayerColor> players) {
         this.gameEngine = new WorldDominationGameEngine(players);
         this.originalPlayerOrder = new ArrayList<>(players);
+        this.numberOfPlayers = players.size();
     }
 
     protected WorldDominationGameEngine getGameEngine() {
@@ -53,6 +58,30 @@ class SceneController {
 
     protected List<PlayerColor> getOriginalPlayerOrder() {
         return originalPlayerOrder;
+    }
+
+    protected void onKeyPress(KeyEvent event) {
+        currentScene.onKeyPress(event);
+    }
+
+    protected int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    protected void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
+    }
+
+    protected void setWinner(PlayerColor winner) {
+        this.winner = winner;
+    }
+
+    protected PlayerColor getWinner() {
+        return winner;
+    }
+
+    protected static void setCurrentScene(GameScene scene) {
+        currentScene = scene;
     }
 
     protected static void setRoot(Scene scene) {
