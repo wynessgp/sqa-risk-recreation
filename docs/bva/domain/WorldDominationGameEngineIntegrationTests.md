@@ -913,3 +913,296 @@ And the attack ends with PURPLE taking over the territory
 Then YELLOW should LOSE the game
 
 And PURPLE should get any Risk cards that YELLOW owned
+
+# method: `moveArmiesBetweenFriendlyTerritories(srcTerritory: TerritoryType, destTerritory: TerritoryType, numArmies: int): void`
+
+## BVA Step 1
+Input: The two territories that the current player wants to move armies between, and the number of armies to move
+between the two territories. This will interact with the underlying territory objects, so those must be considered as well.
+
+We also need to consider the game phase: if we're in the ATTACK phase, this can only be done after a territory is taken
+over, and it HAS to utilize the territories that were just used in the attack.
+If we're in the FORTIFY phase, the phase needs to swing back around to PLACEMENT.
+
+Output: An exception if the movement is not able to be done (too many armies, territories are not adjacent, in the
+incorrect game phase, window to split armies in the attack phase has ended, either territory is not owned by current player).
+
+If the movement is able to be done, then the source and destination territories will be modified.
+If this movement is done in the attack phase, then the player should lose the ability to split armies between the most
+RECENTLY attacked territories.
+(Namely, we can just remove those two territories from being recently attacked)
+If this movement is done in the fortify phase, then the fortify phase should end, and we should be on the next player's
+PLACEMENT phase.
+
+## BVA Step 2
+Input:
+- srcTerritory, destTerritory: Cases
+- numArmies: Interval [1, num armies present in territory - 1]
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+Output:
+- method output: N/A
+- source, destination territory objects: Pointer
+- current game phase: Cases
+- recently attacked source, destination: Cases
+- currently going player: Cases
+
+## BVA Step 3
+Input:
+- srcTerritory, destTerritory (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+- numArmies (Interval):
+  - \<= 0 (error case)
+  - Anything in [1, num armies present in territory - 1]
+    - 1
+    - num armies present in territory - 1
+  - \>= num armies present in territory (error case)
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - If either territory is not owned by the current player (error case)
+    - Source territory doesn't have enough armies to support the move (error case)
+    - Territories are not adjacent on the Risk map (error case)
+- current game phase (Cases):
+  - SCRAMBLE (error case)
+  - SETUP (error case)
+  - PLACEMENT (error case)
+  - ATTACK
+  - FORTIFY
+  - GAME_OVER (error case)
+  - The 0th, 7th possibilities (error case)
+- recently attacked source, dest (Cases):
+  - ALASKA
+  - ARGENTINA
+  - ...
+  - YAKUTSK
+  - The 0th, 43rd possibilities (can't set, Java enum)
+  - These NEED to match up with the inputs provided as source & destination territory
+    - If we are in the attack phase and they do not, this is an error.
+- currently going player (Cases):
+  - Should always line up with the GameEngine's tracking.
+
+Output:
+- IllegalArgumentException if:
+  - Territories were not adjacent (message: "Source and destination territory must be two adjacent territories!")
+  - Territories are not owned by the current player (message: "Provided territories are not owned by the current player!")
+  - `numArmies` >= num armies in territory (message: "Source territory does not have enough armies to support this movement!")
+  - Called in attack, but armies are not able to be split between the two territories (message: "Cannot split armies between this source and destination!")
+- IllegalStateException if:
+  - Done in an incorrect game phase (message: "Friendly army movement can only be done in the ATTACK or FORTIFY phase!")
+- source, destination territory objects (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Looking to see that `numArmies` was removed from source territory
+    - And that `numArmies` was added to the destination territory
+- current game phase (Cases):
+  - If we started in ATTACK, keep it in ATTACK, but remove the ability to split armies
+    - Assuming they had the ability to split armies at first
+    - Namely, clear the recently attacked source and dest
+  - If we started in FORTIFY, move to the PLACEMENT phase of the next player.
+- recently attacked source, destination: Cases
+  - These values NEED to be CLEARED if we are in the attack phase.
+- currently going player (Cases):
+  - If we are in the ATTACK phase, should remain the same player.
+  - If we are in the FORTIFY phase, should ADVANCE to the next player in turn order.
+
+## BVA Step 4
+Here are some things to consider here:
+
+ATTACK Phase: <br>
+This action should only be precisely available immediately AFTER someone takes over a territory. If they take any other
+actions, they should lose the ability to split armies via this method. The possible actions a player can take are:
+- Trading in cards
+- Selecting a new territory / destination pair to attack
+- Actually splitting armies between said territories
+- Forcibly end the attack phase
+
+Note that we should only clear the ability to split if these actions are SUCCESSFUL, meaning they successfully trade in
+cards (and make it back to ATTACK phase) or split between territories / etc.
+
+FORTIFY Phase: <br>
+This is *effectively* the end of the FORTIFY phase if they do choose to move armies once. This means swapping to the next
+player in turn order and having it be their PLACEMENT phase, so we need to respect the rules of swapping to PLACEMENT.
+This is also when we'll let people claim their card, since their turn will end. Note that a card should be claimed any
+time we swap from FORTIFY -> PLACEMENT, so we should respect that elsewhere as well (namely forcefully ending phase).
+
+### Test 1:
+Given that the current player is PURPLE
+
+And the current phase is FORTIFY
+
+And they do not own the source territory
+
+And they own the destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they do not own both the source and destination territory
+
+### Test 2:
+Given that the current player is PURPLE
+
+And the current phase is FORTIFY
+
+And they own the source territory
+
+And they do not own the destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they do not own both the source and destination territory
+
+### Test 3:
+Given that the current player is PURPLE
+
+And the current phase is FORTIFY
+
+And they own the source territory
+
+And they own the destination territory
+
+And they try to move an invalid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they are trying to move an invalid number of armies
+
+### Test 4:
+Given that the current player is PURPLE
+
+And the current phase is PLACEMENT
+
+And they own the source territory
+
+And they own the destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they are trying to move armies in an invalid phase
+
+### Test 5:
+Given that the current player is PURPLE
+
+And the current phase is ATTACK
+
+And they own the source territory
+
+And they own the destination territory
+
+And that the player just traded in cards
+- Note that they'll have to make their way back out of PLACEMENT phase before getting back here
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they cannot split armies between this source and destination
+- Namely, because they've taken other actions before choosing to split.
+
+### Test 6:
+Given that the current player is PURPLE
+
+And the current phase is ATTACK
+
+And they own the source territory 
+
+And they own the destination territory
+
+And that the player just recently started an attack on a new destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they cannot split armies between this source and destination
+- Namely, because they've taken other actions before choosing to split.
+
+### Test 7:
+Given that the current player is GREEN
+
+And the current phase is ATTACK
+
+And they own the source territory 
+
+And they own the destination territory 
+
+And that the player just recently split armies between these two territories
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that they cannot split armies between this source and destination
+- Namely, because they've taken other actions before choosing to split.
+
+### Test 8:
+Given that the current player is GREEN
+
+And the current phase is ATTACK
+
+And they own the source territory
+
+And they own the destination territory
+
+And that the player just recently took over the destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be able to move these armies
+
+And the map should reflect that the armies have been moved
+
+And the player should lose the ability to split armies between these territories again
+
+### Test 9:
+Given that the current player is YELLOW
+
+And the current phase is FORTIFY
+
+And they own the source territory
+
+And they own the destination territory
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be able to move these armies
+
+And the map should reflect that the armies have been removed
+
+And it should be the next player's turn
+
+And the next player should receive their armies for the PLACEMENT phase
+
+And the game phase should be PLACEMENT
+
