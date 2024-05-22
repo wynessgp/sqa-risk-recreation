@@ -77,7 +77,7 @@
              </font>
           </Label>
        </AnchorPane>
-      <Button fx:id="attackSkipButton" alignment="CENTER" layoutX="13.0" layoutY="590.0" mnemonicParsing="false" prefWidth="100.0" text="%gameMapScreen.cancelAttackButton" visible="false">
+      <Button fx:id="attackFortifySkipButton" alignment="CENTER" layoutX="13.0" layoutY="590.0" mnemonicParsing="false" prefWidth="100.0" text="%gameMapScreen.cancelAttackButton" visible="false">
          <styleClass>
             <String fx:value="button" />
             <String fx:value="defaultButton" />
