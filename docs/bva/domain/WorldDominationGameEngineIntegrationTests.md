@@ -1201,6 +1201,7 @@ Then they should be able to move these armies
 And the map should reflect that the armies have been removed
 
 And it should be the next player's turn
+- Claim a card for YELLOW if they earned it
 
 And the next player should receive their armies for the PLACEMENT phase
 
