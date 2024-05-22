@@ -168,19 +168,19 @@ Output: Collection
   - amountOfDiceToRoll = -1 
   - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException 
-  - message: "Valid amount of dice is in the range [1, 3]"
+  - message: "Valid amount of dice for attacker roll must be in the range [1, 3]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll = 0
   - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 3]"
+  - message: "Valid amount of dice for attacker roll must be in the range [1, 3]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll = 4
   - Collection = [valid 6-sided die, valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 3]"
+  - message: "Valid amount of dice for attacker roll must be in the range [1, 3]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll = 3
@@ -247,19 +247,19 @@ Output: Collection
   - amountOfDiceToRoll = -1
   - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 2]"
+  - message: "Valid amount of dice for defender roll must be in the range [1, 2]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll = 0
   - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 2]"
+  - message: "Valid amount of dice for defender roll must be in the range [1, 2]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll = 3
   - Collection = [valid 6-sided die, valid 6-sided die]
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [1, 2]
+  - message: "Valid amount of dice for defender roll must be in the range [1, 2]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll = 2
