@@ -1276,4 +1276,33 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test35_moveArmiesBetweenFriendlyTerritories_fortifyPhase_destNotOwned_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, and try moving the armies.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 4));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
