@@ -220,11 +220,11 @@ public class GameMapScreenController implements GameScene {
         if (gameEngine.getCurrentGamePhase() != GamePhase.SCRAMBLE) {
             enablePlacement();
         }
-        gamePhaseActions();
+        gamePhaseActions(gameEngine.getCurrentGamePhase());
     }
 
-    private void gamePhaseActions() {
-        GamePhase currentPhase = gameEngine.getCurrentGamePhase();
+    private void gamePhaseActions(GamePhase currentPhase) {
+        attackFortifySkipButton.setVisible(false);
         if (currentPhase == GamePhase.SCRAMBLE) {
             handleScramblePhaseInstructions();
         } else if (currentPhase == GamePhase.SETUP) {
@@ -257,7 +257,6 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhaseInstructions() {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
-        attackFortifySkipButton.setVisible(false);
     }
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
@@ -272,6 +271,7 @@ public class GameMapScreenController implements GameScene {
     private void handleFortifyPhaseInstructions() {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.fortifyInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
+        attackFortifySkipButton.setVisible(true);
     }
 
     private void enablePlacement() {
