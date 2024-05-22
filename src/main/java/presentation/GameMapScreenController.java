@@ -287,8 +287,7 @@ public class GameMapScreenController implements GameScene {
 
     private PlayerColor getTerritoryOwner(TerritoryType territory) {
         return gameEngine.getPlayerOrder().stream()
-                .filter(player -> gameEngine.checkIfPlayerOwnsTerritory(territory, player)).findFirst()
-                .orElse(null);
+                .filter(player -> gameEngine.checkIfPlayerOwnsTerritory(territory, player)).findFirst().orElse(null);
     }
 
     private void handleClaimTerritory() {
@@ -323,11 +322,11 @@ public class GameMapScreenController implements GameScene {
             confirmDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{selectedTerritory});
             confirmDialogController.toggleDisplay();
         } else {
-            handlePlaceAndAttackPhases(currentPhase);
+            handleSetupPlacementAttackPhases(currentPhase);
         }
     }
 
-    private void handlePlaceAndAttackPhases(GamePhase currentPhase) {
+    private void handleSetupPlacementAttackPhases(GamePhase currentPhase) {
         if (currentPhase == GamePhase.SETUP) {
             handlePlaceArmies(1);
         } else if (currentPhase == GamePhase.PLACEMENT) {
