@@ -36,9 +36,9 @@ public class PlayerShuffleScreenController implements GameScene {
     private void initialize() {
         SceneController.setCurrentScene(this);
         WorldDominationGameEngine gameEngine = sceneController.getGameEngine();
-        this.originalPlayerOrder = sceneController.getOriginalPlayerOrder();
-        this.dieRolls = gameEngine.getDieRolls();
-        this.updatedPlayerOrder = gameEngine.getPlayerOrder();
+        originalPlayerOrder = sceneController.getOriginalPlayerOrder();
+        dieRolls = gameEngine.getDieRolls();
+        updatedPlayerOrder = gameEngine.getPlayerOrder();
         dieRollResult.setVisible(false);
         startGameButton.setVisible(false);
         prepareCurrentPlayerRoll();

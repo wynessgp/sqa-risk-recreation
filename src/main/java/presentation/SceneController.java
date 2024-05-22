@@ -47,9 +47,9 @@ class SceneController {
     }
 
     protected void initializePlayers(List<PlayerColor> players) {
-        this.gameEngine = new WorldDominationGameEngine(players);
-        this.originalPlayerOrder = new ArrayList<>(players);
-        this.numberOfPlayers = players.size();
+        gameEngine = new WorldDominationGameEngine(players);
+        originalPlayerOrder = new ArrayList<>(players);
+        numberOfPlayers = players.size();
     }
 
     protected WorldDominationGameEngine getGameEngine() {
