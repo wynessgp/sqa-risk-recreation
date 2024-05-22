@@ -49,7 +49,7 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private Label attackResultsLabel;
     @FXML
-    private Button attackSkipButton;
+    private Button attackFortifySkipButton;
     @FXML
     private Spinner<Integer> armyCountSpinner;
     private WorldDominationGameEngine gameEngine;
@@ -91,7 +91,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupSkipButton() {
-        attackSkipButton.addEventHandler(ActionEvent.ACTION, event -> {
+        attackFortifySkipButton.addEventHandler(ActionEvent.ACTION, event -> {
             attackLogic.reset();
             handleAttackButtonClick();
         });
@@ -257,14 +257,15 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhaseInstructions() {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
+        attackFortifySkipButton.setVisible(false);
     }
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
         instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
-        attackSkipButton.setVisible(true);
-        attackSkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
+        attackFortifySkipButton.setVisible(true);
+        attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
                 : "gameMapScreen.cancelAttackButton", null));
     }
 
