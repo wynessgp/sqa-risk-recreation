@@ -1285,9 +1285,34 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer, mockedParser);
     }
 
-    @Test
-    public void test73_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5})
+    public void test73_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException(int numCards) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(numCards);
 
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.tradeInCards(Set.of(
+                        new WildCard(),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY))));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot trade in cards in the ATTACK phase unless you have > 5 held!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
     }
 
     @Test

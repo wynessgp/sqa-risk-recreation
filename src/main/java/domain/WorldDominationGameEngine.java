@@ -596,6 +596,7 @@ public final class WorldDominationGameEngine {
 
     public Set<TerritoryType> tradeInCards(Set<Card> selectedCardsToTradeIn) {
         checkIfInValidGamePhase(Set.of(GamePhase.ATTACK, GamePhase.PLACEMENT));
+        checkForForcedTradeInForAttackPhase();
 
         Player currentPlayerObject = playersMap.get(currentPlayer);
         checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
@@ -605,6 +606,12 @@ public final class WorldDominationGameEngine {
     private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {
         if (!validGamePhases.contains(currentGamePhase)) {
             throw new IllegalStateException("Can only trade in cards during the PLACEMENT or ATTACK phase");
+        }
+    }
+
+    private void checkForForcedTradeInForAttackPhase() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() < 6 && currentGamePhase == GamePhase.ATTACK) {
+            throw new IllegalStateException("Cannot trade in cards in the ATTACK phase unless you have > 5 held!");
         }
     }
 
