@@ -1591,5 +1591,41 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryTrios")
+    public void test42_moveArmiesBetweenFriendlyTerritories_fortifyPhase_playerTookTerritory_expectCardToBeAwarded(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType yellowOwns) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
 
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1));
+        // give yellow a territory, so they *actually* exist in the context of the game.
+        unitUnderTest.placeNewArmiesInTerritory(yellowOwns, 1);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, and try moving the armies. Also, say they've earned the chance to get a card.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+        unitUnderTest.setAbilityToClaimCard();
+
+        assertDoesNotThrow(() -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        // card set was presumably of size 0 beforehand, so it should be size 1 now.
+        assertEquals(1, unitUnderTest.getCardsForPlayer(PlayerColor.PURPLE).size());
+        assertEquals(PlayerColor.YELLOW, unitUnderTest.getCurrentPlayer());
+        // since yellow only owns 1 territory in this example, they'll get 3 armies...
+        // slight complication, though: since we didn't spend all of their setup armies in the traditional manner,
+        // they will get 24 + 3 armies total (setup amount + placement phase bonus for 1 territory)
+        assertEquals(27, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.YELLOW));
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+    }
 }

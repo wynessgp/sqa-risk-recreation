@@ -70,6 +70,7 @@ public final class WorldDominationGameEngine {
         addAllEdgesToTerritoryGraph();
         this.dieRollParser = parser;
         this.tradeInParser = new TradeInParser();
+        this.cardDeck = new RiskCardDeck();
     }
 
     private void addAllEdgesToTerritoryGraph() {
@@ -927,7 +928,10 @@ public final class WorldDominationGameEngine {
     private void handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary() {
         if (currentGamePhase == GamePhase.FORTIFY) {
             currentGamePhase = GamePhase.PLACEMENT;
+            claimCardForCurrentPlayerIfPossible();
             updateCurrentPlayer();
+            int bonusArmies = calculatePlacementPhaseArmiesForCurrentPlayer();
+            increaseNumArmiesCurrentPlayerHasToPlace(bonusArmies);
         }
     }
 
