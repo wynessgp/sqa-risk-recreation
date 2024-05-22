@@ -637,8 +637,7 @@ public final class WorldDominationGameEngine {
         increaseNumArmiesCurrentPlayerHasToPlace(numArmiesToReceive);
         playerObject.removeAllGivenCards(selectedCards);
         currentGamePhase = GamePhase.PLACEMENT;
-        this.recentlyAttackedDestination = null;
-        this.recentlyAttackedSource = null;
+        clearRecentlyAttackedTerritories();
     }
 
     void handleErrorCasesForAttackingTerritory(
@@ -969,10 +968,16 @@ public final class WorldDominationGameEngine {
         handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
         List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
         if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
+            clearRecentlyAttackedTerritories();
             return 0;
         }
         handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
         return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void clearRecentlyAttackedTerritories() {
+        this.recentlyAttackedDestination = null;
+        this.recentlyAttackedSource = null;
     }
 
     private void handleDefenderLosingTerritoryConsequences(

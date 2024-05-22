@@ -1,5 +1,6 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1446,6 +1447,102 @@ public class WorldDominationGameEngineIntegrationTest {
         unitUnderTest.tradeInCards(toTradeIn);
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
 
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateAdjacentTerritoryTrios() {
+        return Stream.of(
+                // North America
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ALBERTA, TerritoryType.ALASKA),
+                Arguments.of(TerritoryType.GREENLAND, TerritoryType.ICELAND, TerritoryType.QUEBEC),
+                Arguments.of(TerritoryType.ALBERTA, TerritoryType.ONTARIO, TerritoryType.WESTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.ONTARIO, TerritoryType.QUEBEC, TerritoryType.EASTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.QUEBEC, TerritoryType.EASTERN_UNITED_STATES, TerritoryType.ONTARIO),
+                Arguments.of(TerritoryType.WESTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA, TerritoryType.ALBERTA),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA, TerritoryType.ONTARIO),
+                Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.VENEZUELA,
+                        TerritoryType.EASTERN_UNITED_STATES),
+                // South America
+                Arguments.of(TerritoryType.VENEZUELA, TerritoryType.PERU, TerritoryType.BRAZIL),
+                Arguments.of(TerritoryType.PERU, TerritoryType.BRAZIL, TerritoryType.ARGENTINA),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.NORTH_AFRICA, TerritoryType.ARGENTINA),
+                Arguments.of(TerritoryType.ARGENTINA, TerritoryType.PERU, TerritoryType.BRAZIL),
+                // Europe
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.ICELAND, TerritoryType.WESTERN_EUROPE),
+                Arguments.of(TerritoryType.ICELAND, TerritoryType.SCANDINAVIA, TerritoryType.GREENLAND),
+                Arguments.of(TerritoryType.SCANDINAVIA, TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN),
+                Arguments.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.SOUTHERN_EUROPE, TerritoryType.UKRAINE),
+                Arguments.of(TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE, TerritoryType.MIDDLE_EAST),
+                Arguments.of(TerritoryType.UKRAINE, TerritoryType.URAL, TerritoryType.AFGHANISTAN),
+                Arguments.of(TerritoryType.WESTERN_EUROPE, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTHERN_EUROPE),
+                // Africa
+                Arguments.of(TerritoryType.NORTH_AFRICA, TerritoryType.EGYPT, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.EAST_AFRICA, TerritoryType.NORTH_AFRICA),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.SOUTH_AFRICA, TerritoryType.EAST_AFRICA),
+                Arguments.of(TerritoryType.EAST_AFRICA, TerritoryType.MIDDLE_EAST, TerritoryType.EGYPT),
+                Arguments.of(TerritoryType.SOUTH_AFRICA, TerritoryType.MADAGASCAR, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.MADAGASCAR, TerritoryType.EAST_AFRICA, TerritoryType.SOUTH_AFRICA),
+                // Asia
+                Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.MIDDLE_EAST, TerritoryType.INDIA),
+                Arguments.of(TerritoryType.MIDDLE_EAST, TerritoryType.INDIA, TerritoryType.AFGHANISTAN),
+                Arguments.of(TerritoryType.URAL, TerritoryType.SIBERIA, TerritoryType.UKRAINE),
+                Arguments.of(TerritoryType.INDIA, TerritoryType.CHINA, TerritoryType.SIAM),
+                Arguments.of(TerritoryType.CHINA, TerritoryType.SIAM, TerritoryType.MONGOLIA),
+                Arguments.of(TerritoryType.SIBERIA, TerritoryType.IRKUTSK, TerritoryType.URAL),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDONESIA, TerritoryType.CHINA),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.JAPAN, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA, TerritoryType.SIBERIA),
+                Arguments.of(TerritoryType.YAKUTSK, TerritoryType.KAMCHATKA, TerritoryType.IRKUTSK),
+                Arguments.of(TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MONGOLIA),
+                Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.MONGOLIA, TerritoryType.IRKUTSK),
+                // Oceania
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.WESTERN_AUSTRALIA, TerritoryType.NEW_GUINEA),
+                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.EASTERN_AUSTRALIA,
+                        TerritoryType.WESTERN_AUSTRALIA),
+                Arguments.of(TerritoryType.WESTERN_AUSTRALIA, TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA),
+                Arguments.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryTrios")
+    public void test40_moveArmiesBetweenFriendlyTerritories_attackPhase_playerStartsNewAttack_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType toAttack) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, new DieRollParser());
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(toAttack, 1)); // claim for yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 8));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(toAttack, 5));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // move into attack, set recently attacked stuff to pretend that we could split.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // now start another attack between two other territories
+        assertDoesNotThrow(() -> unitUnderTest.attackTerritory(
+                sourceTerritory, toAttack, 3, 2));
+
+        // recently attacked source and destination should be cleared, so we should error.
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
         String actualMessage = exception.getMessage();
