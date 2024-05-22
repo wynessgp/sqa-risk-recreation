@@ -492,7 +492,7 @@ public class WorldDominationGameEngineIntegrationTest {
         Set<Card> playerCards = Set.of(new WildCard(), new WildCard(),
                 new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
-        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
         unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
 
         unitUnderTest.tradeInCards(playerCards);
