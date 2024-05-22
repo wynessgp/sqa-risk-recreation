@@ -1365,4 +1365,47 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    private static Stream<Arguments> generateAdjacentTerritoryPairsAndInvalidMovementPhases() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Arguments> territoryPairs = generateAdjacentTerritoryPairs().collect(Collectors.toList());
+        List<GamePhase> invalidGamePhases = new ArrayList<>(List.of(GamePhase.values()));
+        invalidGamePhases.removeAll(List.of(GamePhase.ATTACK, GamePhase.FORTIFY));
+
+        for (Arguments territoryPair : territoryPairs) {
+            Object[] territories = territoryPair.get();
+            for (GamePhase invalidPhase : invalidGamePhases) {
+                toStream.add(Arguments.of(territories[0], territories[1], invalidPhase));
+            }
+
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairsAndInvalidMovementPhases")
+    public void test38_moveArmiesBetweenFriendlyTerritories_invalidPhase_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 3));
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Friendly army movement can only be done in the ATTACK or FORTIFY phase!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
