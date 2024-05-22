@@ -1325,6 +1325,47 @@ public class WorldDominationGameEngineTest {
         testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
     }
 
+    @Test
+    public void test74_tradeInCards_attackPhase_validInput_expectReturnSetOfSizeZero() {
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        Set<Card> cardsToBeTradedIn = Set.of(new WildCard(), alaskaCard, brazilCard);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.BLUE)
+                .addMockedMethod("ownsAllGivenCards")
+                .addMockedMethod("setNumArmiesToPlace")
+                .addMockedMethod("getNumArmiesToPlace")
+                .addMockedMethod("removeAllGivenCards")
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.ownsAllGivenCards(cardsToBeTradedIn)).andReturn(true);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(0);
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(6);
+        mockedPlayer.setNumArmiesToPlace(4);
+        EasyMock.expectLastCall().once();
+
+        mockedPlayer.removeAllGivenCards(cardsToBeTradedIn);
+        EasyMock.expectLastCall().once();
+
+        TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
+        EasyMock.expect(mockedParser.startTrade(cardsToBeTradedIn)).andReturn(4);
+        EasyMock.expect(mockedParser.getMatchedTerritories(mockedPlayer, cardsToBeTradedIn)).andReturn(Set.of());
+
+        EasyMock.replay(mockedPlayer, mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTradeInParser(mockedParser);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        assertEquals(Set.of(), unitUnderTest.tradeInCards(cardsToBeTradedIn));
+
+        EasyMock.verify(mockedPlayer, mockedParser);
+    }
+
     @ParameterizedTest
     @EnumSource(TerritoryType.class)
     public void test39_handleErrorCasesForAttackingTerritory_inputIsDuplicatedTerritory_expectException(
