@@ -637,6 +637,8 @@ public final class WorldDominationGameEngine {
         increaseNumArmiesCurrentPlayerHasToPlace(numArmiesToReceive);
         playerObject.removeAllGivenCards(selectedCards);
         currentGamePhase = GamePhase.PLACEMENT;
+        this.recentlyAttackedDestination = null;
+        this.recentlyAttackedSource = null;
     }
 
     void handleErrorCasesForAttackingTerritory(

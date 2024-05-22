@@ -1408,4 +1408,50 @@ public class WorldDominationGameEngineIntegrationTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test39_moveArmiesBetweenFriendlyTerritories_attackPhase_playerTradesIn_clearedRecent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 3));
+
+        // move into attack, set recently attacked stuff to pretend that it happened.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+
+        // now trade in cards, and assert that we throw an error (and fields are cleared)
+        Card wildCard = new WildCard();
+        Card alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        Card brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.CAVALRY);
+        Set<Card> toTradeIn = Set.of(wildCard, alaskaCard, brazilCard);
+        Set<Card> playerCards = new HashSet<>(toTradeIn);
+        playerCards.addAll(Set.of(
+                new TerritoryCard(TerritoryType.CHINA, PieceType.CAVALRY),
+                new TerritoryCard(TerritoryType.UKRAINE, PieceType.INFANTRY),
+                new WildCard()));
+
+        unitUnderTest.setCardsForPlayer(PlayerColor.PURPLE, playerCards);
+        unitUnderTest.tradeInCards(toTradeIn);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }
