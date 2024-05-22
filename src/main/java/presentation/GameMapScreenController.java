@@ -93,13 +93,17 @@ public class GameMapScreenController implements GameScene {
     private void setupSkipButton() {
         attackSkipButton.addEventHandler(ActionEvent.ACTION, event -> {
             attackLogic.reset();
-            if (attackLogic.sourceSelected()) {
-                handleAttackPhaseInstructions(true);
-            } else {
-                gameEngine.forceGamePhaseToEnd();
-                updateStateLabels();
-            }
+            handleAttackButtonClick();
         });
+    }
+
+    private void handleAttackButtonClick() {
+        if (attackLogic.sourceSelected()) {
+            handleAttackPhaseInstructions(true);
+        } else {
+            gameEngine.forceGamePhaseToEnd();
+            updateStateLabels();
+        }
     }
 
     private void setupClaimTerritoryDialog() {
