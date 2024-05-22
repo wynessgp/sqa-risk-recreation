@@ -230,15 +230,17 @@ public class GameMapScreenController implements GameScene {
         } else if (currentPhase == GamePhase.SETUP) {
             handleSetupPhaseInstructions();
         } else {
-            placementAttackPhaseActions(currentPhase);
+            placementAttackFortifyPhaseActions(currentPhase);
         }
     }
 
-    private void placementAttackPhaseActions(GamePhase currentPhase) {
+    private void placementAttackFortifyPhaseActions(GamePhase currentPhase) {
         if (currentPhase == GamePhase.PLACEMENT) {
             handlePlacementPhaseInstructions();
         } else if (currentPhase == GamePhase.ATTACK) {
             handleAttackPhaseInstructions(attackLogic.sourceSelected());
+        } else if (currentPhase == GamePhase.FORTIFY) {
+            handleFortifyPhaseInstructions();
         }
     }
 
@@ -264,6 +266,11 @@ public class GameMapScreenController implements GameScene {
         attackSkipButton.setVisible(true);
         attackSkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
                 : "gameMapScreen.cancelAttackButton", null));
+    }
+
+    private void handleFortifyPhaseInstructions() {
+        this.instructionLabel.setText(SceneController.getString("gameMapScreen.fortifyInstruction",
+                new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
     private void enablePlacement() {
