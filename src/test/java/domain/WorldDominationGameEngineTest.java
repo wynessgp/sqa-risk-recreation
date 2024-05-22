@@ -1278,11 +1278,16 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideMockedTradeInParser(mockedParser);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
-        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
         assertEquals(territoriesToReturn, unitUnderTest.tradeInCards(cardsToBeTradedIn));
 
         EasyMock.verify(mockedPlayer, mockedParser);
+    }
+
+    @Test
+    public void test73_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException() {
+
     }
 
     @Test
