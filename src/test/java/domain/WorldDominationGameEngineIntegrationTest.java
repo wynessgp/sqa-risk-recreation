@@ -513,13 +513,20 @@ public class WorldDominationGameEngineIntegrationTest {
         // claim a territory just to ensure we can still place after being booted back to placement phase.
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
 
-        Set<Card> playerCards = Set.of(new WildCard(), new WildCard(),
-                new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY));
+        Card brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY);
+        Card irkutskCard = new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY);
+        Card wildCard = new WildCard();
+
+        Set<Card> playerCards = Set.of(wildCard, new WildCard(),
+                brazilCard,
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                irkutskCard,
+                new TerritoryCard(TerritoryType.INDONESIA, PieceType.CAVALRY)); // force a trade in.
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
-        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
         unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
 
-        unitUnderTest.tradeInCards(playerCards);
+        unitUnderTest.tradeInCards(Set.of(wildCard, brazilCard, irkutskCard));
 
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
         // should gain 4 armies for the first trade-in, and with 3 users, you start with 35 armies.
