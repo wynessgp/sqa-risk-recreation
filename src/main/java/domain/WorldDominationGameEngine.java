@@ -782,7 +782,7 @@ public final class WorldDominationGameEngine {
     List<BattleResult> rollDiceForBattle(int numAttackers, int numDefenders) {
         this.attackerRolls = dieRollParser.rollAttackerDice(numAttackers);
         this.defenderRolls = dieRollParser.rollDefenderDice(numDefenders);
-        this.battleResults = dieRollParser.generateBattleResults(this.attackerRolls, this.defenderRolls);
+        this.battleResults = dieRollParser.generateBattleResults(this.defenderRolls, this.attackerRolls);
         return this.battleResults;
     }
 

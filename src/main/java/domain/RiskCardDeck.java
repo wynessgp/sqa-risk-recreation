@@ -15,7 +15,9 @@ class RiskCardDeck {
 
     RiskCardDeck() {
         this.random = new Random();
-        initDeck();
+        if (!initDeck()) {
+            return;
+        }
         shuffle();
     }
 
@@ -25,7 +27,7 @@ class RiskCardDeck {
 
     boolean initDeck() {
         if (!isDeckEmpty()) {
-            throw new IllegalStateException("Deck was previously initialized");
+            return false;
         }
         addTerritoryCards();
         addWildCards();

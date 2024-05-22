@@ -1714,7 +1714,7 @@ public class WorldDominationGameEngineTest {
         DieRollParser mockedDieRollParser = EasyMock.createMock(DieRollParser.class);
         EasyMock.expect(mockedDieRollParser.rollAttackerDice(numAttackers)).andReturn(attackRolls);
         EasyMock.expect(mockedDieRollParser.rollDefenderDice(numDefenders)).andReturn(defenseRolls);
-        EasyMock.expect(mockedDieRollParser.generateBattleResults(attackRolls, defenseRolls)).andReturn(battleResults);
+        EasyMock.expect(mockedDieRollParser.generateBattleResults(defenseRolls, attackRolls)).andReturn(battleResults);
 
         EasyMock.replay(mockedDieRollParser);
 
