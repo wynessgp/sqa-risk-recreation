@@ -355,6 +355,11 @@ Then the game should advance into the attack phase
 ## BVA Step 1
 Input: A collection of Risk cards that the current player would like to turn in and the underlying state of what GamePhase we are currently in.
 
+For input, we also care about some attributes about our player. Specifically:
+- If the player owns the cards they are attempting to trade in
+- If the player owns any territories MATCHING the territories on the respective cards they trade in
+- The amount of cards the player has (particular as it applies to ATTACK phase trade-ins)
+
 Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
 or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
 
@@ -363,12 +368,15 @@ Additionally, we care about:
   - We want to emphasize that these armies MUST be placed before the player can continue
 - The player receiving the bonus armies equivalent to the set's trade in value
   - So if I trade in the first set, I should get 4 more armies.
+- The respective cards being removed from the player's owned cards
+  - I shouldn't be able to trade in the same cards over and over
+  - Cards are removed from the game once turned in
 
 ## BVA Step 2
 Input:
 - selectedCardsToTradeIn: Collection
 - currentPlayer: Cases
-- Player object: Pointer
+- Player object: Pointer (we care about what territories and cards they own, and how many cards they own)
 - Underlying GamePhase: Cases
   - Should either be PLACEMENT/ATTACK.
 
@@ -394,7 +402,7 @@ Input:
   - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
 - Underlying GamePhase (Cases):
   - PLACEMENT
-  - ATTACK
+  - ATTACK (only allowed if they have \> 5 cards, forced trade in only)
   - Any other phase (error case)
 
 Output:
@@ -421,6 +429,8 @@ Some things to consider for integration tests:
   - So if they were in the attack phase, move them back into the PLACEMENT phase.
 - If I am told that I have too many cards to place my armies, calling this should fix it for me and give me my bonus armies.
   - Check that we give players their associated armies and that they can call placement again after trading in
+- If I am trying to trade in cards during the ATTACK phase, then I must hold \> 5 cards for this to be valid
+  - A forced trade in only happens if you have \> 5 cards, otherwise you're not allowed to trade in
 
 ### Test 1
 Given a valid list of players for the current game
@@ -453,7 +463,22 @@ Then the player should be told that the set to trade in is invalid
 ### Test 4
 Given a valid list of players for the current game
 
+And the current player is trying to trade in a valid set of cards
+
+And the current game phase is ATTACK
+
+And the player holds \< 6 cards
+
+When the player tries to trade in their cards
+
+Then the player should be told that they can only trade in cards during the attack phase if they hold \> 5 cards
+
+### Test 5
+Given a valid list of players for the current game
+
 And the player has a valid set of cards to trade in
+
+And the current game phase is the PLACEMENT phase
 
 When the player tries to trade in their cards
 
@@ -461,12 +486,14 @@ Then the player should get bonus armies
 
 And the player's cards they traded in should be removed
 
-### Test 5
+### Test 6
 Given a valid list of players for the current game
 
 And the game is in the attack phase
 
 And the current player has a valid set of cards to trade in
+
+And the current player has \> 5 cards currently held
 
 When the player tries to trade in their cards
 
@@ -474,7 +501,7 @@ Then the player should get bonus armies
 
 And the game phase should be moved to PLACEMENT
 
-### Test 6
+### Test 7
 Given a valid list of players for the current game
 
 And the current player is holding too many cards to be able to place armies
