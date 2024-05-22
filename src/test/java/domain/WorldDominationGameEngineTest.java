@@ -2473,19 +2473,40 @@ public class WorldDominationGameEngineTest {
 
         Territory mockedSource = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(false).anyTimes();
         EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
         EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
         EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
 
         Territory mockedDest = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(false).anyTimes();
         EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
         EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
         EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
 
+        // because this action will put us into the PLACEMENT phase, we need to account for the Graph then
+        // having every territory checked to see if a player owns it, per calculating their bonus armies.
+        List<Territory> otherMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (territory != sourceTerritory && territory != destTerritory) {
+                Territory mockedTerritory = EasyMock.createMock(Territory.class);
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+                EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+                EasyMock.replay(mockedTerritory);
+                otherMockedTerritories.add(mockedTerritory);
+            }
+        }
+
+        Player mockedGreen = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.GREEN)
+                .createMock();
+
         EasyMock.replay(mockedDest, mockedSource, mockedGraph);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedGreen));
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
         unitUnderTest.setPlayerOrderList(List.of(PlayerColor.PURPLE, PlayerColor.GREEN));
@@ -2499,6 +2520,10 @@ public class WorldDominationGameEngineTest {
         assertNull(unitUnderTest.getRecentlyAttackedDest());
 
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+
+        for (Territory mockedTerritory : otherMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
     }
 
     @ParameterizedTest
