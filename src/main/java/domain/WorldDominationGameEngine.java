@@ -921,6 +921,7 @@ public final class WorldDominationGameEngine {
                 && currentGamePhase == GamePhase.ATTACK) {
             throw new IllegalArgumentException("Cannot split armies between this source and destination!");
         }
+        clearRecentlyAttackedTerritories();
     }
 
     private void handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary() {
@@ -939,11 +940,11 @@ public final class WorldDominationGameEngine {
     }
 
     public TerritoryType getRecentlyAttackedSource() {
-        return null;
+        return recentlyAttackedSource;
     }
 
     public TerritoryType getRecentlyAttackedDest() {
-        return null;
+        return recentlyAttackedDestination;
     }
 
     public void forceGamePhaseToEnd() {

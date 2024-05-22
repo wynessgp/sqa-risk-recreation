@@ -3,6 +3,7 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -1550,5 +1551,45 @@ public class WorldDominationGameEngineIntegrationTest {
         String expectedMessage = "Cannot split armies between this source and destination!";
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test41_moveArmiesBetweenFriendlyTerritories_attackPhase_validInput_expectNoAbilityToSplitAgainAfter(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, new DieRollParser());
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 8));
+
+        // move into attack, set recently attacked stuff to pretend that we could split.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // move the armies once, assert that things are null, then try splitting again. it should throw
+        // an exception the second time around.
+        assertDoesNotThrow(() -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+
+        // now do it again.
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 }
