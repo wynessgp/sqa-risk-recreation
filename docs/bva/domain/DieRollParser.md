@@ -62,25 +62,25 @@ Output: Collection
   - amountOfDiceToRoll: -1
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [2, 6]"
+  - message: "Valid amount of dice for player setup roll must be in the range [3, 6]"
 ### Test 2:
 - Input:
   - amountOfDiceToRoll: 0
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [3, 6]"
+  - message: "Valid amount of dice for player setup roll must be in the range [3, 6]"
 ### Test 3:
 - Input:
   - amountOfDiceToRoll: 7
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [3, 6]"
+  - message: "Valid amount of dice for player setup roll must be in the range [3, 6]"
 ### Test 4:
 - Input:
   - amountOfDiceToRoll: 2
   - Set up die = [] (doesn't matter)
 - Output: IllegalArgumentException
-  - message: "Valid amount of dice is in the range [3, 6]"
+  - message: "Valid amount of dice for player setup roll must be in the range [3, 6]"
 ### Test 5:
 - Input:
   - amountOfDiceToRoll: 3
