@@ -93,7 +93,12 @@ public class GameMapScreenController implements GameScene {
     private void setupSkipButton() {
         attackSkipButton.addEventHandler(ActionEvent.ACTION, event -> {
             attackLogic.reset();
-            handleAttackPhaseInstructions();
+            if (attackLogic.sourceSelected()) {
+                handleAttackPhaseInstructions(true);
+            } else {
+                gameEngine.forceGamePhaseToEnd();
+                updateStateLabels();
+            }
         });
     }
 
@@ -229,7 +234,7 @@ public class GameMapScreenController implements GameScene {
         if (currentPhase == GamePhase.PLACEMENT) {
             handlePlacementPhaseInstructions();
         } else if (currentPhase == GamePhase.ATTACK) {
-            handleAttackPhaseInstructions();
+            handleAttackPhaseInstructions(attackLogic.sourceSelected());
         }
     }
 
@@ -248,8 +253,7 @@ public class GameMapScreenController implements GameScene {
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
-    private void handleAttackPhaseInstructions() {
-        boolean sourceSelected = attackLogic.sourceSelected();
+    private void handleAttackPhaseInstructions(boolean sourceSelected) {
         instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
@@ -356,7 +360,7 @@ public class GameMapScreenController implements GameScene {
             if (!attackLogic.setSourceTerritory(territoryButtonMap.get(selectedButton))) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
             }
-            handleAttackPhaseInstructions();
+            handleAttackPhaseInstructions(attackLogic.sourceSelected());
         } else {
             handleTargetTerritorySelection();
         }
