@@ -392,6 +392,30 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
+    public void test32_tradeInCardsAttackPhase_tradeInIsNotForced_expectException() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        Set<Card> attemptToTradeIn = Set.of(new WildCard(),
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY));
+
+        Set<Card> ownedPlayerCards = new HashSet<>(attemptToTradeIn);
+        ownedPlayerCards.addAll(Set.of(new WildCard(), new TerritoryCard(TerritoryType.YAKUTSK, PieceType.INFANTRY)));
+
+        unitUnderTest.setCardsForPlayer(players.get(0), ownedPlayerCards);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.tradeInCards(attemptToTradeIn));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot trade in cards in the ATTACK phase unless you have > 5 held!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     public void test13_tradeInCardsPlacementPhase_playerDoesNotOwnCards_expectException() {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
