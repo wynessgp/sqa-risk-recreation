@@ -15,9 +15,7 @@ class RiskCardDeck {
 
     RiskCardDeck() {
         this.random = new Random();
-        if (!initDeck()) {
-            return;
-        }
+        initDeck();
         shuffle();
     }
 

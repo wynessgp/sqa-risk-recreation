@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class WorldDominationGameEngine {
 
@@ -836,14 +837,8 @@ public final class WorldDominationGameEngine {
     }
 
     private PlayerColor getPlayerInControlOfTerritory(TerritoryType territory) {
-        PlayerColor playerInControl = playersList.get(0);
-        for (PlayerColor player : playersList) {
-            if (checkIfPlayerOwnsTerritory(territory, player)) {
-                playerInControl = player;
-                break;
-            }
-        }
-        return playerInControl;
+        return playersList.stream().filter(player -> checkIfPlayerOwnsTerritory(territory, player))
+                .collect(Collectors.toList()).get(0);
     }
 
     public void handlePlayerLosingGameIfNecessary(PlayerColor potentiallyLosingPlayer) {
