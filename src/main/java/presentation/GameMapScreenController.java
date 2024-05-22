@@ -29,6 +29,8 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private DialogPane attackResultsDialog;
     @FXML
+    private DialogPane generalMessageDialog;
+    @FXML
     private AnchorPane dialogBackground;
     @FXML
     private AnchorPane armiesToPlacePane;
@@ -59,6 +61,7 @@ public class GameMapScreenController implements GameScene {
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
+    private Dialog generalMessageDialogController;
 
     @FXML
     private void initialize() {
@@ -76,6 +79,7 @@ public class GameMapScreenController implements GameScene {
         confirmDialogController = new Dialog(claimTerritoryDialog, dialogBackground);
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
+        generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
     }
 
     private void setupDialogButtons() {
@@ -83,6 +87,7 @@ public class GameMapScreenController implements GameScene {
         setupTerritoryErrorDialog();
         setupArmyPlacementDialog();
         setupAttackResultsDialog();
+        setupGeneralMessageDialog();
     }
 
     private void setupSkipButton() {
@@ -114,8 +119,13 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupAttackResultsDialog() {
-        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogClose", event ->
+        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
                 attackResultsDialogController.toggleDisplay());
+    }
+
+    private void setupGeneralMessageDialog() {
+        generalMessageDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
+                generalMessageDialogController.toggleDisplay());
     }
 
     private void handleSelectionDialogAction(int value) {
@@ -142,10 +152,10 @@ public class GameMapScreenController implements GameScene {
             displayResults();
             checkForLoss();
             checkForWin();
-            attackLogic.reset();
         } else {
             showErrorMessage("gameMapScreen." + result.toKey());
         }
+        attackLogic.reset();
     }
 
     private void displayResults() {
@@ -180,7 +190,10 @@ public class GameMapScreenController implements GameScene {
         int players = gameEngine.getPlayerOrder().size();
         if (players < SceneController.getInstance().getNumberOfPlayers()) {
             SceneController.getInstance().setNumberOfPlayers(players);
-            System.out.println("Player " + attackLogic.getTargetOwner() + " has been eliminated!");
+            generalMessageDialogController.setTitleText("gameMapScreen.playerEliminated", null);
+            generalMessageDialogController.setContentText("gameMapScreen.playerEliminatedMessage",
+                    new Object[]{attackLogic.getTargetOwner()});
+            generalMessageDialogController.toggleDisplay();
         }
     }
 
@@ -241,8 +254,8 @@ public class GameMapScreenController implements GameScene {
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
         attackSkipButton.setVisible(true);
-        attackSkipButton.setText(SceneController.getString(sourceSelected
-                ? "gameMapScreen.resetAttackButton" : "gameMapScreen.cancelAttackButton", null));
+        attackSkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
+                : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
@@ -276,8 +289,7 @@ public class GameMapScreenController implements GameScene {
         StringBuilder style = new StringBuilder("-fx-background-color:");
         style.append(player.getColorString());
         if (player == PlayerColor.YELLOW) {
-            style.append(
-                    "; -fx-border-color: black; -fx-text-fill: black");
+            style.append("; -fx-border-color: black; -fx-text-fill: black");
         }
         button.styleProperty().setValue(style.toString());
     }
