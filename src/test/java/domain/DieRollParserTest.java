@@ -33,7 +33,7 @@ public class DieRollParserTest {
     public void test01_rollAttackerDice_tooFewOrTooManyDice_expectException(int illegalInput) {
         DieRollParser unitUnderTest = new DieRollParser();
 
-        String expectedMessage = "Valid amount of dice is in the range [1, 3]";
+        String expectedMessage = "Valid amount of dice for attacker roll must be in the range [1, 3]";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.rollAttackerDice(illegalInput));
 
@@ -126,7 +126,7 @@ public class DieRollParserTest {
     public void test06_rollDefenderDice_tooFewOrTooManyDice_expectException(int illegalInput) {
         DieRollParser unitUnderTest = new DieRollParser();
 
-        String expectedMessage = "Valid amount of dice is in the range [1, 2]";
+        String expectedMessage = "Valid amount of dice for defender roll must be in the range [1, 2]";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.rollDefenderDice(illegalInput));
 
@@ -398,7 +398,7 @@ public class DieRollParserTest {
             int illegalInput) {
         DieRollParser unitUnderTest = new DieRollParser();
 
-        String expectedMessage = "Valid amount of dice is in the range [3, 6]";
+        String expectedMessage = "Valid amount of dice for player setup roll must be in the range [3, 6]";
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.rollDiceToDeterminePlayerOrder(illegalInput));
 
