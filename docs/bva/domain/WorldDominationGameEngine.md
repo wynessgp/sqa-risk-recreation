@@ -860,7 +860,7 @@ Input:
   - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
 - Underlying GamePhase (Cases):
   - PLACEMENT
-  - ATTACK
+  - ATTACK (only allowed if they have \> 5 cards, forced trade in only)
   - Any other phase (error case)
 
 Output:
@@ -892,6 +892,17 @@ Output:
 
 ### Test 2:
 Input:
+- selectedCardsToBeTradedIn = [ Wild Card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
+- currentPlayer = BLUE
+- Player object = [Color = BLUE, ownedCards = [Wild Card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+- GamePhase = ATTACK
+
+Output:
+- IllegalStateException
+  - message: "Cannot trade in cards in the ATTACK phase unless you have \> 5 held!"
+
+### Test 3:
+Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = BLUE
 - Player object = [Color = BLUE, ownedCards = [] ]
@@ -900,7 +911,8 @@ Input:
 Output:
 - IllegalArgumentException
   - message: "Player doesn't own all the selected cards!"
-### Test 3:
+
+### Test 4:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = GREEN
@@ -910,7 +922,8 @@ Input:
 Output:
 - IllegalStateException
   - message: "Can only trade in cards during the PLACEMENT or ATTACK phases"
-### Test 4:
+
+### Test 5:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = BLUE
@@ -923,7 +936,8 @@ Output:
 - Method output = {ALASKA, BRAZIL}
 - Player object = [Color = BLUE, numArmiesToPlace = 9, ownedCards = [] ]
 - GamePhase = PLACEMENT
-### Test 5:
+
+### Test 6:
 Input:
 - selectedCardsToBeTradedIn = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]]
 - currentPlayer = PURPLE
@@ -936,7 +950,8 @@ Output:
 - Method output: {BRAZIL}
 - Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [] ]
 - GamePhase = PLACEMENT
-### Test 6:
+
+### Test 7:
 Input:
 - selectedCardsToBeTradedIn = {Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]}
 - currentPlayer = PURPLE
