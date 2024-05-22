@@ -817,6 +817,7 @@ Input: A collection of Risk cards that the current player would like to turn in 
 For input, we also care about some attributes about our player. Specifically:
 - If the player owns the cards they are attempting to trade in
 - If the player owns any territories MATCHING the territories on the respective cards they trade in
+- The amount of cards the player has (particular as it applies to ATTACK phase trade-ins)
 
 Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
 or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
@@ -834,7 +835,7 @@ Additionally, we care about:
 Input:
 - selectedCardsToTradeIn: Collection
 - currentPlayer: Cases
-- Player object: Pointer (we care about what territories and cards they own)
+- Player object: Pointer (we care about what territories and cards they own, and how many cards they own)
 - Underlying GamePhase: Cases
   - Should either be PLACEMENT/ATTACK. 
 
@@ -882,7 +883,7 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = {}
 - currentPlayer = RED
-- Player object = [Color = RED, ownedCards = [ Wild card, Wild card, [ALASKA, INFANTRY] ] ]
+- Player object = [Color = RED, ownedCards = [ Wild card, Wild card, [ALASKA, INFANTRY] ], |ownedCards| = 3 ]
 - GamePhase = PLACEMENT
 
 Output:
@@ -894,7 +895,7 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = [ Wild Card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = BLUE
-- Player object = [Color = BLUE, ownedCards = [Wild Card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+- Player object = [Color = BLUE, ownedCards = [Wild Card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ], |ownedCards| = 3 ]
 - GamePhase = ATTACK
 
 Output:
@@ -905,7 +906,7 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = BLUE
-- Player object = [Color = BLUE, ownedCards = [] ]
+- Player object = [Color = BLUE, ownedCards = [], |ownedCards| = 0 ]
 - GamePhase = PLACEMENT (test with all phases besides ATTACK/PLACEMENT here)
 
 Output:
@@ -916,7 +917,7 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = GREEN
-- Player object = [Color = GREEN, ownedCards = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]  ]  ]
+- Player object = [Color = GREEN, ownedCards = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]  ], |ownedCards| = 3  ]
 - GamePhase = SETUP
 
 Output:
@@ -927,7 +928,7 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = [ Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ]
 - currentPlayer = BLUE
-- Player object = [Color = BLUE, numArmiesToPlace = 5, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+- Player object = [Color = BLUE, numArmiesToPlace = 5, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ], |ownedCards| = 3 ]
   - Player owns: {ALASKA, BRAZIL}
   - Let this be the first set traded in
 - GamePhase = PLACEMENT
@@ -941,28 +942,28 @@ Output:
 Input:
 - selectedCardsToBeTradedIn = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]]
 - currentPlayer = PURPLE
-- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY], Wild card, [YAKUTSK, INFANTRY], [CHINA, CAVALRY] ], |ownedCards| = 6 ]
   - Player owns: {YAKUTSK, BRAZIL, JAPAN}
   - Let this be the second set traded in
 - GamePhase = ATTACK
 
 Output:
 - Method output: {BRAZIL}
-- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [] ]
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [Wild card, [YAKUTSK, INFANTRY], [CHINA, CAVALRY] ] ]
 - GamePhase = PLACEMENT
 
 ### Test 7:
 Input:
 - selectedCardsToBeTradedIn = {Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY]}
 - currentPlayer = PURPLE
-- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] ] ]
+- Player object = [Color = PURPLE, numArmiesToPlace = 0, ownedCards = [Wild card, [ALASKA, INFANTRY], [BRAZIL, ARTILLERY], Wild card, [YAKUTSK, INFANTRY], [CHINA, CAVALRY] ], |ownedCards| = 6 ]
   - Player owns: {EASTERN_AUSTRALIA}
   - Let this be the second set traded in
 - GamePhase = ATTACK
 
 Output:
 - Method output: {}
-- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = {}]
+- Player object = [Color = PURPLE, numArmiesToPlace = 6, ownedCards = [Wild card, [YAKUTSK, INFANTRY], [CHINA, CAVALRY] ] ]
 - GamePhase = PLACEMENT
 
 # method: `handleErrorCasesForAttackingTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): void`
