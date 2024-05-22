@@ -1042,6 +1042,8 @@ And they do not own the source territory
 
 And they own the destination territory
 
+And that the source and destination territory are adjacent
+
 And they try to move a valid number of armies
 
 When they try to move armies between the source and destination territory
@@ -1058,6 +1060,8 @@ And the current phase is FORTIFY
 And they own the source territory
 
 And they do not own the destination territory
+
+And that the source and destination territory are adjacent
 
 And they try to move a valid number of armies
 
@@ -1076,15 +1080,36 @@ And they own the source territory
 
 And they own the destination territory
 
+And that the source and destination territory are not adjacent
+
+And they try to move a valid number of armies
+
+When they try to move armies between the source and destination territory
+
+Then they should be unable to move the armies
+
+And the player should be informed that the selected territories are not adjacent
+
+### Test 4:
+Given that the current player is PURPLE
+
+And the current phase is FORTIFY
+
+And they own the source territory
+
+And they own the destination territory
+
+And that the source and destination territory are adjacent
+
 And they try to move an invalid number of armies
 
 When they try to move armies between the source and destination territory
 
 Then they should be unable to move the armies
 
-And the player should be informed that they are trying to move an invalid number of armies
+And the player should be informed that they've selected an invalid number of armies to move between territories
 
-### Test 4:
+### Test 5:
 Given that the current player is PURPLE
 
 And the current phase is PLACEMENT
@@ -1101,7 +1126,7 @@ Then they should be unable to move the armies
 
 And the player should be informed that they are trying to move armies in an invalid phase
 
-### Test 5:
+### Test 6:
 Given that the current player is PURPLE
 
 And the current phase is ATTACK
@@ -1122,7 +1147,7 @@ Then they should be unable to move the armies
 And the player should be informed that they cannot split armies between this source and destination
 - Namely, because they've taken other actions before choosing to split.
 
-### Test 6:
+### Test 7:
 Given that the current player is PURPLE
 
 And the current phase is ATTACK
@@ -1142,7 +1167,7 @@ Then they should be unable to move the armies
 And the player should be informed that they cannot split armies between this source and destination
 - Namely, because they've taken other actions before choosing to split.
 
-### Test 7:
+### Test 8:
 Given that the current player is GREEN
 
 And the current phase is ATTACK
@@ -1162,7 +1187,7 @@ Then they should be unable to move the armies
 And the player should be informed that they cannot split armies between this source and destination
 - Namely, because they've taken other actions before choosing to split.
 
-### Test 8:
+### Test 9:
 Given that the current player is GREEN
 
 And the current phase is ATTACK
@@ -1183,7 +1208,7 @@ And the map should reflect that the armies have been moved
 
 And the player should lose the ability to split armies between these territories again
 
-### Test 9:
+### Test 10:
 Given that the current player is YELLOW
 
 And the current phase is FORTIFY
