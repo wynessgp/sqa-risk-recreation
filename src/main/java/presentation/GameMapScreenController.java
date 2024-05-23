@@ -57,6 +57,7 @@ public class GameMapScreenController implements GameScene {
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private AttackLogic attackLogic;
+    private FortifyLogic fortifyLogic;
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
@@ -67,6 +68,7 @@ public class GameMapScreenController implements GameScene {
     private void initialize() {
         gameEngine = SceneController.getInstance().getGameEngine();
         attackLogic = new AttackLogic(gameEngine);
+        fortifyLogic = new FortifyLogic(gameEngine);
         SceneController.setCurrentScene(this);
         setupDialogControllers();
         updateStateLabels();
@@ -240,7 +242,7 @@ public class GameMapScreenController implements GameScene {
         } else if (currentPhase == GamePhase.ATTACK) {
             handleAttackPhaseInstructions(attackLogic.sourceSelected());
         } else if (currentPhase == GamePhase.FORTIFY) {
-            handleFortifyPhaseInstructions();
+            handleFortifyPhaseInstructions(fortifyLogic.sourceSelected());
         }
     }
 
@@ -268,10 +270,12 @@ public class GameMapScreenController implements GameScene {
                 : "gameMapScreen.cancelAttackButton", null));
     }
 
-    private void handleFortifyPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.fortifyInstruction",
-                new Object[]{gameEngine.getCurrentPlayer()}));
+    private void handleFortifyPhaseInstructions(boolean sourceSelected) {
+        this.instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.fortifyInstruction"
+                : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
         attackFortifySkipButton.setVisible(true);
+        attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
+                : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
