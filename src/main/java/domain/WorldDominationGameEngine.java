@@ -951,8 +951,7 @@ public final class WorldDominationGameEngine {
         if (currentGamePhase == GamePhase.ATTACK) {
             handleAttackPhaseEnding();
         } else {
-            currentGamePhase = GamePhase.PLACEMENT;
-            updateCurrentPlayer();
+            handleFortifyPhaseEnding();
         }
         clearRecentlyAttackedTerritories();
     }
@@ -960,6 +959,13 @@ public final class WorldDominationGameEngine {
     private void handleAttackPhaseEnding() {
         checkIfPlayerHasTooManyCardsAttackPhase();
         currentGamePhase = GamePhase.FORTIFY;
+    }
+
+    private void handleFortifyPhaseEnding() {
+        currentGamePhase = GamePhase.PLACEMENT;
+        updateCurrentPlayer();
+        int bonusArmies = calculatePlacementPhaseArmiesForCurrentPlayer();
+        increaseNumArmiesCurrentPlayerHasToPlace(bonusArmies);
     }
 
     private void checkIfPlayerHasTooManyCardsAttackPhase() {
