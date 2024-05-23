@@ -2914,4 +2914,11 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    public void test78_getRecentlyAttackedSource_setValueAndExpectSameValue() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.ALASKA);
+        assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedSource());
+    }
+
 }
