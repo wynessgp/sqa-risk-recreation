@@ -2602,6 +2602,41 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test74_forceGamePhaseToEnd_attackPhase_validInput_expectAbilityToClaimCardToRemainTheSame(
+            PlayerColor currentPlayer) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        // set recently attacked source/dest to not be NULL ahead of time to enforce them being null.
+        unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.KAMCHATKA);
+        // also set the ability to claim a card to be true, and assert that it remains the same after.
+        unitUnderTest.setAbilityToClaimCard();
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
+        assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertTrue(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
     public void test69_forceGamePhaseToEnd_fortifyPhase_expectPlacementPhaseAndNextPlayer(
             List<PlayerColor> playerOrder) {
