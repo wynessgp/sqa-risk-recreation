@@ -1009,14 +1009,14 @@ public final class WorldDominationGameEngine {
     }
 
     private void addCardToCurrentPlayersCollection() {
+        Player playerObject = playersMap.get(currentPlayer);
+        Card drawnCard;
         try {
-            Player playerObject = playersMap.get(currentPlayer);
-            Card drawnCard = cardDeck.drawCard();
-            playerObject.addCardsToCollection(Set.of(drawnCard));
+            drawnCard = cardDeck.drawCard();
         } catch (Exception exception) {
-            // SpotBugs dictates we do something with this exception; so we'll just say we couldn't claim a card...
-            System.out.printf("Could not claim card: %s%n", exception.getMessage());
+            return;
         }
+        playerObject.addCardsToCollection(Set.of(drawnCard));
     }
 
     void setAbilityToClaimCard() {
