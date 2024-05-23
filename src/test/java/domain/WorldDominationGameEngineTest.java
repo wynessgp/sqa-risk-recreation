@@ -2572,14 +2572,26 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateAllPlayerColorsMinusSetup")
     public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
             PlayerColor currentPlayer) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+
+        EasyMock.replay(mockedPlayer);
+
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
 
         assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
 
         assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
         assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+
+        EasyMock.verify(mockedPlayer);
     }
 
     @ParameterizedTest
