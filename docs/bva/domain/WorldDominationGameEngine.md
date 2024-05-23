@@ -817,7 +817,7 @@ Input: A collection of Risk cards that the current player would like to turn in 
 For input, we also care about some attributes about our player. Specifically:
 - If the player owns the cards they are attempting to trade in
 - If the player owns any territories MATCHING the territories on the respective cards they trade in
-- The amount of cards the player has (particular as it applies to ATTACK phase trade-ins)
+- The amount of cards the player has (particularly as it applies to ATTACK phase trade-ins)
 
 Output: A collection of territories that the player owns and can place a bonus +2 armies on if the cards match them,
 or an error if the set of cards is not valid to trade in, or the player doesn't own the given cards.
@@ -861,7 +861,7 @@ Input:
   - Also care about what territories they own (so they can get a +2 bonus armies in a territory if it matches a card)
 - Underlying GamePhase (Cases):
   - PLACEMENT
-  - ATTACK (only allowed if they have \> 5 cards, forced trade in only)
+  - ATTACK (only allowed if the player holds \> 5 cards; the forced trade-in threshold in Risk)
   - Any other phase (error case)
 
 Output:
