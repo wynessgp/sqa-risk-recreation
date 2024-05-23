@@ -963,6 +963,7 @@ public final class WorldDominationGameEngine {
 
     private void handleFortifyPhaseEnding() {
         currentGamePhase = GamePhase.PLACEMENT;
+        claimCardForCurrentPlayerIfPossible();
         updateCurrentPlayer();
         int bonusArmies = calculatePlacementPhaseArmiesForCurrentPlayer();
         increaseNumArmiesCurrentPlayerHasToPlace(bonusArmies);
