@@ -239,6 +239,7 @@ public class GameMapScreenController implements GameScene {
         } else {
             showErrorMessage("gameMapScreen." + result.toKey());
         }
+        fortifyLogic.reset();
     }
 
     private void updateStateLabels() {
