@@ -2586,10 +2586,17 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
 
+        // set recently attacked source/dest to not be NULL ahead of time to enforce them being null.
+        unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.KAMCHATKA);
+
         assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
 
         assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
         assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
 
         EasyMock.verify(mockedPlayer);
     }

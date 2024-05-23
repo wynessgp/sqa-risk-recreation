@@ -949,12 +949,17 @@ public final class WorldDominationGameEngine {
     public void forceGamePhaseToEnd() {
         checkIfValidPhaseToForciblyEnd();
         if (currentGamePhase == GamePhase.ATTACK) {
-            checkIfPlayerHasTooManyCardsAttackPhase();
-            currentGamePhase = GamePhase.FORTIFY;
+            handleAttackPhaseEnding();
         } else {
             currentGamePhase = GamePhase.PLACEMENT;
             updateCurrentPlayer();
         }
+        clearRecentlyAttackedTerritories();
+    }
+
+    private void handleAttackPhaseEnding() {
+        checkIfPlayerHasTooManyCardsAttackPhase();
+        currentGamePhase = GamePhase.FORTIFY;
     }
 
     private void checkIfPlayerHasTooManyCardsAttackPhase() {
