@@ -54,6 +54,7 @@ public final class WorldDominationGameEngine {
     private TerritoryType recentlyAttackedSource = null;
     private TerritoryType recentlyAttackedDestination = null;
     private boolean currentPlayerCanClaimCard = false;
+    private RiskCardDeck cardDeck;
 
     WorldDominationGameEngine(List<PlayerColor> playerOrder, DieRollParser parser) {
         currentGamePhase = GamePhase.SCRAMBLE;
@@ -70,6 +71,7 @@ public final class WorldDominationGameEngine {
         addAllEdgesToTerritoryGraph();
         this.dieRollParser = parser;
         this.tradeInParser = new TradeInParser();
+        this.cardDeck = new RiskCardDeck();
     }
 
     private void addAllEdgesToTerritoryGraph() {
@@ -405,6 +407,21 @@ public final class WorldDominationGameEngine {
     }
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkIfInInvalidPhaseForPlaceNewArmies();
+        handleValidPhaseParsing(relevantTerritory, numArmiesToPlace);
+
+        return true;
+    }
+
+    private void checkIfInInvalidPhaseForPlaceNewArmies() {
+        Set<GamePhase> validPhases = Set.of(GamePhase.SCRAMBLE, GamePhase.SETUP, GamePhase.PLACEMENT);
+        if (!validPhases.contains(currentGamePhase)) {
+            throw new IllegalStateException(
+                    "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT");
+        }
+    }
+
+    private void handleValidPhaseParsing(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
             handleSetupPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         } else if (currentGamePhase == GamePhase.SCRAMBLE) {
@@ -412,7 +429,6 @@ public final class WorldDominationGameEngine {
         } else {
             handlePlacementPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         }
-        return true;
     }
 
     private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
@@ -596,6 +612,7 @@ public final class WorldDominationGameEngine {
 
     public Set<TerritoryType> tradeInCards(Set<Card> selectedCardsToTradeIn) {
         checkIfInValidGamePhase(Set.of(GamePhase.ATTACK, GamePhase.PLACEMENT));
+        checkForForcedTradeInForAttackPhase();
 
         Player currentPlayerObject = playersMap.get(currentPlayer);
         checkIfPlayerOwnsCards(selectedCardsToTradeIn, currentPlayerObject);
@@ -605,6 +622,12 @@ public final class WorldDominationGameEngine {
     private void checkIfInValidGamePhase(Set<GamePhase> validGamePhases) {
         if (!validGamePhases.contains(currentGamePhase)) {
             throw new IllegalStateException("Can only trade in cards during the PLACEMENT or ATTACK phase");
+        }
+    }
+
+    private void checkForForcedTradeInForAttackPhase() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() < 6 && currentGamePhase == GamePhase.ATTACK) {
+            throw new IllegalStateException("Cannot trade in cards in the ATTACK phase unless you have > 5 held!");
         }
     }
 
@@ -630,6 +653,7 @@ public final class WorldDominationGameEngine {
         increaseNumArmiesCurrentPlayerHasToPlace(numArmiesToReceive);
         playerObject.removeAllGivenCards(selectedCards);
         currentGamePhase = GamePhase.PLACEMENT;
+        clearRecentlyAttackedTerritories();
     }
 
     void handleErrorCasesForAttackingTerritory(
@@ -907,12 +931,16 @@ public final class WorldDominationGameEngine {
                 && currentGamePhase == GamePhase.ATTACK) {
             throw new IllegalArgumentException("Cannot split armies between this source and destination!");
         }
+        clearRecentlyAttackedTerritories();
     }
 
     private void handleUpdatingPhaseAndPlayerForFortifyPhaseIfNecessary() {
         if (currentGamePhase == GamePhase.FORTIFY) {
             currentGamePhase = GamePhase.PLACEMENT;
+            claimCardForCurrentPlayerIfPossible();
             updateCurrentPlayer();
+            int bonusArmies = calculatePlacementPhaseArmiesForCurrentPlayer();
+            increaseNumArmiesCurrentPlayerHasToPlace(bonusArmies);
         }
     }
 
@@ -925,20 +953,40 @@ public final class WorldDominationGameEngine {
     }
 
     public TerritoryType getRecentlyAttackedSource() {
-        return null;
+        return recentlyAttackedSource;
     }
 
     public TerritoryType getRecentlyAttackedDest() {
-        return null;
+        return recentlyAttackedDestination;
     }
 
     public void forceGamePhaseToEnd() {
         checkIfValidPhaseToForciblyEnd();
         if (currentGamePhase == GamePhase.ATTACK) {
-            currentGamePhase = GamePhase.FORTIFY;
+            handleAttackPhaseEnding();
         } else {
-            currentGamePhase = GamePhase.PLACEMENT;
-            updateCurrentPlayer();
+            handleFortifyPhaseEnding();
+        }
+        clearRecentlyAttackedTerritories();
+    }
+
+    private void handleAttackPhaseEnding() {
+        checkIfPlayerHasTooManyCardsAttackPhase();
+        currentGamePhase = GamePhase.FORTIFY;
+    }
+
+    private void handleFortifyPhaseEnding() {
+        currentGamePhase = GamePhase.PLACEMENT;
+        claimCardForCurrentPlayerIfPossible();
+        updateCurrentPlayer();
+        int bonusArmies = calculatePlacementPhaseArmiesForCurrentPlayer();
+        increaseNumArmiesCurrentPlayerHasToPlace(bonusArmies);
+    }
+
+    private void checkIfPlayerHasTooManyCardsAttackPhase() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() > 5) {
+            throw new IllegalStateException(
+                    "Cannot forcibly end the ATTACK phase while the current player is holding > 5 cards!");
         }
     }
 
@@ -954,10 +1002,16 @@ public final class WorldDominationGameEngine {
         handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
         List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
         if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
+            clearRecentlyAttackedTerritories();
             return 0;
         }
         handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
         return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void clearRecentlyAttackedTerritories() {
+        this.recentlyAttackedDestination = null;
+        this.recentlyAttackedSource = null;
     }
 
     private void handleDefenderLosingTerritoryConsequences(
@@ -979,5 +1033,31 @@ public final class WorldDominationGameEngine {
 
     Set<Card> getCardsForPlayer(PlayerColor playerColor) {
         return playersMap.get(playerColor).getOwnedCards();
+    }
+
+    void claimCardForCurrentPlayerIfPossible() {
+        if (currentPlayerCanClaimCard) {
+            addCardToCurrentPlayersCollection();
+        }
+        currentPlayerCanClaimCard = false;
+    }
+
+    private void addCardToCurrentPlayersCollection() {
+        Player playerObject = playersMap.get(currentPlayer);
+        Card drawnCard;
+        try {
+            drawnCard = cardDeck.drawCard();
+        } catch (Exception exception) {
+            return;
+        }
+        playerObject.addCardsToCollection(Set.of(drawnCard));
+    }
+
+    void setAbilityToClaimCard() {
+        this.currentPlayerCanClaimCard = true;
+    }
+
+    void provideMockedCardDeck(RiskCardDeck mockedDeck) {
+        this.cardDeck = mockedDeck;
     }
 }
