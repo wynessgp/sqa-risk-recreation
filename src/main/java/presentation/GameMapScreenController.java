@@ -31,6 +31,8 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private DialogPane generalMessageDialog;
     @FXML
+    private DialogPane tradeInDialog;
+    @FXML
     private AnchorPane dialogBackground;
     @FXML
     private AnchorPane armiesToPlacePane;
@@ -62,6 +64,7 @@ public class GameMapScreenController implements GameScene {
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
     private Dialog generalMessageDialogController;
+    private Dialog tradeInDialogController;
 
     @FXML
     private void initialize() {
@@ -80,6 +83,7 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
+        tradeInDialogController = new Dialog(tradeInDialog, dialogBackground);
     }
 
     private void setupDialogButtons() {

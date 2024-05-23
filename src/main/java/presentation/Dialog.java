@@ -2,10 +2,12 @@ package presentation;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 
 class Dialog {
     private final DialogPane dialog;
@@ -46,4 +48,7 @@ class Dialog {
         dialog.lookupButton(button).setVisible(false);
     }
 
+    void setDialogContent(Node content) {
+        dialog.setContent(new Pane(content));
+    }
 }
