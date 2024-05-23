@@ -25,8 +25,13 @@ public class FortifyLogic {
         armiesToTransfer = armies;
     }
 
-    void performFortify() {
-        // TODO
+    FortifyResult performFortify() {
+        try {
+            gameEngine.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destinationTerritory, armiesToTransfer);
+            return FortifyResult.SUCCESS;
+        } catch (Exception e) {
+            return FortifyResult.parseError(e.getMessage());
+        }
     }
 
     boolean sourceSelected() {
