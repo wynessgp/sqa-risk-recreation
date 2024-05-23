@@ -2895,4 +2895,23 @@ public class WorldDominationGameEngineTest {
         EasyMock.verify(mockedPlayer, mockedDeck);
     }
 
+    private static Stream<Arguments> generateIllegalPhasesForPlaceNewArmiesInTerritory() {
+        return Stream.of(Arguments.of(GamePhase.ATTACK, GamePhase.FORTIFY, GamePhase.GAME_OVER));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateIllegalPhasesForPlaceNewArmiesInTerritory")
+    public void test77_placeNewArmiesInTerritory_illegalPhase_expectException(
+            GamePhase phaseToPutGameIn) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(phaseToPutGameIn);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(TerritoryType.BRAZIL, 5));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

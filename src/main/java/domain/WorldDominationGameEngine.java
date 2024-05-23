@@ -407,6 +407,21 @@ public final class WorldDominationGameEngine {
     }
 
     public boolean placeNewArmiesInTerritory(TerritoryType relevantTerritory, int numArmiesToPlace) {
+        checkIfInInvalidPhaseForPlaceNewArmies();
+        handleValidPhaseParsing(relevantTerritory, numArmiesToPlace);
+
+        return true;
+    }
+
+    private void checkIfInInvalidPhaseForPlaceNewArmies() {
+        Set<GamePhase> validPhases = Set.of(GamePhase.SCRAMBLE, GamePhase.SETUP, GamePhase.PLACEMENT);
+        if (!validPhases.contains(currentGamePhase)) {
+            throw new IllegalStateException(
+                    "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT");
+        }
+    }
+
+    private void handleValidPhaseParsing(TerritoryType relevantTerritory, int numArmiesToPlace) {
         if (currentGamePhase == GamePhase.SETUP) {
             handleSetupPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         } else if (currentGamePhase == GamePhase.SCRAMBLE) {
@@ -414,7 +429,6 @@ public final class WorldDominationGameEngine {
         } else {
             handlePlacementPhaseArmyPlacement(relevantTerritory, numArmiesToPlace);
         }
-        return true;
     }
 
     private void handleScramblePhaseArmyPlacement(TerritoryType relevantTerritory, int numArmiesToPlace) {
