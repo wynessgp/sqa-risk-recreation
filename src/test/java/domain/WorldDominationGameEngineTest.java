@@ -1759,7 +1759,8 @@ public class WorldDominationGameEngineTest {
                 () -> unitUnderTest.rollDiceForBattle(numAttackers, numDefenders));
         String actualMessage = exception.getMessage();
 
-        String expectedMessage = String.format("Valid amount of dice is in the range [1, %d]", upperBoundOnError);
+        String expectedMessage = String.format("Valid amount of dice for %s roll must be in the range [1, %d]",
+                upperBoundOnError == 2 ? "defender" : "attacker", upperBoundOnError);
         assertEquals(expectedMessage, actualMessage);
     }
 

@@ -38,8 +38,8 @@ class DieRollParser {
     }
 
     List<Integer> rollDiceToDeterminePlayerOrder(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(
-                amountOfDiceToRoll, MINIMUM_VALID_AMOUNT_OF_SETUP_DICE, MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE);
+        validateRequestedAmountOfDiceToRollIsInRange("player setup", amountOfDiceToRoll,
+                MINIMUM_VALID_AMOUNT_OF_SETUP_DICE, MAXIMUM_VALID_AMOUNT_OF_SETUP_DICE);
         List<Integer> rollResults = new ArrayList<>();
         while (rollResults.size() != amountOfDiceToRoll) { // continually re-roll the die until we have no duped rolls.
             int rollResult = setupDie.rollSingleDie(randomizer);
@@ -55,24 +55,25 @@ class DieRollParser {
     }
 
     List<Integer> rollAttackerDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
+        validateRequestedAmountOfDiceToRollIsInRange("attacker", amountOfDiceToRoll,
                 MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE);
 
         return rollDiceFromList(amountOfDiceToRoll, attackerDice);
     }
 
     List<Integer> rollDefenderDice(int amountOfDiceToRoll) {
-        validateRequestedAmountOfDiceToRollIsInRange(amountOfDiceToRoll,
+        validateRequestedAmountOfDiceToRollIsInRange("defender", amountOfDiceToRoll,
                 MINIMUM_VALID_AMOUNT_OF_ATTACKER_OR_DEFENDER_DICE, MAXIMUM_VALID_AMOUNT_OF_DEFENDER_DICE);
 
         return rollDiceFromList(amountOfDiceToRoll, defenderDice);
     }
 
     private void validateRequestedAmountOfDiceToRollIsInRange(
-            int requestedAmount, int minAllowedAmount, int maxAllowedAmount) {
+            String rollType, int requestedAmount, int minAllowedAmount, int maxAllowedAmount) {
         if (requestedAmount < minAllowedAmount || requestedAmount > maxAllowedAmount) {
             throw new IllegalArgumentException(String.format(
-                    "Valid amount of dice is in the range [%d, %d]", minAllowedAmount, maxAllowedAmount));
+                    "Valid amount of dice for %s roll must be in the range [%d, %d]", rollType,
+                    minAllowedAmount, maxAllowedAmount));
         }
     }
 
