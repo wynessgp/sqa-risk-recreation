@@ -104,7 +104,7 @@ public class GameMapScreenController implements GameScene {
 
     private void handleAttackButtonClick() {
         attackLogic.reset();
-        if (attackLogic.sourceSelected()) {
+        if (attackLogic.isSourceSelected()) {
             handleAttackPhaseInstructions(true);
         } else {
             gameEngine.forceGamePhaseToEnd();
@@ -114,7 +114,7 @@ public class GameMapScreenController implements GameScene {
 
     private void handleFortifyButtonClick() {
         fortifyLogic.reset();
-        if (fortifyLogic.sourceSelected()) {
+        if (fortifyLogic.isSourceSelected()) {
             handleFortifyPhaseInstructions(true);
         } else {
             gameEngine.forceGamePhaseToEnd();
@@ -267,9 +267,9 @@ public class GameMapScreenController implements GameScene {
         if (currentPhase == GamePhase.PLACEMENT) {
             handlePlacementPhaseInstructions();
         } else if (currentPhase == GamePhase.ATTACK) {
-            handleAttackPhaseInstructions(attackLogic.sourceSelected());
+            handleAttackPhaseInstructions(attackLogic.isSourceSelected());
         } else if (currentPhase == GamePhase.FORTIFY) {
-            handleFortifyPhaseInstructions(fortifyLogic.sourceSelected());
+            handleFortifyPhaseInstructions(fortifyLogic.isSourceSelected());
         }
     }
 
@@ -399,20 +399,20 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttack() {
-        if (!attackLogic.sourceSelected()) {
+        if (!attackLogic.isSourceSelected()) {
             if (!attackLogic.setSourceTerritory(territoryButtonMap.get(selectedButton))) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
             }
-            handleAttackPhaseInstructions(attackLogic.sourceSelected());
+            handleAttackPhaseInstructions(attackLogic.isSourceSelected());
         } else {
             handleTargetTerritorySelection();
         }
     }
 
     private void handleFortify() {
-        if (!fortifyLogic.sourceSelected()) {
+        if (!fortifyLogic.isSourceSelected()) {
             fortifyLogic.setSourceTerritory(territoryButtonMap.get(selectedButton));
-            handleFortifyPhaseInstructions(fortifyLogic.sourceSelected());
+            handleFortifyPhaseInstructions(fortifyLogic.isSourceSelected());
         } else {
             fortifyLogic.setDestinationTerritory(territoryButtonMap.get(selectedButton));
             handleFortifyAction();

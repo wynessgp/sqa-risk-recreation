@@ -7,7 +7,8 @@ public class FortifyLogic {
     private final WorldDominationGameEngine gameEngine;
     private TerritoryType sourceTerritory;
     private TerritoryType destinationTerritory;
-    int armiesToTransfer = 0;
+    private int armiesToTransfer = 0;
+    private boolean sourceSelected = false;
 
     FortifyLogic(WorldDominationGameEngine gameEngine) {
         this.gameEngine = gameEngine;
@@ -15,6 +16,7 @@ public class FortifyLogic {
 
     void setSourceTerritory(TerritoryType territory) {
         sourceTerritory = territory;
+        sourceSelected = true;
     }
 
     void setDestinationTerritory(TerritoryType territory) {
@@ -34,13 +36,12 @@ public class FortifyLogic {
         }
     }
 
-    boolean sourceSelected() {
-        return sourceTerritory != null;
+    boolean isSourceSelected() {
+        return sourceSelected;
     }
 
     void reset() {
-        sourceTerritory = null;
-        destinationTerritory = null;
+        sourceSelected = false;
         armiesToTransfer = 0;
     }
 }
