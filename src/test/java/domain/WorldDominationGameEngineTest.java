@@ -770,6 +770,9 @@ public class WorldDominationGameEngineTest {
         Set<TerritoryType> sizeTwelveSet = new HashSet<>(sizeElevenSet);
         sizeTwelveSet.add(TerritoryType.JAPAN); // add from a new continent
 
+        Set<TerritoryType> sizeThirteenSet = new HashSet<>(sizeTwelveSet);
+        sizeThirteenSet.add(TerritoryType.KAMCHATKA);
+
         Set<TerritoryType> sizeFourteenSet = new HashSet<>(sizeTwelveSet);
         sizeTwelveSet.add(TerritoryType.MONGOLIA);
         sizeTwelveSet.add(TerritoryType.SIAM);
@@ -787,6 +790,7 @@ public class WorldDominationGameEngineTest {
 
         toStream.add(Arguments.of(sizeElevenSet));
         toStream.add(Arguments.of(sizeTwelveSet));
+        toStream.add(Arguments.of(sizeThirteenSet));
         toStream.add(Arguments.of(sizeFourteenSet));
         toStream.add(Arguments.of(sizeFifteenSet));
         toStream.add(Arguments.of(sizeThirtySixSet));
