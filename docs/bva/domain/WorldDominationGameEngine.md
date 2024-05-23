@@ -279,7 +279,6 @@ Additionally, we care about:
   - from SCRAMBLE -> SETUP if all territories are claimed (integration test)
   - from SETUP -> PLACEMENT if all armies have been placed (integration test)
   - from PLACEMENT -> ATTACK if the player places all of their earned armies
-    - Note that they may also change it manually, if they so desire.
 
 ## BVA Step 2
 Input:
@@ -294,8 +293,6 @@ Output:
 - Territory: Pointer
 - Current player object: Pointer
 - Game Phase: Cases
-
-## TODO: Elaborate more once attack/placement phase is being developed!
 
 ## BVA Step 3
 Input: 
@@ -320,9 +317,9 @@ Input:
 - Game Phase (Cases):
   - The 1st possibility (SCRAMBLE -> restrict army placement to 1)
   - The 2nd possibility (SETUP -> restrict army placement to 1)
-  - The 3rd possibility (PLACEMENT)
-  - ...
-  - The 6th possibility (GAME_OVER)
+  - The 3rd possibility (PLACEMENT -> any amount of armies)
+  - The 4th, 5th possibility (ATTACK, FORTIFY -> error case)
+  - The 6th possibility (GAME_OVER -> error case)
   - The 0th, 7th possibility (can't set)
 - Player object (Pointer):
   - Null pointer (can't set, per Martin's suggestions)
@@ -346,18 +343,14 @@ Output:
         - SCRAMBLE
         - SETUP
         - PLACEMENT
-        - FORTIFY
-        - ATTACK(?)
 - Player object: Pointer
   - The number of armies they have to place should be updated
   - Territories held should be updated if in SCRAMBLE (maybe attack too).
 - Game Phase: Cases
   - SCRAMBLE (advancing out requires all territories to be claimed)
   - SETUP (advancing out requires all setup armies to be placed)
-  - PLACEMENT (advancing requires all earned armies to be placed, or a manual phase end)
-  - ATTACK
-  - FORTIFY
-  - GAME_OVER
+  - PLACEMENT (advancing requires all earned armies to be placed)
+  - ATTACK (can advance INTO, but cannot call this method from here)
 
 ## BVA Step 4
 
@@ -592,7 +585,40 @@ Output:
   - Game Phase = ATTACK
     - Need to be on the same player's turn, but on the attack phase.
 
-### TODO: ATTACK PHASE
+### REMAINING PHASES
+
+### Test 21:
+- Input:
+  - territory = CONGO
+  - numArmies = 5
+  - Territory owner = current player
+  - Game phase = ATTACK
+  - Current player = [Color = YELLOW, numArmiesToPlace = 6, |heldCards| = 4]
+- Output:
+  - IllegalStateException
+    - message: "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT"
+
+### Test 22:
+- Input:
+  - territory = CONGO
+  - numArmies = 5
+  - Territory owner = current player
+  - Game phase = FORTIFY
+  - Current player = [Color = YELLOW, numArmiesToPlace = 6, |heldCards| = 4]
+- Output:
+  - IllegalStateException
+    - message: "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT"
+
+### Test 23:
+- Input:
+  - territory = CONGO
+  - numArmies = 5
+  - Territory owner = current player
+  - Game phase = GAME_OVER
+  - Current player = [Color = YELLOW, numArmiesToPlace = 6, |heldCards| = 4]
+- Output:
+  - IllegalStateException
+    - message: "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT"
 
 # method: `shufflePlayers(parser: DieRollParser): void`
 
