@@ -949,10 +949,18 @@ public final class WorldDominationGameEngine {
     public void forceGamePhaseToEnd() {
         checkIfValidPhaseToForciblyEnd();
         if (currentGamePhase == GamePhase.ATTACK) {
+            checkIfPlayerHasTooManyCardsAttackPhase();
             currentGamePhase = GamePhase.FORTIFY;
         } else {
             currentGamePhase = GamePhase.PLACEMENT;
             updateCurrentPlayer();
+        }
+    }
+
+    private void checkIfPlayerHasTooManyCardsAttackPhase() {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() > 5) {
+            throw new IllegalStateException(
+                    "Cannot forcibly end the ATTACK phase while the current player is holding > 5 cards!");
         }
     }
 

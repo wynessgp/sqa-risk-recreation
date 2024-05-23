@@ -2542,6 +2542,33 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {6, 7, 8, 9, Integer.MAX_VALUE})
+    public void test73_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
+            int numCardsPlayerHolds) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.GREEN)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(numCardsPlayerHolds);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        Exception exception = assertThrows(IllegalStateException.class, unitUnderTest::forceGamePhaseToEnd);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot forcibly end the ATTACK phase while the current player is holding > 5 cards!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
     public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
             PlayerColor currentPlayer) {
