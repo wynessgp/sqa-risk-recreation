@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
@@ -768,6 +770,9 @@ public class WorldDominationGameEngineTest {
         Set<TerritoryType> sizeTwelveSet = new HashSet<>(sizeElevenSet);
         sizeTwelveSet.add(TerritoryType.JAPAN); // add from a new continent
 
+        Set<TerritoryType> sizeThirteenSet = new HashSet<>(sizeTwelveSet);
+        sizeThirteenSet.add(TerritoryType.KAMCHATKA);
+
         Set<TerritoryType> sizeFourteenSet = new HashSet<>(sizeTwelveSet);
         sizeTwelveSet.add(TerritoryType.MONGOLIA);
         sizeTwelveSet.add(TerritoryType.SIAM);
@@ -785,6 +790,7 @@ public class WorldDominationGameEngineTest {
 
         toStream.add(Arguments.of(sizeElevenSet));
         toStream.add(Arguments.of(sizeTwelveSet));
+        toStream.add(Arguments.of(sizeThirteenSet));
         toStream.add(Arguments.of(sizeFourteenSet));
         toStream.add(Arguments.of(sizeFifteenSet));
         toStream.add(Arguments.of(sizeThirtySixSet));
@@ -1276,11 +1282,41 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.provideMockedTradeInParser(mockedParser);
         unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
-        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
 
         assertEquals(territoriesToReturn, unitUnderTest.tradeInCards(cardsToBeTradedIn));
 
         EasyMock.verify(mockedPlayer, mockedParser);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5})
+    public void test73_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException(int numCards) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.RED)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(numCards);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.tradeInCards(Set.of(
+                        new WildCard(),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                        new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY))));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot trade in cards in the ATTACK phase unless you have > 5 held!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
     }
 
     @Test
@@ -1291,6 +1327,47 @@ public class WorldDominationGameEngineTest {
     @Test
     public void test38_tradeInCards_validInput_expectReturnSetOfSizeOne() {
         testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
+    }
+
+    @Test
+    public void test74_tradeInCards_attackPhase_validInput_expectReturnSetOfSizeZero() {
+        TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        Set<Card> cardsToBeTradedIn = Set.of(new WildCard(), alaskaCard, brazilCard);
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.BLUE)
+                .addMockedMethod("ownsAllGivenCards")
+                .addMockedMethod("setNumArmiesToPlace")
+                .addMockedMethod("getNumArmiesToPlace")
+                .addMockedMethod("removeAllGivenCards")
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.ownsAllGivenCards(cardsToBeTradedIn)).andReturn(true);
+        EasyMock.expect(mockedPlayer.getNumArmiesToPlace()).andReturn(0);
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(6);
+        mockedPlayer.setNumArmiesToPlace(4);
+        EasyMock.expectLastCall().once();
+
+        mockedPlayer.removeAllGivenCards(cardsToBeTradedIn);
+        EasyMock.expectLastCall().once();
+
+        TradeInParser mockedParser = EasyMock.createMock(TradeInParser.class);
+        EasyMock.expect(mockedParser.startTrade(cardsToBeTradedIn)).andReturn(4);
+        EasyMock.expect(mockedParser.getMatchedTerritories(mockedPlayer, cardsToBeTradedIn)).andReturn(Set.of());
+
+        EasyMock.replay(mockedPlayer, mockedParser);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTradeInParser(mockedParser);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        assertEquals(Set.of(), unitUnderTest.tradeInCards(cardsToBeTradedIn));
+
+        EasyMock.verify(mockedPlayer, mockedParser);
     }
 
     @ParameterizedTest
@@ -2401,19 +2478,40 @@ public class WorldDominationGameEngineTest {
 
         Territory mockedSource = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(false).anyTimes();
         EasyMock.expect(mockedSource.getNumArmiesPresent()).andReturn(numArmiesInSource).anyTimes();
         EasyMock.expect(mockedSource.setNumArmiesPresent(numArmiesInSource - numArmiesToMove)).andReturn(true);
         EasyMock.expect(mockedGraph.getTerritory(sourceTerritory)).andReturn(mockedSource).anyTimes();
 
         Territory mockedDest = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.PURPLE)).andReturn(true);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(false).anyTimes();
         EasyMock.expect(mockedDest.getNumArmiesPresent()).andReturn(2).anyTimes();
         EasyMock.expect(mockedDest.setNumArmiesPresent(2 + numArmiesToMove)).andReturn(true);
         EasyMock.expect(mockedGraph.getTerritory(destTerritory)).andReturn(mockedDest).anyTimes();
 
+        // because this action will put us into the PLACEMENT phase, we need to account for the Graph then
+        // having every territory checked to see if a player owns it, per calculating their bonus armies.
+        List<Territory> otherMockedTerritories = new ArrayList<>();
+        for (TerritoryType territory : TerritoryType.values()) {
+            if (territory != sourceTerritory && territory != destTerritory) {
+                Territory mockedTerritory = EasyMock.createMock(Territory.class);
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+                EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+                EasyMock.replay(mockedTerritory);
+                otherMockedTerritories.add(mockedTerritory);
+            }
+        }
+
+        Player mockedGreen = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.GREEN)
+                .createMock();
+
         EasyMock.replay(mockedDest, mockedSource, mockedGraph);
 
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedGreen));
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
         unitUnderTest.setPlayerOrderList(List.of(PlayerColor.PURPLE, PlayerColor.GREEN));
@@ -2427,6 +2525,10 @@ public class WorldDominationGameEngineTest {
         assertNull(unitUnderTest.getRecentlyAttackedDest());
 
         EasyMock.verify(mockedDest, mockedSource, mockedGraph);
+
+        for (Territory mockedTerritory : otherMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
     }
 
     @ParameterizedTest
@@ -2444,32 +2546,390 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {6, 7, 8, 9, Integer.MAX_VALUE})
+    public void test73_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
+            int numCardsPlayerHolds) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.GREEN)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(numCardsPlayerHolds);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        Exception exception = assertThrows(IllegalStateException.class, unitUnderTest::forceGamePhaseToEnd);
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot forcibly end the ATTACK phase while the current player is holding > 5 cards!";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
     public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
             PlayerColor currentPlayer) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+
+        EasyMock.replay(mockedPlayer);
+
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
         unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        // set recently attacked source/dest to not be NULL ahead of time to enforce them being null.
+        unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.KAMCHATKA);
 
         assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
 
         assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
         assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test74_forceGamePhaseToEnd_attackPhase_validInput_expectAbilityToClaimCardToRemainTheSame(
+            PlayerColor currentPlayer) {
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("getNumCardsHeld")
+                .createMock();
+        EasyMock.expect(mockedPlayer.getNumCardsHeld()).andReturn(5);
+
+        EasyMock.replay(mockedPlayer);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+
+        // set recently attacked source/dest to not be NULL ahead of time to enforce them being null.
+        unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.KAMCHATKA);
+        // also set the ability to claim a card to be true, and assert that it remains the same after.
+        unitUnderTest.setAbilityToClaimCard();
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.FORTIFY, unitUnderTest.getCurrentGamePhase());
+        assertEquals(currentPlayer, unitUnderTest.getCurrentPlayer());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertTrue(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer);
     }
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test69_forceGamePhaseToEnd_fortifyPhase_expectPlacementPhaseAndNextPlayer(
+    public void test75_forceGamePhaseToEnd_fortifyPhase_expectNextPlayerGetsArmies(
             List<PlayerColor> playerOrder) {
+        Player mockedNextPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerOrder.get(0))
+                .addMockedMethod("setNumArmiesToPlace")
+                .createMock();
+        mockedNextPlayer.setNumArmiesToPlace(3);
+        EasyMock.expectLastCall().once();
+
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            if (territory == TerritoryType.ALASKA) {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerOrder.get(0))).andReturn(true).anyTimes();
+            } else {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerOrder.get(0))).andReturn(false).anyTimes();
+            }
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+
+        Player mockedCurrentPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerOrder.get(playerOrder.size() - 1))
+                .createMock();
+
+        EasyMock.replay(mockedCurrentPlayer, mockedNextPlayer, mockedGraph);
+
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setPlayerOrderList(playerOrder);
         unitUnderTest.provideCurrentPlayerForTurn(playerOrder.get(playerOrder.size() - 1));
         unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedCurrentPlayer, mockedNextPlayer));
 
         assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
 
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
         assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedCurrentPlayer, mockedNextPlayer, mockedGraph);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
+    public void test76_forceGamePhaseToEnd_fortifyPhase_expectOriginalPlayerGetsCard(List<PlayerColor> playerOrder) {
+        Player mockedNextPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerOrder.get(0))
+                .addMockedMethod("setNumArmiesToPlace")
+                .createMock();
+        mockedNextPlayer.setNumArmiesToPlace(5);
+        EasyMock.expectLastCall().once();
+
+        List<Territory> allMockedTerritories = new ArrayList<>();
+        Set<TerritoryType> oceaniaTerritories = Set.of(TerritoryType.INDONESIA, TerritoryType.NEW_GUINEA,
+                TerritoryType.EASTERN_AUSTRALIA, TerritoryType.WESTERN_AUSTRALIA);
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        for (TerritoryType territory : TerritoryType.values()) {
+            Territory mockedTerritory = EasyMock.createMock(Territory.class);
+            if (oceaniaTerritories.contains(territory)) {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerOrder.get(0))).andReturn(true).anyTimes();
+            } else {
+                EasyMock.expect(mockedTerritory.isOwnedByPlayer(playerOrder.get(0))).andReturn(false).anyTimes();
+            }
+            EasyMock.expect(mockedGraph.getTerritory(territory)).andReturn(mockedTerritory).anyTimes();
+            EasyMock.replay(mockedTerritory);
+            allMockedTerritories.add(mockedTerritory);
+        }
+
+        Card brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
+        Player mockedCurrentPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(playerOrder.get(playerOrder.size() - 1))
+                .addMockedMethod("addCardsToCollection")
+                .createMock();
+        mockedCurrentPlayer.addCardsToCollection(Set.of(brazilCard));
+        EasyMock.expectLastCall().once();
+
+        RiskCardDeck mockedCardDeck = EasyMock.createMock(RiskCardDeck.class);
+        EasyMock.expect(mockedCardDeck.drawCard()).andReturn(brazilCard);
+
+        EasyMock.replay(mockedCurrentPlayer, mockedNextPlayer, mockedGraph, mockedCardDeck);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setPlayerOrderList(playerOrder);
+        unitUnderTest.provideCurrentPlayerForTurn(playerOrder.get(playerOrder.size() - 1));
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedCurrentPlayer, mockedNextPlayer));
+        unitUnderTest.provideMockedCardDeck(mockedCardDeck);
+        unitUnderTest.setAbilityToClaimCard();
+
+        assertDoesNotThrow(unitUnderTest::forceGamePhaseToEnd);
+
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+        assertEquals(playerOrder.get(0), unitUnderTest.getCurrentPlayer());
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedCurrentPlayer, mockedNextPlayer, mockedGraph, mockedCardDeck);
+
+        for (Territory mockedTerritory : allMockedTerritories) {
+            EasyMock.verify(mockedTerritory);
+        }
+    }
+
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetupAndSomeCardSets() {
+        List<Arguments> playerColorsMinusSetup = generateAllPlayerColorsMinusSetup().collect(Collectors.toList());
+
+        List<Set<Card>> playerCards = List.of(
+                Set.of(),
+                Set.of(new WildCard()),
+                Set.of(new WildCard(), new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY)));
+
+        Set<Arguments> toStream = new HashSet<>();
+        for (Set<Card> cardSet : playerCards) {
+            for (Arguments playerColor : playerColorsMinusSetup) {
+                Object[] currentPlayer = playerColor.get();
+                toStream.add(Arguments.of(currentPlayer[0], cardSet));
+            }
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
+    public void test70_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .createMock();
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
+
+        EasyMock.replay(mockedPlayer);
+
+        // note that it doesn't matter what the card deck looks like here; we aren't going to
+        // claim a card anyway. This will be checked in the next test.
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+
+        EasyMock.verify(mockedPlayer);
+    }
+
+    private static Stream<Arguments> generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw() {
+        List<Arguments> playerColorsMinusSetup = generateAllPlayerColorsMinusSetup().collect(Collectors.toList());
+
+        List<Set<Card>> playerCards = List.of(
+                Set.of(),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                        new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY)),
+                Set.of(new WildCard(),
+                        new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY)),
+                Set.of(new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY)));
+        List<Card> cardsToDrawFromDeck = List.of(
+                new TerritoryCard(TerritoryType.SOUTHERN_EUROPE, PieceType.CAVALRY),
+                new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY),
+                new WildCard(),
+                new TerritoryCard(TerritoryType.JAPAN, PieceType.INFANTRY),
+                new WildCard());
+
+        Set<Arguments> toStream = new HashSet<>();
+        int cardSetIndex = 0;
+        for (Set<Card> cardSet : playerCards) {
+            for (Arguments playerColor : playerColorsMinusSetup) {
+                Object[] currentPlayer = playerColor.get();
+                toStream.add(Arguments.of(currentPlayer[0], cardSet, cardsToDrawFromDeck.get(cardSetIndex)));
+            }
+            cardSetIndex++;
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw")
+    public void test71_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns, Card cardToDraw) {
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .addMockedMethod("addCardsToCollection")
+                .createMock();
+        mockedPlayer.addCardsToCollection(Set.of(cardToDraw));
+        EasyMock.expectLastCall().once();
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
+
+        RiskCardDeck mockedDeck = EasyMock.createMock(RiskCardDeck.class);
+        EasyMock.expect(mockedDeck.drawCard()).andReturn(cardToDraw);
+
+        EasyMock.replay(mockedPlayer, mockedDeck);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedCardDeck(mockedDeck);
+        unitUnderTest.setAbilityToClaimCard();
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+
+        EasyMock.verify(mockedPlayer, mockedDeck);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
+    public void test72_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
+            PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
+
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
+                .withConstructor(PlayerColor.class)
+                .withArgs(currentPlayer)
+                .createMock();
+        mockedPlayer.setOwnedCards(cardsPlayerOwns);
+
+        RiskCardDeck mockedDeck = EasyMock.createMock(RiskCardDeck.class);
+        EasyMock.expect(mockedDeck.drawCard()).andThrow(
+                new NoSuchElementException("Cannot draw card from an empty deck"));
+
+        EasyMock.replay(mockedPlayer, mockedDeck);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayerObjects(List.of(mockedPlayer));
+        unitUnderTest.provideCurrentPlayerForTurn(currentPlayer);
+        unitUnderTest.provideMockedCardDeck(mockedDeck);
+        unitUnderTest.setAbilityToClaimCard();
+
+        unitUnderTest.claimCardForCurrentPlayerIfPossible();
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+
+        EasyMock.verify(mockedPlayer, mockedDeck);
+    }
+
+    private static Stream<Arguments> generateIllegalPhasesForPlaceNewArmiesInTerritory() {
+        return Stream.of(Arguments.of(GamePhase.ATTACK, GamePhase.FORTIFY, GamePhase.GAME_OVER));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateIllegalPhasesForPlaceNewArmiesInTerritory")
+    public void test77_placeNewArmiesInTerritory_illegalPhase_expectException(
+            GamePhase phaseToPutGameIn) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(phaseToPutGameIn);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.placeNewArmiesInTerritory(TerritoryType.BRAZIL, 5));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Valid phases to call placeNewArmiesInTerritory from are: SCRAMBLE, SETUP, PLACEMENT";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void test78_getRecentlyAttackedSource_setValueAndExpectSameValue() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setRecentlyAttackedSource(TerritoryType.ALASKA);
+        assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedSource());
+    }
+
+    @Test
+    public void test79_getRecentlyAttackedDest_setValueAndExpectSameValue() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
+        assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedDest());
     }
 
 }

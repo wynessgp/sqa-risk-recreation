@@ -69,5 +69,4 @@ class RiskCardDeck {
     boolean isDeckEmpty() {
         return deckOfCards.isEmpty();
     }
-
 }

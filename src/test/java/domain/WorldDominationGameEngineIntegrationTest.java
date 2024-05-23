@@ -1,7 +1,9 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -392,6 +394,30 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
+    public void test32_tradeInCardsAttackPhase_tradeInIsNotForced_expectException() {
+        List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
+        DieRollParser parser = generateMockedParser(players);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
+
+        Set<Card> attemptToTradeIn = Set.of(new WildCard(),
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY));
+
+        Set<Card> ownedPlayerCards = new HashSet<>(attemptToTradeIn);
+        ownedPlayerCards.addAll(Set.of(new WildCard(), new TerritoryCard(TerritoryType.YAKUTSK, PieceType.INFANTRY)));
+
+        unitUnderTest.setCardsForPlayer(players.get(0), ownedPlayerCards);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.tradeInCards(attemptToTradeIn));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot trade in cards in the ATTACK phase unless you have > 5 held!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     public void test13_tradeInCardsPlacementPhase_playerDoesNotOwnCards_expectException() {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
@@ -489,13 +515,20 @@ public class WorldDominationGameEngineIntegrationTest {
         // claim a territory just to ensure we can still place after being booted back to placement phase.
         assertTrue(unitUnderTest.placeNewArmiesInTerritory(TerritoryType.ALASKA, 1));
 
-        Set<Card> playerCards = Set.of(new WildCard(), new WildCard(),
-                new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY));
+        Card brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.INFANTRY);
+        Card irkutskCard = new TerritoryCard(TerritoryType.IRKUTSK, PieceType.ARTILLERY);
+        Card wildCard = new WildCard();
+
+        Set<Card> playerCards = Set.of(wildCard, new WildCard(),
+                brazilCard,
+                new TerritoryCard(TerritoryType.CENTRAL_AMERICA, PieceType.INFANTRY),
+                irkutskCard,
+                new TerritoryCard(TerritoryType.INDONESIA, PieceType.CAVALRY)); // force a trade in.
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN); // go back to green.
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
         unitUnderTest.setCardsForPlayer(players.get(0), playerCards);
 
-        unitUnderTest.tradeInCards(playerCards);
+        unitUnderTest.tradeInCards(Set.of(wildCard, brazilCard, irkutskCard));
 
         assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
         // should gain 4 armies for the first trade-in, and with 3 users, you start with 35 armies.
@@ -1215,4 +1248,384 @@ public class WorldDominationGameEngineIntegrationTest {
         EasyMock.verify(mockedParser);
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test34_moveArmiesBetweenFriendlyTerritories_fortifyPhase_sourceNotOwned_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, go back to PURPLE, and try moving the armies.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 4));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test35_moveArmiesBetweenFriendlyTerritories_fortifyPhase_destNotOwned_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, and try moving the armies.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 4));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Provided territories are not owned by the current player!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNonAdjacentTerritoryPairs")
+    public void test36_moveArmiesBetweenFriendlyTerritories_fortifyPhase_territoriesAreNotAdjacent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, and try moving the armies.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 4));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source and destination territory must be two adjacent territories!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test37_moveArmiesBetweenFriendlyTerritories_fortifyPhase_invalidNumOfArmiesToMove_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1));
+
+        // advance to FORTIFY, and try moving the armies.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Source territory does not have enough armies to support this movement!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateAdjacentTerritoryPairsAndInvalidMovementPhases() {
+        Set<Arguments> toStream = new HashSet<>();
+        List<Arguments> territoryPairs = generateAdjacentTerritoryPairs().collect(Collectors.toList());
+        List<GamePhase> invalidGamePhases = new ArrayList<>(List.of(GamePhase.values()));
+        invalidGamePhases.removeAll(List.of(GamePhase.ATTACK, GamePhase.FORTIFY));
+
+        for (Arguments territoryPair : territoryPairs) {
+            Object[] territories = territoryPair.get();
+            for (GamePhase invalidPhase : invalidGamePhases) {
+                toStream.add(Arguments.of(territories[0], territories[1], invalidPhase));
+            }
+
+        }
+        return toStream.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairsAndInvalidMovementPhases")
+    public void test38_moveArmiesBetweenFriendlyTerritories_invalidPhase_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 3));
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Friendly army movement can only be done in the ATTACK or FORTIFY phase!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test39_moveArmiesBetweenFriendlyTerritories_attackPhase_playerTradesIn_clearedRecent_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 3));
+
+        // move into attack, set recently attacked stuff to pretend that it happened.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+
+        // now trade in cards, and assert that we throw an error (and fields are cleared)
+        Card wildCard = new WildCard();
+        Card alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
+        Card brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.CAVALRY);
+        Set<Card> toTradeIn = Set.of(wildCard, alaskaCard, brazilCard);
+        Set<Card> playerCards = new HashSet<>(toTradeIn);
+        playerCards.addAll(Set.of(
+                new TerritoryCard(TerritoryType.CHINA, PieceType.CAVALRY),
+                new TerritoryCard(TerritoryType.UKRAINE, PieceType.INFANTRY),
+                new WildCard()));
+
+        unitUnderTest.setCardsForPlayer(PlayerColor.PURPLE, playerCards);
+        unitUnderTest.tradeInCards(toTradeIn);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    private static Stream<Arguments> generateAdjacentTerritoryTrios() {
+        return Stream.of(
+                // North America
+                Arguments.of(TerritoryType.ALASKA, TerritoryType.NORTHWEST_TERRITORY, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.NORTHWEST_TERRITORY, TerritoryType.ALBERTA, TerritoryType.ALASKA),
+                Arguments.of(TerritoryType.GREENLAND, TerritoryType.ICELAND, TerritoryType.QUEBEC),
+                Arguments.of(TerritoryType.ALBERTA, TerritoryType.ONTARIO, TerritoryType.WESTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.ONTARIO, TerritoryType.QUEBEC, TerritoryType.EASTERN_UNITED_STATES),
+                Arguments.of(TerritoryType.QUEBEC, TerritoryType.EASTERN_UNITED_STATES, TerritoryType.ONTARIO),
+                Arguments.of(TerritoryType.WESTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA, TerritoryType.ALBERTA),
+                Arguments.of(TerritoryType.EASTERN_UNITED_STATES, TerritoryType.CENTRAL_AMERICA, TerritoryType.ONTARIO),
+                Arguments.of(TerritoryType.CENTRAL_AMERICA, TerritoryType.VENEZUELA,
+                        TerritoryType.EASTERN_UNITED_STATES),
+                // South America
+                Arguments.of(TerritoryType.VENEZUELA, TerritoryType.PERU, TerritoryType.BRAZIL),
+                Arguments.of(TerritoryType.PERU, TerritoryType.BRAZIL, TerritoryType.ARGENTINA),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.NORTH_AFRICA, TerritoryType.ARGENTINA),
+                Arguments.of(TerritoryType.ARGENTINA, TerritoryType.PERU, TerritoryType.BRAZIL),
+                // Europe
+                Arguments.of(TerritoryType.GREAT_BRITAIN, TerritoryType.ICELAND, TerritoryType.WESTERN_EUROPE),
+                Arguments.of(TerritoryType.ICELAND, TerritoryType.SCANDINAVIA, TerritoryType.GREENLAND),
+                Arguments.of(TerritoryType.SCANDINAVIA, TerritoryType.UKRAINE, TerritoryType.GREAT_BRITAIN),
+                Arguments.of(TerritoryType.NORTHERN_EUROPE, TerritoryType.SOUTHERN_EUROPE, TerritoryType.UKRAINE),
+                Arguments.of(TerritoryType.SOUTHERN_EUROPE, TerritoryType.WESTERN_EUROPE, TerritoryType.MIDDLE_EAST),
+                Arguments.of(TerritoryType.UKRAINE, TerritoryType.URAL, TerritoryType.AFGHANISTAN),
+                Arguments.of(TerritoryType.WESTERN_EUROPE, TerritoryType.NORTH_AFRICA, TerritoryType.SOUTHERN_EUROPE),
+                // Africa
+                Arguments.of(TerritoryType.NORTH_AFRICA, TerritoryType.EGYPT, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.EGYPT, TerritoryType.EAST_AFRICA, TerritoryType.NORTH_AFRICA),
+                Arguments.of(TerritoryType.CONGO, TerritoryType.SOUTH_AFRICA, TerritoryType.EAST_AFRICA),
+                Arguments.of(TerritoryType.EAST_AFRICA, TerritoryType.MIDDLE_EAST, TerritoryType.EGYPT),
+                Arguments.of(TerritoryType.SOUTH_AFRICA, TerritoryType.MADAGASCAR, TerritoryType.CONGO),
+                Arguments.of(TerritoryType.MADAGASCAR, TerritoryType.EAST_AFRICA, TerritoryType.SOUTH_AFRICA),
+                // Asia
+                Arguments.of(TerritoryType.AFGHANISTAN, TerritoryType.MIDDLE_EAST, TerritoryType.INDIA),
+                Arguments.of(TerritoryType.MIDDLE_EAST, TerritoryType.INDIA, TerritoryType.AFGHANISTAN),
+                Arguments.of(TerritoryType.URAL, TerritoryType.SIBERIA, TerritoryType.UKRAINE),
+                Arguments.of(TerritoryType.INDIA, TerritoryType.CHINA, TerritoryType.SIAM),
+                Arguments.of(TerritoryType.CHINA, TerritoryType.SIAM, TerritoryType.MONGOLIA),
+                Arguments.of(TerritoryType.SIBERIA, TerritoryType.IRKUTSK, TerritoryType.URAL),
+                Arguments.of(TerritoryType.SIAM, TerritoryType.INDONESIA, TerritoryType.CHINA),
+                Arguments.of(TerritoryType.MONGOLIA, TerritoryType.JAPAN, TerritoryType.KAMCHATKA),
+                Arguments.of(TerritoryType.IRKUTSK, TerritoryType.KAMCHATKA, TerritoryType.SIBERIA),
+                Arguments.of(TerritoryType.YAKUTSK, TerritoryType.KAMCHATKA, TerritoryType.IRKUTSK),
+                Arguments.of(TerritoryType.JAPAN, TerritoryType.KAMCHATKA, TerritoryType.MONGOLIA),
+                Arguments.of(TerritoryType.KAMCHATKA, TerritoryType.MONGOLIA, TerritoryType.IRKUTSK),
+                // Oceania
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.WESTERN_AUSTRALIA, TerritoryType.NEW_GUINEA),
+                Arguments.of(TerritoryType.NEW_GUINEA, TerritoryType.EASTERN_AUSTRALIA,
+                        TerritoryType.WESTERN_AUSTRALIA),
+                Arguments.of(TerritoryType.WESTERN_AUSTRALIA, TerritoryType.EASTERN_AUSTRALIA, TerritoryType.INDONESIA),
+                Arguments.of(TerritoryType.EASTERN_AUSTRALIA, TerritoryType.NEW_GUINEA, TerritoryType.WESTERN_AUSTRALIA)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryTrios")
+    public void test40_moveArmiesBetweenFriendlyTerritories_attackPhase_playerStartsNewAttack_expectException(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType toAttack) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, new DieRollParser());
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(toAttack, 1)); // claim for yellow
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 8));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.YELLOW);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(toAttack, 5));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // move into attack, set recently attacked stuff to pretend that we could split.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // now start another attack between two other territories
+        assertDoesNotThrow(() -> unitUnderTest.attackTerritory(
+                sourceTerritory, toAttack, 3, 2));
+
+        // recently attacked source and destination should be cleared, so we should error.
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 2));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryPairs")
+    public void test41_moveArmiesBetweenFriendlyTerritories_attackPhase_validInput_expectNoAbilityToSplitAgainAfter(
+            TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, new DieRollParser());
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1)); // claim for purple
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 8));
+
+        // move into attack, set recently attacked stuff to pretend that we could split.
+        unitUnderTest.setRecentlyAttackedSource(sourceTerritory);
+        unitUnderTest.setRecentlyAttackedDest(destTerritory);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        // move the armies once, assert that things are null, then try splitting again. it should throw
+        // an exception the second time around.
+        assertDoesNotThrow(() -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+
+        assertNull(unitUnderTest.getRecentlyAttackedDest());
+        assertNull(unitUnderTest.getRecentlyAttackedSource());
+
+        // now do it again.
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot split armies between this source and destination!";
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAdjacentTerritoryTrios")
+    public void test42_moveArmiesBetweenFriendlyTerritories_fortifyPhase_playerTookTerritory_expectCardToBeAwarded(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType yellowOwns) {
+        List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
+                PlayerColor.PURPLE, PlayerColor.YELLOW);
+        DieRollParser mockedParser = generateMockedParser(playersList);
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(playersList, mockedParser);
+
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 1));
+        // give yellow a territory, so they *actually* exist in the context of the game.
+        unitUnderTest.placeNewArmiesInTerritory(yellowOwns, 1);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(destTerritory, 1));
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.PURPLE);
+
+        // advance to placement, so we can have valid army amounts.
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        assertTrue(unitUnderTest.placeNewArmiesInTerritory(sourceTerritory, 5));
+
+        // advance to FORTIFY, and try moving the armies. Also, say they've earned the chance to get a card.
+        unitUnderTest.setGamePhase(GamePhase.FORTIFY);
+        unitUnderTest.setAbilityToClaimCard();
+
+        assertDoesNotThrow(() -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(sourceTerritory, destTerritory, 3));
+
+        assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
+        // card set was presumably of size 0 beforehand, so it should be size 1 now.
+        assertEquals(1, unitUnderTest.getCardsForPlayer(PlayerColor.PURPLE).size());
+        assertEquals(PlayerColor.YELLOW, unitUnderTest.getCurrentPlayer());
+        // since yellow only owns 1 territory in this example, they'll get 3 armies...
+        // slight complication, though: since we didn't spend all of their setup armies in the traditional manner,
+        // they will get 24 + 3 armies total (setup amount + placement phase bonus for 1 territory)
+        assertEquals(27, unitUnderTest.getNumArmiesByPlayerColor(PlayerColor.YELLOW));
+        assertEquals(GamePhase.PLACEMENT, unitUnderTest.getCurrentGamePhase());
+    }
 }
