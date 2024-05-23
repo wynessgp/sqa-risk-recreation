@@ -2458,17 +2458,35 @@ Output:
 ## BVA Step 1
 Input: The current phase that the game is in, who's turn it is in the game.
 
+If we're in the fortify phase, we need to know if the current player can claim a card, and how many territories
+the next going player owns given the current state of the game (so we can get their bonus army count for PLACEMENT)
+
 Output: An updated form of the current game phase, who's turn it is. An IllegalStateException if this
 is called from a phase that the player cannot forcibly end; and must do it via game actions instead.
+
+Additionally, we have to respect some rules regarding transitioning phases in Risk. 
+
+When you move out of the ATTACK phase, you lose the option to "split" armies and instead of move armies using the one 
+movement in FORTIFY.
+
+When you move out of the FORTIFY phase, you claim a card (given that one is available, player has earned one), 
+then move on to the next player in turn order, and give them the bonus armies they should earn based on how many 
+territories they own. This means we need access to the next player's pointer object. So, we want players to be able to
+gain cards, next player to gain armies, etc.
 
 ## BVA Step 2
 Input: 
 - current game phase (Cases)
 - currently going player (Cases)
+- ability to claim card (Boolean)
+- current state of all territories (Pointer)
 
 Output:
 - current game phase (Cases)
 - currently going player (Cases)
+- next player object (Pointer)
+- recently attacked source / destination (Cases)
+- ability to claim card (Boolean)
 - IllegalStateException 
 
 ## BVA Step 3
@@ -2488,6 +2506,14 @@ Input:
   - ...
   - BLACK
   - The 0th, 8th possibilities (can't set, Java enum)
+- Ability to claim card (Boolean):
+  - 0 (false)
+  - 1 (true)
+  - Something other than true/false (can't set)
+- current state of all territories (Pointer):
+  - A null pointer (can't set, Martin's rules)
+  - A pointer to the true object
+    - Only care about if the next going player owns the territory or not.
 
 Output:
 - IllegalStateException if:
@@ -2505,12 +2531,30 @@ Output:
   - The next player to go in turn order if we called in FORTIFY
     - Note that we'll also draw the current player's card
       - This BVA will be elaborated on in a different method.
+- recently attacked dest/source (Cases):
+  - Should be set to NULL if we're in the ATTACK phase
+  - Should already be NULL if we are in the FORTIFY phase
+  - Note that this is about the only place we're using NULL anywhere
+- Next player object (Pointer):
+  - If we are in the FORTIFY phase:
+    - Update the number of armies they have to place
+  - Nothing if we are in the ATTACK phase
+  - Note that "next" player object means NEXT as we come INTO the method; not the "next" after we change players already.
+- Current player object (Pointer):
+  - If we are in the FORTIFY phase:
+    - Claim a card for them if possible
+  - Nothing if we are in the ATTACK phase
+- Ability to claim card (Boolean):
+  - Set to false if we are in the FORTIFY phase
+  - Remains the same as it was for input if we were in ATTACK
 
 ## BVA Step 4
 ### Test 1:
 Input:
 - current game phase = SCRAMBLE
 - currently going player = GREEN
+- ability to claim card = false (does not matter; wrong phase)
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - IllegalStateException
@@ -2520,6 +2564,8 @@ Output:
 Input:
 - current game phase = SETUP
 - currently going player = GREEN
+- ability to claim card = false (does not matter; wrong phase)
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - IllegalStateException
@@ -2529,6 +2575,8 @@ Output:
 Input:
 - current game phase = PLACEMENT
 - currently going player = GREEN
+- ability to claim card = false (does not matter; wrong phase)
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - IllegalStateException
@@ -2538,6 +2586,8 @@ Output:
 Input:
 - current game phase = GAME_OVER
 - currently going player = GREEN
+- ability to claim card = false (does not matter; wrong phase)
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - IllegalStateException
@@ -2547,39 +2597,84 @@ Output:
 Input:
 - current game phase = ATTACK
 - currently going player = RED
+- ability to claim card = false
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - current game phase = FORTIFY
 - currently going player = RED
+- recently attacked dest/source = NULL
+- current, next player objects: No change
+- ability to claim card = false
 
 ### Test 6:
 Input:
 - current game phase = ATTACK
 - currently going player = YELLOW
+- ability to claim card = true 
+- current state of all territories (does not matter; wrong phase)
 
 Output:
 - current game phase = FORTIFY
 - currently going player = YELLOW
+- recently attacked dest/source = NULL
+- current, next player objects: No change
+- ability to claim card = true
 
 ### Test 7:
 Input:
 - current game phase = FORTIFY
 - currently going player = GREEN
+- ability to claim card = false 
+- current state of all territories 
+  - black should earn 3 new armies (owns 1 territory)
 
 Output:
 - current game phase = PLACEMENT
 - currently going player = BLACK
   - player order might've been [... -> GREEN -> BLACK -> ...]
+- recently attacked dest/source = NULL
+- next player object = [BLACK, numArmiesToPlace = 3]
+- current player object = [GREEN, no change in cards]
+- ability to claim card = false
 
 ### Test 8:
 Input:
 - current game phase = FORTIFY
 - currently going player = BLACK
+- ability to claim card = false
+- current state of all territories 
+  - purple should earn 5 armies (owns all of OCEANIA, 4 territories)
 
 Output:
 - current game phase = PLACEMENT
 - currently going player = PURPLE
   - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]
+- recently attacked dest/source = NULL
+- next player object = [PURPLE, numArmiesToPlace = 5]
+- current player object = [BLACK, no change in cards]
+- ability to claim card = false
+
+### Test 9:
+Input:
+- current game phase = FORTIFY
+- currently going player = BLACK
+- ability to claim card = true
+- current state of all territories
+  - purple should earn 6 armies (owns all of AFRICA, 6 territories)
+  - Consult the calculatePlacementPhaseArmiesForCurrentPlayer BVA if you want more details
+
+Output:
+- current game phase = PLACEMENT
+- currently going player = PURPLE
+  - player order might've been [... -> GREEN -> BLACK -> PURPLE -> ...]
+- recently attacked dest/source = NULL
+- next player object = [PURPLE, numArmiesToPlace = 7]
+- current player object = [BLACK, old card set + new card of [BRAZIL, ARTILLERY] ]
+  - We don't really care what the particular card is, we just care that they gained one; assuming one is available.
+  - See BVA for claimCardForCurrentPlayerIfPossible to know more details on if they can get a card or not.
+    - This is the method that'll be invoked to handle gaining cards.
+- ability to claim card = false
 
 # method: `claimCardForCurrentPlayerIfPossible(): void`
 
