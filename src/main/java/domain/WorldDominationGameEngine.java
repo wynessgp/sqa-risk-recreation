@@ -26,6 +26,7 @@ public final class WorldDominationGameEngine {
     private static final int REQUIRED_TERRITORIES_PER_EXTRA_ARMY = 3;
 
     private static final int FORCED_CARD_TURN_IN_THRESHOLD = 5;
+    private static final int ATTACK_PHASE_FORCED_CARD_TURN_IN_THRESHOLD = 6;
 
     private static final int MINIMUM_NUMBER_OF_ATTACKING_ARMIES = 1;
     private static final int MAXIMUM_NUMBER_OF_ATTACKING_ARMIES = 3;
@@ -617,7 +618,8 @@ public final class WorldDominationGameEngine {
     }
 
     private void checkForForcedTradeInForAttackPhase() {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() < 6 && currentGamePhase == GamePhase.ATTACK) {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() < ATTACK_PHASE_FORCED_CARD_TURN_IN_THRESHOLD
+                && currentGamePhase == GamePhase.ATTACK) {
             throw new IllegalStateException("Cannot trade in cards in the ATTACK phase unless you have > 5 held!");
         }
     }
