@@ -29,7 +29,6 @@ class DieRollParser {
                 List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)));
     }
 
-    // this constructor is to only be utilized for unit testing!
     DieRollParser(Random randomizer, List<Die> attackerDice,
                   List<Die> defenderDice) {
         this.randomizer = randomizer;
