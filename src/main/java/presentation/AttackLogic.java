@@ -72,13 +72,11 @@ public class AttackLogic {
 
     PlayerColor getTargetOwner() {
         if (!ownerSelected) {
-            for (PlayerColor color : gameEngine.getPlayerOrder()) {
-                if (gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, color)) {
-                    targetOwner = color;
-                    ownerSelected = true;
-                    break;
-                }
-            }
+            gameEngine.getPlayerOrder().stream().filter(color -> gameEngine
+                    .checkIfPlayerOwnsTerritory(targetTerritory, color)).findFirst().ifPresent(color -> {
+                        targetOwner = color;
+                        ownerSelected = true;
+                    });
         }
         return targetOwner;
     }
