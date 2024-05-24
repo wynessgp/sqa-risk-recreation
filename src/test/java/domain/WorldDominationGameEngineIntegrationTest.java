@@ -1068,6 +1068,9 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(0, unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders));
 
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
+
         assertEquals(numAttackersExpectedAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numDefendersExpectedAfter, unitUnderTest.getNumberOfArmies(dest));
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
@@ -1146,6 +1149,9 @@ public class WorldDominationGameEngineIntegrationTest {
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
 
         assertEquals(anticipatedResult, unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders));
+
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
 
         assertEquals(numAttackersInSourceAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numAttackers, unitUnderTest.getNumberOfArmies(dest));
@@ -1240,7 +1246,7 @@ public class WorldDominationGameEngineIntegrationTest {
         unitUnderTest.attackTerritory(TerritoryType.ALASKA, TerritoryType.ALBERTA, 3, 1);
 
         // check that BLUE owns BLACK's cards.
-        assertTrue(unitUnderTest.getCardsForPlayer(PlayerColor.BLUE).containsAll(blackCards));
+        assertTrue(unitUnderTest.getCardsOwnedByPlayer(PlayerColor.BLUE).containsAll(blackCards));
         // make sure BLACK is no longer in turns order / the map.
         assertFalse(unitUnderTest.getPlayerOrder().contains(PlayerColor.BLACK));
         assertFalse(unitUnderTest.getPlayerMap().containsKey(PlayerColor.BLACK));
@@ -1620,7 +1626,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
         // card set was presumably of size 0 beforehand, so it should be size 1 now.
-        assertEquals(1, unitUnderTest.getCardsForPlayer(PlayerColor.PURPLE).size());
+        assertEquals(1, unitUnderTest.getCardsOwnedByPlayer(PlayerColor.PURPLE).size());
         assertEquals(PlayerColor.YELLOW, unitUnderTest.getCurrentPlayer());
         // since yellow only owns 1 territory in this example, they'll get 3 armies...
         // slight complication, though: since we didn't spend all of their setup armies in the traditional manner,

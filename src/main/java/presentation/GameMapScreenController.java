@@ -90,7 +90,7 @@ public class GameMapScreenController implements GameScene {
 
     private void setupDialogButtons() {
         setupClaimTerritoryDialog();
-        setupTerritoryErrorDialog();
+        setupErrorDialog();
         setupArmyPlacementDialog();
         setupAttackResultsDialog();
         setupGeneralMessageDialog();
@@ -133,7 +133,7 @@ public class GameMapScreenController implements GameScene {
                 confirmDialogController.toggleDisplay());
     }
 
-    private void setupTerritoryErrorDialog() {
+    private void setupErrorDialog() {
         errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event ->
                 errorDialogController.toggleDisplay());
     }
@@ -148,8 +148,20 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void setupAttackResultsDialog() {
-        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
-                attackResultsDialogController.toggleDisplay());
+        attackResultsDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event -> {
+            attackResultsDialogController.toggleDisplay();
+            if (attackLogic.didDefenderLoseTerritory()) {
+                promptForAdditionalArmyTransfer();
+            }
+        });
+    }
+
+    private void promptForAdditionalArmyTransfer() {
+        resetSelectionDialog(0);
+        selectionDialogController.setTitleText("gameMapScreen.additionalArmyTransfer", new Object[]{
+                gameEngine.getCurrentPlayer(), gameEngine.getNumberOfArmies(attackLogic.getSourceTerritory()) - 1,
+                attackLogic.getTargetTerritory()});
+        selectionDialogController.toggleDisplay();
     }
 
     private void setupGeneralMessageDialog() {
@@ -168,14 +180,38 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void attackPhaseLogic(int value) {
-        if (!attackLogic.sourceArmiesSelected()) {
+        if (attackLogic.isAttackComplete()) {
+            transferArmiesAttackPhase(value);
+        } else if (!attackLogic.sourceArmiesSelected()) {
             attackLogic.setAttackArmies(value);
             getArmiesForDefense();
         } else {
-            attackLogic.setDefendArmies(value);
-            handleAttackErrors(attackLogic.performAttack());
-            updateStateLabels();
+            performAttack(value);
         }
+    }
+
+    private void transferArmiesAttackPhase(int value) {
+        fortifyLogic.setSourceTerritory(attackLogic.getSourceTerritory());
+        fortifyLogic.setDestinationTerritory(attackLogic.getTargetTerritory());
+        fortifyLogic.setArmiesToTransfer(value);
+        handleArmyTransfer(fortifyLogic.performFortify());
+        updateStateLabels();
+    }
+
+    private void handleArmyTransfer(FortifyResult result) {
+        if (result != FortifyResult.SUCCESS) {
+            errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+                errorDialogController.toggleDisplay();
+                promptForAdditionalArmyTransfer();
+            });
+            showErrorMessage("gameMapScreen." + result.toKey());
+        }
+    }
+
+    private void performAttack(int value) {
+        attackLogic.setDefendArmies(value);
+        handleAttackErrors(attackLogic.performAttack());
+        updateStateLabels();
     }
 
     private void handleAttackErrors(AttackResult result) {
@@ -392,10 +428,11 @@ public class GameMapScreenController implements GameScene {
     private void showErrorMessage(String key) {
         errorDialogController.setContentText(key, null);
         errorDialogController.toggleDisplay();
+        setupErrorDialog();
     }
 
     private void handlePlacement() {
-        resetSelectionDialog();
+        resetSelectionDialog(1);
         selectionDialogController.setTitleText("gameMapScreen.armyPlacementSelection",
                 new Object[]{gameEngine.getCurrentPlayerArmiesToPlace()});
         selectionDialogController.showButton(ButtonType.CANCEL);
@@ -424,15 +461,15 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleFortifyAction() {
-        resetSelectionDialog();
+        resetSelectionDialog(1);
         selectionDialogController.setTitleText("gameMapScreen.fortifyArmySelection", null);
         selectionDialogController.showButton(ButtonType.CANCEL);
         selectionDialogController.toggleDisplay();
     }
 
-    private void resetSelectionDialog() {
-        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
-                Integer.MAX_VALUE, 1));
+    private void resetSelectionDialog(int startingValue) {
+        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
+                startingValue));
     }
 
     private void handleTargetTerritorySelection() {
@@ -444,7 +481,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void getArmiesForAttack() {
-        resetSelectionDialog();
+        resetSelectionDialog(1);
         selectionDialogController.setTitleText("gameMapScreen.attackArmySelection",
                 new Object[]{gameEngine.getCurrentPlayer()});
         selectionDialogController.hideButton(ButtonType.CANCEL);
@@ -452,7 +489,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void getArmiesForDefense() {
-        resetSelectionDialog();
+        resetSelectionDialog(1);
         selectionDialogController.setTitleText("gameMapScreen.defendArmySelection",
                 new Object[]{attackLogic.getTargetOwner()});
         selectionDialogController.toggleDisplay();

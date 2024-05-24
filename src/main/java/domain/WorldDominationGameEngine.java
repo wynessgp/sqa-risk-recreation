@@ -1000,13 +1000,18 @@ public final class WorldDominationGameEngine {
     public int attackTerritory(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
         handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        storeRecentlyAttackedTerritories(sourceTerritory, destTerritory);
         List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
         if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
-            clearRecentlyAttackedTerritories();
             return 0;
         }
         handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
         return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void storeRecentlyAttackedTerritories(TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        setRecentlyAttackedSource(sourceTerritory);
+        setRecentlyAttackedDest(destTerritory);
     }
 
     private void clearRecentlyAttackedTerritories() {
@@ -1031,7 +1036,10 @@ public final class WorldDominationGameEngine {
         playersMap.get(playerColor).setNumArmiesToPlace(numArmies);
     }
 
-    Set<Card> getCardsForPlayer(PlayerColor playerColor) {
+    public Set<Card> getCardsOwnedByPlayer(PlayerColor playerColor) {
+        if (playerColor == PlayerColor.SETUP) {
+            throw new IllegalArgumentException("Invalid player color");
+        }
         return playersMap.get(playerColor).getOwnedCards();
     }
 
