@@ -247,6 +247,7 @@ public class GameMapScreenController implements GameScene {
     private void handleArmyTransfer(FortifyResult result) {
         if (result == FortifyResult.SUCCESS) {
             tradeInLogic.displayIfEnoughCards();
+            fortifyLogic.reset();
         } else {
             showArmyTransferError(result);
         }
