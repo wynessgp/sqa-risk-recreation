@@ -59,6 +59,7 @@ public class GameMapScreenController implements GameScene {
     private Button selectedButton;
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private AttackLogic attackLogic;
+    private FortifyLogic fortifyLogic;
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
@@ -70,6 +71,7 @@ public class GameMapScreenController implements GameScene {
     private void initialize() {
         gameEngine = SceneController.getInstance().getGameEngine();
         attackLogic = new AttackLogic(gameEngine);
+        fortifyLogic = new FortifyLogic(gameEngine);
         SceneController.setCurrentScene(this);
         setupDialogControllers();
         updateStateLabels();
@@ -96,18 +98,32 @@ public class GameMapScreenController implements GameScene {
 
     private void setupSkipButton() {
         attackFortifySkipButton.addEventHandler(ActionEvent.ACTION, event -> {
-            attackLogic.reset();
-            handleAttackButtonClick();
+            if (gameEngine.getCurrentGamePhase() == GamePhase.ATTACK) {
+                handleAttackButtonClick();
+            } else if (gameEngine.getCurrentGamePhase() == GamePhase.FORTIFY) {
+                handleFortifyButtonClick();
+            }
         });
     }
 
     private void handleAttackButtonClick() {
-        if (attackLogic.sourceSelected()) {
-            handleAttackPhaseInstructions(true);
+        if (attackLogic.isSourceSelected()) {
+            handleAttackPhaseInstructions(false);
         } else {
             gameEngine.forceGamePhaseToEnd();
             updateStateLabels();
         }
+        attackLogic.reset();
+    }
+
+    private void handleFortifyButtonClick() {
+        if (fortifyLogic.isSourceSelected()) {
+            handleFortifyPhaseInstructions(false);
+        } else {
+            gameEngine.forceGamePhaseToEnd();
+            updateStateLabels();
+        }
+        fortifyLogic.reset();
     }
 
     private void setupClaimTerritoryDialog() {
@@ -146,6 +162,8 @@ public class GameMapScreenController implements GameScene {
             handlePlaceArmies(value);
         } else if (gameEngine.getCurrentGamePhase() == GamePhase.ATTACK) {
             attackPhaseLogic(value);
+        } else if (gameEngine.getCurrentGamePhase() == GamePhase.FORTIFY) {
+            fortifyPhaseLogic(value);
         }
     }
 
@@ -217,6 +235,17 @@ public class GameMapScreenController implements GameScene {
         }
     }
 
+    private void fortifyPhaseLogic(int value) {
+        fortifyLogic.setArmiesToTransfer(value);
+        FortifyResult result = fortifyLogic.performFortify();
+        if (result == FortifyResult.SUCCESS) {
+            updateStateLabels();
+        } else {
+            showErrorMessage("gameMapScreen." + result.toKey());
+        }
+        fortifyLogic.reset();
+    }
+
     private void updateStateLabels() {
         currentPlayerColor.setText(gameEngine.getCurrentPlayer().toString());
         currentPhase.setText(gameEngine.getCurrentGamePhase().toString());
@@ -224,11 +253,11 @@ public class GameMapScreenController implements GameScene {
         if (gameEngine.getCurrentGamePhase() != GamePhase.SCRAMBLE) {
             enablePlacement();
         }
-        gamePhaseActions();
+        gamePhaseActions(gameEngine.getCurrentGamePhase());
     }
 
-    private void gamePhaseActions() {
-        GamePhase currentPhase = gameEngine.getCurrentGamePhase();
+    private void gamePhaseActions(GamePhase currentPhase) {
+        attackFortifySkipButton.setVisible(false);
         if (currentPhase == GamePhase.SCRAMBLE) {
             handleScramblePhaseInstructions();
         } else if (currentPhase == GamePhase.SETUP) {
@@ -242,9 +271,9 @@ public class GameMapScreenController implements GameScene {
         if (currentPhase == GamePhase.PLACEMENT) {
             handlePlacementPhaseInstructions();
         } else if (currentPhase == GamePhase.ATTACK) {
-            handleAttackPhaseInstructions(attackLogic.sourceSelected());
+            handleAttackPhaseInstructions(attackLogic.isSourceSelected());
         } else if (currentPhase == GamePhase.FORTIFY) {
-            handleFortifyPhaseInstructions();
+            handleFortifyPhaseInstructions(fortifyLogic.isSourceSelected());
         }
     }
 
@@ -261,7 +290,6 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhaseInstructions() {
         this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
-        attackFortifySkipButton.setVisible(false);
     }
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
@@ -273,9 +301,12 @@ public class GameMapScreenController implements GameScene {
                 : "gameMapScreen.cancelAttackButton", null));
     }
 
-    private void handleFortifyPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.fortifyInstruction",
-                new Object[]{gameEngine.getCurrentPlayer()}));
+    private void handleFortifyPhaseInstructions(boolean sourceSelected) {
+        this.instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
+                : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
+        attackFortifySkipButton.setVisible(true);
+        attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
+                : "gameMapScreen.cancelAttackButton", null));
     }
 
     private void enablePlacement() {
@@ -317,26 +348,27 @@ public class GameMapScreenController implements GameScene {
     private void handleTerritoryButtonClick(ActionEvent event) {
         selectedButton = (Button) event.getSource();
         selectedTerritory = TerritoryType.valueOf(selectedButton.getAccessibleText());
-        handleGamePhaseAction();
+        handleGamePhaseAction(gameEngine.getCurrentGamePhase());
     }
 
-    private void handleGamePhaseAction() {
-        GamePhase currentPhase = gameEngine.getCurrentGamePhase();
+    private void handleGamePhaseAction(GamePhase currentPhase) {
         if (currentPhase == GamePhase.SCRAMBLE) {
             confirmDialogController.setContentText("gameMapScreen.claimAsk", new Object[]{selectedTerritory});
             confirmDialogController.toggleDisplay();
+        } else if (currentPhase == GamePhase.SETUP) {
+            handlePlaceArmies(1);
         } else {
-            handleSetupPlacementAttackPhases(currentPhase);
+            handlePlacementAttackFortifyPhases(currentPhase);
         }
     }
 
-    private void handleSetupPlacementAttackPhases(GamePhase currentPhase) {
-        if (currentPhase == GamePhase.SETUP) {
-            handlePlaceArmies(1);
-        } else if (currentPhase == GamePhase.PLACEMENT) {
+    private void handlePlacementAttackFortifyPhases(GamePhase currentPhase) {
+        if (currentPhase == GamePhase.PLACEMENT) {
             handlePlacement();
         } else if (currentPhase == GamePhase.ATTACK) {
             handleAttack();
+        } else if (currentPhase == GamePhase.FORTIFY) {
+            handleFortify();
         }
     }
 
@@ -371,14 +403,31 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttack() {
-        if (!attackLogic.sourceSelected()) {
+        if (!attackLogic.isSourceSelected()) {
             if (!attackLogic.setSourceTerritory(territoryButtonMap.get(selectedButton))) {
                 updateTerritoryErrorDialog("gameMapScreen.attackSourceError");
             }
-            handleAttackPhaseInstructions(attackLogic.sourceSelected());
+            handleAttackPhaseInstructions(attackLogic.isSourceSelected());
         } else {
             handleTargetTerritorySelection();
         }
+    }
+
+    private void handleFortify() {
+        if (!fortifyLogic.isSourceSelected()) {
+            fortifyLogic.setSourceTerritory(territoryButtonMap.get(selectedButton));
+            handleFortifyPhaseInstructions(fortifyLogic.isSourceSelected());
+        } else {
+            fortifyLogic.setDestinationTerritory(territoryButtonMap.get(selectedButton));
+            handleFortifyAction();
+        }
+    }
+
+    private void handleFortifyAction() {
+        resetSelectionDialog();
+        selectionDialogController.setTitleText("gameMapScreen.fortifyArmySelection", null);
+        selectionDialogController.showButton(ButtonType.CANCEL);
+        selectionDialogController.toggleDisplay();
     }
 
     private void resetSelectionDialog() {
