@@ -85,7 +85,7 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
-        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground));
+        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground), gameEngine);
     }
 
     private void setupDialogButtons() {
@@ -314,17 +314,17 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleScramblePhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
     private void handleSetupPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
     private void handlePlacementPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
@@ -338,7 +338,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleFortifyPhaseInstructions(boolean sourceSelected) {
-        this.instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
+        instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
                 : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
         attackFortifySkipButton.setVisible(true);
         attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
@@ -346,7 +346,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void enablePlacement() {
-        this.armiesToPlacePane.setVisible(true);
+        armiesToPlacePane.setVisible(true);
         for (Entry<Button, TerritoryType> entry : territoryButtonMap.entrySet()) {
             Button territoryButton = entry.getKey();
             TerritoryType territory = entry.getValue();
@@ -468,7 +468,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void resetSelectionDialog(int startingValue) {
-        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
+        armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
                 startingValue));
     }
 
@@ -502,7 +502,7 @@ public class GameMapScreenController implements GameScene {
 
     @Override
     public void onKeyPress(KeyEvent event) {
-        if (this.confirmDialogController.isVisible()) {
+        if (confirmDialogController.isVisible()) {
             if (event.getCode() == KeyCode.ENTER) {
                 handleClaimTerritory();
             } else if (event.getCode() == KeyCode.ESCAPE) {

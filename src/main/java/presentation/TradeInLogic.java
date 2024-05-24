@@ -6,8 +6,8 @@ import domain.TerritoryType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+import domain.WorldDominationGameEngine;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -16,13 +16,15 @@ import javafx.scene.layout.Pane;
 class TradeInLogic {
     private final List<Pane> content = new ArrayList<>();
     private final Dialog tradeInDialog;
+    private final WorldDominationGameEngine gameEngine;
 
-    TradeInLogic(Dialog tradeInDialog) {
+    TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine) {
         this.tradeInDialog = tradeInDialog;
+        this.gameEngine = gameEngine;
     }
 
-    void displayListOfCards(Set<Card> cards) {
-        for (Card card : cards) {
+    void displayListOfCards() {
+        for (Card card : gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer())) {
             createDisplayCard(card);
         }
         setDialogContent();
