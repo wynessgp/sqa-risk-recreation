@@ -752,13 +752,18 @@ public final class WorldDominationGameEngine {
     public int attackTerritory(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
         handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        storeRecentlyAttackedTerritories(sourceTerritory, destTerritory);
         List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
         if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
-            clearRecentlyAttackedTerritories();
             return 0;
         }
         handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
         return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void storeRecentlyAttackedTerritories(TerritoryType source, TerritoryType dest) {
+        this.recentlyAttackedSource = source;
+        this.recentlyAttackedDestination = dest;
     }
 
     void handleErrorCasesForAttackingTerritory(
