@@ -2936,7 +2936,9 @@ public class WorldDominationGameEngineTest {
     @MethodSource("generateAllPlayerColorsMinusSetup")
     public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-        unitUnderTest.provideMockedPlayersMap(Map.of(player, new Player(player)));
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
         assertEquals(Collections.emptySet(), unitUnderTest.getCardsOwnedByPlayer(player));
     }
 
