@@ -33,6 +33,7 @@ public final class WorldDominationGameEngine {
 
     private static final int MINIMUM_NUMBER_OF_DEFENDING_ARMIES = 1;
     private static final int MAXIMUM_NUMBER_OF_DEFENDING_ARMIES = 2;
+    private static final int TRADE_IN_BONUS_ARMIES = 2;
 
     private List<PlayerColor> playersList = new ArrayList<>();
     private Map<PlayerColor, Player> playersMap = new HashMap<>();
@@ -1051,7 +1052,7 @@ public final class WorldDominationGameEngine {
         if (!possibilities.contains(territory)) {
             throw new IllegalArgumentException("Cannot place armies in this territory");
         }
-        increaseNumArmiesInTerritory(territory, 2);
+        increaseNumArmiesInTerritory(territory, TRADE_IN_BONUS_ARMIES);
     }
 
     WorldDominationGameEngine() {

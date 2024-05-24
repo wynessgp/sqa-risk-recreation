@@ -103,7 +103,7 @@ public class GameMapScreenController implements GameScene {
     private void handleExtraArmies() {
         Set<TerritoryType> extraArmies = tradeInLogic.getExtraArmyTerritories();
         if (extraArmies.size() == 1) {
-            gameEngine.placeNewArmiesInTerritory(extraArmies.iterator().next(), 2);
+            gameEngine.placeBonusArmies(extraArmies.iterator().next(), extraArmies);
         } else if (extraArmies.size() > 1) {
             // prompt player
         }
