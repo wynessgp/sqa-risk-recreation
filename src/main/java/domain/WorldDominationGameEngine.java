@@ -1047,6 +1047,10 @@ public final class WorldDominationGameEngine {
         return playersMap.get(playerInQuestion).getTerritories();
     }
 
+    public void placeBonusArmies(TerritoryType territory, Set<TerritoryType> possibilities) {
+        increaseNumArmiesInTerritory(territory, 2);
+    }
+
     WorldDominationGameEngine() {
         territoryGraph = initializeGraph();
         currentGamePhase = GamePhase.SCRAMBLE;

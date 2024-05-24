@@ -3080,23 +3080,23 @@ Output:
 
 ## BVA Step 4
 ### Test value 1
-Input: ALASKA, [ALASKA], territory = [ALASKA, numArmiesInTerritory = 2]
+Input: ALASKA, [ALASKA], territory = [ALASKA, numArmiesInTerritory = 0]
 
-Output: [ALASKA, numArmiesInTerritory = 4]
+Output: [ALASKA, numArmiesInTerritory = 2]
 #### Repeat for each TerritoryType
 ### Test value 2
-Input: ALASKA, [ALASKA, KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 2]
+Input: ALASKA, [ALASKA, KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 0]
 
-Output: [ALASKA, numArmiesInTerritory = 4]
+Output: [ALASKA, numArmiesInTerritory = 2]
 ### Test value 3
-Input: ALASKA, [ALASKA, KAMCHATKA, NORTHWEST_TERRITORIES], territory = [ALASKA, numArmiesInTerritory = 2]
+Input: ALASKA, [ALASKA, KAMCHATKA, NORTHWEST_TERRITORIES], territory = [ALASKA, numArmiesInTerritory = 0]
 
-Output: [ALASKA, numArmiesInTerritory = 4]
+Output: [ALASKA, numArmiesInTerritory = 2]
 ### Test value 4
-Input: ALASKA, [], territory = [ALASKA, numArmiesInTerritory = 2]
+Input: ALASKA, [], territory = [ALASKA, numArmiesInTerritory = 0]
 
 Output: IllegalArgumentException "Cannot place armies in this territory"
 ### Test value 5
-Input: ALASKA, [KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 2]
+Input: ALASKA, [KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 0]
 
 Output: IllegalArgumentException "Cannot place armies in this territory"
