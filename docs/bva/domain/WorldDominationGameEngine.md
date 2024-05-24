@@ -3048,3 +3048,55 @@ Output: { WILD, WILD }
 Input: SETUP, underlined object does not matter
 
 Output: IllegalArgumentException "Invalid player color"
+
+# method: `placeBonusArmies(territory: TerritoryType, Set<TerritoryType> possibilities): void`
+
+## BVA Step 1
+Input: The territory to place 2 bonus armies on, the collection of placement possibilities, and the underlying
+Territory object that corresponds to the input type
+
+Output: The updated army count for the territory or an exception
+
+## BVA Step 2
+Input: Cases, Collection
+
+Output: Pointer (modifies the Territory object)
+
+## BVA Step 3
+Input:
+- Cases: TerritoryType
+  - ALASKA
+  - ...
+  - KAMCHATKA
+- Collection
+  - Empty set
+  - Set containing 1 territory
+  - Set containing 2 territories
+  - Set containing 3 territories (max return value from trade in calculation)
+
+Output:
+- Updated territory object
+- IllegalArgumentException
+
+## BVA Step 4
+### Test value 1
+Input: ALASKA, [ALASKA], territory = [ALASKA, numArmiesInTerritory = 2]
+
+Output: [ALASKA, numArmiesInTerritory = 4]
+#### Repeat for each TerritoryType
+### Test value 2
+Input: ALASKA, [ALASKA, KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 2]
+
+Output: [ALASKA, numArmiesInTerritory = 4]
+### Test value 3
+Input: ALASKA, [ALASKA, KAMCHATKA, NORTHWEST_TERRITORIES], territory = [ALASKA, numArmiesInTerritory = 2]
+
+Output: [ALASKA, numArmiesInTerritory = 4]
+### Test value 4
+Input: ALASKA, [], territory = [ALASKA, numArmiesInTerritory = 2]
+
+Output: IllegalArgumentException "Cannot place armies in this territory"
+### Test value 5
+Input: ALASKA, [KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 2]
+
+Output: IllegalArgumentException "Cannot place armies in this territory"
