@@ -1,5 +1,7 @@
 package presentation;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -12,6 +14,7 @@ import javafx.scene.layout.Pane;
 class Dialog {
     private final DialogPane dialog;
     private final AnchorPane dialogBackground;
+    private final Map<ButtonType, EventHandler<Event>> events = new HashMap<>();
 
     protected Dialog(DialogPane dialog, AnchorPane background) {
         this.dialog = dialog;
@@ -36,8 +39,12 @@ class Dialog {
     }
 
     void setupButton(ButtonType buttonType, String key, EventHandler<Event> eventHandler) {
+        boolean eventHandlerExists = events.containsKey(buttonType);
         ((Button) dialog.lookupButton(buttonType)).setText(SceneController.getString(key, null));
-        dialog.lookupButton(buttonType).addEventHandler(javafx.event.ActionEvent.ACTION, eventHandler);
+        events.put(buttonType, eventHandler);
+        if (!eventHandlerExists) {
+            dialog.lookupButton(buttonType).addEventHandler(javafx.event.ActionEvent.ACTION, events.get(buttonType));
+        }
     }
 
     void showButton(ButtonType button) {
