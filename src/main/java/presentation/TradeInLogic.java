@@ -21,7 +21,7 @@ class TradeInLogic {
     private final WorldDominationGameEngine gameEngine;
     private final CheckComboBox<String> cardSelection;
     private final EventHandler<Event> performTradeIn;
-    private Set<TerritoryType> extraArmyTerritories;
+    private Set<TerritoryType> extraArmyTerritories = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine, EventHandler<Event> performTradeIn) {
