@@ -2531,10 +2531,7 @@ public class WorldDominationGameEngineTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
-    public void test69_moveArmiesBetweenFriendlyTerritories_attackPhase_negativeArmyInput_expectException(
-            int illegalNumArmies) {
+    private void testMovementBetweenFriendlyTerritoriesNegativeArmyInput(int illegalNumArmies, GamePhase phase) {
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
         EasyMock.expect(mockedGraph.areTerritoriesAdjacent(TerritoryType.ALASKA, TerritoryType.KAMCHATKA))
                 .andReturn(true);
@@ -2552,7 +2549,7 @@ public class WorldDominationGameEngineTest {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
-        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+        unitUnderTest.setGamePhase(phase);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(
@@ -2563,6 +2560,20 @@ public class WorldDominationGameEngineTest {
         assertEquals(expectedMessage, actualMessage);
 
         EasyMock.verify(mockedGraph, mockedSource, mockedDest);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
+    public void test69_moveArmiesBetweenFriendlyTerritories_attackPhase_negativeArmyInput_expectException(
+            int illegalNumArmies) {
+        testMovementBetweenFriendlyTerritoriesNegativeArmyInput(illegalNumArmies, GamePhase.ATTACK);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
+    public void test70_moveArmiesBetweenFriendlyTerritories_fortifyPhase_negativeArmyInput_expectException(
+            int illegalNumArmies) {
+        testMovementBetweenFriendlyTerritoriesNegativeArmyInput(illegalNumArmies, GamePhase.FORTIFY);
     }
 
     @ParameterizedTest
