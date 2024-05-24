@@ -396,7 +396,6 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleFortifyPhaseInstructions(boolean sourceSelected) {
-        fortifyLogic.reset();
         instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
                 : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
         attackFortifySkipButton.setVisible(true);
