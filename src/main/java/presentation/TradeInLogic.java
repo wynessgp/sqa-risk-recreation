@@ -64,10 +64,13 @@ class TradeInLogic {
     }
 
     private void createDisplayCard(Card card) {
-        TerritoryType territoryType = getTerritoryType(card);
-        PieceType pieceType = getPieceType(card);
-        cardSelection.getItems().add(territoryType + " (" + pieceType + ")");
-
+        if (card.isWild()) {
+            cardSelection.getItems().add("Wild card");
+        } else {
+            TerritoryType territoryType = getTerritoryType(card);
+            PieceType pieceType = getPieceType(card);
+            cardSelection.getItems().add(territoryType + " (" + pieceType + ")");
+        }
     }
 
     private TerritoryType getTerritoryType(Card card) {
@@ -96,6 +99,14 @@ class TradeInLogic {
     }
 
     private Card getCardFromString(String cardString) {
+        if (cardString.contains("Wild")) {
+            return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(Card::isWild)
+                    .collect(Collectors.toList()).get(0);
+        }
+        return getTerritoryCardFromString(cardString);
+    }
+
+    private Card getTerritoryCardFromString(String cardString) {
         String territory = cardString.substring(0, cardString.indexOf('(') - 1);
         String piece = cardString.substring(cardString.indexOf('(') + 1, cardString.indexOf(')'));
         TerritoryType territoryType = Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory))
