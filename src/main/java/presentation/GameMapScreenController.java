@@ -86,7 +86,7 @@ public class GameMapScreenController implements GameScene {
 
     private void setupDialogButtons() {
         setupClaimTerritoryDialog();
-        setupTerritoryErrorDialog();
+        setupErrorDialog();
         setupArmyPlacementDialog();
         setupAttackResultsDialog();
         setupGeneralMessageDialog();
@@ -129,7 +129,7 @@ public class GameMapScreenController implements GameScene {
                 confirmDialogController.toggleDisplay());
     }
 
-    private void setupTerritoryErrorDialog() {
+    private void setupErrorDialog() {
         errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event ->
                 errorDialogController.toggleDisplay());
     }
@@ -187,9 +187,21 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void transferArmiesAttackPhase(int value) {
-        gameEngine.moveArmiesBetweenFriendlyTerritories(attackLogic.getSourceTerritory(),
-                attackLogic.getTargetTerritory(), value);
+        fortifyLogic.setSourceTerritory(attackLogic.getSourceTerritory());
+        fortifyLogic.setDestinationTerritory(attackLogic.getTargetTerritory());
+        fortifyLogic.setArmiesToTransfer(value);
+        handleArmyTransfer(fortifyLogic.performFortify());
         updateStateLabels();
+    }
+
+    private void handleArmyTransfer(FortifyResult result) {
+        if (result != FortifyResult.SUCCESS) {
+            errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+                errorDialogController.toggleDisplay();
+                promptForAdditionalArmyTransfer();
+            });
+            showErrorMessage("gameMapScreen." + result.toKey());
+        }
     }
 
     private void performAttack(int value) {
@@ -412,6 +424,7 @@ public class GameMapScreenController implements GameScene {
     private void showErrorMessage(String key) {
         errorDialogController.setContentText(key, null);
         errorDialogController.toggleDisplay();
+        setupErrorDialog();
     }
 
     private void handlePlacement() {
@@ -451,8 +464,8 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void resetSelectionDialog(int startingValue) {
-        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE,
-                Integer.MAX_VALUE, startingValue));
+        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
+                startingValue));
     }
 
     private void handleTargetTerritorySelection() {
