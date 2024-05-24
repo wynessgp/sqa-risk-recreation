@@ -2426,6 +2426,38 @@ Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
 - current game phase = ATTACK
+- numArmies = -1
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = ALASKA
+- recently attacked dest = URAL
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot move a negative number of armies between territories"
+
+### Test 16:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
+- numArmies = -2
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
+- recently attacked source = ALASKA
+- recently attacked dest = URAL
+- currently going player = GREEN
+
+Output:
+- IllegalArgumentException
+  - message: "Cannot move a negative number of armies between territories"
+
+### Test 17:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
 - numArmies = 1
 - source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
 - dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
@@ -2440,7 +2472,7 @@ Output:
 - recently attacked source, destination = NULL (only time we'll use this!)
 - currently going player = PURPLE
 
-### Test 16:
+### Test 18:
 Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
@@ -2459,7 +2491,7 @@ Output:
 - recently attacked source, destination = NULL (only time we'll use this!)
 - currently going player = PURPLE
 
-### Test 17:
+### Test 19:
 Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
