@@ -852,11 +852,6 @@ public final class WorldDominationGameEngine {
         return territoryGraph.getTerritory(territoryType).getNumArmiesPresent();
     }
 
-    private void clearRecentlyAttackedTerritories() {
-        this.recentlyAttackedDestination = null;
-        this.recentlyAttackedSource = null;
-    }
-
     PlayerColor handleAttackerTakingTerritory(TerritoryType territory, int numAttackers) {
         PlayerColor playerLosingTerritory = getPlayerInControlOfTerritory(territory);
         territoryGraph.getTerritory(territory).setNumArmiesPresent(numAttackers);
@@ -965,22 +960,6 @@ public final class WorldDominationGameEngine {
 
     void setAbilityToClaimCard() {
         this.currentPlayerCanClaimCard = true;
-      
-    public int attackTerritory(
-            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
-        handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
-        storeRecentlyAttackedTerritories(sourceTerritory, destTerritory);
-        List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
-        if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
-            return 0;
-        }
-        handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
-        return getNumberOfArmies(sourceTerritory) - 1;
-    }
-
-    private void storeRecentlyAttackedTerritories(TerritoryType sourceTerritory, TerritoryType destTerritory) {
-        setRecentlyAttackedSource(sourceTerritory);
-        setRecentlyAttackedDest(destTerritory);
     }
 
     private void clearRecentlyAttackedTerritories() {
