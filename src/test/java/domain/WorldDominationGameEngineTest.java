@@ -2797,7 +2797,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
-        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsOwnedByPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer);
     }
@@ -2894,7 +2894,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
-        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsOwnedByPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer, mockedDeck);
     }
@@ -2932,4 +2932,100 @@ public class WorldDominationGameEngineTest {
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedDest());
     }
 
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(Collections.emptySet(), unitUnderTest.getCardsOwnedByPlayer(player));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test81_getCardsOwnedByPlayer_withOneCard_returnsSingletonSet(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        for (PieceType pieceType : PieceType.values()) {
+            for (TerritoryType territoryType : TerritoryType.values()) {
+                Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                        .withArgs(player).createMock();
+                TerritoryCard card = new TerritoryCard(territoryType, pieceType);
+                mockedPlayer.setOwnedCards(Set.of(card));
+                EasyMock.replay(mockedPlayer);
+                unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+                assertEquals(Set.of(card), unitUnderTest.getCardsOwnedByPlayer(player));
+                EasyMock.verify(mockedPlayer);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test82_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = Set.of(new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY));
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
+
+    private Set<Card> generateSetOfAllCards() {
+        Set<Card> allCards = new HashSet<>();
+        int pieceTypeIndex = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            allCards.add(new TerritoryCard(territoryType,
+                    PieceType.values()[pieceTypeIndex++ % PieceType.values().length]));
+        }
+        allCards.add(new WildCard());
+        allCards.add(new WildCard());
+        return allCards;
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test83_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = generateSetOfAllCards();
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test84_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = Set.of(new WildCard(), new WildCard());
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
+
+    @Test
+    public void test85_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
+        String expectedMessage = "Invalid player color";
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.SETUP).createMock();
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(PlayerColor.SETUP, mockedPlayer));
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                unitUnderTest.getCardsOwnedByPlayer(PlayerColor.SETUP));
+        assertEquals(expectedMessage, exception.getMessage());
+        EasyMock.verify(mockedPlayer);
+    }
 }
