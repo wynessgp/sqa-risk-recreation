@@ -159,7 +159,14 @@ package domain {
         -{static}{final} INITIAL_NUM_UNCLAIMED_TERRITORIES: int
         -{static}{final} REQUIRED_NUM_TERRITORIES_TO_EARN_MORE_THAN_THREE_ARMIES: int
         -{static}{final} THREE_ARMIES: int
+        -{static}{final} REQUIRED_TERRITORIES_PER_EXTRA_ARMY: int
         -{static}{final} FORCED_CARD_TURN_IN_THRESHOLD: int
+        -{static}{final} ATTACK_PHASE_FORCED_CARD_TURN_IN_THRESHOLD: int
+        -{static}{final} MINIMUM_NUMBER_OF_ATTACKING_ARMIES: int
+        -{static}{final} MAXIMUM_NUMBER_OF_ATTACKING_ARMIES: int
+        -{static}{final} MINIMUM_NUMBER_OF_DEFENDING_ARMIES: int
+        -{static}{final} MAXIMUM_NUMBER_OF_DEFENDING_ARMIES: int
+        -{static}{final} TRADE_IN_BONUS_ARMIES: int
 
         -playersList: List<PlayerColor>
         -playersMap: Map<PlayerColor, Player>
@@ -171,88 +178,208 @@ package domain {
         -dieRollParser: DieRollParser
         -tradeInParser: TradeInParser
         -dieRolls: List<Integer>
+        -attackerRolls: List<Integer>
+        -defenderRolls: List<Integer>
+        -battleResults: List<BattleResult>
+        -recentlyAttackedSource: TerritoryType
+        -recentlyAttackedDest: TerritoryType
+        -currentPlayerCanClaimCard: boolean
+        -cardDeck: RiskCardDeck
 
+        +WorldDominationGameEngine(playerOrder: List<PlayerColor>)
         ~WorldDominationGameEngine(playerOrder: List<PlayerColor>, parser: DieRollParser)
         -handleOtherDependentObjectCreation(parser: DieRollParser): void
-        ~shufflePlayers(): void
-        -sortPlayersListByDieRoll(): void
-        +WorldDominationGameEngine(playerOrder: List<PlayerColor>)
         -initializeGraph(): boolean
+        -addAllEdgesToTerritoryGraph(): void
+
+        -addNorthAmericanGraphEdges(): void
+        -addAlaskaEdges(): void
+        -addNorthwestTerritoryEdges(): void
+        -addGreenlandEdges(): void
+        -addAlbertaEdges(): void
+        -addOntarioEdges(): void
+        -addRemainingNorthAmericanGraphEdges(): void
+        -addQuebecEdges(): void
+        -addWesternUnitedStatesEdges(): void
+        -addEasternUnitedStatesEdges(): void
+        -addCentralAmericaEdges(): void
+
+        -addSouthAmericanGraphEdges(): void
+        -addVenezuelaEdges(): void
+        -addPeruEdges(): void
+        -addBrazilEdges(): void
+
+        -addAfricanGraphEdges(): void
+        -addNorthAfricaEdges(): void
+        -addEgyptEdges(): void
+        -addCongoEdges(): void
+        -addEastAfricaEdges(): void
+        -addSouthAfricaEdges(): void
+
+        -addEuropeanGraphEdges(): void
+        -addGreatBritainEdges(): void
+        -addIcelandEdges(): void
+        -addScandinaviaEdges(): void
+        -addNorthernEuropeEdges(): void
+        -addSouthernEuropeEdges(): void
+        -addUkraineEdges(): void
+
+        -addAsianGraphEdges(): void
+        -addAfghanistanEdges(): void
+        -addMiddleEastEdges(): void
+        -addUralEdges(): void
+        -addIndiaEdges(): void
+        -addChinaEdges(): void
+        -addSiberiaEdges(): void
+        -addRemainingAsianGraphEdges(): void
+        -addSiamEdges(): void
+        -addMongoliaEdges(): void
+        -addIrkutskEdges(): void
+        -addYakutskEdges(): void
+        -addJapanEdges(): void
+
+        -addOceanicGraphEdges(): void
+        -addIndonesiaGraphEdges(): void
+        -addNewGuineaEdges(): void
+        -addWesternAustraliaEdges(): void
+
         +initializePlayersList(playerOrder: List<PlayerColor>): boolean
         -handleErrorCheckingForOrderSize(playerOrder: List<PlayerColor>): void
         -handleErrorCheckingForOrderContents(playerOrder: List<PlayerColor>): void
         -initializePlayerColorToPlayerMap(playerColors: List<PlayerColor>): void
+
+        ~shufflePlayers(): void
+        -sortPlayersListByDieRoll(): void
+
         ~assignSetupArmiesToPlayers(): boolean
         -checkIfPlayersListIsEmpty(): void
         -handleArmyAssignment(numPlayersInGame: int): void
 
         +checkIfPlayerOwnsTerritory(relevantTerritory: TerritoryType, playerColor: PlayerColor): boolean
-        -getTerritoryFromType(relevantTerritory: TerritoryType)
-
         +placeNewArmiesInTerritory(relevantTerritory: TerritoryType, numArmiesToPlace: int): boolean
-        -handleScramblePhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
-        -checkIfTerritoryIsUnclaimed(relevantTerritory: TerritoryType): void
-        -checkIfNumArmiesToPlaceIsValidForScramblePhase(numArmiesToPlace: int): void
-        -checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace: int): void
-        -updateTerritoryObjectWithValidSetupArguments(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
-        -decreaseNumArmiesCurrentPlayerHasToPlace(0: void
-        -addTerritoryToCurrentPlayerCollection(relevantTerritory: TerritoryType): void
-        -updateCurrentPlayer(): void
-        -checkScramblePhaseEndCondition(): void
-        -calculateNumUnplacedArmiesLeft(): void
+        -checkIfGameIsInValidPhaseForAction(validPhases: Set<GamePhase>, errorMessage: String): void
+        -handleValidPhaseParsing(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
 
         -handleSetupPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
         -checkNumArmiesToPlaceIsValidForSetup(numArmiesToPlace: int): void
         -checkIfCurrentPlayerOwnsTerritory(relevantTerritory: TerritoryType): void
-        -modifyNumArmiesInTerritory(relevantTerritory: TerritoryType, additionalArmies: int): void
-        -modifyNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace: int): void
+        -increaseNumArmiesInTerritory(relevantTerritory: TerritoryType, additionalArmies: int): void
+        -decreaseNumArmiesCurrentPlayerHasToPlace(numArmiesToPlace: int): void
+        -updateCurrentPlayer(): void
         -checkSetupPhaseEndCondition(): void
-        -increaseNumArmiesPlayerHasToPlace(numToIncreaseBy: int): void
 
         ~calculatePlacementPhaseArmiesForCurrentPlayer(): int
         -getTerritoriesCurrentPlayerOwns(): Set<TerritoryType>
         -checkIfPlayerShouldExistOrGameIsOverWithTerritoryCount(numOwnedTerritories: int): void
         -calculateBonusForOwnedContinents(): int
+        -increaseNumArmiesCurrentPlayerHasToPlace(numToIncreaseBy: int): void
+
+        -handleScramblePhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -checkIfTerritoryIsUnclaimed(relevantTerritory: TerritoryType): void
+        -checkIfNumArmiesToPlaceIsValidForScramblePhase(numArmiesToPlace: int): void
+        -checkIfPlayerHasEnoughArmiesToPlace(numArmiesToPlace: int): void
+        -updateTerritoryObjectWithValidScrambleArguments(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
+        -addTerritoryToCurrentPlayerCollection(relevantTerritory: TerritoryType): void
+        -checkScramblePhaseEndCondition(): void
+        -calculateNumUnplacedArmiesLeft(): void
 
         -handlePlacementPhaseArmyPlacement(relevantTerritory: TerritoryType, numArmiesToPlace: int): void
         -checkIfPlayerIsHoldingTooManyCards(): void
         -checkIfNumArmiesToPlaceIsValidForPlacement(numArmiesToPlace: int): void
-        -checkAttackPhaseEndCondition(): void
+        -checkPlacementPhaseEndCondition(): void
 
         +tradeInCards(selectedCardsToTradeIn: Set<Card>): Set<TerritoryType>
-        -checkIfInValidGamePhase(validGamePhases: Set<GamePhase>): void
+        -checkForForcedTradeInForAttackPhase(): void
         -checkIfPlayerOwnsCards(givenCardSet: Set<Card>, currentPlayerObject: Player): void
         -addArmiesToPlayerStockpileIfValidSet(selectedCards: Set<Card>, playerObject: Player): Set<TerritoryType>
         -modifyPlayerObjectAndGamePhaseToAccountForTradeIn(playerObject: Player, numArmiesToReceive: int, selectedCards: Set<Card>): void
 
+        +placeBonusArmies(territory: TerritoryType, possibilities: Set<TerritoryType>): void
+
+        +moveArmiesBetweenFriendlyTerritories(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numArmies: int): void
+        -checkIfTerritoriesAreAdjacent(source: TerritoryType, dest: TerritoryType): void
+        -checkIfPlayerOwnsBothSourceAndDestinationTerritories(source: TerritoryType, dest: TerritoryType): void
+        -handleInputArmyValidation(sourceTerritory: TerritoryType, numArmiesToMove: int): void
+        -checkIfInValidGamePhaseForMovement(): void
+        -checkIfTerritoriesWereRecentlyAttacked(sourceTerritory: TerritoryType, destTerritory: TerritoryType): void
+        -clearRecentlyAttackedTerritories(): void
+        -decreaseNumArmiesInTerritory(territory: TerritoryType, numArmiesLost: int): void
+        -handleFortifyPhaseEndingIfNecessary(): void
+
+        +forceGamePhaseToEnd(): void
+        -handleAttackPhaseEnding(): void
+        -checkIfPlayerHasTooManyCardsAttackPhase(): void
+        -handleFortifyPhaseEnding(): void
+
+        ~claimCardForCurrentPlayerIfPossible(): void
+        -addCardToCurrentPlayersCollection(): void
+
+        +attackTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): int
+        -handleErrorCasesForAttackingTerritory(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int, numDefenders: int): void
+        -checkIfNumAttackersIsValid(numAttackers: int): void
+        -checkIfNumDefendersIsValid(numDefenders: int): void
+        -checkIfGameIsInAttackPhase(): void
+        -checkIfAppropriatePlayersOwnTerritories(source: TerritoryType, dest: TerritoryType): void
+        -checkIfSourceTerritoryHasEnoughArmiesToSupportAttack(sourceTerritory: TerritoryType, numAttackers: int): void
+        -checkIfDestTerritoryHasEnoughArmiesToSupportDefense(destTerritory: TerritoryType, numDefenders: int): void
+
+        -storeRecentlyAttackedTerritories(source: TerritoryType, dest: TerritoryType): void
+        -rollDiceForBattle(numAttackers: int, numDefenders: int): List<BattleResult>
+        -handleArmyLosses(sourceTerritory: TerritoryType, destTerritory: TerritoryType, battleResults: List<BattleResult>): AttackConsequence
+        -handleDefenderLosingTerritoryConsequences(sourceTerritory: TerritoryType, destTerritory: TerritoryType, numAttackers: int): void
+        -handleAttackerTakingTerritory(territory: TerritoryType, numAttackers: int): void
+        -getPlayerInControlOfTerritory(territory: TerritoryType): PlayerColor
+        +handlePlayerLosingGameIfNecessary(potentiallyLosingPlayer: PlayerColor): void
+        -playerOwnsAtLeastOneTerritory(player: PlayerColor): boolean
+        -handlePlayerWinningGameIfNecessary(): void
+
+        +getAttackerDiceRolls(): List<Integer>
+        +getDefenderDiceRolls(): List<Integer>
+        +getBattleResults(): List<BattleResult>
+        +getIfCurrentPlayerCanClaimCard(): boolean
+        +getRecentlyAttackedSource(): TerritoryType
+        +getRecentlyAttackedDest(): TerritoryType
         +getCurrentPlayer(): PlayerColor
         +getCurrentGamePhase(): GamePhase
         +getPlayerOrder(): List<PlayerColor>
         +getDieRolls(): List<Integer>
         +getCurrentPlayerArmiesToPlace(): int
         +getNumberOfArmies(territoryType: TerritoryType): int
+        +getCardsOwnedByPlayer(playerColor: PlayerColor): Set<Card>
 
-        ~provideCurrentPlayerForTurn(currentlyGoingPlayer: PlayerColor): void
+        ~setNumArmiesForPlayer(playerColor: PlayerColor, numArmies: int): void
+        ~setAbilityToClaimCard(): void
         ~setGamePhase(gamePhase: GamePhase): void
         ~setPlayerOrderList(playersList: List<PlayerColor>): void
+        ~setCardsForPlayer(playerColor: PlayerColor, cardsPlayerOwns: Set<Card>): void
+        ~setParser(parser: DieRollParser): void
         ~provideMockedPlayerObjects(mockedPlayers: List<Player>): void
-        ~getNumArmiesByPlayerColor(playerColor: PlayerColor): int
         ~provideMockedTerritoryGraph(mockedGraph: TerritoryGraph): void
+        ~provideMockedPlayersMap(mockedPlayersMap: Map<PlayerColor, Player>): void
+        ~provideMockedTradeInParser(mockedParser: TradeInParser): void
+        ~provideCurrentPlayerForTurn(currentlyGoingPlayer: PlayerColor): void
+        ~provideMockedCardDeck(mockedDeck: RiskCardDeck): void
+        ~provideDieRollParser(dieRollParser: DieRollParser): void
+        ~getNumCardsForPlayer(playerColor: PlayerColor): int
+        ~getPlayerMap(): Map<PlayerColor, Player>
+        ~getNumArmiesByPlayerColor(playerColor: PlayerColor): int
         ~getClaimedTerritoriesForPlayer(playerInQuestion: PlayerColor): Set<TerritoryType>
         ~WorldDominationGameEngine()
-        ~setParser(parser: DieRollParser): void
         ~claimAllTerritoriesForCurrentPlayer(territoriesToClaim: Set<TerritoryType>): void
-        ~provideMockedTradeInParser(mockedParser: TradeInParser): void
-        ~setCardsForPlayer(playerColor: PlayerColor, cardsPlayerOwns: Set<Card>): void
-        ~getNumCardsForPlayer(playerColor: PlayerColor): int
     }
 
     WorldDominationGameEngine --> "*" Player
     WorldDominationGameEngine --> "*" PlayerColor
     WorldDominationGameEngine --> DieRollParser
     WorldDominationGameEngine --> TradeInParser
+    WorldDominationGameEngine --> RiskCardDeck
+    WorldDominationGameEngine --> TerritoryGraph
     WorldDominationGameEngine ..> Continent
     WorldDominationGameEngine ..> Card
+    WorldDominationGameEngine ..> AttackConsequence
+    WorldDominationGameEngine --> GamePhase
+    WorldDominationGameEngine ..> TerritoryType
+    WorldDominationGameEngine ..> PlayerColor
 
     ~class Player {
         -{final} playerColor: PlayerColor
@@ -273,6 +400,8 @@ package domain {
         ~Player()
         ~setOwnedCards(cardsPlayerOwns: Set<Card>): void
         ~getOwnedCards(): Set<Card>
+        ~addCardsToCollection(cardToBeAdded: Set<Card>): void
+        ~removeTerritoryFromCollection(territory: TerritoryType): void
     }
 
     Player --> PlayerColor
@@ -290,10 +419,10 @@ package domain {
         +toString(): String
     }
 
-    WorldDominationGameEngine --> GamePhase
-    WorldDominationGameEngine --> TerritoryGraph
-    WorldDominationGameEngine ..> TerritoryType
-    WorldDominationGameEngine ..> PlayerColor
+    ~enum AttackConsequence {
+        DEFENDER_LOSES_TERRITORY
+        NO_CHANGE
+    }
 
     ~class RiskCardDeck {
         -{static} {final} NUMBER_OF_WILD_CARDS: int
@@ -338,15 +467,13 @@ package domain {
         -buildSetupDie(setupDieUpperBound: int): void
         ~rollAttackerDice(amountOfDiceToRoll: int): List<Integer>
         ~rollDefenderDice(amountOfDiceToRoll: int): List<Integer>
-        -validateRequestedAmountOfDiceToRollIsInRange(requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
+        -validateRequestedAmountOfDiceToRollIsInRange(rolLType: String, requestedAmount: int, minAllowedAmount: int, maxAllowedAmount: int): void
         -rollDiceFromList(amountOfDiceToRoll: int, List<Die> listToUse)
         ~generateBattleResults(defenderRolls: List<Integer>, attackerRolls: List<Integer>): List<BattleResult>
         -validateListsAreNotEmpty(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -validateListsAreSortedProperly(defenderRollsList: List<Integer>, attackerRollsList: List<Integer>): void
         -calculateBattleResult(defenderRoll: Integer, attackerRoll: Integer): BattleResult
         ~validateSortIsInNonIncreasingOrder(toCheck: List<Integer>): boolean
-
-        // {method} the below constructor is for unit testing purposes only!
         ~DieRollParser(randomizer: Random, attackerDice: List<Die>, defenderDice: List<Die>)
     }
 
@@ -376,7 +503,6 @@ package domain {
         ~getContinentBonusIfPlayerHasTerritories(setToPassIn: Set<TerritoryType>): int
     }
 
-
     ~class TradeInParser {
         -{static} {final} TRADE_IN_SET_LENGTH: int
         -{static} {final} MAXIMUM_NUMBER_OF_TRADES: int
@@ -389,6 +515,7 @@ package domain {
 
         ~startTrade(cards: Set<Card>): int
         ~getMatchedTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
+        -checkPlayerTerritories(player: Player, cards: Set<Card>): Set<TerritoryType>
         -checkTradeInState(cards: Set<Card>): void
         -hasOneOfEachType(cards: Set<Card>): boolean
         -hasThreeOfSameType(cards: Set<Card>): boolean
@@ -440,7 +567,11 @@ package domain {
     RiskCardDeck --> "*" Card
 
     +enum TerritoryType {
+        ALASKA
+        ALBERTA
+        CENTRAL_AMERICA
         ...
+        WESTERN_AUSTRALIA
 
         +toString(): String
     }
@@ -448,16 +579,17 @@ package domain {
     ~class TerritoryGraph {
         -territories: Map<TerritoryType, Set<Territory>>
         -territoryTypeToObject: Map<TerritoryType, Territory>
-        ~TerritoryGraph()
 
         ~getTerritory(territoryType: TerritoryType): Territory
         ~findAdjacentTerritories(territoryType: TerritoryType): Set<Territory>
 
         ~addNewTerritory(territory: Territory): boolean
         ~addNewAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+        ~areTerritoriesAdjacent(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
+
         -isValidAdjacency(startingTerritory: TerritoryType, endingTerritory: TerritoryType): boolean
 
-        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<Territory>): boolean
+        ~addSetOfAdjacencies(keyToAddOn: TerritoryType, adjTerritories: Set<TerritoryType>): boolean
         -graphContainsAdjacencies(territoryType: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
         -graphHasAdjacencyMapping(adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): boolean
         -addAdjacenciesToGraph(territory: TerritoryType, adjacencies: Set<TerritoryType>, currentAdjacencies: Set<TerritoryType>): void
@@ -475,7 +607,6 @@ package domain {
         ~Territory(playerToBeInControl: Player, territoryType: TerritoryType)
         ~setPlayerInControl(newPlayer: Player): boolean
         ~setNumArmiesPresent(newAmount: int): boolean
-        ~getPlayerInControl(): Player
         ~getNumArmiesPresent(): int
         ~getTerritoryType(): TerritoryType
         ~isOwnedByPlayer(playerToCheck: PlayerColor): boolean
@@ -561,5 +692,12 @@ presentation.RiskApp ..> datasource.ImageFileLoader
 
 presentation.SceneController --> datasource.FileLoader
 presentation.SceneController ..> datasource.StringsBundleLoader
+
+domain.BattleResult ..> datasource.StringsBundleLoader
+domain.Continent ..> datasource.StringsBundleLoader
+domain.GamePhase ..> datasource.StringsBundleLoader
+domain.PieceType ..> datasource.StringsBundleLoader
+domain.PlayerColor ..> datasource.StringsBundleLoader
+domain.TerritoryType ..> datasource.StringsBundleLoader
 
 @enduml
