@@ -2441,7 +2441,7 @@ Output:
 Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
-- current game phase = ATTACK
+- current game phase = FORTIFY
 - numArmies = -2
 - source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = GREEN]
 - dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = GREEN]
