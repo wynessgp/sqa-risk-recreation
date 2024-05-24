@@ -3089,7 +3089,7 @@ Input: ALASKA, [ALASKA, KAMCHATKA], territory = [ALASKA, numArmiesInTerritory = 
 
 Output: [ALASKA, numArmiesInTerritory = 2]
 ### Test value 3
-Input: ALASKA, [ALASKA, KAMCHATKA, NORTHWEST_TERRITORIES], territory = [ALASKA, numArmiesInTerritory = 0]
+Input: ALASKA, [ALASKA, KAMCHATKA, NORTHWEST_TERRITORY], territory = [ALASKA, numArmiesInTerritory = 0]
 
 Output: [ALASKA, numArmiesInTerritory = 2]
 ### Test value 4
