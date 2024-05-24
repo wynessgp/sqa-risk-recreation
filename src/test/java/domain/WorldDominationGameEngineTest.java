@@ -2416,6 +2416,9 @@ public class WorldDominationGameEngineTest {
 
     private static Stream<Arguments> generateValidInputsForMoveArmiesAttackPhase() {
         return Stream.of(
+                Arguments.of(TerritoryType.YAKUTSK, TerritoryType.IRKUTSK, 2, 0),
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.NEW_GUINEA, 3, 0),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.PERU, 4, 0),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 1),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 2),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 3),
