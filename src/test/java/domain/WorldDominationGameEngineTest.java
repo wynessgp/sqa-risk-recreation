@@ -2797,7 +2797,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
-        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsOwnedByPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer);
     }
@@ -2894,7 +2894,7 @@ public class WorldDominationGameEngineTest {
         unitUnderTest.claimCardForCurrentPlayerIfPossible();
 
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
-        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsForPlayer(currentPlayer));
+        assertEquals(cardsPlayerOwns, unitUnderTest.getCardsOwnedByPlayer(currentPlayer));
 
         EasyMock.verify(mockedPlayer, mockedDeck);
     }
@@ -2932,4 +2932,11 @@ public class WorldDominationGameEngineTest {
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedDest());
     }
 
+    @ParameterizedTest
+    @EnumSource(PlayerColor.class)
+    public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, new Player(player)));
+        assertEquals(Collections.emptySet(), unitUnderTest.getCardsOwnedByPlayer(player));
+    }
 }
