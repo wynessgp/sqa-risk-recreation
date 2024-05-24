@@ -57,7 +57,9 @@ class TradeInLogic {
     private void displayListOfCards() {
         extraArmyTerritories.clear();
         cardSelection.getItems().clear();
-        cardSelection.getCheckModel().clearChecks();
+        if (cardSelection.getCheckModel() != null) {
+            cardSelection.getCheckModel().clearChecks();
+        }
         gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).forEach(this::createDisplayCard);
         setupDialogButtons();
         tradeInDialog.toggleDisplay();
@@ -65,7 +67,7 @@ class TradeInLogic {
 
     private void createDisplayCard(Card card) {
         if (card.isWild()) {
-            cardSelection.getItems().add("Wild card");
+            cardSelection.getItems().add(SceneController.getString("gameMapScreen.wildCard", null));
         } else {
             TerritoryType territoryType = getTerritoryType(card);
             PieceType pieceType = getPieceType(card);
@@ -99,7 +101,7 @@ class TradeInLogic {
     }
 
     private Card getCardFromString(String cardString) {
-        if (cardString.contains("Wild")) {
+        if (!cardString.contains("(")) {
             return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(Card::isWild)
                     .collect(Collectors.toList()).get(0);
         }
