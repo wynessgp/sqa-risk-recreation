@@ -2933,7 +2933,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
-    @EnumSource(PlayerColor.class)
+    @MethodSource("generateAllPlayerColorsMinusSetup")
     public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideMockedPlayersMap(Map.of(player, new Player(player)));
