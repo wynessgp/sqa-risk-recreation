@@ -572,6 +572,8 @@ With all of that being said, there's still more things that we care about as a r
   - The results of rolling the attack dice
   - The results of rolling the defense dice
   - The results of each "die" comparison; i.e. if a defender won one roll, attacker the other, etc.
+- Once I do an attack, the game should store where I attacked from and where I attacked to
+  - That way if I win the attack, I can split my attacking armies between the two later on.
 
 ## BVA Step 2
 Input:
@@ -599,6 +601,7 @@ Output:
 - Ability to claim a card this turn: Boolean
   - true if and only if you successfully take a territory during the attack phase
 - Attacker dice results, defender dice results, battle results: Collection
+- Recently attacked source/dest: Cases
 
 ## BVA Step 3
 Input:
@@ -671,6 +674,8 @@ Output:
   - Attacker rolls can have a maximum size of 3 (should match numAttackers)
   - Defender, battle results have a maximum size of 2 (should match numDefenders)
   - These lists are sorted in non-increasing order; to make it easier to visualize the results for players.
+- Recently attacked source/dest (Cases):
+  - Should always match the respective input source and destination territory, given we didn't error.
 
 ## BVA Step 4
 Here are the things we want to consider:
@@ -705,6 +710,8 @@ If a player attacks a territory, and they **DO** take over the territory
 - If this is the last territory they need to win the game, the game should be over!
 - If this is the last territory another player was holding on to, they should lose the game.
   - The attacking player takes their cards.
+Regardless if they take over the territory or not
+- Store the recently attacked source and destination
 
 ### Test 1:
 Given that the current player is PURPLE
@@ -851,6 +858,10 @@ And the destination territory should **NOT** be controlled by Purple
 
 And PURPLE should not be allowed to claim a card yet
 
+And the attacked SOURCE should line up with the source territory
+
+And the attacked DESTINATION should line up with the destination territory
+
 ### Test 10:
 Given that the current player is PURPLE
 
@@ -873,6 +884,10 @@ And the destination territory **SHOULD** be controlled by Purple
 And PURPLE **SHOULD** be allowed to claim a card at the end of their turn
 
 And PURPLE **SHOULD** be allowed to split the attacking force if they choose
+
+And the attacked SOURCE should line up with the source territory
+
+And the attacked DESTINATION should line up with the destination territory
 
 ### Test 11:
 Given that the current player is PURPLE
@@ -913,6 +928,10 @@ And the attack ends with PURPLE taking over the territory
 Then YELLOW should LOSE the game
 
 And PURPLE should get any Risk cards that YELLOW owned
+
+And the attacked SOURCE should line up with the source territory
+
+And the attacked DESTINATION should line up with the destination territory
 
 # method: `moveArmiesBetweenFriendlyTerritories(srcTerritory: TerritoryType, destTerritory: TerritoryType, numArmies: int): void`
 
