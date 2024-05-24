@@ -2972,4 +2972,30 @@ public class WorldDominationGameEngineTest {
         assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
         EasyMock.verify(mockedPlayer);
     }
+
+    private Set<Card> generateSetOfAllCards() {
+        Set<Card> allCards = new HashSet<>();
+        int pieceTypeIndex = 0;
+        for (TerritoryType territoryType : TerritoryType.values()) {
+            allCards.add(new TerritoryCard(territoryType,
+                    PieceType.values()[pieceTypeIndex++ % PieceType.values().length]));
+        }
+        allCards.add(new WildCard());
+        allCards.add(new WildCard());
+        return allCards;
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test83_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = generateSetOfAllCards();
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
 }
