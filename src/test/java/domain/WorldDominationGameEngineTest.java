@@ -2581,7 +2581,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPhasesMinusAttackAndFortify")
-    public void test69_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
+    public void test71_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(invalidGamePhase);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
@@ -2595,7 +2595,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {6, 7, 8, 9, Integer.MAX_VALUE})
-    public void test73_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
+    public void test72_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
             int numCardsPlayerHolds) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2622,7 +2622,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test70_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
+    public void test73_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
             PlayerColor currentPlayer) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2655,7 +2655,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test71_forceGamePhaseToEnd_attackPhase_validInput_expectAbilityToClaimCardToRemainTheSame(
+    public void test74_forceGamePhaseToEnd_attackPhase_validInput_expectAbilityToClaimCardToRemainTheSame(
             PlayerColor currentPlayer) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2690,7 +2690,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test72_forceGamePhaseToEnd_fortifyPhase_expectNextPlayerGetsArmies(
+    public void test75_forceGamePhaseToEnd_fortifyPhase_expectNextPlayerGetsArmies(
             List<PlayerColor> playerOrder) {
         Player mockedNextPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2743,7 +2743,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidPlayerListsSizesThreeThroughSix")
-    public void test73_forceGamePhaseToEnd_fortifyPhase_expectOriginalPlayerGetsCard(List<PlayerColor> playerOrder) {
+    public void test76_forceGamePhaseToEnd_fortifyPhase_expectOriginalPlayerGetsCard(List<PlayerColor> playerOrder) {
         Player mockedNextPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
                 .withArgs(playerOrder.get(0))
@@ -2825,7 +2825,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
-    public void test74_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
+    public void test77_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2886,7 +2886,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw")
-    public void test75_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
+    public void test78_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns, Card cardToDraw) {
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
@@ -2918,7 +2918,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
-    public void test76_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
+    public void test79_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
@@ -2953,7 +2953,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateIllegalPhasesForPlaceNewArmiesInTerritory")
-    public void test77_placeNewArmiesInTerritory_illegalPhase_expectException(
+    public void test80_placeNewArmiesInTerritory_illegalPhase_expectException(
             GamePhase phaseToPutGameIn) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(phaseToPutGameIn);
@@ -2967,14 +2967,14 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test78_getRecentlyAttackedSource_setValueAndExpectSameValue() {
+    public void test81_getRecentlyAttackedSource_setValueAndExpectSameValue() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setRecentlyAttackedSource(TerritoryType.ALASKA);
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedSource());
     }
 
     @Test
-    public void test79_getRecentlyAttackedDest_setValueAndExpectSameValue() {
+    public void test82_getRecentlyAttackedDest_setValueAndExpectSameValue() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedDest());
@@ -2982,7 +2982,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
+    public void test83_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -2992,7 +2992,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test81_getCardsOwnedByPlayer_withOneCard_returnsSingletonSet(PlayerColor player) {
+    public void test84_getCardsOwnedByPlayer_withOneCard_returnsSingletonSet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         for (PieceType pieceType : PieceType.values()) {
             for (TerritoryType territoryType : TerritoryType.values()) {
@@ -3010,7 +3010,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test82_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
+    public void test85_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -3037,7 +3037,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test83_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
+    public void test86_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -3051,7 +3051,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test84_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
+    public void test87_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -3064,7 +3064,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test85_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
+    public void test88_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
         String expectedMessage = "Invalid player color";
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
