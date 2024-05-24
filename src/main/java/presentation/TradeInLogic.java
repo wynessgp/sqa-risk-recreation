@@ -6,6 +6,7 @@ import domain.PieceType;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -13,6 +14,8 @@ import javafx.scene.control.ButtonType;
 import org.controlsfx.control.CheckComboBox;
 
 class TradeInLogic {
+    private static final int TRADE_IN_COUNT = 3;
+
     private final Dialog tradeInDialog;
     private final WorldDominationGameEngine gameEngine;
     private final CheckComboBox<String> cardSelection;
@@ -28,8 +31,8 @@ class TradeInLogic {
     }
 
     void displayIfEnoughCards() {
-        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() < 3
-                || !shouldForceInAttackPhase()) {
+        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() < TRADE_IN_COUNT
+                || shouldForceInAttackPhase()) {
             return;
         }
         hideCancelButtonOnForced();
@@ -38,11 +41,11 @@ class TradeInLogic {
 
     private boolean shouldForceInAttackPhase() {
         return gameEngine.getCurrentGamePhase() == GamePhase.ATTACK
-                && gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() > 4;
+                && gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() <= TRADE_IN_COUNT + 1;
     }
 
     private void hideCancelButtonOnForced() {
-        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() > 4) {
+        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() > TRADE_IN_COUNT + 1) {
             tradeInDialog.hideButton(ButtonType.CANCEL);
         } else {
             tradeInDialog.showButton(ButtonType.CANCEL);
@@ -82,8 +85,8 @@ class TradeInLogic {
     public boolean tradeIn() {
         try {
             tradeInDialog.toggleDisplay();
-            gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
-                    .map(this::getCardFromString).collect(Collectors.toSet()));
+            placeAdditionalArmies(gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
+                    .map(this::getCardFromString).collect(Collectors.toSet())));
         } catch (Exception exception) {
             return false;
         }
@@ -99,5 +102,11 @@ class TradeInLogic {
                 .collect(Collectors.toList()).get(0);
         return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(c ->
                 c.matchesTerritory(territoryType) && c.matchesPieceType(pieceType)).collect(Collectors.toList()).get(0);
+    }
+
+    private void placeAdditionalArmies(Set<TerritoryType> matches) {
+        for (TerritoryType territory : matches) {
+            System.out.println("Can place armies on " + territory);
+        }
     }
 }
