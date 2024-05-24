@@ -14,6 +14,7 @@ public class AttackLogic {
     private boolean sourceSelected = false;
     private boolean attackArmiesSet = false;
     private boolean ownerSelected = false;
+    private boolean attackComplete = false;
 
     AttackLogic(WorldDominationGameEngine gameEngine) {
         this.gameEngine = gameEngine;
@@ -22,6 +23,7 @@ public class AttackLogic {
     AttackResult performAttack() {
         try {
             gameEngine.attackTerritory(sourceTerritory, targetTerritory, attackArmies, defendArmies);
+            attackComplete = true;
             return AttackResult.SUCCESS;
         } catch (Exception e) {
             return AttackResult.parseError(e.getMessage());
@@ -37,6 +39,7 @@ public class AttackLogic {
     }
 
     boolean setSourceTerritory(TerritoryType territory) {
+        attackComplete = false;
         if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
             sourceTerritory = territory;
             sourceSelected = true;
@@ -91,5 +94,9 @@ public class AttackLogic {
 
     TerritoryType getTargetTerritory() {
         return targetTerritory;
+    }
+
+    boolean isAttackComplete() {
+        return attackComplete;
     }
 }

@@ -176,14 +176,26 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void attackPhaseLogic(int value) {
-        if (!attackLogic.sourceArmiesSelected()) {
+        if (attackLogic.isAttackComplete()) {
+            transferArmiesAttackPhase(value);
+        } else if (!attackLogic.sourceArmiesSelected()) {
             attackLogic.setAttackArmies(value);
             getArmiesForDefense();
         } else {
-            attackLogic.setDefendArmies(value);
-            handleAttackErrors(attackLogic.performAttack());
-            updateStateLabels();
+            performAttack(value);
         }
+    }
+
+    private void transferArmiesAttackPhase(int value) {
+        gameEngine.moveArmiesBetweenFriendlyTerritories(attackLogic.getSourceTerritory(),
+                attackLogic.getTargetTerritory(), value);
+        updateStateLabels();
+    }
+
+    private void performAttack(int value) {
+        attackLogic.setDefendArmies(value);
+        handleAttackErrors(attackLogic.performAttack());
+        updateStateLabels();
     }
 
     private void handleAttackErrors(AttackResult result) {
