@@ -98,13 +98,19 @@ public class GameMapScreenController implements GameScene {
 
     private void tradeIn() {
         if (!tradeInLogic.tradeIn()) {
+            tradeInErrorAction();
             showErrorMessage("gameMapScreen.tradeInError");
         } else {
-            errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event ->
-                    tradeInLogic.displayIfEnoughCards());
             handleExtraArmies();
         }
         updateStateLabels();
+    }
+
+    private void tradeInErrorAction() {
+        errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+            tradeInLogic.displayIfEnoughCards();
+            errorDialogController.toggleDisplay();
+        });
     }
 
     private void handleExtraArmies() {
