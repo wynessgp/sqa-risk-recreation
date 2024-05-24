@@ -653,7 +653,7 @@ public final class WorldDominationGameEngine {
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmies) {
         checkIfTerritoriesAreAdjacent(sourceTerritory, destTerritory);
         checkIfPlayerOwnsBothSourceAndDestinationTerritories(sourceTerritory, destTerritory);
-        checkIfEnoughArmiesInSource(sourceTerritory, numArmies);
+        handleInputArmyValidation(sourceTerritory, numArmies);
         checkIfInValidGamePhaseForMovement();
         checkIfTerritoriesWereRecentlyAttacked(sourceTerritory, destTerritory);
         decreaseNumArmiesInTerritory(sourceTerritory, numArmies);
@@ -670,7 +670,10 @@ public final class WorldDominationGameEngine {
         }
     }
 
-    private void checkIfEnoughArmiesInSource(TerritoryType sourceTerritory, int numArmiesToMove) {
+    private void handleInputArmyValidation(TerritoryType sourceTerritory, int numArmiesToMove) {
+        if (numArmiesToMove < 0) {
+            throw new IllegalArgumentException("Cannot move a negative number of armies between territories");
+        }
         int numArmiesInSource = getNumberOfArmies(sourceTerritory);
         if (numArmiesToMove >= numArmiesInSource) {
             throw new IllegalArgumentException(

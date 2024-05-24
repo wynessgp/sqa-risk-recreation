@@ -2532,6 +2532,40 @@ public class WorldDominationGameEngineTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
+    public void test69_moveArmiesBetweenFriendlyTerritories_attackPhase_negativeArmyInput_expectException(
+            int illegalNumArmies) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(TerritoryType.ALASKA, TerritoryType.KAMCHATKA))
+                .andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedSource);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.KAMCHATKA)).andReturn(mockedSource);
+        EasyMock.replay(mockedGraph, mockedSource, mockedDest);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(GamePhase.ATTACK);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(
+                        TerritoryType.ALASKA, TerritoryType.KAMCHATKA, illegalNumArmies));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot move a negative number of armies between territories";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph, mockedSource, mockedDest);
+    }
+
+    @ParameterizedTest
     @MethodSource("generateAllPhasesMinusAttackAndFortify")
     public void test69_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
