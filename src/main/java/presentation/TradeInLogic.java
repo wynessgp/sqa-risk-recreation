@@ -83,7 +83,6 @@ class TradeInLogic {
             tradeInDialog.toggleDisplay();
             gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
                     .map(this::getCardFromString).collect(Collectors.toSet()));
-            System.out.println("Trade in successful");
         } catch (Exception exception) {
             return false;
         }
@@ -93,8 +92,11 @@ class TradeInLogic {
     private Card getCardFromString(String cardString) {
         String territory = cardString.substring(0, cardString.indexOf('(') - 1);
         String piece = cardString.substring(cardString.indexOf('(') + 1, cardString.indexOf(')'));
-        TerritoryType territoryType = Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory)).collect(Collectors.toList()).get(0);
-        PieceType pieceType = Arrays.stream(PieceType.values()).filter(p -> p.toString().equals(piece)).collect(Collectors.toList()).get(0);
-        return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(c -> c.matchesTerritory(territoryType) && c.matchesPieceType(pieceType)).collect(Collectors.toList()).get(0);
+        TerritoryType territoryType = Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory))
+                .collect(Collectors.toList()).get(0);
+        PieceType pieceType = Arrays.stream(PieceType.values()).filter(p -> p.toString().equals(piece))
+                .collect(Collectors.toList()).get(0);
+        return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(c ->
+                c.matchesTerritory(territoryType) && c.matchesPieceType(pieceType)).collect(Collectors.toList()).get(0);
     }
 }
