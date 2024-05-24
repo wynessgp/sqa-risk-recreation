@@ -1032,6 +1032,9 @@ public final class WorldDominationGameEngine {
     }
 
     public Set<Card> getCardsOwnedByPlayer(PlayerColor playerColor) {
+        if (playerColor == PlayerColor.SETUP) {
+            throw new IllegalArgumentException("Invalid player color");
+        }
         return playersMap.get(playerColor).getOwnedCards();
     }
 

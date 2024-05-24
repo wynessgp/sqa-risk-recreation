@@ -3012,4 +3012,18 @@ public class WorldDominationGameEngineTest {
         assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
         EasyMock.verify(mockedPlayer);
     }
+
+    @Test
+    public void test85_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
+        String expectedMessage = "Invalid player color";
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(PlayerColor.SETUP).createMock();
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(PlayerColor.SETUP, mockedPlayer));
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                unitUnderTest.getCardsOwnedByPlayer(PlayerColor.SETUP));
+        assertEquals(expectedMessage, exception.getMessage());
+        EasyMock.verify(mockedPlayer);
+    }
 }
