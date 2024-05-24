@@ -207,7 +207,7 @@ public class GameMapScreenController implements GameScene {
 
     @SuppressWarnings("unchecked")
     private void setupExtraArmiesDialog() {
-        extraArmiesDialogController.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
+        extraArmiesDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogApply", event -> {
             gameEngine.placeBonusArmies(TerritoryType.valueOf(((ChoiceBox<String>) extraArmiesDialog.getContent())
                     .getValue()), tradeInLogic.getExtraArmyTerritories());
             extraArmiesDialogController.toggleDisplay();
