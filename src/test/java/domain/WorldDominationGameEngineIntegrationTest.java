@@ -1151,6 +1151,8 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(numAttackersInSourceAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numAttackers, unitUnderTest.getNumberOfArmies(dest));
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
         assertTrue(unitUnderTest.getIfCurrentPlayerCanClaimCard());
 
         EasyMock.verify(mockedParser);
