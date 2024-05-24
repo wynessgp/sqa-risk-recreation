@@ -2944,6 +2944,7 @@ Output:
 - Set containing all 44 cards
 - Set containing both wild cards
 - Set containing 2 of the same territory cards (not possible)
+- IllegalArgumentException
 
 ## BVA Step 4
 ### Test value 1
@@ -2971,3 +2972,7 @@ Input: BLACK, [BLACK, ownedCards = { WILD, WILD }]
 
 Output: { WILD, WILD }
 #### Repeat for each PlayerColor
+### Test value 6
+Input: SETUP, underlined object does not matter
+
+Output: IllegalArgumentException "Invalid player color"
