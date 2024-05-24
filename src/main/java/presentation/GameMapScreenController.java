@@ -8,11 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -34,6 +35,8 @@ public class GameMapScreenController implements GameScene {
     private DialogPane generalMessageDialog;
     @FXML
     private DialogPane tradeInDialog;
+    @FXML
+    private DialogPane extraArmiesDialog;
     @FXML
     private AnchorPane dialogBackground;
     @FXML
@@ -68,6 +71,7 @@ public class GameMapScreenController implements GameScene {
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
     private Dialog generalMessageDialogController;
+    private Dialog extraArmiesDialogController;
     private boolean placementStarted;
 
     @FXML
@@ -88,6 +92,7 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
+        extraArmiesDialogController = new Dialog(extraArmiesDialog, dialogBackground);
         tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground), gameEngine, event -> tradeIn());
     }
 
@@ -105,8 +110,17 @@ public class GameMapScreenController implements GameScene {
         if (extraArmies.size() == 1) {
             gameEngine.placeBonusArmies(extraArmies.iterator().next(), extraArmies);
         } else if (extraArmies.size() > 1) {
-            // prompt player
+            displayExtraArmiesChoice(extraArmies);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void displayExtraArmiesChoice(Set<TerritoryType> extraArmies) {
+        ChoiceBox<String> territoryChoices = (ChoiceBox<String>) extraArmiesDialog.getContent();
+        territoryChoices.getItems().clear();
+        territoryChoices.getItems().addAll(extraArmies.stream().map(TerritoryType::toString)
+                .collect(Collectors.toSet()));
+        extraArmiesDialogController.toggleDisplay();
     }
 
     private void setupDialogButtons() {
@@ -115,6 +129,7 @@ public class GameMapScreenController implements GameScene {
         setupArmyPlacementDialog();
         setupAttackResultsDialog();
         setupGeneralMessageDialog();
+        setupExtraArmiesDialog();
     }
 
     private void setupSkipButton() {
@@ -188,6 +203,16 @@ public class GameMapScreenController implements GameScene {
     private void setupGeneralMessageDialog() {
         generalMessageDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogOk", event ->
                 generalMessageDialogController.toggleDisplay());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setupExtraArmiesDialog() {
+        extraArmiesDialogController.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
+            gameEngine.placeBonusArmies(TerritoryType.valueOf(((ChoiceBox<String>) extraArmiesDialog.getContent())
+                    .getValue()), tradeInLogic.getExtraArmyTerritories());
+            extraArmiesDialogController.toggleDisplay();
+            updateStateLabels();
+        });
     }
 
     private void handleSelectionDialogAction(int value) {

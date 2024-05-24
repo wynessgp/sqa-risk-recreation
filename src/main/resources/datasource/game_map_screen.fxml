@@ -628,4 +628,10 @@
          <CheckComboBox prefHeight="25.0" />
       </content>
    </DialogPane>
+   <DialogPane fx:id="extraArmiesDialog" expanded="true" headerText="%gameMapScreen.extraArmiesDialog" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+      <content>
+         <ChoiceBox prefHeight="25.0"/>
+      </content>
+      <ButtonType fx:constant="OK"/>
+   </DialogPane>
 </AnchorPane>
