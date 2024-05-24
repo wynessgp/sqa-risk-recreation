@@ -2998,4 +2998,18 @@ public class WorldDominationGameEngineTest {
         assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
         EasyMock.verify(mockedPlayer);
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test84_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = Set.of(new WildCard(), new WildCard());
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
 }
