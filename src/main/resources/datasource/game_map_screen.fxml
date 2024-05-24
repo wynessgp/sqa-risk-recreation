@@ -597,7 +597,7 @@
       <ButtonType fx:constant="YES" />
       <ButtonType fx:constant="NO" />
    </DialogPane>
-   <DialogPane fx:id="territoryErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true" headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+   <DialogPane fx:id="territoryErrorDialog" contentText="%gameMapScreen.wrongTerritoryMessage" expanded="true" headerText="%gameMapScreen.wrongTerritory" layoutX="311.0" layoutY="266.0" prefHeight="130.0" prefWidth="360.0" styleClass="dialog" visible="false">
       <ButtonType fx:constant="CLOSE" />
    </DialogPane>
    <DialogPane fx:id="armyPlacementSelectionDialog" expanded="true" headerText="%gameMapScreen.armyPlacementSelection" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
@@ -611,9 +611,9 @@
       <ButtonType fx:constant="OK" />
       <content>
          <Pane prefHeight="65.0" prefWidth="360.0">
-            <Label fx:id="attackerRollsLabel" layoutX="14.0" layoutY="5.0" text="%gameMapScreen.attackerRolls"/>
-            <Label fx:id="defenderRollsLabel" layoutX="14.0" layoutY="22.0" text="%gameMapScreen.defenderRolls"/>
-            <Label fx:id="attackResultsLabel" layoutX="14.0" layoutY="39.0" text="%gameMapScreen.attackResults"/>
+            <Label fx:id="attackerRollsLabel" layoutX="14.0" layoutY="5.0" text="%gameMapScreen.attackerRolls" />
+            <Label fx:id="defenderRollsLabel" layoutX="14.0" layoutY="22.0" text="%gameMapScreen.defenderRolls" />
+            <Label fx:id="attackResultsLabel" layoutX="14.0" layoutY="39.0" text="%gameMapScreen.attackResults" />
          </Pane>
       </content>
    </DialogPane>
