@@ -154,7 +154,10 @@ public class GameMapScreenController implements GameScene {
 
     private void promptForAdditionalArmyTransfer() {
         resetSelectionDialog(0);
-        selectionDialogController.setTitleText("gameMapScreen.additionalArmyTransfer", null);
+        selectionDialogController.setTitleText("gameMapScreen.additionalArmyTransfer", new Object[]{
+                gameEngine.getCurrentPlayer(), gameEngine.getNumberOfArmies(attackLogic.getSourceTerritory()) - 1,
+                attackLogic.getTargetTerritory()});
+        selectionDialogController.toggleDisplay();
     }
 
     private void setupGeneralMessageDialog() {
