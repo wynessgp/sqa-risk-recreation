@@ -11,7 +11,9 @@ public class AttackLogic {
     private int attackArmies = 0;
     private int defendArmies = 0;
     private PlayerColor targetOwner;
+    private boolean sourceSelected = false;
     private boolean attackArmiesSet = false;
+    private boolean ownerSelected = false;
 
     AttackLogic(WorldDominationGameEngine gameEngine) {
         this.gameEngine = gameEngine;
@@ -26,8 +28,8 @@ public class AttackLogic {
         }
     }
 
-    boolean sourceSelected() {
-        return sourceTerritory != null;
+    boolean isSourceSelected() {
+        return sourceSelected;
     }
 
     boolean sourceArmiesSelected() {
@@ -37,6 +39,7 @@ public class AttackLogic {
     boolean setSourceTerritory(TerritoryType territory) {
         if (gameEngine.checkIfPlayerOwnsTerritory(territory, gameEngine.getCurrentPlayer())) {
             sourceTerritory = territory;
+            sourceSelected = true;
             return true;
         }
         return false;
@@ -60,21 +63,20 @@ public class AttackLogic {
     }
 
     void reset() {
-        sourceTerritory = null;
-        targetTerritory = null;
         attackArmies = 0;
         defendArmies = 0;
-        targetOwner = null;
         attackArmiesSet = false;
+        sourceSelected = false;
+        ownerSelected = false;
     }
 
     PlayerColor getTargetOwner() {
-        if (targetOwner == null) {
-            for (PlayerColor color : gameEngine.getPlayerOrder()) {
-                if (gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, color)) {
-                    targetOwner = color;
-                }
-            }
+        if (!ownerSelected) {
+            gameEngine.getPlayerOrder().stream().filter(color -> gameEngine
+                    .checkIfPlayerOwnsTerritory(targetTerritory, color)).findFirst().ifPresent(color -> {
+                        targetOwner = color;
+                        ownerSelected = true;
+                    });
         }
         return targetOwner;
     }
