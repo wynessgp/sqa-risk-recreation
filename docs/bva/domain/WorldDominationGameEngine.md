@@ -2141,8 +2141,9 @@ Input:
   - YAKUTSK
   - The 0th, 43rd possibilities (can't set, Java enum)
 - numArmies (Interval):
-  - \<= 0 (error case)
-  - Anything in [1, num armies present in territory - 1] 
+  - \<= -1 (error case)
+  - Anything in [0, num armies present in territory - 1] 
+    - 0 
     - 1
     - num armies present in territory - 1
   - \>= num armies present in territory (error case)
@@ -2477,6 +2478,25 @@ Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
 - current game phase = ATTACK
+- numArmies = 0
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ALASKA
+- recently attacked dest = KAMCHATKA
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- current game phase = ATTACK
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = PURPLE
+
+### Test 19:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = ATTACK
 - numArmies = 2
 - source territory pointer = [ALASKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
@@ -2491,7 +2511,7 @@ Output:
 - recently attacked source, destination = NULL (only time we'll use this!)
 - currently going player = PURPLE
 
-### Test 19:
+### Test 20:
 Input:
 - srcTerritory = ALASKA
 - destTerritory = KAMCHATKA
@@ -2506,6 +2526,26 @@ Input:
 Output:
 - source territory pointer = [ALASKA, numArmiesInTerritory = 1, ownedBy = PURPLE]
 - dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 4, ownedBy = PURPLE]
+- current game phase = PLACEMENT
+- recently attacked source, destination = NULL (only time we'll use this!)
+- currently going player = GREEN
+  - imagine that player order was [PURPLE, GREEN, ...]
+
+### Test 21:
+Input:
+- srcTerritory = ALASKA
+- destTerritory = KAMCHATKA
+- current game phase = FORTIFY
+- numArmies = 0
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
+- recently attacked source = ANY (likely null)
+- recently attacked dest = ANY (likely null)
+- currently going player = PURPLE
+
+Output:
+- source territory pointer = [ALASKA, numArmiesInTerritory = 2, ownedBy = PURPLE]
+- dest territory pointer = [KAMCHATKA, numArmiesInTerritory = 3, ownedBy = PURPLE]
 - current game phase = PLACEMENT
 - recently attacked source, destination = NULL (only time we'll use this!)
 - currently going player = GREEN
