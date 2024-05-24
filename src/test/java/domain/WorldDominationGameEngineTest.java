@@ -3086,4 +3086,13 @@ public class WorldDominationGameEngineTest {
 
         assertEquals(2, unitUnderTest.getNumberOfArmies(territory));
     }
+
+    @Test
+    public void test90_placeBonusArmies_withTwoInSet_returnsUpdatedObject() {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+        unitUnderTest.placeBonusArmies(TerritoryType.ALASKA, Set.of(TerritoryType.ALASKA, TerritoryType.KAMCHATKA));
+
+        assertEquals(2, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
+    }
 }
