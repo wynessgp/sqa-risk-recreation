@@ -1048,6 +1048,9 @@ public final class WorldDominationGameEngine {
     }
 
     public void placeBonusArmies(TerritoryType territory, Set<TerritoryType> possibilities) {
+        if (!possibilities.contains(territory)) {
+            throw new IllegalArgumentException("Cannot place armies in this territory");
+        }
         increaseNumArmiesInTerritory(territory, 2);
     }
 

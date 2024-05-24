@@ -3105,4 +3105,16 @@ public class WorldDominationGameEngineTest {
 
         assertEquals(2, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
     }
+
+    @Test
+    public void test92_placeBonusArmies_withEmptySet_throwsException() {
+        String expectedMessage = "Cannot place armies in this territory";
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                unitUnderTest.placeBonusArmies(TerritoryType.ALASKA, Collections.emptySet()));
+        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(0, unitUnderTest.getNumberOfArmies(TerritoryType.ALASKA));
+    }
 }
