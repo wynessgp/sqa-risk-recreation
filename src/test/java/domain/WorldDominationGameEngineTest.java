@@ -2957,4 +2957,19 @@ public class WorldDominationGameEngineTest {
             }
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("generateAllPlayerColorsMinusSetup")
+    public void test82_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
+                .withArgs(player).createMock();
+        Set<Card> cards = Set.of(new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY),
+                new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY));
+        mockedPlayer.setOwnedCards(cards);
+        EasyMock.replay(mockedPlayer);
+        unitUnderTest.provideMockedPlayersMap(Map.of(player, mockedPlayer));
+        assertEquals(cards, unitUnderTest.getCardsOwnedByPlayer(player));
+        EasyMock.verify(mockedPlayer);
+    }
 }

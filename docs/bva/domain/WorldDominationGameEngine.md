@@ -2961,7 +2961,7 @@ Output: { [ALASKA, INFANTRY] }
 Input: BLACK, [BLACK, ownedCards = { [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] }]
 
 Output: { [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] }
-#### Repeat for each PlayerColor and each card
+#### Repeat for each PlayerColor
 ### Test value 4
 Input: BLACK, [BLACK, ownedCards = { all 44 cards }]
 
