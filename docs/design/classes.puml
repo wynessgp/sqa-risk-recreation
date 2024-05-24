@@ -10,6 +10,7 @@ package presentation {
         -loadUniversalFiles(): void
         -initializeScreen(root: Parent, stage: Stage): void
         -addCssFileToScene(cssFileString: String, sceneInQuestion: Scene): Scene
+        -addKeyListenerToScene(scene: Scene): Scene
         -performStageSetup(stage: Stage): void
         +{static} main(args: String[]): void
     }
@@ -19,6 +20,7 @@ package presentation {
         PLAYER_SELECT
         SHUFFLE
         GAME_OVER
+        WIN
 
         -{final} sceneName: String
         ~SceneType(sceneName: String)
@@ -27,29 +29,94 @@ package presentation {
 
     +class GameMapScreenController {
         -claimTerritoryDialog: DialogPane
-        -placeArmiesErrorDialog: DialogPane
+        -territoryErrorDialog: DialogPane
+        -armyPlacementSelectionDialog: DialogPane
+        -attackResultsDialog: DialogPane
+        -generalMessageDialog: DialogPane
         -dialogBackground: AnchorPane
         -armiesToPlacePane: AnchorPane
         -currentPlayerColor: Label
         -currentPhase: Label
         -instructionLabel: Label
         -armiesToPlace: Label
+        -attackerRollsLabel: Label
+        -defenderRollsLabel: Label
+        -attackResultsLabel: Label
+        -attackFortifySkipButton: Button
+        -armyCountSpinner: Spinner<Integer>
         -gameEngine: WorldDominationGameEngine
         -selectedTerritory: TerritoryType
         -selectedButton: Button
         -territoryButtonMap: Map<Button, TerritoryType>
+        -attackLogic: AttackLogic
+        -fortifyLogic: FortifyLogic
+        -errorDialogController: Dialog
+        -confirmDialogController: Dialog
+        -selectDialogController: Dialog
+        -attackResultsDialogController: Dialog
+        -generalMessageDialogController: Dialog
 
         -initialize(): void
+        -setupDialogControllers(): void
+        -setupDialogButtons(): void
+        -setupSkipButton(): void
+        -handleAttackButtonClick(): void
+        -handleFortifyButtonClick(): void
+        -setupClaimTerritoryDialog(): void
+        -setupErrorDialog(): void
+        -setupArmyPlacementDialog(): void
+        -setupAttackResultsDialog(): void
+        -promptForAdditionalArmyTransfer(): void
+        -setupGeneralMessageDialog(): void
+        -handleSelectionDialogAction(value: int): void
+        -attackPhaseLogic(value: int): void
+        -transferArmiesAttackPhase(value: int): void
+        -handleArmyTransfer(result: FortifyResult): void
+        -performAttack(value: int): void
+        -handleAttackErrors(result: AttackResult): void
+        -displayResults(): void
+        -displayAttackerResults(): void
+        -displayDefenderResults(): void
+        -displayAttackResults(): void
+        -checkForLoss(): void
+        -checkForWin(): void
+        -fortifyPhaseLogic(value: int): void
         -updateStateLabels(): void
-        -gamePhaseActions(): void
+        -gamePhaseActions(currentPhase: GamePhase): void
+        -handleScramblePhaseInstructions(): void
+        -handleSetupPhaseInstructions(): void
+        -handlePlacementPhaseInstructions(): void
+        -handleAttackPhaseInstructions(sourceSelected: boolean): void
+        -handleFortifyPhaseInstructions(sourceSelected: boolean): void
         -enablePlacement(): void
+        -getTerritoryOwner(territory: TerritoryType): PlayerColor
         -handleClaimTerritory(): void
-        -setButtonBackgroundColor(): void
-        -toggleDialog(dialog: DialogPane): void
+        -setButtonBackgroundColor(player: PlayerColor, button: Button): void
         -handleTerritoryButtonClick(event: ActionEvent): void
-        -handleGamePhaseAction(): void
-        -handlePlaceArmies(): void
+        -handleGamePhaseAction(currentPhase: GamePhase): void
+        -handlePlacementAttackFortifyPhases(currentPhase: GamePhase): void
+        -handlePlaceArmies(armies: int): void
+        -selectPlacementErrorMessage(message: String): void
+        -showErrorMessage(key: String): void
+        -handlePlacement(): void
+        -handleAttack(): void
+        -handleFortify(): void
+        -handleFortifyAction(): void
+        -resetSelectionDialog(startingValue: int): void
+        -handleTargetTerritorySelection(): void
+        -getArmiesForAttack(): void
+        -getArmiesForDefense(): void
+        -updateTerritoryErrorDialog(error: String): void
+        -onKeyPress(event: KeyEvent): void
     }
+
+    GameMapScreenController ..|> GameScene
+    GameMapScreenController --> Dialog
+    GameMapScreenController --> FortifyLogic
+    GameMapScreenController --> AttackLogic
+    GameMapScreenController ..> FortifyResult
+    GameMapScreenController ..> AttackResult
+    GameMapScreenController ..> SceneType
 
     +class PlayerSelectScreenController {
         -{static}{final} MIN_PLAYERS: int
@@ -75,7 +142,12 @@ package presentation {
         -onPlayerSelect(e: ActionEvent): void
         -handlePlayerSelectUpdate(button: Button): void
         -updateInstructionLabel(): void
+        +onKeyPress(event: KeyEvent): void
     }
+
+    PlayerSelectScreenController ..|> GameScene
+    PlayerSelectScreenController --> SceneController
+    PlayerSelectScreenController ..> SceneType
 
     +class PlayerShuffleScreenController {
         -instructionLabel: Label
@@ -95,7 +167,11 @@ package presentation {
         -stringifyPlayerOrder(): void
         -rollDie(): void
         -startGame(): void
+        +onKeyPress(event: KeyEvent): void
     }
+
+    PlayerShuffleScreenController ..|> GameScene
+    PlayerShuffleScreenController ..> SceneType
 
     -enum DieImage {
         ONE
@@ -114,10 +190,13 @@ package presentation {
     ~class SceneController {
         -{static} sceneController: SceneController
         -{static} languageName: String
+        -{static} currentScene: GameScene
         -{final} screenMap: Map<SceneType, Pane>
         -{final} main: Scene
         -gameEngine: WorldDominationGameEngine
         -originalPlayerOrder: List<PlayerColor>
+        -numberOfPlayers: int
+        -winner: PlayerColor
 
         -SceneController(main: Scene)
         #add(scene: SceneType, pane: Pane): void
@@ -125,12 +204,113 @@ package presentation {
         #initializePlayers(players: List<PlayerColor>): void
         #getGameEngine(): WorldDominationGameEngine
         #getOriginalPlayerOrder(): List<PlayerColor>
+        #onKeyPress(event: KeyEvent): void
+        #getNumberOfPlayers(): int
+        #setWinner(winner: PlayerColor): void
+        #getWinner(): PlayerColor
+        #{static} setCurrentScene(scene: GameScene): void
         #{static} setRoot(scene: Scene): void
         #{static} getInstance(): SceneController
+        #{static} setLanguage(language: String): void
         #{static} getLanguageBundle(): ResourceBundle
         #{static} getLanguage(): String
         #{static} initializeLanguageBundle(): void
         #{static} getString(key: String, format: Object[]): String
+    }
+
+    SceneController --> GameScene
+    SceneController ..> SceneType
+
+    +class AttackLogic {
+        -{final} gameEngine: WorldDominationGameEngine
+        -sourceTerritory: TerritoryType
+        -targetTerritory: TerritoryType
+        -attackArmies: int
+        -defendArmies: int
+        -targetOwner: PlayerColor
+        -sourceSelected: boolean
+        -attackArmiesSet: boolean
+        -ownerSelected: boolean
+        -attackComplete: boolean
+
+        ~AttackLogic(gameEngine: WorldDominationGameEngine)
+        ~performAttack(): AttackResult
+        ~isSourceSelected(): boolean
+        ~sourceArmiesSelected(): boolean
+        ~setSourceTerritory(territory: TerritoryType): boolean
+        ~setTargetTerritory(territory: TerritoryType): boolean
+        ~setAttackArmies(armies: int): void
+        ~setDefendArmies(armies: int): void
+        ~reset(): void
+        ~getTargetOwner(): PlayerColor
+        ~didDefenderLoseTerritory(): boolean
+        ~getSourceTerritory(): TerritoryType
+        ~getTargetTerritory(): TerritoryType
+        ~isAttackComplete(): boolean
+    }
+
+    +enum AttackResult {
+        SUCCESS
+        NOT_ADJACENT
+        SOURCE_NOT_OWNED
+        DESTINATION_OWNED
+        WRONG_STATE
+        BAD_ATTACK_ARMIES
+        BAD_DEFEND_ARMIES
+        NOT_ENOUGH_ATTACKERS
+        NOT_ENOUGH_DEFENDERS
+
+        ~toKey(): String
+        ~{static} parseError(message: String): AttackResult
+    }
+
+    AttackLogic ..> AttackResult
+
+    ~class Dialog {
+        -{final} dialog: DialogPane
+        -{final} dialogBackground: AnchorPane
+
+        #Dialog(dialog: DialogPane, background: AnchorPane)
+        ~isVisible(): boolean
+        ~toggleDisplay(): void
+        ~setTitleText(key: String, replacements: Object[]): void
+        ~setContentText(key: String, replacements: Object[]): void
+        ~setupButton(buttonType: ButtonType, key: String, eventHandler: EventHandler<Event>): void
+        -showButton(button: ButtonType): void
+        -hideButton(button: ButtonType): void
+    }
+
+    +class FortifyLogic {
+        -{final} gameEngine: WorldDominationGameEngine
+        -sourceTerritory: TerritoryType
+        -destinationTerritory: TerritoryType
+        -armiesToTransfer: int
+        -sourceSelected: boolean
+
+        ~FortifyLogic(gameEngine: WorldDominationGameEngine)
+        ~setSourceTerritory(territory: TerritoryType): void
+        ~setDestinationTerritory(territory: TerritoryType): void
+        ~setArmiesToTransfer(armies: int): void
+        ~performFortify(): FortifyResult
+        ~isSourceSelected(): boolean
+        ~reset(): void
+    }
+
+    +enum FortifyResult {
+        SUCCESS
+        NOT_ADJACENT
+        NOT_OWNED
+        NOT_ENOUGH_ARMIES
+        WRONG_PHASE
+
+        ~toKey(): String
+        ~{static} parseError(message: String): FortifyResult
+    }
+
+    FortifyLogic ..> FortifyResult
+
+    +interface GameScene {
+        ~onKeyPress(event: KeyEvent): void
     }
 
     SceneController --> "*" SceneType
@@ -140,12 +320,26 @@ package presentation {
 
         -initialize(): void
         -onStartButtonClick(): void
+        +onKeyPress(event: KeyEvent): void
     }
 
-    GameMapScreenController ..> SceneController
-    PlayerSelectScreenController --> SceneController
+    StartScreenController ..|> GameScene
+
+    +class WinScreenController {
+        -winLabel: Label
+
+        -initialize(): void
+        -onPlayAgain(): void
+        +onKeyPress(event: KeyEvent): void
+    }
+
+    WinScreenController ..|> GameScene
+
     PlayerShuffleScreenController --> SceneController
+    PlayerSelectScreenController --> SceneController
+    GameMapScreenController ..> SceneController
     StartScreenController ..> SceneController
+    WinScreenController ..> SceneController
     RiskApp ..> SceneController
 }
 
@@ -629,8 +823,16 @@ package domain {
     }
 }
 
+presentation.AttackLogic --> domain.WorldDominationGameEngine
+presentation.AttackLogic --> "2" domain.TerritoryType
+presentation.AttackLogic --> domain.PlayerColor
+
+presentation.FortifyLogic --> domain.WorldDominationGameEngine
+presentation.FortifyLogic --> "2" domain.TerritoryType
+
 presentation.GameMapScreenController --> domain.WorldDominationGameEngine
 presentation.GameMapScreenController --> "*" domain.TerritoryType
+presentation.GameMapScreenController ..> domain.GamePhase
 
 presentation.PlayerSelectScreenController --> "*" domain.PlayerColor
 
