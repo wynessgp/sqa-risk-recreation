@@ -3081,10 +3081,7 @@ public class WorldDominationGameEngineTest {
     @EnumSource(TerritoryType.class)
     public void test89_placeBonusArmies_withMatchingInputs_returnsUpdatedObject(TerritoryType territory) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
-//        unitUnderTest.provideMockedPlayersMap(Map.of(PlayerColor.GREEN, new Player()));
         unitUnderTest.setGamePhase(GamePhase.PLACEMENT);
-//        unitUnderTest.setNumArmiesForPlayer(unitUnderTest.getCurrentPlayer(), 2);
-//        unitUnderTest.placeNewArmiesInTerritory(territory, 2);
         unitUnderTest.placeBonusArmies(territory, Set.of(territory));
 
         assertEquals(2, unitUnderTest.getNumberOfArmies(territory));
