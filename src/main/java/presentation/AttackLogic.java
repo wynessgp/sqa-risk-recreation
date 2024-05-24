@@ -81,4 +81,8 @@ public class AttackLogic {
         return targetOwner;
     }
 
+    boolean didDefenderLoseTerritory() {
+        return gameEngine.checkIfPlayerOwnsTerritory(targetTerritory, targetOwner);
+    }
+
 }
