@@ -1010,7 +1010,6 @@ public final class WorldDominationGameEngine {
     }
 
     private void storeRecentlyAttackedTerritories(TerritoryType sourceTerritory, TerritoryType destTerritory) {
-        clearRecentlyAttackedTerritories();
         setRecentlyAttackedSource(sourceTerritory);
         setRecentlyAttackedDest(destTerritory);
     }
