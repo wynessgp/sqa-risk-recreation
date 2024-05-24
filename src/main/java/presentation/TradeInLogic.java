@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.Card;
+import domain.GamePhase;
 import domain.PieceType;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
@@ -21,7 +22,29 @@ class TradeInLogic {
         this.cardSelection = (CheckComboBox<String>) tradeInDialog.getDialog().getContent();
     }
 
-    void displayListOfCards() {
+    void displayIfEnoughCards() {
+        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() < 3
+                || shouldForceInAttackPhase()) {
+            return;
+        }
+        hideCancelButtonOnForced();
+        displayListOfCards();
+    }
+
+    private boolean shouldForceInAttackPhase() {
+        return gameEngine.getCurrentGamePhase() == GamePhase.ATTACK
+                && gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() > 4;
+    }
+
+    private void hideCancelButtonOnForced() {
+        if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() > 4) {
+            tradeInDialog.hideButton(ButtonType.CANCEL);
+        } else {
+            tradeInDialog.showButton(ButtonType.CANCEL);
+        }
+    }
+
+    private void displayListOfCards() {
         cardSelection.getItems().clear();
         for (Card card : gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer())) {
             createDisplayCard(card);

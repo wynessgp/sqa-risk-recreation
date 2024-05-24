@@ -66,6 +66,7 @@ public class GameMapScreenController implements GameScene {
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
     private Dialog generalMessageDialogController;
+    private boolean placementStarted;
 
     @FXML
     private void initialize() {
@@ -199,13 +200,19 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleArmyTransfer(FortifyResult result) {
-        if (result != FortifyResult.SUCCESS) {
-            errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
-                errorDialogController.toggleDisplay();
-                promptForAdditionalArmyTransfer();
-            });
-            showErrorMessage("gameMapScreen." + result.toKey());
+        if (result == FortifyResult.SUCCESS) {
+            tradeInLogic.displayIfEnoughCards();
+        } else {
+            showArmyTransferError(result);
         }
+    }
+
+    private void showArmyTransferError(FortifyResult result) {
+        errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+            errorDialogController.toggleDisplay();
+            promptForAdditionalArmyTransfer();
+        });
+        showErrorMessage("gameMapScreen." + result.toKey());
     }
 
     private void performAttack(int value) {
@@ -326,9 +333,14 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhaseInstructions() {
         instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
+        if (!placementStarted) {
+            tradeInLogic.displayIfEnoughCards();
+            placementStarted = true;
+        }
     }
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
+        placementStarted = false;
         instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
