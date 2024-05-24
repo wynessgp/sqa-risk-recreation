@@ -7,6 +7,8 @@ import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import org.controlsfx.control.CheckComboBox;
 
@@ -14,12 +16,14 @@ class TradeInLogic {
     private final Dialog tradeInDialog;
     private final WorldDominationGameEngine gameEngine;
     private final CheckComboBox<String> cardSelection;
+    private final EventHandler<Event> performTradeIn;
 
     @SuppressWarnings("unchecked")
-    TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine) {
+    TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine, EventHandler<Event> performTradeIn) {
         this.tradeInDialog = tradeInDialog;
         this.gameEngine = gameEngine;
         this.cardSelection = (CheckComboBox<String>) tradeInDialog.getDialog().getContent();
+        this.performTradeIn = performTradeIn;
     }
 
     void displayIfEnoughCards() {
@@ -69,13 +73,28 @@ class TradeInLogic {
     }
 
     private void setupDialogButtons() {
-        tradeInDialog.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
+        tradeInDialog.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogNotNow", event ->
                 tradeInDialog.toggleDisplay());
-        tradeInDialog.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
-            for (String card : cardSelection.getCheckModel().getCheckedItems()) {
-                System.out.println(card);
-            }
+        tradeInDialog.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", performTradeIn);
+    }
+
+    public boolean tradeIn() {
+        try {
             tradeInDialog.toggleDisplay();
-        });
+            gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
+                    .map(this::getCardFromString).collect(Collectors.toSet()));
+            System.out.println("Trade in successful");
+        } catch (Exception exception) {
+            return false;
+        }
+        return true;
+    }
+
+    private Card getCardFromString(String cardString) {
+        String territory = cardString.substring(0, cardString.indexOf('(') - 1);
+        String piece = cardString.substring(cardString.indexOf('(') + 1, cardString.indexOf(')'));
+        TerritoryType territoryType = Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory)).collect(Collectors.toList()).get(0);
+        PieceType pieceType = Arrays.stream(PieceType.values()).filter(p -> p.toString().equals(piece)).collect(Collectors.toList()).get(0);
+        return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(c -> c.matchesTerritory(territoryType) && c.matchesPieceType(pieceType)).collect(Collectors.toList()).get(0);
     }
 }

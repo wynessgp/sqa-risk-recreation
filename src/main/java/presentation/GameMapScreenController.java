@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -86,7 +87,14 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
-        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground), gameEngine);
+        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground), gameEngine, event -> tradeIn());
+    }
+
+    private void tradeIn() {
+        if (!tradeInLogic.tradeIn()) {
+            showErrorMessage("gameMapScreen.tradeInError");
+        }
+        updateStateLabels();
     }
 
     private void setupDialogButtons() {
