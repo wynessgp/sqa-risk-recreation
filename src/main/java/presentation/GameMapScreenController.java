@@ -60,12 +60,12 @@ public class GameMapScreenController implements GameScene {
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private AttackLogic attackLogic;
     private FortifyLogic fortifyLogic;
+    private TradeInLogic tradeInLogic;
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
     private Dialog generalMessageDialogController;
-    private Dialog tradeInDialogController;
 
     @FXML
     private void initialize() {
@@ -85,7 +85,7 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
-        tradeInDialogController = new Dialog(tradeInDialog, dialogBackground);
+        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground));
     }
 
     private void setupDialogButtons() {
