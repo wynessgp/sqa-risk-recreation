@@ -394,7 +394,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test32_tradeInCardsAttackPhase_tradeInIsNotForced_expectException() {
+    public void test13_tradeInCardsAttackPhase_tradeInIsNotForced_expectException() {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -418,7 +418,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test13_tradeInCardsPlacementPhase_playerDoesNotOwnCards_expectException() {
+    public void test14_tradeInCardsPlacementPhase_playerDoesNotOwnCards_expectException() {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -439,7 +439,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test14_tradeInCardsPlacementPhase_playerOwnsCards_invalidTradeInSet_expectException() {
+    public void test15_tradeInCardsPlacementPhase_playerOwnsCards_invalidTradeInSet_expectException() {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -490,7 +490,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generatePlayerHeldCardsAndSetsToTradeIn")
-    public void test15_tradeInCardsPlacementPhase_playerOwnsCards_validTradeIn_ensureCardsGetRemoved(
+    public void test16_tradeInCardsPlacementPhase_playerOwnsCards_validTradeIn_ensureCardsGetRemoved(
             Set<Card> playerCards, Set<Card> toTradeIn) {
         List<PlayerColor> players = List.of(PlayerColor.YELLOW, PlayerColor.BLACK, PlayerColor.GREEN);
         DieRollParser parser = generateMockedParser(players);
@@ -507,7 +507,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test16_tradeInCardsAttackPhase_validTradeIn_ensureGameIsPutInPlacementPhase() {
+    public void test17_tradeInCardsAttackPhase_validTradeIn_ensureGameIsPutInPlacementPhase() {
         List<PlayerColor> players = List.of(PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.BLUE);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -540,7 +540,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test17_tradeInCardsPlacementPhase_playerHasTooManyCards_forceTradeIn_ensurePlayerCanPlaceAfterTrade() {
+    public void test18_tradeInCardsPlacementPhase_playerHasTooManyCards_forceTradeIn_ensurePlayerCanPlaceAfterTrade() {
         List<PlayerColor> players = List.of(PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.BLUE);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -582,7 +582,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test18_placeNewArmiesInTerritory_scramblePhase_validInput_playerLosesAnArmy() {
+    public void test19_placeNewArmiesInTerritory_scramblePhase_validInput_playerLosesAnArmy() {
         List<PlayerColor> players = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -596,7 +596,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test19_placeNewArmiesInTerritory_setupPhase_validInput_playerLosesAnArmy() {
+    public void test20_placeNewArmiesInTerritory_setupPhase_validInput_playerLosesAnArmy() {
         List<PlayerColor> players = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED);
         DieRollParser parser = generateMockedParser(players);
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine(players, parser);
@@ -635,7 +635,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateNonAdjacentTerritoryPairs")
-    public void test20_attackTerritory_territoriesAreNotAdjacent_expectException(
+    public void test21_attackTerritory_territoriesAreNotAdjacent_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         // since we aim to utilize as few mocks as possible, this test will be a little long.
         List<PlayerColor> playersList = List.of(PlayerColor.PURPLE, PlayerColor.YELLOW, PlayerColor.GREEN);
@@ -720,7 +720,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test21_attackTerritory_attackerDoesNotOwnSource_expectException(
+    public void test22_attackTerritory_attackerDoesNotOwnSource_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.RED, PlayerColor.YELLOW, PlayerColor.GREEN,
                 PlayerColor.PURPLE);
@@ -752,7 +752,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test22_attackTerritory_attackerOwnsDestination_expectException(
+    public void test23_attackTerritory_attackerOwnsDestination_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.GREEN, PlayerColor.YELLOW, PlayerColor.RED,
                 PlayerColor.PURPLE);
@@ -797,7 +797,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairsAndIncorrectPhases")
-    public void test23_attackTerritory_incorrectGamePhase_expectException(
+    public void test24_attackTerritory_incorrectGamePhase_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory, GamePhase invalidPhase) {
         List<PlayerColor> playersList = List.of(PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.RED,
                 PlayerColor.PURPLE);
@@ -841,7 +841,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairsAndIncorrectAttackerAmounts")
-    public void test24_attackTerritory_invalidNumAttackers_expectException(
+    public void test25_attackTerritory_invalidNumAttackers_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int invalidAttackerAmount) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -889,7 +889,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairsAndInvalidAmountInSourceCombos")
-    public void test25_attackTerritory_invalidNumArmiesInSource_expectException(
+    public void test26_attackTerritory_invalidNumArmiesInSource_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInTerritory, int numAttackers) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -935,7 +935,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairsAndInvalidNumDefenders")
-    public void test26_attackTerritory_invalidNumDefenders_expectException(
+    public void test27_attackTerritory_invalidNumDefenders_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int invalidNumDefenders) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -965,7 +965,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test27_attackTerritory_invalidNumArmiesInDestination_expectException(
+    public void test28_attackTerritory_invalidNumArmiesInDestination_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1029,7 +1029,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateReturnsAndExpectationsForAttackerNotTakingTerritory")
-    public void test28_attackTerritory_validInput_attackerDoesNotTakeTerritory_expectDecreasedArmiesAndNoCardClaiming(
+    public void test29_attackTerritory_validInput_attackerDoesNotTakeTerritory_expectDecreasedArmiesAndNoCardClaiming(
             List<Integer> attackDiceRolls, List<Integer> defenseDiceRolls, List<BattleResult> battleResults,
             int armiesInSource, int armiesInDest, int numAttackersExpectedAfter, int numDefendersExpectedAfter,
             int numAttackers, int numDefenders, TerritoryType source, TerritoryType dest) {
@@ -1073,6 +1073,8 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(numAttackersExpectedAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numDefendersExpectedAfter, unitUnderTest.getNumberOfArmies(dest));
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
 
         EasyMock.verify(mockedParser);
@@ -1113,7 +1115,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateReturnsAndExpectationsForAttackerTakingTerritory")
-    public void test29_attackTerritory_validInput_attackerTakesTerritory_expectTerritoryTakeOverAndCardClaimability(
+    public void test30_attackTerritory_validInput_attackerTakesTerritory_expectTerritoryTakeOverAndCardClaimability(
             List<Integer> attackDiceRolls, List<Integer> defenseDiceRolls, List<BattleResult> battleResults,
             int armiesInSource, int armiesInDest, int numAttackersInSourceAfter, int numAttackers, int numDefenders,
             TerritoryType source, TerritoryType dest, int anticipatedResult) {
@@ -1155,13 +1157,15 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(numAttackersInSourceAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numAttackers, unitUnderTest.getNumberOfArmies(dest));
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
         assertTrue(unitUnderTest.getIfCurrentPlayerCanClaimCard());
 
         EasyMock.verify(mockedParser);
     }
 
     @Test
-    public void test30_attackTerritory_validInput_playerWinsGame_expectGameOverGamePhase() {
+    public void test31_attackTerritory_validInput_playerWinsGame_expectGameOverGamePhase() {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
 
@@ -1207,7 +1211,7 @@ public class WorldDominationGameEngineIntegrationTest {
     }
 
     @Test
-    public void test31_attackTerritory_validInput_defenderLosesGame_expectCardTransferBetweenPlayersAndLoserRemoved() {
+    public void test32_attackTerritory_validInput_defenderLosesGame_expectCardTransferBetweenPlayersAndLoserRemoved() {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
 
@@ -1256,7 +1260,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test34_moveArmiesBetweenFriendlyTerritories_fortifyPhase_sourceNotOwned_expectException(
+    public void test33_moveArmiesBetweenFriendlyTerritories_fortifyPhase_sourceNotOwned_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1286,7 +1290,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test35_moveArmiesBetweenFriendlyTerritories_fortifyPhase_destNotOwned_expectException(
+    public void test34_moveArmiesBetweenFriendlyTerritories_fortifyPhase_destNotOwned_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1315,7 +1319,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateNonAdjacentTerritoryPairs")
-    public void test36_moveArmiesBetweenFriendlyTerritories_fortifyPhase_territoriesAreNotAdjacent_expectException(
+    public void test35_moveArmiesBetweenFriendlyTerritories_fortifyPhase_territoriesAreNotAdjacent_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1345,7 +1349,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test37_moveArmiesBetweenFriendlyTerritories_fortifyPhase_invalidNumOfArmiesToMove_expectException(
+    public void test36_moveArmiesBetweenFriendlyTerritories_fortifyPhase_invalidNumOfArmiesToMove_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1391,7 +1395,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairsAndInvalidMovementPhases")
-    public void test38_moveArmiesBetweenFriendlyTerritories_invalidPhase_expectException(
+    public void test37_moveArmiesBetweenFriendlyTerritories_invalidPhase_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1418,7 +1422,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test39_moveArmiesBetweenFriendlyTerritories_attackPhase_playerTradesIn_clearedRecent_expectException(
+    public void test38_moveArmiesBetweenFriendlyTerritories_attackPhase_playerTradesIn_clearedRecent_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1519,7 +1523,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryTrios")
-    public void test40_moveArmiesBetweenFriendlyTerritories_attackPhase_playerStartsNewAttack_expectException(
+    public void test39_moveArmiesBetweenFriendlyTerritories_attackPhase_playerStartsNewAttack_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType toAttack) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1560,7 +1564,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test41_moveArmiesBetweenFriendlyTerritories_attackPhase_validInput_expectNoAbilityToSplitAgainAfter(
+    public void test40_moveArmiesBetweenFriendlyTerritories_attackPhase_validInput_expectNoAbilityToSplitAgainAfter(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);
@@ -1599,7 +1603,7 @@ public class WorldDominationGameEngineIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryTrios")
-    public void test42_moveArmiesBetweenFriendlyTerritories_fortifyPhase_playerTookTerritory_expectCardToBeAwarded(
+    public void test41_moveArmiesBetweenFriendlyTerritories_fortifyPhase_playerTookTerritory_expectCardToBeAwarded(
             TerritoryType sourceTerritory, TerritoryType destTerritory, TerritoryType yellowOwns) {
         List<PlayerColor> playersList = List.of(PlayerColor.BLUE, PlayerColor.BLACK, PlayerColor.RED,
                 PlayerColor.PURPLE, PlayerColor.YELLOW);

@@ -1291,7 +1291,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5})
-    public void test73_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException(int numCards) {
+    public void test37_tradeInCards_attackPhase_playerHasTooFewCardsToBeForcedTradeIn_expectException(int numCards) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
                 .withArgs(PlayerColor.RED)
@@ -1320,17 +1320,17 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test37_tradeInCards_validInput_expectReturnSetOfSizeTwo() {
+    public void test38_tradeInCards_validInput_expectReturnSetOfSizeTwo() {
         testTradeInCards(5, 4, Set.of(TerritoryType.ALASKA, TerritoryType.BRAZIL));
     }
 
     @Test
-    public void test38_tradeInCards_validInput_expectReturnSetOfSizeOne() {
+    public void test39_tradeInCards_validInput_expectReturnSetOfSizeOne() {
         testTradeInCards(6, 6, Set.of(TerritoryType.BRAZIL));
     }
 
     @Test
-    public void test74_tradeInCards_attackPhase_validInput_expectReturnSetOfSizeZero() {
+    public void test40_tradeInCards_attackPhase_validInput_expectReturnSetOfSizeZero() {
         TerritoryCard alaskaCard = new TerritoryCard(TerritoryType.ALASKA, PieceType.INFANTRY);
         TerritoryCard brazilCard = new TerritoryCard(TerritoryType.BRAZIL, PieceType.ARTILLERY);
         Set<Card> cardsToBeTradedIn = Set.of(new WildCard(), alaskaCard, brazilCard);
@@ -1372,7 +1372,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @EnumSource(TerritoryType.class)
-    public void test39_handleErrorCasesForAttackingTerritory_inputIsDuplicatedTerritory_expectException(
+    public void test41_handleErrorCasesForAttackingTerritory_inputIsDuplicatedTerritory_expectException(
             TerritoryType duplicateTerritory) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1408,7 +1408,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateNonAdjacentTerritories")
-    public void test40_handleErrorCasesForAttackingTerritory_inputTerritoriesAreNotAdjacent_expectException(
+    public void test42_handleErrorCasesForAttackingTerritory_inputTerritoriesAreNotAdjacent_expectException(
             TerritoryType firstTerritory, TerritoryType nonAdjacentTerritory) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1432,7 +1432,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test41_handleErrorCasesForAttackingTerritory_sourceTerritoryNotOwnedByPlayer_expectException(
+    public void test43_handleErrorCasesForAttackingTerritory_sourceTerritoryNotOwnedByPlayer_expectException(
             TerritoryType sourceTerritory, PlayerColor currentPlayer) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1459,7 +1459,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllTerritoryTypesAndPlayerMinusSetupCombinations")
-    public void test42_handleErrorCasesForAttackingTerritory_destinationTerritoryOwnedByCurrentPlayer_expectException(
+    public void test44_handleErrorCasesForAttackingTerritory_destinationTerritoryOwnedByCurrentPlayer_expectException(
             TerritoryType destinationTerritory, PlayerColor currentPlayer) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1504,7 +1504,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPhasesBesidesAttack")
-    public void test43_handleErrorCasesForAttackingTerritory_gamePhaseIsNotAttack_expectException(
+    public void test45_handleErrorCasesForAttackingTerritory_gamePhaseIsNotAttack_expectException(
             GamePhase providedGamePhase) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(providedGamePhase);
@@ -1520,7 +1520,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 4, 17, Integer.MAX_VALUE})
-    public void test44_handleErrorCasesForAttackingTerritory_invalidAmountOfAttackers_expectException(
+    public void test46_handleErrorCasesForAttackingTerritory_invalidAmountOfAttackers_expectException(
             int illegalAttackerAmount) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1536,7 +1536,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 3, 17, Integer.MAX_VALUE})
-    public void test45_handleErrorCasesForAttackingTerritory_invalidAmountOfDefenders_expectException(
+    public void test47_handleErrorCasesForAttackingTerritory_invalidAmountOfDefenders_expectException(
             int illegalDefenderAmount) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1552,7 +1552,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {5, 6, 7, 15, Integer.MAX_VALUE})
-    public void test46_handleErrorCasesForAttackingTerritory_playerHasTooManyCards_expectException(
+    public void test48_handleErrorCasesForAttackingTerritory_playerHasTooManyCards_expectException(
             int illegalAmountOfCards) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1600,7 +1600,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateInvalidAmountOfAttackerArmiesInTerritoryPairs")
-    public void test47_handleErrorCasesForAttackingTerritory_sourceTerritoryHasTooFewAttackers_expectException(
+    public void test49_handleErrorCasesForAttackingTerritory_sourceTerritoryHasTooFewAttackers_expectException(
             int numArmiesInSourceTerritory, int numAttackers) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1643,7 +1643,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test48_handleErrorCasesForAttackingTerritory_destinationTerritoryHasTooFewDefenders_expectException() {
+    public void test50_handleErrorCasesForAttackingTerritory_destinationTerritoryHasTooFewDefenders_expectException() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.RED);
@@ -1699,7 +1699,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test49_handleErrorCasesForAttackingTerritory_validInput_expectNoException(
+    public void test51_handleErrorCasesForAttackingTerritory_validInput_expectNoException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(GamePhase.ATTACK);
@@ -1754,7 +1754,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateInvalidInputsForRollDiceForBattle")
-    public void test50_rollDiceForBattle_invalidInput_expectException(
+    public void test52_rollDiceForBattle_invalidInput_expectException(
             int numAttackers, int numDefenders, int upperBoundOnError) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.provideDieRollParser(new DieRollParser());
@@ -1783,7 +1783,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidInputsForRollDiceAndOutputs")
-    public void test51_rollDiceForBattle_validInput_expectSpecificOutput(
+    public void test53_rollDiceForBattle_validInput_expectSpecificOutput(
             int numAttackers, int numDefenders, List<Integer> attackRolls,
             List<Integer> defenseRolls, List<BattleResult> battleResults) {
 
@@ -1821,7 +1821,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateNoChangeInputsForHandleArmyLosses")
-    public void test52_handleArmyLosses_inputsResultInNoChange_expectNoChangeAsResult(
+    public void test54_handleArmyLosses_inputsResultInNoChange_expectNoChangeAsResult(
             TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults) {
 
         Territory mockedSource = EasyMock.createMock(Territory.class);
@@ -1862,7 +1862,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateDefenderLosesTerritoryInputsForHandleArmyLosses")
-    public void test53_handleArmyLosses_inputsResultInDefenderLosingTerritory_expectDefenderLosesTerritory(
+    public void test55_handleArmyLosses_inputsResultInDefenderLosingTerritory_expectDefenderLosesTerritory(
             TerritoryType sourceTerritory, TerritoryType destinationTerritory, List<BattleResult> battleResults,
             int initialNumDefenders) {
 
@@ -1913,7 +1913,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllValidCombosForHandleAttacker")
-    public void test54_handleAttackerTakingTerritory_validInput_expectPlayerColorOfDefendingPlayer(
+    public void test56_handleAttackerTakingTerritory_validInput_expectPlayerColorOfDefendingPlayer(
             TerritoryType destTerritory, int numAttackers, PlayerColor attackingPlayer, PlayerColor defendingPlayer) {
 
         Territory mockedDestTerritory = EasyMock.createMock(Territory.class);
@@ -1983,7 +1983,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateInputsForHandlePlayerLosingGameIfNecessary")
-    public void test55_handlePlayerLosingGameIfNecessary_playerHasNotLost_expectCollectionsToRemainTheSame(
+    public void test57_handlePlayerLosingGameIfNecessary_playerHasNotLost_expectCollectionsToRemainTheSame(
             int ownedTerritoryIndex, PlayerColor potentiallyLosingPlayer, List<PlayerColor> playersList) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2044,7 +2044,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateLosingPlayerCardsAndRespectivePlayersAndPlayerList")
-    public void test56_handlePlayerLosingGameIfNecessary_playerLosesGame_expectCardTransferAndCollectionsChange(
+    public void test58_handlePlayerLosingGameIfNecessary_playerLosesGame_expectCardTransferAndCollectionsChange(
             Set<Card> losingPlayerCards, PlayerColor attackerColor, PlayerColor defenderColor,
             List<PlayerColor> playersList) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
@@ -2112,7 +2112,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateNonWinningArgumentsForHandleCurrentPlayerWinning")
-    public void test57_handleCurrentPlayerWinningGameIfNecessary_currentPlayerDoesNotWin_expectGameInAttackPhase(
+    public void test59_handleCurrentPlayerWinningGameIfNecessary_currentPlayerDoesNotWin_expectGameInAttackPhase(
             int indexOfFirstNonOwnedTerritory, PlayerColor currentPlayer) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2160,7 +2160,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test58_handleCurrentPlayerWinningGameIfNecessary_currentPlayerWins_expectGameInGameOverPhase(
+    public void test60_handleCurrentPlayerWinningGameIfNecessary_currentPlayerWins_expectGameInGameOverPhase(
             PlayerColor winningPlayer) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
@@ -2191,7 +2191,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateNonAdjacentTerritories")
-    public void test59_moveArmiesBetweenFriendlyTerritories_territoriesAreNotAdjacent_expectException(
+    public void test61_moveArmiesBetweenFriendlyTerritories_territoriesAreNotAdjacent_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2214,7 +2214,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test60_moveArmiesBetweenFriendlyTerritories_sourceIsNotOwnedByCurrentPlayer_expectException(
+    public void test62_moveArmiesBetweenFriendlyTerritories_sourceIsNotOwnedByCurrentPlayer_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
 
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
@@ -2242,7 +2242,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAdjacentTerritoryPairs")
-    public void test61_moveArmiesBetweenFriendlyTerritories_destIsNotOwnedByCurrentPlayer_expectException(
+    public void test63_moveArmiesBetweenFriendlyTerritories_destIsNotOwnedByCurrentPlayer_expectException(
             TerritoryType sourceTerritory, TerritoryType destTerritory) {
 
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
@@ -2288,7 +2288,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateInvalidNumArmiesInTerritoryAndAmountToMovePairs")
-    public void test62_moveArmiesBetweenFriendlyTerritories_notEnoughArmiesInSource_expectException(
+    public void test64_moveArmiesBetweenFriendlyTerritories_notEnoughArmiesInSource_expectException(
             int numArmiesInTerritory, int invalidAmountToMoveOut) {
         TerritoryType alaska = TerritoryType.ALASKA;
         TerritoryType kamchatka = TerritoryType.KAMCHATKA;
@@ -2331,7 +2331,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPhasesMinusAttackAndFortify")
-    public void test63_moveArmiesBetweenFriendlyTerritories_invalidGamePhase_expectException(
+    public void test65_moveArmiesBetweenFriendlyTerritories_invalidGamePhase_expectException(
             GamePhase invalidGamePhase) {
         TerritoryType alaska = TerritoryType.ALASKA;
         TerritoryType kamchatka = TerritoryType.KAMCHATKA;
@@ -2378,7 +2378,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateInvalidRecentlyAttackedTerritories")
-    public void test64_moveArmiesBetweenFriendlyTerritories_territoriesDoNotMatchRecentlyAttacked_expectException(
+    public void test66_moveArmiesBetweenFriendlyTerritories_territoriesDoNotMatchRecentlyAttacked_expectException(
             TerritoryType recentlyAttackedSrc, TerritoryType recentlyAttackedDest) {
         TerritoryType alaska = TerritoryType.ALASKA;
         TerritoryType kamchatka = TerritoryType.KAMCHATKA;
@@ -2416,6 +2416,9 @@ public class WorldDominationGameEngineTest {
 
     private static Stream<Arguments> generateValidInputsForMoveArmiesAttackPhase() {
         return Stream.of(
+                Arguments.of(TerritoryType.YAKUTSK, TerritoryType.IRKUTSK, 2, 0),
+                Arguments.of(TerritoryType.INDONESIA, TerritoryType.NEW_GUINEA, 3, 0),
+                Arguments.of(TerritoryType.BRAZIL, TerritoryType.PERU, 4, 0),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 1),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 2),
                 Arguments.of(TerritoryType.MONGOLIA, TerritoryType.CHINA, 4, 3),
@@ -2433,7 +2436,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
-    public void test65_moveArmiesBetweenFriendlyTerritories_validInputAttackPhase_expectTerritoriesToReflectMovement(
+    public void test67_moveArmiesBetweenFriendlyTerritories_validInputAttackPhase_expectTerritoriesToReflectMovement(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
         EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
@@ -2471,7 +2474,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateValidInputsForMoveArmiesAttackPhase")
-    public void test66_moveArmiesBetweenFriendlyTerritories_fortifyPhase_endPlayerTurnAndExpectMovedArmies(
+    public void test68_moveArmiesBetweenFriendlyTerritories_fortifyPhase_endPlayerTurnAndExpectMovedArmies(
             TerritoryType sourceTerritory, TerritoryType destTerritory, int numArmiesInSource, int numArmiesToMove) {
         TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
         EasyMock.expect(mockedGraph.areTerritoriesAdjacent(sourceTerritory, destTerritory)).andReturn(true);
@@ -2531,9 +2534,54 @@ public class WorldDominationGameEngineTest {
         }
     }
 
+    private void testMovementBetweenFriendlyTerritoriesNegativeArmyInput(int illegalNumArmies, GamePhase phase) {
+        TerritoryGraph mockedGraph = EasyMock.createMock(TerritoryGraph.class);
+        EasyMock.expect(mockedGraph.areTerritoriesAdjacent(TerritoryType.ALASKA, TerritoryType.KAMCHATKA))
+                .andReturn(true);
+
+        Territory mockedSource = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedSource.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+
+        Territory mockedDest = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockedDest.isOwnedByPlayer(PlayerColor.GREEN)).andReturn(true).anyTimes();
+
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.ALASKA)).andReturn(mockedSource);
+        EasyMock.expect(mockedGraph.getTerritory(TerritoryType.KAMCHATKA)).andReturn(mockedSource);
+        EasyMock.replay(mockedGraph, mockedSource, mockedDest);
+
+        WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
+        unitUnderTest.provideMockedTerritoryGraph(mockedGraph);
+        unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
+        unitUnderTest.setGamePhase(phase);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> unitUnderTest.moveArmiesBetweenFriendlyTerritories(
+                        TerritoryType.ALASKA, TerritoryType.KAMCHATKA, illegalNumArmies));
+        String actualMessage = exception.getMessage();
+
+        String expectedMessage = "Cannot move a negative number of armies between territories";
+        assertEquals(expectedMessage, actualMessage);
+
+        EasyMock.verify(mockedGraph, mockedSource, mockedDest);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
+    public void test69_moveArmiesBetweenFriendlyTerritories_attackPhase_negativeArmyInput_expectException(
+            int illegalNumArmies) {
+        testMovementBetweenFriendlyTerritoriesNegativeArmyInput(illegalNumArmies, GamePhase.ATTACK);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -20, -2, -1})
+    public void test70_moveArmiesBetweenFriendlyTerritories_fortifyPhase_negativeArmyInput_expectException(
+            int illegalNumArmies) {
+        testMovementBetweenFriendlyTerritoriesNegativeArmyInput(illegalNumArmies, GamePhase.FORTIFY);
+    }
+
     @ParameterizedTest
     @MethodSource("generateAllPhasesMinusAttackAndFortify")
-    public void test67_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
+    public void test71_forceGamePhaseToEnd_invalidGamePhase_expectException(GamePhase invalidGamePhase) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(invalidGamePhase);
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.GREEN);
@@ -2547,7 +2595,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @ValueSource(ints = {6, 7, 8, 9, Integer.MAX_VALUE})
-    public void test73_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
+    public void test72_forceGamePhaseToEnd_attackPhase_playerHasTooManyCards_cannotEndPhase_expectException(
             int numCardsPlayerHolds) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2574,7 +2622,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test68_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
+    public void test73_forceGamePhaseToEnd_attackPhase_expectCurrentPhaseMovesForwardButIsSamePlayer(
             PlayerColor currentPlayer) {
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
                 .withConstructor(PlayerColor.class)
@@ -2777,7 +2825,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
-    public void test70_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
+    public void test77_claimCardForCurrentPlayerIfPossible_playerCardsVary_cannotClaimCard_expectNoChangeInCollection(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
 
@@ -2838,7 +2886,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSetsAndCardToDraw")
-    public void test71_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
+    public void test78_claimCardForCurrentPlayerIfPossible_playerCardsVary_canDrawCard_expectCollectionChange(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns, Card cardToDraw) {
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
@@ -2870,7 +2918,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetupAndSomeCardSets")
-    public void test72_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
+    public void test79_claimCardForCurrentPlayerIfPossible_noMoreCardsInDeck_expectNoChangeInCollection(
             PlayerColor currentPlayer, Set<Card> cardsPlayerOwns) {
 
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class)
@@ -2905,7 +2953,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateIllegalPhasesForPlaceNewArmiesInTerritory")
-    public void test77_placeNewArmiesInTerritory_illegalPhase_expectException(
+    public void test80_placeNewArmiesInTerritory_illegalPhase_expectException(
             GamePhase phaseToPutGameIn) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setGamePhase(phaseToPutGameIn);
@@ -2919,14 +2967,14 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test78_getRecentlyAttackedSource_setValueAndExpectSameValue() {
+    public void test81_getRecentlyAttackedSource_setValueAndExpectSameValue() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setRecentlyAttackedSource(TerritoryType.ALASKA);
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedSource());
     }
 
     @Test
-    public void test79_getRecentlyAttackedDest_setValueAndExpectSameValue() {
+    public void test82_getRecentlyAttackedDest_setValueAndExpectSameValue() {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         unitUnderTest.setRecentlyAttackedDest(TerritoryType.ALASKA);
         assertEquals(TerritoryType.ALASKA, unitUnderTest.getRecentlyAttackedDest());
@@ -2934,7 +2982,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test80_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
+    public void test83_getCardsOwnedByPlayer_withNoCardsOwned_returnsEmptySet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -2944,7 +2992,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test81_getCardsOwnedByPlayer_withOneCard_returnsSingletonSet(PlayerColor player) {
+    public void test84_getCardsOwnedByPlayer_withOneCard_returnsSingletonSet(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         for (PieceType pieceType : PieceType.values()) {
             for (TerritoryType territoryType : TerritoryType.values()) {
@@ -2962,7 +3010,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test82_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
+    public void test85_getCardsOwnedByPlayer_withTwoCards_returnsSetOfTwoCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -2989,7 +3037,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test83_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
+    public void test86_getCardsOwnedByPlayer_withAllCards_returnsSetOfAllCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -3003,7 +3051,7 @@ public class WorldDominationGameEngineTest {
 
     @ParameterizedTest
     @MethodSource("generateAllPlayerColorsMinusSetup")
-    public void test84_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
+    public void test87_getCardsOwnedByPlayer_withTwoWildCards_returnsSetOfTwoWildCards(PlayerColor player) {
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
                 .withArgs(player).createMock();
@@ -3016,7 +3064,7 @@ public class WorldDominationGameEngineTest {
     }
 
     @Test
-    public void test85_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
+    public void test88_getCardsOwnedByPlayer_withSetupPlayer_throwsException() {
         String expectedMessage = "Invalid player color";
         WorldDominationGameEngine unitUnderTest = new WorldDominationGameEngine();
         Player mockedPlayer = EasyMock.partialMockBuilder(Player.class).withConstructor(PlayerColor.class)
