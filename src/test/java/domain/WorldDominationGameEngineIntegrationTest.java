@@ -1068,6 +1068,9 @@ public class WorldDominationGameEngineIntegrationTest {
 
         assertEquals(0, unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders));
 
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
+
         assertEquals(numAttackersExpectedAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numDefendersExpectedAfter, unitUnderTest.getNumberOfArmies(dest));
         assertFalse(unitUnderTest.getIfCurrentPlayerCanClaimCard());
@@ -1146,6 +1149,9 @@ public class WorldDominationGameEngineIntegrationTest {
         unitUnderTest.provideCurrentPlayerForTurn(PlayerColor.BLUE);
 
         assertEquals(anticipatedResult, unitUnderTest.attackTerritory(source, dest, numAttackers, numDefenders));
+
+        assertEquals(source, unitUnderTest.getRecentlyAttackedSource());
+        assertEquals(dest, unitUnderTest.getRecentlyAttackedDest());
 
         assertEquals(numAttackersInSourceAfter, unitUnderTest.getNumberOfArmies(source));
         assertEquals(numAttackers, unitUnderTest.getNumberOfArmies(dest));
