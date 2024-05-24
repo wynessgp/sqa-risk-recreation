@@ -23,12 +23,12 @@ class DieRollParser {
     private static final int MAXIMUM_VALID_AMOUNT_OF_ATTACKER_DICE = 3;
 
     DieRollParser() {
-        this(new Random(), List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL,
-                MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)), List.of(new Die(MAXIMUM_DIE_ROLL,
-                MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MAXIMUM_DIE_ROLL)));
+        this(new Random(),
+                List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL),
+                        new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)),
+                List.of(new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL), new Die(MAXIMUM_DIE_ROLL, MINIMUM_DIE_ROLL)));
     }
 
-    // this constructor is to only be utilized for unit testing!
     DieRollParser(Random randomizer, List<Die> attackerDice,
                   List<Die> defenderDice) {
         this.randomizer = randomizer;
