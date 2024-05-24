@@ -103,23 +103,23 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleAttackButtonClick() {
-        attackLogic.reset();
         if (attackLogic.isSourceSelected()) {
-            handleAttackPhaseInstructions(true);
+            handleAttackPhaseInstructions(false);
         } else {
             gameEngine.forceGamePhaseToEnd();
             updateStateLabels();
         }
+        attackLogic.reset();
     }
 
     private void handleFortifyButtonClick() {
-        fortifyLogic.reset();
         if (fortifyLogic.isSourceSelected()) {
-            handleFortifyPhaseInstructions(true);
+            handleFortifyPhaseInstructions(false);
         } else {
             gameEngine.forceGamePhaseToEnd();
             updateStateLabels();
         }
+        fortifyLogic.reset();
     }
 
     private void setupClaimTerritoryDialog() {
@@ -298,7 +298,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleFortifyPhaseInstructions(boolean sourceSelected) {
-        this.instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.fortifyInstruction"
+        this.instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
                 : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
         attackFortifySkipButton.setVisible(true);
         attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
