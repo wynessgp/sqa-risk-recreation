@@ -98,7 +98,7 @@ class TerritoryTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 24})
+    @ValueSource(ints = {0, 1, 24})
     void test04_setNumArmiesPresent_validNumber_expectTrue(int validInput) {
         Territory territory = new Territory(TerritoryType.ALASKA);
 
