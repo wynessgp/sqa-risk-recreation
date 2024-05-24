@@ -718,7 +718,7 @@ public final class WorldDominationGameEngine {
     }
 
     private void checkIfPlayerHasTooManyCardsAttackPhase() {
-        if (playersMap.get(currentPlayer).getNumCardsHeld() > 5) {
+        if (playersMap.get(currentPlayer).getNumCardsHeld() > FORCED_CARD_TURN_IN_THRESHOLD) {
             throw new IllegalStateException(
                     "Cannot forcibly end the ATTACK phase while the current player is holding > 5 cards!");
         }
