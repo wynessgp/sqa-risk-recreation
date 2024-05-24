@@ -22,13 +22,14 @@ class TradeInLogic {
     TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine, EventHandler<Event> performTradeIn) {
         this.tradeInDialog = tradeInDialog;
         this.gameEngine = gameEngine;
+        // Java doesn't like this cast, so we're suppressing the warning
         this.cardSelection = (CheckComboBox<String>) tradeInDialog.getDialog().getContent();
         this.performTradeIn = performTradeIn;
     }
 
     void displayIfEnoughCards() {
         if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() < 3
-                || shouldForceInAttackPhase()) {
+                || !shouldForceInAttackPhase()) {
             return;
         }
         hideCancelButtonOnForced();
