@@ -2941,3 +2941,70 @@ Output:
   - They just don't receive a card since there isn't a new one to get.
 - risk card deck = []
 - ability to claim a card = false
+
+# method: `getCardsOwnedByPlayer(player: PlayerColor): Set<Card>`
+
+## BVA Step 1
+Input: The provided player color and associated underlying Player object, which contains the set of cards owned by the player
+
+Output: A collection of cards currently in the player's possession
+
+## BVA Step 2
+Input: Cases, Pointer
+
+Output: Collection
+
+## BVA Step 3
+Input:
+- Cases:
+  - BLACK
+  - RED
+  - YELLOW
+  - BLUE
+  - GREEN
+  - PURPLE
+  - SETUP (error case)
+- Pointer:
+  - Null pointer (can't set, Martin's rules)
+  - A pointer to a Player object
+    - We care about the cards they own
+
+Output:
+- Empty set of cards
+- Set containing 1 card
+- Set containing > 1 card
+- Set containing all 44 cards
+- Set containing both wild cards
+- Set containing 2 of the same territory cards (not possible)
+- IllegalArgumentException
+
+## BVA Step 4
+### Test value 1
+Input: BLACK, [BLACK, ownedCards = {}]
+
+Output: {}
+#### Repeat for each PlayerColor
+### Test value 2
+Input: BLACK, [BLACK, ownedCards = { [ALASKA, INFANTRY] }]
+
+Output: { [ALASKA, INFANTRY] }
+#### Repeat for each PlayerColor and each card
+### Test value 3
+Input: BLACK, [BLACK, ownedCards = { [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] }]
+
+Output: { [ALASKA, INFANTRY], [BRAZIL, ARTILLERY] }
+#### Repeat for each PlayerColor
+### Test value 4
+Input: BLACK, [BLACK, ownedCards = { all 44 cards }]
+
+Output: { all 44 cards }
+#### Repeat for each PlayerColor
+### Test value 5
+Input: BLACK, [BLACK, ownedCards = { WILD, WILD }]
+
+Output: { WILD, WILD }
+#### Repeat for each PlayerColor
+### Test value 6
+Input: SETUP, underlined object does not matter
+
+Output: IllegalArgumentException "Invalid player color"

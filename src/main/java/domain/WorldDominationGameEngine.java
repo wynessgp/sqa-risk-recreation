@@ -963,12 +963,29 @@ public final class WorldDominationGameEngine {
         playersMap.get(playerColor).setNumArmiesToPlace(numArmies);
     }
 
-    Set<Card> getCardsForPlayer(PlayerColor playerColor) {
-        return playersMap.get(playerColor).getOwnedCards();
-    }
-
     void setAbilityToClaimCard() {
         this.currentPlayerCanClaimCard = true;
+      
+    public int attackTerritory(
+            TerritoryType sourceTerritory, TerritoryType destTerritory, int numAttackers, int numDefenders) {
+        handleErrorCasesForAttackingTerritory(sourceTerritory, destTerritory, numAttackers, numDefenders);
+        storeRecentlyAttackedTerritories(sourceTerritory, destTerritory);
+        List<BattleResult> dieResults = rollDiceForBattle(numAttackers, numDefenders);
+        if (handleArmyLosses(sourceTerritory, destTerritory, dieResults) == AttackConsequence.NO_CHANGE) {
+            return 0;
+        }
+        handleDefenderLosingTerritoryConsequences(sourceTerritory, destTerritory, numAttackers);
+        return getNumberOfArmies(sourceTerritory) - 1;
+    }
+
+    private void storeRecentlyAttackedTerritories(TerritoryType sourceTerritory, TerritoryType destTerritory) {
+        setRecentlyAttackedSource(sourceTerritory);
+        setRecentlyAttackedDest(destTerritory);
+    }
+
+    private void clearRecentlyAttackedTerritories() {
+        this.recentlyAttackedDestination = null;
+        this.recentlyAttackedSource = null;
     }
 
     void provideMockedCardDeck(RiskCardDeck mockedDeck) {
@@ -985,6 +1002,14 @@ public final class WorldDominationGameEngine {
 
     void setRecentlyAttackedDest(TerritoryType recentlyAttackedDest) {
         this.recentlyAttackedDestination = recentlyAttackedDest;
+    }
+
+    public Set<Card> getCardsOwnedByPlayer(PlayerColor playerColor) {
+        if (playerColor == PlayerColor.SETUP) {
+            throw new IllegalArgumentException("Invalid player color");
+        }
+        return playersMap.get(playerColor).getOwnedCards();
+
     }
 
     void setParser(DieRollParser parser) {
