@@ -58,4 +58,8 @@ class Dialog {
     void setDialogContent(Node content) {
         dialog.setContent(new Pane(content));
     }
+
+    DialogPane getDialog() {
+        return dialog;
+    }
 }

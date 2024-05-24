@@ -6,6 +6,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
 <AnchorPane maxHeight="630.0" maxWidth="980.0" prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GameMapScreenController">
     <AnchorPane prefHeight="630.0" prefWidth="980.0">
@@ -623,5 +624,8 @@
    <DialogPane fx:id="tradeInDialog" expanded="true" headerText="%gameMapScreen.tradeInDialog" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
       <ButtonType fx:constant="APPLY" />
       <ButtonType fx:constant="CANCEL" />
+      <content>
+         <CheckComboBox prefHeight="25.0" />
+      </content>
    </DialogPane>
 </AnchorPane>

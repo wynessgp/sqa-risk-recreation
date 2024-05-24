@@ -4,30 +4,28 @@ import domain.Card;
 import domain.PieceType;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import org.controlsfx.control.CheckComboBox;
 
 class TradeInLogic {
-    private final List<Pane> content = new ArrayList<>();
     private final Dialog tradeInDialog;
     private final WorldDominationGameEngine gameEngine;
+    private final CheckComboBox<String> cardSelection;
 
+    @SuppressWarnings("unchecked")
     TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine) {
         this.tradeInDialog = tradeInDialog;
         this.gameEngine = gameEngine;
+        this.cardSelection = (CheckComboBox<String>) tradeInDialog.getDialog().getContent();
     }
 
     void displayListOfCards() {
+        cardSelection.getItems().clear();
         for (Card card : gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer())) {
             createDisplayCard(card);
         }
-        setDialogContent();
         setupDialogButtons();
         tradeInDialog.toggleDisplay();
     }
@@ -35,10 +33,8 @@ class TradeInLogic {
     private void createDisplayCard(Card card) {
         TerritoryType territoryType = getTerritoryType(card);
         PieceType pieceType = getPieceType(card);
-        Pane cardPane = new AnchorPane();
-        cardPane.getChildren().add(new Label(territoryType.toString()));
-        cardPane.getChildren().add(new Label(pieceType.toString()));
-        content.add(cardPane);
+        cardSelection.getItems().add(territoryType + " (" + pieceType + ")");
+
     }
 
     private TerritoryType getTerritoryType(Card card) {
@@ -49,18 +45,14 @@ class TradeInLogic {
         return Arrays.stream(PieceType.values()).filter(card::matchesPieceType).collect(Collectors.toList()).get(0);
     }
 
-    private void setDialogContent() {
-        Pane contentPane = new Pane();
-        for (Pane cardPane : content) {
-            contentPane.getChildren().add(cardPane);
-        }
-        tradeInDialog.setDialogContent(contentPane);
-    }
-
     private void setupDialogButtons() {
         tradeInDialog.setupButton(ButtonType.CANCEL, "gameMapScreen.dialogCancel", event ->
                 tradeInDialog.toggleDisplay());
-        tradeInDialog.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event ->
-                tradeInDialog.toggleDisplay());
+        tradeInDialog.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", event -> {
+            for (String card : cardSelection.getCheckModel().getCheckedItems()) {
+                System.out.println(card);
+            }
+            tradeInDialog.toggleDisplay();
+        });
     }
 }
