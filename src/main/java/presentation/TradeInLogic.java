@@ -6,6 +6,7 @@ import domain.PieceType;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.event.Event;
@@ -20,6 +21,7 @@ class TradeInLogic {
     private final WorldDominationGameEngine gameEngine;
     private final CheckComboBox<String> cardSelection;
     private final EventHandler<Event> performTradeIn;
+    private Set<TerritoryType> extraArmyTerritories;
 
     @SuppressWarnings("unchecked")
     TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine, EventHandler<Event> performTradeIn) {
@@ -53,10 +55,10 @@ class TradeInLogic {
     }
 
     private void displayListOfCards() {
+        extraArmyTerritories.clear();
         cardSelection.getItems().clear();
-        for (Card card : gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer())) {
-            createDisplayCard(card);
-        }
+        cardSelection.getCheckModel().clearChecks();
+        gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).forEach(this::createDisplayCard);
         setupDialogButtons();
         tradeInDialog.toggleDisplay();
     }
@@ -82,10 +84,10 @@ class TradeInLogic {
         tradeInDialog.setupButton(ButtonType.APPLY, "gameMapScreen.dialogApply", performTradeIn);
     }
 
-    public boolean tradeIn() {
+    boolean tradeIn() {
         try {
             tradeInDialog.toggleDisplay();
-            placeAdditionalArmies(gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
+            extraArmyTerritories = (gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
                     .map(this::getCardFromString).collect(Collectors.toSet())));
         } catch (Exception exception) {
             return false;
@@ -104,9 +106,7 @@ class TradeInLogic {
                 c.matchesTerritory(territoryType) && c.matchesPieceType(pieceType)).collect(Collectors.toList()).get(0);
     }
 
-    private void placeAdditionalArmies(Set<TerritoryType> matches) {
-        for (TerritoryType territory : matches) {
-            System.out.println("Can place armies on " + territory);
-        }
+    Set<TerritoryType> getExtraArmyTerritories() {
+        return extraArmyTerritories;
     }
 }

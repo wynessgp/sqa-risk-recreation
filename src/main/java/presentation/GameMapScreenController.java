@@ -7,6 +7,7 @@ import domain.WorldDominationGameEngine;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -93,8 +94,19 @@ public class GameMapScreenController implements GameScene {
     private void tradeIn() {
         if (!tradeInLogic.tradeIn()) {
             showErrorMessage("gameMapScreen.tradeInError");
+        } else {
+            handleExtraArmies();
         }
         updateStateLabels();
+    }
+
+    private void handleExtraArmies() {
+        Set<TerritoryType> extraArmies = tradeInLogic.getExtraArmyTerritories();
+        if (extraArmies.size() == 1) {
+            gameEngine.placeNewArmiesInTerritory(extraArmies.iterator().next(), 2);
+        } else if (extraArmies.size() > 1) {
+            // prompt player
+        }
     }
 
     private void setupDialogButtons() {
