@@ -75,6 +75,7 @@ package presentation {
         -promptForAdditionalArmyTransfer(): void
         -setupGeneralMessageDialog(): void
         -setupExtraArmiesDialog(): void
+        -getTerritoryTypeFromString(territory: String): TerritoryType
         -setupTradeInButton(): void
         -handleSelectionDialogAction(value: int): void
         -attackPhaseLogic(value: int): void
