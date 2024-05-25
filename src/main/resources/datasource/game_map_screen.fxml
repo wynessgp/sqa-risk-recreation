@@ -6,6 +6,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
 <AnchorPane maxHeight="630.0" maxWidth="980.0" prefHeight="630.0" prefWidth="980.0" styleClass="container" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GameMapScreenController">
     <AnchorPane prefHeight="630.0" prefWidth="980.0">
@@ -82,6 +83,12 @@
             <String fx:value="button" />
             <String fx:value="defaultButton" />
          </styleClass></Button>
+      <Button fx:id="tradeInButton" alignment="CENTER" layoutX="14.0" layoutY="537.0" mnemonicParsing="false" prefWidth="100.0" text="%gameMapScreen.tradeInButton" visible="false">
+         <styleClass>
+            <String fx:value="button" />
+            <String fx:value="defaultButton" />
+         </styleClass>
+      </Button>
     </AnchorPane>
    <AnchorPane layoutX="128.0" layoutY="65.0" prefHeight="568.0" prefWidth="854.0">
       <ImageView fitHeight="568.0" fitWidth="864.0" pickOnBounds="true" preserveRatio="true">
@@ -618,6 +625,19 @@
       </content>
    </DialogPane>
    <DialogPane fx:id="generalMessageDialog" expanded="true" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+      <ButtonType fx:constant="OK" />
+   </DialogPane>
+   <DialogPane fx:id="tradeInDialog" expanded="true" headerText="%gameMapScreen.tradeInDialog" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+      <ButtonType fx:constant="APPLY" />
+      <ButtonType fx:constant="CANCEL" />
+      <content>
+         <CheckComboBox prefHeight="25.0" />
+      </content>
+   </DialogPane>
+   <DialogPane fx:id="extraArmiesDialog" expanded="true" headerText="%gameMapScreen.extraArmiesDialog" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
+      <content>
+         <ComboBox styleClass="armySelect" />
+      </content>
       <ButtonType fx:constant="OK" />
    </DialogPane>
 </AnchorPane>

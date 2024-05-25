@@ -4,13 +4,17 @@ import domain.GamePhase;
 import domain.PlayerColor;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -30,6 +34,10 @@ public class GameMapScreenController implements GameScene {
     private DialogPane attackResultsDialog;
     @FXML
     private DialogPane generalMessageDialog;
+    @FXML
+    private DialogPane tradeInDialog;
+    @FXML
+    private DialogPane extraArmiesDialog;
     @FXML
     private AnchorPane dialogBackground;
     @FXML
@@ -51,6 +59,8 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private Button attackFortifySkipButton;
     @FXML
+    private Button tradeInButton;
+    @FXML
     private Spinner<Integer> armyCountSpinner;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
@@ -58,11 +68,14 @@ public class GameMapScreenController implements GameScene {
     private final Map<Button, TerritoryType> territoryButtonMap = new HashMap<>();
     private AttackLogic attackLogic;
     private FortifyLogic fortifyLogic;
+    private TradeInLogic tradeInLogic;
     private Dialog errorDialogController;
     private Dialog confirmDialogController;
     private Dialog selectionDialogController;
     private Dialog attackResultsDialogController;
     private Dialog generalMessageDialogController;
+    private Dialog extraArmiesDialogController;
+    private boolean placementStarted;
 
     @FXML
     private void initialize() {
@@ -70,10 +83,15 @@ public class GameMapScreenController implements GameScene {
         attackLogic = new AttackLogic(gameEngine);
         fortifyLogic = new FortifyLogic(gameEngine);
         SceneController.setCurrentScene(this);
+        prepareStates();
+    }
+
+    private void prepareStates() {
         setupDialogControllers();
         updateStateLabels();
         setupDialogButtons();
         setupSkipButton();
+        setupTradeInButton();
     }
 
     private void setupDialogControllers() {
@@ -82,6 +100,43 @@ public class GameMapScreenController implements GameScene {
         selectionDialogController = new Dialog(armyPlacementSelectionDialog, dialogBackground);
         attackResultsDialogController = new Dialog(attackResultsDialog, dialogBackground);
         generalMessageDialogController = new Dialog(generalMessageDialog, dialogBackground);
+        extraArmiesDialogController = new Dialog(extraArmiesDialog, dialogBackground);
+        tradeInLogic = new TradeInLogic(new Dialog(tradeInDialog, dialogBackground), gameEngine, event -> tradeIn());
+    }
+
+    private void tradeIn() {
+        if (!tradeInLogic.tradeIn()) {
+            tradeInErrorAction();
+            showErrorMessage("gameMapScreen.tradeInError");
+        } else {
+            handleExtraArmies();
+        }
+        updateStateLabels();
+    }
+
+    private void tradeInErrorAction() {
+        errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+            tradeInLogic.displayIfEnoughCards();
+            errorDialogController.toggleDisplay();
+        });
+    }
+
+    private void handleExtraArmies() {
+        Set<TerritoryType> extraArmies = tradeInLogic.getExtraArmyTerritories();
+        if (extraArmies.size() == 1) {
+            gameEngine.placeBonusArmies(extraArmies.iterator().next(), extraArmies);
+        } else if (extraArmies.size() > 1) {
+            displayExtraArmiesChoice(extraArmies);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void displayExtraArmiesChoice(Set<TerritoryType> extraArmies) {
+        ComboBox<String> territoryChoices = (ComboBox<String>) extraArmiesDialog.getContent();
+        territoryChoices.getItems().clear();
+        territoryChoices.getItems().addAll(extraArmies.stream().map(TerritoryType::toString)
+                .collect(Collectors.toSet()));
+        extraArmiesDialogController.toggleDisplay();
     }
 
     private void setupDialogButtons() {
@@ -90,6 +145,7 @@ public class GameMapScreenController implements GameScene {
         setupArmyPlacementDialog();
         setupAttackResultsDialog();
         setupGeneralMessageDialog();
+        setupExtraArmiesDialog();
     }
 
     private void setupSkipButton() {
@@ -120,6 +176,14 @@ public class GameMapScreenController implements GameScene {
             updateStateLabels();
         }
         fortifyLogic.reset();
+    }
+
+    private void setupTradeInButton() {
+        tradeInButton.addEventHandler(ActionEvent.ACTION, event -> {
+            if (!tradeInLogic.displayIfEnoughCards()) {
+                showErrorMessage("gameMapScreen.unableToTradeIn");
+            }
+        });
     }
 
     private void setupClaimTerritoryDialog() {
@@ -165,6 +229,21 @@ public class GameMapScreenController implements GameScene {
                 generalMessageDialogController.toggleDisplay());
     }
 
+    @SuppressWarnings("unchecked")
+    private void setupExtraArmiesDialog() {
+        extraArmiesDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogApply", event -> {
+            gameEngine.placeBonusArmies(getTerritoryTypeFromString(((ComboBox<String>) extraArmiesDialog.getContent())
+                    .getValue()), tradeInLogic.getExtraArmyTerritories());
+            extraArmiesDialogController.toggleDisplay();
+            updateStateLabels();
+        });
+    }
+
+    private TerritoryType getTerritoryTypeFromString(String territory) {
+        return Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory))
+                .collect(Collectors.toList()).get(0);
+    }
+
     private void handleSelectionDialogAction(int value) {
         if (gameEngine.getCurrentGamePhase() == GamePhase.PLACEMENT) {
             handlePlaceArmies(value);
@@ -195,13 +274,20 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleArmyTransfer(FortifyResult result) {
-        if (result != FortifyResult.SUCCESS) {
-            errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
-                errorDialogController.toggleDisplay();
-                promptForAdditionalArmyTransfer();
-            });
-            showErrorMessage("gameMapScreen." + result.toKey());
+        if (result == FortifyResult.SUCCESS) {
+            tradeInLogic.displayIfEnoughCards();
+            fortifyLogic.reset();
+        } else {
+            showArmyTransferError(result);
         }
+    }
+
+    private void showArmyTransferError(FortifyResult result) {
+        errorDialogController.setupButton(ButtonType.CLOSE, "gameMapScreen.dialogClose", event -> {
+            errorDialogController.toggleDisplay();
+            promptForAdditionalArmyTransfer();
+        });
+        showErrorMessage("gameMapScreen." + result.toKey());
     }
 
     private void performAttack(int value) {
@@ -285,6 +371,7 @@ public class GameMapScreenController implements GameScene {
         if (gameEngine.getCurrentGamePhase() != GamePhase.SCRAMBLE) {
             enablePlacement();
         }
+        tradeInButton.setVisible(false);
         gamePhaseActions(gameEngine.getCurrentGamePhase());
     }
 
@@ -310,21 +397,28 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleScramblePhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.claimInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
     private void handleSetupPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.setupInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
     }
 
     private void handlePlacementPhaseInstructions() {
-        this.instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
+        instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
+        tradeInButton.setVisible(true);
+        if (!placementStarted) {
+            tradeInLogic.displayIfEnoughCards();
+            placementStarted = true;
+        }
     }
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
+        placementStarted = false;
+        tradeInButton.setVisible(true);
         instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));
@@ -334,7 +428,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void handleFortifyPhaseInstructions(boolean sourceSelected) {
-        this.instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
+        instructionLabel.setText(SceneController.getString(!sourceSelected ? "gameMapScreen.fortifyInstruction"
                 : "gameMapScreen.fortifySourceInstruction", new Object[]{gameEngine.getCurrentPlayer()}));
         attackFortifySkipButton.setVisible(true);
         attackFortifySkipButton.setText(SceneController.getString(sourceSelected ? "gameMapScreen.resetAttackButton"
@@ -342,7 +436,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void enablePlacement() {
-        this.armiesToPlacePane.setVisible(true);
+        armiesToPlacePane.setVisible(true);
         for (Entry<Button, TerritoryType> entry : territoryButtonMap.entrySet()) {
             Button territoryButton = entry.getKey();
             TerritoryType territory = entry.getValue();
@@ -464,7 +558,7 @@ public class GameMapScreenController implements GameScene {
     }
 
     private void resetSelectionDialog(int startingValue) {
-        this.armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
+        armyCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,
                 startingValue));
     }
 
@@ -498,7 +592,7 @@ public class GameMapScreenController implements GameScene {
 
     @Override
     public void onKeyPress(KeyEvent event) {
-        if (this.confirmDialogController.isVisible()) {
+        if (confirmDialogController.isVisible()) {
             if (event.getCode() == KeyCode.ENTER) {
                 handleClaimTerritory();
             } else if (event.getCode() == KeyCode.ESCAPE) {

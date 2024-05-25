@@ -16,3 +16,4 @@ Team 5: Canon Maranda, Grant Wyness
 - Checkstyle: 10.14.2
 - JaCoCo: 0.8.8
 - PITest: 1.15.0
+- ControlsFX: 11.2.1
