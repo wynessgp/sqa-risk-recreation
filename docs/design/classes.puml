@@ -333,6 +333,30 @@ package presentation {
         +onKeyPress(event: KeyEvent): void
     }
 
+    +class TradeInLogic {
+        -{static}{final} TRADE_IN_COUNT: int
+        -{final} tradeInDialog: Dialog
+        -{final} CheckComboBox<String>: cardSelection
+        -{final} EventHandler<Event> performTradeIn
+        -extraArmyTerritories: Set<TerritoryType>
+
+        ~TradeInLogic(tradeInDialog: Dialog, gameEngine: WorldDominationGameEngine, performTradeIn: EventHandler<Event>)
+        ~displayIfEnoughCards(): void
+        -shouldForceInAttackPhase(): boolean
+        -hideCancelButtonOnForced(): void
+        -displayListOfCards(): void
+        -createDisplayCard(card: Card): void
+        -getTerritoryType(card: Card): void
+        -getPieceType(card: Card): void
+        -setupDialogButtons(): void
+        ~tradeIn(): boolean
+        -getCardFromString(cardString: String): Card
+        -getTerritoryCardFromString(cardString: String): Card
+        ~getExtraArmyTerritories(): Set<TerritoryType>
+    }
+
+    TradeInLogic --> Dialog
+
     WinScreenController ..|> GameScene
 
     PlayerShuffleScreenController --> SceneController
@@ -340,6 +364,7 @@ package presentation {
     GameMapScreenController ..> SceneController
     StartScreenController ..> SceneController
     WinScreenController ..> SceneController
+    TradeInLogic ..> SceneController
     RiskApp ..> SceneController
 }
 
@@ -840,6 +865,11 @@ presentation.PlayerShuffleScreenController --> "*" domain.PlayerColor
 
 presentation.SceneController --> "*" domain.PlayerColor
 presentation.SceneController --> domain.WorldDominationGameEngine
+
+presentation.TradeInLogic --> domain.WorldDominationGameEngine
+presentation.TradeInLogic --> domain.GamePhase
+presentation.TradeInLogic --> "*" domain.TerritoryType
+presentation.TradeInLogic ..> domain.Card
 
 package datasource {
     +interface FileLoader {
