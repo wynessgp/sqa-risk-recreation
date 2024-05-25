@@ -7,11 +7,11 @@
 3. Wrap up deliverables
 
 # Part 2. Team Progress of the Week
-**Evaluation Date**: 5/x/2024
+**Evaluation Date**: 5/25/2024
 
 **Item Progress**:
 1. [done] Finish up domain code necessary for GUI
-2. [95% done] Finish up GUI
+2. [done] Finish up GUI
 3. [95% done] Wrap up deliverables (need to update design)
 
 # Part 3. Individual Progress of the Week
