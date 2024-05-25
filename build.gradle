@@ -36,6 +36,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testImplementation group: 'org.easymock', name: 'easymock', version: '4.2'
+    implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.2.1'
 }
 
 test {
