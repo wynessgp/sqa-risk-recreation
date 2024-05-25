@@ -50,3 +50,7 @@
 .spinner {
     -fx-background-color: transparent;
 }
+
+.extraArmiesSelect .context-menu {
+    -fx-background-color: #424242;
+}

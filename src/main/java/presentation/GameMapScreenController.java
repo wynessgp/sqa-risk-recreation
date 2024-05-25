@@ -4,6 +4,7 @@ import domain.GamePhase;
 import domain.PlayerColor;
 import domain.TerritoryType;
 import domain.WorldDominationGameEngine;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -231,11 +232,16 @@ public class GameMapScreenController implements GameScene {
     @SuppressWarnings("unchecked")
     private void setupExtraArmiesDialog() {
         extraArmiesDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogApply", event -> {
-            gameEngine.placeBonusArmies(TerritoryType.valueOf(((ChoiceBox<String>) extraArmiesDialog.getContent())
+            gameEngine.placeBonusArmies(getTerritoryTypeFromString(((ChoiceBox<String>) extraArmiesDialog.getContent())
                     .getValue()), tradeInLogic.getExtraArmyTerritories());
             extraArmiesDialogController.toggleDisplay();
             updateStateLabels();
         });
+    }
+
+    private TerritoryType getTerritoryTypeFromString(String territory) {
+        return Arrays.stream(TerritoryType.values()).filter(t -> t.toString().equals(territory))
+                .collect(Collectors.toList()).get(0);
     }
 
     private void handleSelectionDialogAction(int value) {
