@@ -33,6 +33,8 @@ package presentation {
         -armyPlacementSelectionDialog: DialogPane
         -attackResultsDialog: DialogPane
         -generalMessageDialog: DialogPane
+        -tradeInDialog: DialogPane
+        -extraArmiesDialog: DialogPane
         -dialogBackground: AnchorPane
         -armiesToPlacePane: AnchorPane
         -currentPlayerColor: Label
@@ -43,6 +45,7 @@ package presentation {
         -defenderRollsLabel: Label
         -attackResultsLabel: Label
         -attackFortifySkipButton: Button
+        -tradeInButton: Button
         -armyCountSpinner: Spinner<Integer>
         -gameEngine: WorldDominationGameEngine
         -selectedTerritory: TerritoryType
@@ -50,11 +53,14 @@ package presentation {
         -territoryButtonMap: Map<Button, TerritoryType>
         -attackLogic: AttackLogic
         -fortifyLogic: FortifyLogic
+        -tradeInLogic: TradeInLogic
         -errorDialogController: Dialog
         -confirmDialogController: Dialog
         -selectDialogController: Dialog
         -attackResultsDialogController: Dialog
         -generalMessageDialogController: Dialog
+        -extraArmiesDialogController: Dialog
+        -placementStarted: Boolean
 
         -initialize(): void
         -setupDialogControllers(): void
@@ -68,6 +74,8 @@ package presentation {
         -setupAttackResultsDialog(): void
         -promptForAdditionalArmyTransfer(): void
         -setupGeneralMessageDialog(): void
+        -setupExtraArmiesDialog(): void
+        -setupTradeInButton(): void
         -handleSelectionDialogAction(value: int): void
         -attackPhaseLogic(value: int): void
         -transferArmiesAttackPhase(value: int): void
@@ -78,6 +86,7 @@ package presentation {
         -displayAttackerResults(): void
         -displayDefenderResults(): void
         -displayAttackResults(): void
+        -displayExtraArmiesChoice(): void
         -checkForLoss(): void
         -checkForWin(): void
         -fortifyPhaseLogic(value: int): void
@@ -88,6 +97,7 @@ package presentation {
         -handlePlacementPhaseInstructions(): void
         -handleAttackPhaseInstructions(sourceSelected: boolean): void
         -handleFortifyPhaseInstructions(sourceSelected: boolean): void
+        -handleExtraArmies(): void
         -enablePlacement(): void
         -getTerritoryOwner(territory: TerritoryType): PlayerColor
         -handleClaimTerritory(): void
@@ -98,6 +108,10 @@ package presentation {
         -handlePlaceArmies(armies: int): void
         -selectPlacementErrorMessage(message: String): void
         -showErrorMessage(key: String): void
+        -showArmyTransferError(result: FortifyResult): void
+        -tradeIn(): void
+        -tradeInErrorAction(): void
+        -prepareStates(): void
         -handlePlacement(): void
         -handleAttack(): void
         -handleFortify(): void
@@ -117,6 +131,7 @@ package presentation {
     GameMapScreenController ..> FortifyResult
     GameMapScreenController ..> AttackResult
     GameMapScreenController ..> SceneType
+    GameMapScreenController --> TradeInLogic
 
     +class PlayerSelectScreenController {
         -{static}{final} MIN_PLAYERS: int
@@ -269,6 +284,7 @@ package presentation {
     ~class Dialog {
         -{final} dialog: DialogPane
         -{final} dialogBackground: AnchorPane
+        -{final} events: Map<ButtonType, EventHandler<Event>>
 
         #Dialog(dialog: DialogPane, background: AnchorPane)
         ~isVisible(): boolean
@@ -278,6 +294,8 @@ package presentation {
         ~setupButton(buttonType: ButtonType, key: String, eventHandler: EventHandler<Event>): void
         -showButton(button: ButtonType): void
         -hideButton(button: ButtonType): void
+        ~setDialogContent(content: Node): void
+        ~getDialog(): DialogPane
     }
 
     +class FortifyLogic {
@@ -339,12 +357,14 @@ package presentation {
         -{final} CheckComboBox<String>: cardSelection
         -{final} EventHandler<Event> performTradeIn
         -extraArmyTerritories: Set<TerritoryType>
+        -playerCards: Set<Card>
 
         ~TradeInLogic(tradeInDialog: Dialog, gameEngine: WorldDominationGameEngine, performTradeIn: EventHandler<Event>)
         ~displayIfEnoughCards(): void
         -shouldForceInAttackPhase(): boolean
         -hideCancelButtonOnForced(): void
         -displayListOfCards(): void
+        -iterateThroughCards(cards: Set<Card>): void
         -createDisplayCard(card: Card): void
         -getTerritoryType(card: Card): void
         -getPieceType(card: Card): void
