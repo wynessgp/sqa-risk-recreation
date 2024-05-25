@@ -83,6 +83,12 @@
             <String fx:value="button" />
             <String fx:value="defaultButton" />
          </styleClass></Button>
+      <Button fx:id="tradeInButton" alignment="CENTER" layoutX="14.0" layoutY="537.0" mnemonicParsing="false" prefWidth="100.0" text="%gameMapScreen.tradeInButton" visible="false">
+         <styleClass>
+            <String fx:value="button" />
+            <String fx:value="defaultButton" />
+         </styleClass>
+      </Button>
     </AnchorPane>
    <AnchorPane layoutX="128.0" layoutY="65.0" prefHeight="568.0" prefWidth="854.0">
       <ImageView fitHeight="568.0" fitWidth="864.0" pickOnBounds="true" preserveRatio="true">
@@ -630,8 +636,8 @@
    </DialogPane>
    <DialogPane fx:id="extraArmiesDialog" expanded="true" headerText="%gameMapScreen.extraArmiesDialog" layoutX="311.0" layoutY="266.0" prefWidth="360.0" styleClass="dialog" visible="false">
       <content>
-         <ChoiceBox prefHeight="25.0"/>
+         <ChoiceBox prefHeight="25.0" />
       </content>
-      <ButtonType fx:constant="OK"/>
+      <ButtonType fx:constant="OK" />
    </DialogPane>
 </AnchorPane>

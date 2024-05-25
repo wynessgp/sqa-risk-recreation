@@ -58,6 +58,8 @@ public class GameMapScreenController implements GameScene {
     @FXML
     private Button attackFortifySkipButton;
     @FXML
+    private Button tradeInButton;
+    @FXML
     private Spinner<Integer> armyCountSpinner;
     private WorldDominationGameEngine gameEngine;
     private TerritoryType selectedTerritory;
@@ -80,10 +82,15 @@ public class GameMapScreenController implements GameScene {
         attackLogic = new AttackLogic(gameEngine);
         fortifyLogic = new FortifyLogic(gameEngine);
         SceneController.setCurrentScene(this);
+        prepareStates();
+    }
+
+    private void prepareStates() {
         setupDialogControllers();
         updateStateLabels();
         setupDialogButtons();
         setupSkipButton();
+        setupTradeInButton();
     }
 
     private void setupDialogControllers() {
@@ -168,6 +175,14 @@ public class GameMapScreenController implements GameScene {
             updateStateLabels();
         }
         fortifyLogic.reset();
+    }
+
+    private void setupTradeInButton() {
+        tradeInButton.addEventHandler(ActionEvent.ACTION, event -> {
+            if (!tradeInLogic.displayIfEnoughCards()) {
+                showErrorMessage("gameMapScreen.unableToTradeIn");
+            }
+        });
     }
 
     private void setupClaimTerritoryDialog() {
@@ -350,6 +365,7 @@ public class GameMapScreenController implements GameScene {
         if (gameEngine.getCurrentGamePhase() != GamePhase.SCRAMBLE) {
             enablePlacement();
         }
+        tradeInButton.setVisible(false);
         gamePhaseActions(gameEngine.getCurrentGamePhase());
     }
 
@@ -387,6 +403,7 @@ public class GameMapScreenController implements GameScene {
     private void handlePlacementPhaseInstructions() {
         instructionLabel.setText(SceneController.getString("gameMapScreen.placementInstruction",
                 new Object[]{gameEngine.getCurrentPlayer()}));
+        tradeInButton.setVisible(true);
         if (!placementStarted) {
             tradeInLogic.displayIfEnoughCards();
             placementStarted = true;
@@ -395,6 +412,7 @@ public class GameMapScreenController implements GameScene {
 
     private void handleAttackPhaseInstructions(boolean sourceSelected) {
         placementStarted = false;
+        tradeInButton.setVisible(true);
         instructionLabel.setText(SceneController.getString(sourceSelected ? "gameMapScreen.attackInstructionTarget"
                         : "gameMapScreen.attackInstructionSource",
                 new Object[]{gameEngine.getCurrentPlayer()}));

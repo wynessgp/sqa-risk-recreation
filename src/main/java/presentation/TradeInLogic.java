@@ -32,13 +32,14 @@ class TradeInLogic {
         this.performTradeIn = performTradeIn;
     }
 
-    void displayIfEnoughCards() {
+    boolean displayIfEnoughCards() {
         if (gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).size() < TRADE_IN_COUNT
                 || shouldForceInAttackPhase()) {
-            return;
+            return false;
         }
         hideCancelButtonOnForced();
         displayListOfCards();
+        return true;
     }
 
     private boolean shouldForceInAttackPhase() {
@@ -56,13 +57,19 @@ class TradeInLogic {
 
     private void displayListOfCards() {
         extraArmyTerritories.clear();
-        cardSelection.getItems().clear();
-        if (cardSelection.getCheckModel() != null) {
-            cardSelection.getCheckModel().clearChecks();
-        }
+        clearSelection();
         gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).forEach(this::createDisplayCard);
         setupDialogButtons();
         tradeInDialog.toggleDisplay();
+    }
+
+    private void clearSelection() {
+        cardSelection.getItems().clear();
+        try {
+            cardSelection.getCheckModel().clearChecks();
+        } catch (Exception e) {
+            cardSelection.notify();
+        }
     }
 
     private void createDisplayCard(Card card) {
