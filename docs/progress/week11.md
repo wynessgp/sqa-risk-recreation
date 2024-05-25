@@ -12,7 +12,7 @@
 **Item Progress**:
 1. [done] Finish up domain code necessary for GUI
 2. [done] Finish up GUI
-3. [95% done] Wrap up deliverables (need to update design)
+3. [done] Wrap up deliverables (design updated)
 
 # Part 3. Individual Progress of the Week
 ### Team member: Canon Maranda
@@ -42,6 +42,7 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/177
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/180
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/182
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/185
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/166
@@ -62,6 +63,8 @@
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/166
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/173
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/183
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/184
+- https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/187
 
 #### Other people's PR reviewed by you
 - https://github.com/rhit-csse376/project-202430-s1-team05-202430/pull/162
