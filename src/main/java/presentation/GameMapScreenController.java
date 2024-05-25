@@ -14,7 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -132,7 +132,7 @@ public class GameMapScreenController implements GameScene {
 
     @SuppressWarnings("unchecked")
     private void displayExtraArmiesChoice(Set<TerritoryType> extraArmies) {
-        ChoiceBox<String> territoryChoices = (ChoiceBox<String>) extraArmiesDialog.getContent();
+        ComboBox<String> territoryChoices = (ComboBox<String>) extraArmiesDialog.getContent();
         territoryChoices.getItems().clear();
         territoryChoices.getItems().addAll(extraArmies.stream().map(TerritoryType::toString)
                 .collect(Collectors.toSet()));
@@ -232,7 +232,7 @@ public class GameMapScreenController implements GameScene {
     @SuppressWarnings("unchecked")
     private void setupExtraArmiesDialog() {
         extraArmiesDialogController.setupButton(ButtonType.OK, "gameMapScreen.dialogApply", event -> {
-            gameEngine.placeBonusArmies(getTerritoryTypeFromString(((ChoiceBox<String>) extraArmiesDialog.getContent())
+            gameEngine.placeBonusArmies(getTerritoryTypeFromString(((ComboBox<String>) extraArmiesDialog.getContent())
                     .getValue()), tradeInLogic.getExtraArmyTerritories());
             extraArmiesDialogController.toggleDisplay();
             updateStateLabels();
