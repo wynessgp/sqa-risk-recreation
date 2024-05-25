@@ -22,6 +22,7 @@ class TradeInLogic {
     private final CheckComboBox<String> cardSelection;
     private final EventHandler<Event> performTradeIn;
     private Set<TerritoryType> extraArmyTerritories = new HashSet<>();
+    private Set<Card> playerCards;
 
     @SuppressWarnings("unchecked")
     TradeInLogic(Dialog tradeInDialog, WorldDominationGameEngine gameEngine, EventHandler<Event> performTradeIn) {
@@ -57,24 +58,26 @@ class TradeInLogic {
 
     private void displayListOfCards() {
         extraArmyTerritories.clear();
-        clearSelection();
-        gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).forEach(this::createDisplayCard);
+        cardSelection.getCheckModel().clearChecks();
+        cardSelection.getItems().clear();
+        iterateThroughCards(gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()));
         setupDialogButtons();
         tradeInDialog.toggleDisplay();
     }
 
-    private void clearSelection() {
-        cardSelection.getItems().clear();
-        try {
-            cardSelection.getCheckModel().clearChecks();
-        } catch (Exception e) {
-            cardSelection.notify();
+    private void iterateThroughCards(Set<Card> cards) {
+        int wildCardIndex = 1;
+        for (Card card : cards) {
+            createDisplayCard(card, wildCardIndex);
+            if (card.isWild()) {
+                wildCardIndex++;
+            }
         }
     }
 
-    private void createDisplayCard(Card card) {
+    private void createDisplayCard(Card card, int index) {
         if (card.isWild()) {
-            cardSelection.getItems().add(SceneController.getString("gameMapScreen.wildCard", null));
+            cardSelection.getItems().add(SceneController.getString("gameMapScreen.wildCard", new Object[]{index}));
         } else {
             TerritoryType territoryType = getTerritoryType(card);
             PieceType pieceType = getPieceType(card);
@@ -98,19 +101,25 @@ class TradeInLogic {
 
     boolean tradeIn() {
         try {
-            tradeInDialog.toggleDisplay();
-            extraArmyTerritories = (gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
-                    .map(this::getCardFromString).collect(Collectors.toSet())));
+            attemptTradeIn();
         } catch (Exception exception) {
             return false;
         }
         return true;
     }
 
+    private void attemptTradeIn() {
+        tradeInDialog.toggleDisplay();
+        playerCards = gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer());
+        extraArmyTerritories = (gameEngine.tradeInCards(cardSelection.getCheckModel().getCheckedItems().stream()
+                .map(this::getCardFromString).collect(Collectors.toSet())));
+    }
+
     private Card getCardFromString(String cardString) {
         if (!cardString.contains("(")) {
-            return gameEngine.getCardsOwnedByPlayer(gameEngine.getCurrentPlayer()).stream().filter(Card::isWild)
-                    .collect(Collectors.toList()).get(0);
+            Card wildCard = playerCards.stream().filter(Card::isWild).collect(Collectors.toList()).get(0);
+            playerCards.remove(wildCard);
+            return wildCard;
         }
         return getTerritoryCardFromString(cardString);
     }
